@@ -45,7 +45,7 @@ def simplify(points,epsilon=0.035):
 def atlas():
     original=json.loads((ASSETS/"world-1300.geojson").read_text());result=[]
     for f in original["features"]:
-        p=f["properties"];name=norm(p.get("NAME"));realm=norm(p.get("SUBJECTO")) or name
+        p=f["properties"];name=norm(p.get("NAME"));realm=name or norm(p.get("SUBJECTO"))
         paths=[]
         geometry=f["geometry"];polys=[geometry["coordinates"]] if geometry["type"]=="Polygon" else geometry["coordinates"]
         for poly in polys:
