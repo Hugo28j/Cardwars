@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Iberia · first 31 cards
+# Cardwars 1300 research · Europe · first 58 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -67,3 +67,22 @@ Political ownership in the exact 1300 snapshot:
 - **Emirate of Granada:** Granada and Málaga.
 
 Near-date population anchors used where available include Lisbon ≈35K, Porto ≈6K, Coimbra ≈6K, Évora ≈12K and Santarém ≈7K from published urban-population tables; Zaragoza ≥22K from the 1302 monedaje; Valencia ≈25K in the early fourteenth century; Barcelona ≈30–40K; and Girona ≈8K at the end of the thirteenth century. Other values are explicitly marked low confidence.
+
+
+## France and neighbouring polities batch: 27 cities
+
+Added: Nantes, Rennes, Vannes, Rouen, Caen, Amiens, Paris, Reims, Troyes, Provins, Dijon, Tours, Angers, Poitiers, La Rochelle, Orléans, Bourges, Limoges, Bordeaux, Bayonne, Toulouse, Carcassonne, Montpellier, Lyon, Vienne, Marseille and Aix-en-Provence.
+
+Exact-1300 political handling:
+- **Duchy of Brittany:** Nantes, Rennes, Vannes.
+- **Kingdom of France / royal domain or royal provinces:** Rouen, Caen, Amiens, Paris, Reims, Tours, Poitiers, La Rochelle, Orléans, Bourges, Toulouse, Carcassonne.
+- **County of Champagne:** Troyes and Provins, still treated as a distinct county in personal union with Philip IV and Joan I around 1300.
+- **Duchy of Burgundy:** Dijon, under Robert II.
+- **County of Anjou:** Angers, under Charles of Valois from 1290.
+- **Viscounty of Limoges:** Limoges, with a deliberately nuanced note that the medieval city was split between the viscomital/communal Château and the episcopal Cité.
+- **Duchy of Aquitaine under the English Crown:** Bordeaux and Bayonne.
+- **Kingdom of Majorca:** Montpellier.
+- **Holy Roman Empire ecclesiastical principalities:** Lyon and Vienne; neither is treated as French in 1300.
+- **County of Provence:** Marseille and Aix-en-Provence under Charles II of Anjou-Naples.
+
+Population values for this batch are intentionally marked low or medium confidence unless a near-date estimate is especially strong. They are not presented as census counts.
