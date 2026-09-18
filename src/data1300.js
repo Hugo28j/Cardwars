@@ -89,18 +89,20 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-murcia',name:'Murcia',modern:'Murcia',country:'Crown of Castile',subrealm:'Kingdom of Murcia',
+  id:'1300-murcia',name:'Murcia',modern:'Murcia',country:'Crown of Aragon',subrealm:'Kingdom of Murcia · Aragonese occupation (1296–1304)',
   lon:-1.1307,lat:37.9922,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationConfidence:'medium',
   sizeText:'≈1.1 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:88,technology:70,satisfaction:52,
-  historicalRole:'Irrigated southeastern regional capital in a contested Castilian-Aragonese frontier zone',
+  historicalRole:'Irrigated southeastern regional capital under the Crown of Aragon in the 1300 snapshot',
   economy:'Huerta irrigation, agriculture, crafts and Mediterranean-oriented trade through regional ports',
-  militaryRole:'Strategically exposed eastern city; political control was contested around 1296–1304',
-  researchSummary:'Murcia had been definitively incorporated into Castile in 1266. Around 1300 it was still in a politically unstable eastern frontier environment.',
+  militaryRole:'Strategically exposed eastern city held by Jaume II during the Aragonese occupation of Murcia',
+  researchSummary:'Jaume II of Aragon occupied the Kingdom of Murcia from 1296. In the exact 1300 snapshot Murcia city was therefore under Aragonese sovereignty; the 1304–1305 settlements later returned Murcia city and the southern portion to Castile.',
   evidenceNote:'Population is a published c.1300 estimate. The city is inland, so Navy is zero even though the wider kingdom accessed Mediterranean trade through ports such as Cartagena.',
   sources:[
    ['Spanish historical-demography city table','https://es.wikipedia.org/wiki/Evoluci%C3%B3n_de_la_poblaci%C3%B3n_espa%C3%B1ola_en_la_%C3%A9poca_precensal'],
-   ['CSIC — Kingdom of Murcia in the Mediterranean economy','https://doi.org/10.3989/aem.1994.v24.973']
+   ['CSIC — Kingdom of Murcia in the Mediterranean economy','https://doi.org/10.3989/aem.1994.v24.973'],
+   ['Universidad de Murcia — Jaime II confirms Murcia privileges, 1296–1304','https://doi.org/10.6018/j5621'],
+   ['Biblioteca Virtual Miguel de Cervantes — Aragonese occupation and 1304–1305 partition','https://www.cervantesvirtual.com/s3/BVMC_OBRAS/ff4/78b/368/2b1/11d/fac/c70/021/85c/e60/64/mimes/ff478b36-82b1-11df-acc7-002185ce6064_60.html']
   ]
  },
  {
@@ -163,8 +165,41 @@ export const CITIES_1300=[
    ['University of Jaén — frontier concejo in the 13th century','https://revistaselectronicas.ujaen.es/index.php/ATM/article/view/1561'],
    ['University of Jaén — urban structure/background','https://crea.ujaen.es/jspui/bitstream/10953.1/2265/1/Tapia_Sanchez_Felipe_TFG_GeografiaeHistoria.pdf']
   ]
+ },
+ {
+  id:'1300-santiago',name:'Santiago de Compostela',modern:'Santiago de Compostela',country:'Crown of Castile',subrealm:'Kingdom of Galicia · lordship of the Archbishop of Santiago',
+  lon:-8.5448,lat:42.8782,rarity:3,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  sizeText:'≈0.35 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
+  food:66,technology:82,satisfaction:71,
+  historicalRole:'Archiepiscopal capital and one of medieval Europe’s foremost pilgrimage destinations',
+  economy:'Pilgrimage services, ecclesiastical rents, crafts, markets and regional trade',
+  militaryRole:'Walled ecclesiastical city whose power rested more on lordship, wealth and pilgrimage than on a large urban army',
+  researchSummary:'Around 1300 Santiago was a major Peninsular city of ecclesiastical lordship and an internationally renowned pilgrimage centre. The archbishop exercised substantial temporal power over the Tierra de Santiago.',
+  evidenceNote:'No reliable c.1300 census survives, so the resident population is a deliberately broad low-confidence estimate. The city’s importance is much greater than that population alone suggests because the 12th–13th centuries were the golden age of the pilgrimage and pilgrim traffic was transient. Army and the 0–100 scores are gameplay estimates.',
+  sources:[
+   ['UNESCO — Santiago de Compostela (Old Town)','https://whc.unesco.org/en/list/347'],
+   ['Universidade de Santiago — medieval city council and ecclesiastical lordship','https://doi.org/10.5944/ETFIII.32.2019.22411'],
+   ['Universidade de Santiago — archiepiscopal power, 1150–1400','https://investigacion.usc.gal/documentos/5d1df66129995204f766a4f4'],
+   ['Cathedral of Santiago — pilgrimage history','https://catedraldesantiago.es/en/pilgrimage/']
+  ]
+ },
+ {
+  id:'1300-plasencia',name:'Plasencia',modern:'Plasencia',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal town and episcopal see',
+  lon:-6.0883,lat:40.0312,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  sizeText:'≈0.30 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
+  food:79,technology:64,satisfaction:67,
+  historicalRole:'Fortified royal city, episcopal see and organising centre of a very large north-eastern Extremaduran territory',
+  economy:'Agriculture, livestock, communal pasture, timber, market exchange and ecclesiastical activity',
+  militaryRole:'Originally a military and colonising centre controlling routes between the Meseta, the Tajo and Extremadura',
+  researchSummary:'Plasencia was a royal town with an extensive alfoz, a wealthy bishopric founded in 1188 and an important role in the repopulation and administration of north-eastern Extremadura. Around 1300 small lordships were forming within its territory, but the city itself remained royal.',
+  evidenceNote:'There is no dependable c.1300 headcount for the city, so population and urban footprint are low-confidence gameplay estimates. The qualitative ratings are grounded in its large jurisdiction, fortified status, agricultural and pastoral resources, and episcopal institutions.',
+  sources:[
+   ['Universidad de Extremadura — Arte y urbanismo de Plasencia en la Edad Media','https://dehesa.unex.es/server/api/core/bitstreams/7b9270ad-2dca-4bee-9753-49894da51e9f/content'],
+   ['En la España Medieval — lordships in the Plasencia concejo around 1300','https://dialnet.unirioja.es/servlet/articulo?codigo=1226648'],
+   ['Universidad de Extremadura — feudal society and the major Extremaduran concejos','https://dehesa.unex.es/server/api/core/bitstreams/555acba5-f66e-4f20-9770-893aabf1699c/content']
+  ]
  }
 ];
 
 export const CITY_1300=Object.fromEntries(CITIES_1300.map((c,index)=>[c.id,{...c,index}]));
-export const CASTILE_1300_NOTE='Population figures are historical estimates, not census counts. Army, navy, Food, Technology and Satisfaction are comparative Cardwars gameplay estimates based on population, strategic role, institutions, trade, fortifications and frontier exposure.';
+export const RESEARCH_1300_NOTE='Population figures are historical estimates, not census counts. Army, navy, Food, Technology and Satisfaction are comparative Cardwars gameplay estimates based on population, strategic role, institutions, trade, fortifications and frontier exposure. Political ownership follows the exact c. 1300 snapshot, including temporary occupations such as Aragonese Murcia.';
