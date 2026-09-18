@@ -5,7 +5,7 @@ A static, English-language city-card collection prototype set around **600 CE**.
 ## Included
 
 - **123 original c. 600 CE city cards** from the connected European mainland, with photographs, historical and modern place names, political realm labels, five rarity tiers and seven stats.
-- A separate **c. 1300 research collection**, built country by country. The current set contains 12 researched Iberian cards: 11 in the Crown of Castile and Murcia under the Crown of Aragon, reflecting the exact 1300 occupation. These cards deliberately have no artwork yet; historical research and data come first.
+- A separate **c. 1300 research collection**, built country by country. The current set contains 31 researched Iberian cards across the Crown of Castile, Crown of Aragon, Kingdom of Portugal, Kingdom of Navarre and Emirate of Granada.
 - Unlimited **free packs of five cards**. Each draw is independent: Common 50%, Uncommon 28%, Rare 15%, Epic 6%, Legendary 1%.
 - Duplicate rewards: **10 / 25 / 60 / 150 / 400 coins**. Duplicates within one pack count immediately; extra copies remain in the collection.
 - All cards visible from the start: undiscovered cards are grey, collected cards are coloured. Search and filter by country, rarity or ownership.
@@ -40,7 +40,7 @@ Progress uses `localStorage` key `cardwars.collection.v2`. Saves belong to the c
 - `scripts/prepare-assets.py`: regenerates the coarse upstream c. 1300 reference as `assets/atlas-base.json`; the playable `assets/atlas.json` contains additional authored small-state subdivisions for gameplay.
 - `src/engine.js`: pack draws, rewards, formatting and save validation.
 - `src/map.js`: geographic SVG map, interactions and label placement; map city markers come from the 1300 research catalogue.
-- `src/data1300.js`: researched c. 1300 card catalogue, currently 12 Iberian cards with exact-year political ownership.
+- `src/data1300.js`: researched c. 1300 card catalogue, currently 31 Iberian cards with exact-year political ownership.
 - `tests/engine.test.js`: catalogue, probability boundaries, rewards, saves, reset and asset checks.
 
 Cards display historical political identities for the c. 600 CE setting. Present-day city and country names remain geographic reference metadata only; modern flags are not shown on cards. The Eastern Roman Empire still existed. Historical borders are approximate; city populations, armies, areas and scores are invented for balancing. Photographs show present-day cities or surviving sites, including later buildings. See [SOURCES.md](SOURCES.md) and the in-game credits for attribution and limitations.
