@@ -489,6 +489,411 @@ export const CITIES_1300=[
    ['Málaga archaeological routes — Muslim Málaga','https://rutasarqueologicas.malaga.eu/malaga-musulmana/'],
    ['Alcazaba de Málaga — official history','https://alcazabaygibralfaro.malaga.eu/en/alcazaba/history/']
   ]
+ },
+ {
+  id:'1300-nantes',name:'Nantes',modern:'Nantes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · ducal city on the Loire',
+  lon:-1.5536,lat:47.2184,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  sizeText:'≈0.70 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:10,navyText:'≈10',
+  food:78,technology:72,satisfaction:70,
+  historicalRole:'One of the principal economic and ducal centres of independent Brittany',
+  economy:'Loire trade, maritime commerce, crafts and regional agriculture',
+  militaryRole:'Fortified river-port with ducal residence and useful naval capacity',
+  researchSummary:'Nantes was firmly within the Duchy of Brittany in 1300 and had become one of its leading economic poles, strengthened by 13th-century ducal fortifications and its position at the Loire estuary.',
+  evidenceNote:'No direct c.1300 census survives; population and size are low-confidence estimates. Political ownership and the city’s ducal-commercial role are well documented.',
+  sources:[
+   ['Nantes Patrimonia — Duché de Bretagne','https://patrimonia.nantes.fr/fiches-encyclopediques/duche-de-bretagne/'],
+   ['Nantes Patrimonia — Moyen Âge','https://patrimonia.nantes.fr/periodes/moyen-age/']
+  ]
+ },
+ {
+  id:'1300-rennes',name:'Rennes',modern:'Rennes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · major eastern ducal centre',
+  lon:-1.6778,lat:48.1173,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  sizeText:'≈0.65 km²',sizeConfidence:'low',army:1600,armyText:'≈1.6 K',navy:0,navyText:'0',
+  food:76,technology:70,satisfaction:68,
+  historicalRole:'One of Brittany’s foremost political and commercial cities',
+  economy:'Markets, crafts, regional agriculture and ducal administration',
+  militaryRole:'Important fortified eastern city near the frontier with the French kingdom',
+  researchSummary:'Rennes was one of the major urban centres of the Duchy of Brittany and a regular place of ducal power, especially important because of its eastern position.',
+  evidenceNote:'Population is a broad low-confidence reconstruction; political placement inside the Duchy of Brittany is secure.',
+  sources:[
+   ['Nantes Patrimonia — Duché de Bretagne','https://patrimonia.nantes.fr/fiches-encyclopediques/duche-de-bretagne/'],
+   ['Encyclopaedia Britannica — Rennes','https://www.britannica.com/place/Rennes']
+  ]
+ },
+ {
+  id:'1300-vannes',name:'Vannes',modern:'Vannes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · episcopal and port city',
+  lon:-2.7608,lat:47.6582,rarity:1,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  sizeText:'≈0.30 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:4,navyText:'≈4',
+  food:75,technology:67,satisfaction:72,
+  historicalRole:'Episcopal port city and established Breton urban centre',
+  economy:'Port trade, agriculture, church activity and local crafts',
+  militaryRole:'Compact fortified episcopal city with a useful gulf port',
+  researchSummary:'Vannes had an active medieval port and bishopric and was one of the established cities of the Breton duchy, although its greatest ducal prominence came later in the 14th and 15th centuries.',
+  evidenceNote:'Population is low-confidence; the city’s port, bishopric and 12th–13th-century urban renewal are documented.',
+  sources:[
+   ['Ville de Vannes — Au fil de l’Histoire','https://www.mairie-vannes.fr/au-fil-de-lhistoire'],
+   ['Ville de Vannes — Identité bretonne','https://www.mairie-vannes.fr/identite-bretonne']
+  ]
+ },
+ {
+  id:'1300-rouen',name:'Rouen',modern:'Rouen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · capital and Seine port',
+  lon:1.0993,lat:49.4432,rarity:4,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'medium',
+  sizeText:'≈1.50 km²',sizeConfidence:'low',army:4500,armyText:'≈4.5 K',navy:14,navyText:'≈14',
+  food:79,technology:83,satisfaction:71,
+  historicalRole:'Capital of Normandy and one of the largest commercial cities in the French kingdom',
+  economy:'Textiles, Seine shipping, wine, salt, fish and international trade',
+  militaryRole:'Major fortified river-port controlling the lower Seine',
+  researchSummary:'Rouen entered the French royal domain in 1204 but retained its communal privileges and commercial power. Around 1300 it was among the kingdom’s most important cities after Paris.',
+  evidenceNote:'Population is a medium-confidence order-of-magnitude estimate; economic and political role are strongly documented.',
+  sources:[
+   ['Ville de Rouen — Rouen au Moyen Âge','https://www.rouen.fr/fr/moyen-age'],
+   ['Préfecture de Normandie — Histoire de la Normandie','https://www.prefectures-regions.gouv.fr/normandie/Region-et-institutions/Portrait-de-la-region/Histoire/Histoire-de-la-Normandie']
+  ]
+ },
+ {
+  id:'1300-caen',name:'Caen',modern:'Caen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · major Norman city',
+  lon:-0.3707,lat:49.1829,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
+  sizeText:'≈1.00 km²',sizeConfidence:'low',army:2600,armyText:'≈2.6 K',navy:3,navyText:'≈3',
+  food:77,technology:76,satisfaction:70,
+  historicalRole:'Major Norman administrative, religious and commercial city',
+  economy:'Markets, textiles, crafts, agriculture and regional trade',
+  militaryRole:'Large fortified city dominated by the ducal castle',
+  researchSummary:'Caen was conquered by Philip Augustus in 1204 and remained an important Norman city under the French crown, retaining major religious foundations and a powerful castle.',
+  evidenceNote:'Population is low-confidence; the 1204 political transition and major urban role are well documented.',
+  sources:[
+   ['Ville de Caen — dates clés','https://caen.fr/node/83730'],
+   ['Préfecture de Normandie — Histoire de la Normandie','https://www.prefectures-regions.gouv.fr/normandie/Region-et-institutions/Portrait-de-la-region/Histoire/Histoire-de-la-Normandie']
+  ]
+ },
+ {
+  id:'1300-amiens',name:'Amiens',modern:'Amiens',country:'Kingdom of France',subrealm:'Amiénois · French royal sphere',
+  lon:2.2958,lat:49.8941,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  sizeText:'≈0.90 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
+  food:74,technology:79,satisfaction:71,
+  historicalRole:'Wealthy northern textile city and episcopal centre',
+  economy:'Wool and cloth, woad, markets, crafts and river commerce',
+  militaryRole:'Fortified northern city with strategic value between Paris and Flanders',
+  researchSummary:'Amiens prospered through textiles and trade in the 13th century while the immense Gothic cathedral transformed the city’s ecclesiastical profile.',
+  evidenceNote:'Population is a low-confidence estimate; commercial wealth and cathedral construction are well established.',
+  sources:[
+   ['Amiens Cathedral — official monument history','https://www.cathedrale-amiens.fr/en/discover/history-of-the-monument'],
+   ['Encyclopaedia Britannica — Amiens','https://www.britannica.com/place/Amiens']
+  ]
+ },
+ {
+  id:'1300-paris',name:'Paris',modern:'Paris',country:'Kingdom of France',subrealm:'Royal domain · capital of Capetian government',
+  lon:2.3522,lat:48.8566,rarity:4,year:1300,people:200000,populationText:'≈200 K',populationRange:'≈170–220 K',populationConfidence:'medium',
+  sizeText:'≈4.4 km²',sizeConfidence:'medium',army:12000,armyText:'≈12.0 K',navy:0,navyText:'0',
+  food:70,technology:96,satisfaction:64,
+  historicalRole:'Political, intellectual and economic centre of the Capetian kingdom and one of Europe’s largest cities',
+  economy:'Court, university, crafts, luxury production, markets and Seine commerce',
+  militaryRole:'Enormous walled capital whose manpower and royal institutions gave exceptional defensive depth',
+  researchSummary:'Around 1300 Paris was the centre of Philip IV’s government and one of the largest cities in western Europe. Its university and court gave it exceptional intellectual and political weight.',
+  evidenceNote:'Medieval population estimates vary substantially; 200,000 is used as a rounded medium-confidence figure rather than a census.',
+  sources:[
+   ['Encyclopaedia Britannica — Paris history','https://www.britannica.com/place/Paris/History'],
+   ['Paris Musées — medieval Paris collections','https://www.parismuseescollections.paris.fr/en']
+  ]
+ },
+ {
+  id:'1300-reims',name:'Reims',modern:'Reims',country:'Kingdom of France',subrealm:'Archbishopric of Reims · coronation city within the French kingdom',
+  lon:4.0317,lat:49.2583,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  sizeText:'≈0.90 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
+  food:73,technology:87,satisfaction:70,
+  historicalRole:'Archiepiscopal metropolis and traditional coronation city of the French kings',
+  economy:'Church wealth, cloth, wine, markets and regional commerce',
+  militaryRole:'Walled ecclesiastical city with high symbolic and strategic value',
+  researchSummary:'Reims combined the temporal lordship of its archbishop with its unique role in French kingship. The cathedral and archiepiscopal complex made it one of the kingdom’s most prestigious cities.',
+  evidenceNote:'Population is low-confidence; institutional and ecclesiastical significance are high confidence.',
+  sources:[
+   ['Visit Reims — Cathedral district','https://visit.reims.fr/accueil/cathedral-district'],
+   ['Visit Reims — Château Porte-Mars','https://visit.reims.fr/parcours-dans-la-ville/cite-des-sacres/chateau-porte-mars']
+  ]
+ },
+ {
+  id:'1300-troyes',name:'Troyes',modern:'Troyes',country:'County of Champagne',subrealm:'County of Champagne · personal union with the French crown through Joan I and Philip IV',
+  lon:4.0744,lat:48.2973,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  sizeText:'≈1.00 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
+  food:76,technology:82,satisfaction:70,
+  historicalRole:'Principal city of Champagne and international fair centre',
+  economy:'Champagne fairs, cloth, finance, crafts and long-distance commerce',
+  militaryRole:'Walled county capital with strong economic rather than frontier-military power',
+  researchSummary:'Troyes remained the leading city of Champagne’s famous fair system. In 1300 the county was ruled by Joan I of Navarre/Champagne and her husband Philip IV of France in personal union, not yet simply erased as a separate county.',
+  evidenceNote:'Population is low-confidence. The fair system and the county’s personal-union status are well documented.',
+  sources:[
+   ['Ville de Troyes — medieval history','https://www.ville-troyes.fr/decouvrir-troyes/troyes-une-histoire-passionnante/'],
+   ['Larousse — French royal domain and Champagne','https://www.larousse.fr/encyclopedie/divers/domaine_royal/44341']
+  ]
+ },
+ {
+  id:'1300-provins',name:'Provins',modern:'Provins',country:'County of Champagne',subrealm:'County of Champagne · international fair city',
+  lon:3.2990,lat:48.5601,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–15 K',populationConfidence:'low',
+  sizeText:'≈0.65 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
+  food:70,technology:83,satisfaction:68,
+  historicalRole:'Merchant city of the Champagne fairs at the end of their great 12th–13th-century apogee',
+  economy:'International fairs, money-changing, cloth, warehousing and crafts',
+  militaryRole:'Strongly fortified commercial town',
+  researchSummary:'Provins was one of the defining merchant cities of the Champagne fairs. Its economic zenith lay in the 12th and 13th centuries, so the 1300 card captures a still-important centre beginning to pass its peak.',
+  evidenceNote:'Population is low-confidence; international commercial significance is high confidence.',
+  sources:[
+   ['Provins Tourisme — UNESCO medieval town','https://provins.net/en/discover-visit/the-medieval-town-of-provins/provins-unesco/'],
+   ['Provins Tourisme — Tithe Barn and fairs','https://provins.net/en/the-tithe-barn-of-provins/']
+  ]
+ },
+ {
+  id:'1300-dijon',name:'Dijon',modern:'Dijon',country:'Duchy of Burgundy',subrealm:'Duchy of Burgundy · ducal capital under Robert II',
+  lon:5.0415,lat:47.3220,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  sizeText:'≈0.75 km²',sizeConfidence:'low',army:1800,armyText:'≈1.8 K',navy:0,navyText:'0',
+  food:79,technology:75,satisfaction:72,
+  historicalRole:'Capital of the Capetian Duchy of Burgundy',
+  economy:'Ducal administration, wine, crafts, markets and regional trade',
+  militaryRole:'Walled ducal capital with central command value',
+  researchSummary:'Dijon had been the capital of the Duchy of Burgundy since the 11th century. In 1300 Duke Robert II still ruled the duchy as a major prince of the French kingdom.',
+  evidenceNote:'Population is low-confidence; political ownership and Dijon’s status as ducal capital are high confidence.',
+  sources:[
+   ['Dijon Patrimoine — Dijon au Moyen Âge','https://patrimoine.dijon.fr/wp-content/uploads/sites/20/2025/05/Dijon_dossier_moyen-age_2025.pdf'],
+   ['Académie de Dijon — Robert II, duc de Bourgogne','https://www.academie-sabl-dijon.org/celebration/robert-ii-duc-de-bourgogne/']
+  ]
+ },
+ {
+  id:'1300-tours',name:'Tours',modern:'Tours',country:'Kingdom of France',subrealm:'Touraine · French royal domain',
+  lon:0.6848,lat:47.3941,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
+  food:82,technology:76,satisfaction:73,
+  historicalRole:'Important Loire city, pilgrimage centre and regional commercial hub',
+  economy:'Pilgrimage, river commerce, agriculture, crafts and church activity',
+  militaryRole:'Fortified Loire crossing with strategic central location',
+  researchSummary:'Tours remained an important Loire centre around the shrine of Saint Martin and the episcopal city, under Capetian control after the collapse of Plantagenet power north of the Loire.',
+  evidenceNote:'Population is low-confidence; importance as a religious and Loire-route centre is well established.',
+  sources:[
+   ['Encyclopaedia Britannica — Tours','https://www.britannica.com/place/Tours'],
+   ['Ville de Tours — official site','https://www.tours.fr/']
+  ]
+ },
+ {
+  id:'1300-angers',name:'Angers',modern:'Angers',country:'County of Anjou',subrealm:'County of Anjou · held by Charles of Valois from 1290',
+  lon:-0.5632,lat:47.4784,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  sizeText:'≈0.80 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
+  food:82,technology:76,satisfaction:70,
+  historicalRole:'Capital of the County of Anjou and major fortress-city on the Maine',
+  economy:'Agriculture, river trade, crafts, church institutions and princely administration',
+  militaryRole:'Powerful 13th-century castle and 3.8 km urban enceinte facing independent Brittany',
+  researchSummary:'Angers was not simply direct royal France in 1300: Charles of Valois had held the County of Anjou since 1290. The massive royal-era castle and walls made the city one of western France’s strongest fortresses.',
+  evidenceNote:'Population is low-confidence; the ownership by Charles of Valois and major 13th-century fortifications are documented.',
+  sources:[
+   ['Archives d’Angers — Les princes angevins','https://archives.angers.fr/aide-memoire/angers-en-dates/angers-dans-l-histoire/les-princes-angevins/index.html'],
+   ['Archives départementales Maine-et-Loire — L’Anjou au cours des siècles','https://archives.maine-et-loire.fr/decouvrir-et-apprendre/parcourir-lhistoire-de-lanjou/lanjou-au-cours-des-siecles']
+  ]
+ },
+ {
+  id:'1300-poitiers',name:'Poitiers',modern:'Poitiers',country:'Kingdom of France',subrealm:'Poitou · reverted to the French royal domain in 1271',
+  lon:0.3404,lat:46.5802,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–13 K',populationConfidence:'low',
+  sizeText:'≈0.80 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
+  food:76,technology:75,satisfaction:70,
+  historicalRole:'Major administrative and ecclesiastical centre of Poitou',
+  economy:'Markets, crafts, agriculture, church institutions and regional exchange',
+  militaryRole:'Strong walled hill city with commanding position',
+  researchSummary:'After the death of Alphonse of Poitiers in 1271, Poitou reverted to the royal domain. Poitiers remained its principal urban and administrative centre.',
+  evidenceNote:'Population is low-confidence; political placement in the royal domain after 1271 is firm.',
+  sources:[
+   ['Encyclopaedia Britannica — Poitiers','https://www.britannica.com/place/Poitiers-France'],
+   ['Larousse — domaine royal','https://www.larousse.fr/encyclopedie/divers/domaine_royal/44341']
+  ]
+ },
+ {
+  id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
+  lon:-1.1511,lat:46.1603,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  sizeText:'≈0.70 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:15,navyText:'≈15',
+  food:75,technology:78,satisfaction:72,
+  historicalRole:'Important Atlantic trading port of the French crown',
+  economy:'Wine, salt, Atlantic shipping, fisheries and merchant trade',
+  militaryRole:'Walled port with substantial merchant-maritime capacity',
+  researchSummary:'La Rochelle was a strategically important Atlantic port in the French royal sphere by 1300, with extensive maritime trade and strong urban privileges.',
+  evidenceNote:'Population and navy are gameplay estimates; port significance and French political control are well established.',
+  sources:[
+   ['Encyclopaedia Britannica — La Rochelle','https://www.britannica.com/place/La-Rochelle'],
+   ['Ville de La Rochelle — official site','https://www.larochelle.fr/']
+  ]
+ },
+ {
+  id:'1300-orleans',name:'Orléans',modern:'Orléans',country:'Kingdom of France',subrealm:'Orléanais · core Capetian royal domain',
+  lon:1.9093,lat:47.9029,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  sizeText:'≈0.85 km²',sizeConfidence:'low',army:1800,armyText:'≈1.8 K',navy:0,navyText:'0',
+  food:85,technology:82,satisfaction:73,
+  historicalRole:'Core royal-domain city and strategic Loire crossing',
+  economy:'Loire river trade, agriculture, crafts, markets and legal learning',
+  militaryRole:'Key fortified bridge city guarding the Loire corridor',
+  researchSummary:'Orléans was one of the oldest pillars of the Capetian royal domain. Philip IV was physically present there in July 1300, underlining its continuing place in royal itineration.',
+  evidenceNote:'Population is low-confidence; direct royal-domain status is high confidence.',
+  sources:[
+   ['TELMA — Act of Philip IV at Orléans, July 1300','https://telma-chartes.irht.cnrs.fr/actes-philippe4.php/16742'],
+   ['FranceArchives — Orléans privileges and royal affairs','https://francearchives.gouv.fr/facomponent/a04b0ebb5a3a485f356d4db567719c1f9b8a8ac6']
+  ]
+ },
+ {
+  id:'1300-bourges',name:'Bourges',modern:'Bourges',country:'Kingdom of France',subrealm:'Berry · French royal domain',
+  lon:2.3988,lat:47.0810,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  sizeText:'≈0.85 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
+  food:78,technology:79,satisfaction:72,
+  historicalRole:'Major central royal city and archiepiscopal centre of Berry',
+  economy:'Agriculture, crafts, markets, ecclesiastical wealth and regional administration',
+  militaryRole:'Large walled inland city in the secure royal heartland',
+  researchSummary:'Berry, centred on Bourges, had belonged to the Capetian royal domain since the early 12th century. Bourges combined archiepiscopal and royal-administrative weight.',
+  evidenceNote:'Population is low-confidence; royal ownership is well established.',
+  sources:[
+   ['Encyclopaedia Britannica — Bourges','https://www.britannica.com/place/Bourges'],
+   ['Larousse — French royal domain','https://www.larousse.fr/encyclopedie/divers/domaine_royal/44341']
+  ]
+ },
+ {
+  id:'1300-limoges',name:'Limoges',modern:'Limoges',country:'Viscounty of Limoges',subrealm:'Bipartite city: Château under viscomital/communal power; Cité under the bishop',
+  lon:1.2611,lat:45.8336,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  sizeText:'≈0.75 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
+  food:72,technology:88,satisfaction:64,
+  historicalRole:'Famous enamel-production and pilgrimage centre divided between two urban jurisdictions',
+  economy:'Limoges enamels, pilgrimage, crafts, trade and church institutions',
+  militaryRole:'Two fortified urban nuclei with fragmented lordship rather than unified military command',
+  researchSummary:'Limoges around 1300 was not a simple French royal city. It consisted of the episcopal Cité and the Château, linked to the Viscounty of Limoges, which passed into the Dreux-Brittany dynasty around 1290.',
+  evidenceNote:'Population is low-confidence. The divided urban jurisdiction and viscomital status are documented; Technology is high because of the internationally renowned Limoges enamel industry and Saint-Martial cultural tradition.',
+  sources:[
+   ['Ville de Limoges — portrait and medieval history','https://www.limoges.fr/ville-creative/portrait-dune-ville'],
+   ['Musée des Beaux-Arts de Limoges — Limoges au Moyen Âge','https://beauxarts.limoges.fr/sites/musee_des_beaux_arts/files/3-1-histoire-de-limoges-au-moyen-age.pdf']
+  ]
+ },
+ {
+  id:'1300-bordeaux',name:'Bordeaux',modern:'Bordeaux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Duchy of Aquitaine/Gascony · held by Edward I as duke',
+  lon:-0.5792,lat:44.8378,rarity:4,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  sizeText:'≈1.20 km²',sizeConfidence:'low',army:3200,armyText:'≈3.2 K',navy:18,navyText:'≈18',
+  food:80,technology:82,satisfaction:74,
+  historicalRole:'Principal city of English-ruled Gascony and major wine-export port',
+  economy:'Wine exports, Atlantic shipping, finance, crafts and regional trade',
+  militaryRole:'Major fortified river-port and administrative centre of the English duchy',
+  researchSummary:'In 1300 Bordeaux was under Edward I’s authority as duke of Aquitaine/Gascony, even though the duchy was feudally held from the French king. Its English trade connection made the city exceptionally prosperous.',
+  evidenceNote:'Population is low-confidence; political dependence on the English crown and wine-export economy are high confidence.',
+  sources:[
+   ['Gascon Rolls Project — English administration of Gascony','https://www.gasconrolls.org/'],
+   ['Bordeaux — English community and medieval wine trade','https://seniorsreporters.bordeaux.fr/2026/06/03/la-communaute-anglaise-de-bordeaux/']
+  ]
+ },
+ {
+  id:'1300-bayonne',name:'Bayonne',modern:'Bayonne',country:'Duchy of Aquitaine (English Crown)',subrealm:'English-held Gascony · directly administered royal port',
+  lon:-1.4748,lat:43.4929,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  sizeText:'≈0.60 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:16,navyText:'≈16',
+  food:76,technology:73,satisfaction:76,
+  historicalRole:'Important English-Gascon fortified port and shipbuilding centre',
+  economy:'Shipping, shipbuilding, wine transport, fisheries and Atlantic trade',
+  militaryRole:'Fortified port with a notably active fleet and direct English royal administration',
+  researchSummary:'Bayonne had been incorporated into the Aquitanian lands of the English crown after 1152 and by 1300 was administered through English royal officers. Its maritime community was one of the strongest in Gascony.',
+  evidenceNote:'Population is low-confidence; English political authority and maritime role are directly documented.',
+  sources:[
+   ['Ville de Bayonne — formation of the city','https://www.bayonne.fr/cest-a-bayonne/culture/histoire-et-patrimoines/une-ville-dart-et-dhistoire/comprendre-la-formation-de-la-ville'],
+   ['Ville de Bayonne — heritage brochure','https://www.bayonne.fr/fileadmin/medias/Publications/Patrimoine_-_VAH/Parcours_Bayonne.pdf']
+  ]
+ },
+ {
+  id:'1300-toulouse',name:'Toulouse',modern:'Toulouse',country:'Kingdom of France',subrealm:'Former County of Toulouse · direct royal domain since 1271',
+  lon:1.4442,lat:43.6047,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
+  sizeText:'≈1.60 km²',sizeConfidence:'low',army:3600,armyText:'≈3.6 K',navy:0,navyText:'0',
+  food:89,technology:91,satisfaction:67,
+  historicalRole:'Great southern commercial, university and administrative city newly integrated into the royal domain',
+  economy:'Grain, crafts, mills, regional trade and university activity',
+  militaryRole:'Large walled city with major manpower and regional command value',
+  researchSummary:'The County and city of Toulouse entered the French royal domain in 1271. By 1300 the city remained a rich merchant centre with consular traditions, a university and major religious institutions.',
+  evidenceNote:'Population is low-confidence; the 1271 royal incorporation is directly documented by Toulouse archives.',
+  sources:[
+   ['Toulouse Archives — Le Moyen Âge','https://www.archives.toulouse.fr/histoire-de-toulouse/le-moyen-age'],
+   ['Toulouse Archives — 1271 incorporation into royal domain','https://www.archives.toulouse.fr/en/histoire-de-toulouse/chronologie?_2_WAR_archiveportlet_INSTANCE_5awtB7cA9vC4_uid=225']
+  ]
+ },
+ {
+  id:'1300-carcassonne',name:'Carcassonne',modern:'Carcassonne',country:'Kingdom of France',subrealm:'Royal sénéchaussée and frontier fortress of Languedoc',
+  lon:2.3537,lat:43.2130,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  sizeText:'≈0.75 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
+  food:72,technology:72,satisfaction:61,
+  historicalRole:'One of the French crown’s premier southern fortresses',
+  economy:'Regional markets, crafts, military administration and agriculture',
+  militaryRole:'Exceptional double-walled royal fortress modernised under Philip III and Philip IV',
+  researchSummary:'Carcassonne had entered the French royal domain in the 13th century and around 1300 was being developed as a massive royal stronghold close to the southern frontier.',
+  evidenceNote:'Population is low-confidence; military strength is deliberately high because the surviving 13th-century fortification programme is exceptionally well documented.',
+  sources:[
+   ['Centre des monuments nationaux — Carcassonne history','https://www.remparts-carcassonne.fr/en/discover/history-of-the-monument'],
+   ['Cité de Carcassonne — attachment to royal domain','https://citedecarcassonne.culture.gouv.fr/fr/le-rattachement-au-domaine-royal']
+  ]
+ },
+ {
+  id:'1300-montpellier',name:'Montpellier',modern:'Montpellier',country:'Kingdom of Majorca',subrealm:'Lordship of Montpellier · possession of the kings of Majorca',
+  lon:3.8767,lat:43.6108,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'medium',
+  sizeText:'≈1.10 km²',sizeConfidence:'low',army:2600,armyText:'≈2.6 K',navy:4,navyText:'≈4',
+  food:81,technology:93,satisfaction:74,
+  historicalRole:'Major Mediterranean commercial and medical-learning centre under the kings of Majorca',
+  economy:'Mediterranean trade, medicine, textiles, finance, spices and Lattes port traffic',
+  militaryRole:'Large walled commercial city with limited direct naval capacity through nearby Lattes',
+  researchSummary:'Montpellier was not French in 1300. The lordship had passed through Aragon to the kings of Majorca and remained theirs until its sale to the French crown in 1349.',
+  evidenceNote:'Population is a medium-confidence order-of-magnitude estimate. Political ownership is high confidence.',
+  sources:[
+   ['Ville de Montpellier — Marie and the lordship of Montpellier','https://en-commun.montpellier.fr/articles/2025-08-18-marie-la-derniere-dame-de-montpellier'],
+   ['Cambridge — A Mediterranean Emporium / Kingdom of Majorca','https://www.cambridge.org/core/books/abs/mediterranean-emporium/montpellier-inquest-13381339/DE2160EBBA43F6547AD75DC3B1683B36']
+  ]
+ },
+ {
+  id:'1300-lyon',name:'Lyon',modern:'Lyon',country:'Archbishopric of Lyon (Holy Roman Empire)',subrealm:'Imperial archiepiscopal city · not annexed to France until 1312',
+  lon:4.8357,lat:45.7640,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–20 K',populationConfidence:'low',
+  sizeText:'≈0.90 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
+  food:77,technology:82,satisfaction:55,
+  historicalRole:'Imperial archiepiscopal city at a major Rhône-Saône crossroads',
+  economy:'River trade, crafts, church wealth and long-distance transit',
+  militaryRole:'Fortified strategic crossroads contested between archbishop, citizens and growing French influence',
+  researchSummary:'In 1300 Lyon still unquestionably belonged to the Empire and remained under archiepiscopal lordship. French control intensified after 1307 and the definitive incorporation occurred only in 1312.',
+  evidenceNote:'Population is low-confidence. Satisfaction is reduced to reflect the documented conflict between archbishop, chapter, citizens and increasingly interventionist French monarchy.',
+  sources:[
+   ['Archives de Lyon — Lyon au fil du temps','https://www.archives-lyon.fr/expos/lyon-au-fil-du-temps'],
+   ['Archives de Lyon — chronology around 1297–1312','https://www.archives-lyon.fr/arrive-a-lyon?page=9']
+  ]
+ },
+ {
+  id:'1300-vienne',name:'Vienne',modern:'Vienne',country:'Archbishopric of Vienne (Holy Roman Empire)',subrealm:'Imperial prince-archbishopric · city ruled by the Archbishop of Vienne',
+  lon:4.8747,lat:45.5256,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  sizeText:'≈0.50 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
+  food:75,technology:79,satisfaction:65,
+  historicalRole:'Imperial archiepiscopal city and major ecclesiastical centre on the Rhône',
+  economy:'Church institutions, Rhône trade, crafts and surrounding agriculture',
+  militaryRole:'Fortified river city under a powerful prince-archbishop',
+  researchSummary:'Vienne was still a city of the Holy Roman Empire in 1300. The archbishop exercised temporal rule; the city was not included in the 1349 sale of Dauphiné and did not become French until the mid-15th century.',
+  evidenceNote:'Population is low-confidence; imperial and archiepiscopal sovereignty are high confidence.',
+  sources:[
+   ['Ville de Vienne — Archéologie and historical overview','https://vienne.fr/nos-services/archeologie/'],
+   ['Cambridge Medieval History — ecclesiastical principalities of Viennois','https://cristoraul.org/english/readinghall/thirdmillenniumlibrary/Medieval-History-Chapters/PDF/NCMedH_6-1198-1300.pdf']
+  ]
+ },
+ {
+  id:'1300-marseille',name:'Marseille',modern:'Marseille',country:'County of Provence',subrealm:'Angevin County of Provence · under Charles II of Naples',
+  lon:5.3698,lat:43.2965,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–20 K',populationConfidence:'low',
+  sizeText:'≈0.85 km²',sizeConfidence:'low',army:1800,armyText:'≈1.8 K',navy:20,navyText:'≈20',
+  food:72,technology:80,satisfaction:62,
+  historicalRole:'Leading Provençal Mediterranean port under Angevin comital rule',
+  economy:'Mediterranean shipping, trade, fisheries, crafts and provisioning',
+  militaryRole:'Strong maritime city whose independent traditions had been subdued by the Angevin counts',
+  researchSummary:'Marseille was not French in 1300. It lay in the County of Provence, then ruled by Charles II of Anjou-Naples, after Charles I had forcibly reduced the city’s autonomy in the 13th century.',
+  evidenceNote:'Population is low-confidence; Provence’s Angevin government under Charles II (1285–1309) is securely documented.',
+  sources:[
+   ['Ville de Marseille — 2,600 ans d’histoire','https://www.marseille.fr/decouvrir-marseille/histoire-de-marseille/pr%C3%A9sentation'],
+   ['École française de Rome — Provence under Charles II, 1285–1309','https://www.persee.fr/doc/efr_0223-5099_2008_act_399_1_9274']
+  ]
+ },
+ {
+  id:'1300-aix-en-provence',name:'Aix-en-Provence',modern:'Aix-en-Provence',country:'County of Provence',subrealm:'Angevin County of Provence · principal comital capital',
+  lon:5.4474,lat:43.5297,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  sizeText:'≈0.60 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
+  food:78,technology:78,satisfaction:70,
+  historicalRole:'Political and administrative capital of Angevin Provence',
+  economy:'Comital administration, markets, crafts, agriculture and regional trade',
+  militaryRole:'Inland comital centre with strong administrative and strategic importance',
+  researchSummary:'Aix occupied the political centre of the County of Provence and remained a key comital residence under the Angevin dynasty. In 1300 it was ruled by Charles II, king of Naples and count of Provence.',
+  evidenceNote:'Population is low-confidence; Aix’s political centrality within Provence and Charles II’s rule are well documented.',
+  sources:[
+   ['Persée — Aix, capitale de la Provence angevine','https://www.persee.fr/doc/efr_0223-5099_1998_act_245_1_5324'],
+   ['École française de Rome — Provence under Charles II, 1285–1309','https://www.persee.fr/doc/efr_0223-5099_2008_act_399_1_9274']
+  ]
  }
 ];
 
