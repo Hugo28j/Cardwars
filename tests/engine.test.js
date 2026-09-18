@@ -64,13 +64,13 @@ test('every card has a local photo and attributed image licence',()=>{
 });
 
 
-test('1300 research collection contains thirty-one researched Iberian cards with bounded modeled scores',()=>{
- assert.equal(CITIES_1300.length,31);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,31);
+test('1300 research collection contains fifty-eight researched European cards with bounded modeled scores',()=>{
+ assert.equal(CITIES_1300.length,58);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,58);
  for(const c of CITIES_1300){
-  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
+  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada','Duchy of Brittany','Kingdom of France','County of Champagne','Duchy of Burgundy','County of Anjou','Viscounty of Limoges','Duchy of Aquitaine (English Crown)','Kingdom of Majorca','Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Vienne (Holy Roman Empire)','County of Provence'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
   assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
   for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
-  assert.ok(c.lon>-10&&c.lon<0&&c.lat>37&&c.lat<43,c.id+' coordinates');
+  assert.ok(c.lon>-10&&c.lon<6&&c.lat>36&&c.lat<51,c.id+' coordinates');
   assert.equal(c.image,undefined,c.id+' must not have artwork yet');
   assert.ok(Array.isArray(c.sources)&&c.sources.length>=2,c.id+' research sources');
  }
@@ -113,4 +113,18 @@ test('map-only position offsets keep true city coordinates unchanged',()=>{
   assert.ok(Number.isFinite(c.mapLon)&&Number.isFinite(c.mapLat),id+' display coords');
   assert.ok(Math.abs(c.mapLon-c.lon)<0.2&&Math.abs(c.mapLat-c.lat)<0.2,id+' display shift too large');
  }
+});
+
+
+test('all twenty-seven requested France-region expansion cities are present with exact-1300 owners',()=>{
+ const ids=['nantes','rennes','vannes','rouen','caen','amiens','paris','reims','troyes','provins','dijon','tours','angers','poitiers','la-rochelle','orleans','bourges','limoges','bordeaux','bayonne','toulouse','carcassonne','montpellier','lyon','vienne','marseille','aix-en-provence'].map(x=>'1300-'+x);
+ for(const id of ids){assert.ok(CITY_1300[id],id);assert.equal(CITY_1300[id].image,undefined,id+' must remain image-free');}
+ assert.equal(CITY_1300['1300-nantes'].country,'Duchy of Brittany');
+ assert.equal(CITY_1300['1300-dijon'].country,'Duchy of Burgundy');
+ assert.equal(CITY_1300['1300-bordeaux'].country,'Duchy of Aquitaine (English Crown)');
+ assert.equal(CITY_1300['1300-montpellier'].country,'Kingdom of Majorca');
+ assert.equal(CITY_1300['1300-lyon'].country,'Archbishopric of Lyon (Holy Roman Empire)');
+ assert.equal(CITY_1300['1300-vienne'].country,'Archbishopric of Vienne (Holy Roman Empire)');
+ assert.equal(CITY_1300['1300-marseille'].country,'County of Provence');
+ assert.equal(CITY_1300['1300-aix-en-provence'].country,'County of Provence');
 });
