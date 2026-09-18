@@ -1,16 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {CITIES,CITY,COUNTRIES,RARITIES,PACK,DUPLICATE_COINS} from '../src/data.js';
+import {CITIES,CITY,MODERN_COUNTRIES,RARITIES,PACK,DUPLICATE_COINS} from '../src/data.js';
 import {freshProfile,formatNumber,openPack,validateProfile} from '../src/engine.js';
 
-test('catalogue contains 123 unique European cities with bounded scores and consistent countries',()=>{
+test('catalogue contains 123 unique European cities with bounded scores and historical realms',()=>{
  assert.equal(CITIES.length,123);assert.equal(new Set(CITIES.map(c=>c.id)).size,123);
- assert.equal(Object.keys(COUNTRIES).length,17);assert.equal(PACK.odds.reduce((a,b)=>a+b),100);
+ assert.equal(Object.keys(MODERN_COUNTRIES).length,17);assert.equal(PACK.odds.reduce((a,b)=>a+b),100);
  for(const c of CITIES){
   for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,`${c.id} ${k}`);
   for(const k of ['army','navy','people','size'])assert.ok(Number.isInteger(c[k])&&c[k]>=0,`${c.id} ${k}`);
-  assert.equal(c.country,COUNTRIES[c.countryCode]);assert.ok(RARITIES[c.rarity]);
+  assert.equal(c.modernCountry,MODERN_COUNTRIES[c.countryCode]);assert.equal(c.country,c.realm);assert.ok(c.mapRealm);assert.ok(RARITIES[c.rarity]);
   assert.ok(c.lon>-10&&c.lon<30&&c.lat>36&&c.lat<54,c.id);
  }
  for(let r=0;r<5;r++)assert.ok(CITIES.some(c=>c.rarity===r));
@@ -53,10 +53,10 @@ test('reset returns an independent empty valid profile',()=>{
  assert.equal(reset.coins,0);assert.equal(reset.drawn,0);assert.equal(reset.packsOpened,0);
  assert.deepEqual(reset.collection,{});assert.deepEqual(reset.lastPack,[]);assert.ok(validateProfile(reset));
 });
-test('every card has a local photo, flag and attributed image licence',()=>{
+test('every card has a local photo and attributed image licence',()=>{
  const credits=JSON.parse(fs.readFileSync(new URL('../assets/photo-credits.json',import.meta.url)));
  for(const c of CITIES){
-  for(const path of [c.image,c.flag])assert.ok(fs.statSync(new URL('../'+path,import.meta.url)).size>100,path);
+  assert.ok(fs.statSync(new URL('../'+c.image,import.meta.url)).size>100,c.image);
   const p=credits.find(p=>p.city===c.id);assert.ok(p?.license,c.id+' licence');assert.ok(p?.source,c.id+' source');
  }
  assert.equal(credits.length,CITIES.length);
