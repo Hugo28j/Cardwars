@@ -61,3 +61,12 @@ Plasencia is included for the western interior. Universidad de Extremadura schol
 The 19-city expansion adds Portugal (Porto, Braga, Guimarães, Coimbra, Lisbon, Évora, Santarém, Silves), Navarre (Pamplona), additional Crown of Aragon cities (Barcelona, Zaragoza, Girona, Valencia, Alicante), additional Crown of Castile cities (Badajoz, Cuenca, Guadalajara), and Nasrid Granada (Granada, Málaga).
 
 For Portugal, published urban-history research and municipal/UNESCO histories are combined with the c.1300 population table reproduced in *An Agrarian History of Portugal, 1000–2000* (Brill). Zaragoza uses near-contemporary 1302 fiscal evidence; Valencia uses the Museu d’Història de València’s early-fourteenth-century population estimate; Barcelona and Girona use Catalan historical-demographic studies. Alicante’s Aragonese ownership is anchored to the documented conquest of 1296. Granada’s population is especially uncertain, with published reconstructions varying widely, so the conservative 90K value is paired with a low-confidence range. Málaga is likewise kept conservative because later-fourteenth-century estimates are much higher than can safely be projected backward to 1300.
+
+
+## France and neighbouring polities — c. 1300 batch
+
+Political ownership for the 27-city expansion was checked separately from modern national borders. Normandy was in the French royal domain after the 1204 conquest; Toulouse entered the royal domain in 1271; Carcassonne was a royal fortress by the 13th century. Brittany remained a distinct duchy. Dijon belonged to Robert II's Duchy of Burgundy; Angers to Charles of Valois' County of Anjou; and Troyes/Provins are treated as the County of Champagne in personal union with the French crown rather than prematurely flattened into direct royal France.
+
+Bordeaux and Bayonne are classified under the English-held Duchy of Aquitaine/Gascony. Montpellier belonged to the kings of Majorca and was not sold to France until 1349. Lyon still belonged to the Empire in 1300 and was incorporated into the French kingdom only in 1312; Vienne remained an imperial archiepiscopal city even longer. Marseille and Aix are classified under the Angevin County of Provence, ruled by Charles II in 1300; Provence was not united to France until the late 15th century.
+
+As elsewhere in the research catalogue, the exact-looking gameplay fields Army, Navy, Food, Technology and Satisfaction are modeled comparative indices, not claimed medieval measurements.
