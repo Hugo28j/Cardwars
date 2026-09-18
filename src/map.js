@@ -3,15 +3,12 @@ import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
 const historicalLabels=[
- ['KINGDOM OF FRANCE',2,47],['KINGDOM OF ENGLAND',-1.5,52.5],['KINGDOM OF SCOTLAND',-4,56.8],
- ['KINGDOM OF PORTUGAL',-8,39.4],['CROWN OF CASTILE',-4.5,40.1],['CROWN OF ARAGON',.3,41.2],
- ['KINGDOM OF NAVARRE',-1.7,42.7],['EMIRATE OF GRANADA',-4.6,36.8],
- ['HOLY ROMAN EMPIRE',9.5,50],['KINGDOM OF POLAND',19,52],['GRAND DUCHY OF LITHUANIA',24,54.5],
- ['TEUTONIC ORDER',23.5,55],['KINGDOM OF HUNGARY',20,47],['REPUBLIC OF VENICE',12.8,45.5],
- ['PAPAL STATES',12.7,42.7],['KINGDOM OF SICILY',14.5,38.6],['KINGDOM OF SERBIA',20.4,43.5],
- ['SECOND BULGARIAN EMPIRE',25.3,43.2],['BYZANTINE EMPIRE',25.5,39.5],
- ['SULTANATE OF RUM',31.5,39.5],['GOLDEN HORDE',31.5,48.8],
- ['KINGDOM OF DENMARK',10.5,56.5],['KINGDOM OF SWEDEN',16,59],['KINGDOM OF NORWAY',9,61]
+ ['KINGDOM OF FRANCE',2,47,1],['KINGDOM OF ENGLAND',-1.5,52.5,1],['KINGDOM OF SCOTLAND',-4,56.8,1],
+ ['KINGDOM OF PORTUGAL',-8,39.4,1],['CROWN OF CASTILE',-4.5,40.1,1],['CROWN OF ARAGON',.3,41.2,1],
+ ['KINGDOM OF NAVARRE',-1.7,42.7,2],['EMIRATE OF GRANADA',-4.6,36.8,2],
+ ['KINGDOM OF POLAND',19,52,1],['GRAND DUCHY OF LITHUANIA',24,54.5,1],['TEUTONIC ORDER',23.5,55,2],
+ ['KINGDOM OF HUNGARY',20,47,1],['KINGDOM OF SERBIA',20.4,43.5,2],['SECOND BULGARIAN EMPIRE',25.3,43.2,2],
+ ['GOLDEN HORDE',31.5,48.8,1],['KINGDOM OF DENMARK',10.5,56.5,1],['KINGDOM OF SWEDEN',16,59,1],['KINGDOM OF NORWAY',9,61,1]
 ];
 const palettes=['#879372','#8b7890','#a38d65','#728fa1','#9c8172','#738f82','#9c966f','#8b9a8b','#947b68','#6f8793','#947b8a','#7d946f'];
 const realmOf=f=>f.realm||f.name||'Local communities';
@@ -42,7 +39,7 @@ export class WorldMap{
   const mode=this.mode;
   try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json':'assets/atlas.json').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];if(this.destroyed||this.mode!==mode)return;
    this.svg.querySelector('#land').innerHTML=atlas.map((f,i)=>`<path class="territory" data-realm="${esc(realmOf(f))}" data-country="${esc(f.code||'')}" d="${f.d}" fill="${mode==='historical'?(realmColors[realmOf(f)]||realmColors[f.name]||(f.name?'#85917b':'#596c5d')):palettes[i%palettes.length]}" fill-rule="evenodd" stroke="#22322b" stroke-width=".8" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`).join('');
-   this.svg.querySelector('#realm-labels').innerHTML=historicalLabels.map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="realm-label">${name}</text>`;}).join('');
+   const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.svg.querySelector('#sea-labels').innerHTML=[['MEDITERRANEAN SEA',14,35],['BLACK SEA',34,43],['ATLANTIC OCEAN',-14,44],['NORTH SEA',3,56]].map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="sea-label">${name}</text>`;}).join('');
    this.host.querySelector('#map-attribution').textContent='Approximate historical borders · c. 1300 CE · Historical Basemaps';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
   }catch{delete cache[mode];const el=this.host.querySelector('.map-loading');if(el)el.textContent='Map could not load. Reload to try again.';}
@@ -55,7 +52,7 @@ export class WorldMap{
  refresh(){const unit=this.view.w/(this.host.clientWidth||1000),s=this.state,occupied=[];
   const cities=[...CITIES].sort((a,b)=>(s.selected===b.id?100:0)+(s.collection[b.id]?30:0)+b.rarity-((s.selected===a.id?100:0)+(s.collection[a.id]?30:0)+a.rarity));
   this.svg.querySelector('#cities').innerHTML=cities.map(c=>{const p=pos(c.lon,c.lat),selected=s.selected===c.id,owned=!!s.collection[c.id],box={x:(p[0]-this.view.x)/unit+10,y:(p[1]-this.view.y)/unit-10,w:c.name.length*7,h:21};const show=selected||!occupied.some(b=>box.x<b.x+b.w&&box.x+box.w>b.x&&box.y<b.y+b.h&&box.y+box.h>b.y);if(show)occupied.push(box);return `<g class="city-marker ${owned?'owned':''}" data-city="${c.id}" transform="translate(${p}) scale(${unit})"><title>${esc(c.name)} · ${c.country} · ${owned?'Collected':'Undiscovered'}</title><circle r="12" fill="transparent"/>${selected?'<circle r="12" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -4 4 0 0 4 -4 0Z" fill="${owned?'#f8d791':'#c4cdc6'}" stroke="#283d32" stroke-width="1.2"/>${show?`<text x="10" y="4" class="city-label ${owned?'owned':''}">${esc(c.name)}</text>`:''}</g>`;}).reverse().join('');
-  this.svg.querySelectorAll('.realm-label').forEach(t=>t.style.fontSize=Math.max(5,Math.min(15,unit*12))+'px');
+  this.svg.querySelectorAll('.realm-label').forEach(t=>{const level=+(t.dataset.level||1),show=level===1||(level===2&&unit<.82)||(level===3&&unit<.46);t.style.display=show?'':'none';t.style.fontSize=Math.max(level===3?4.2:5,Math.min(level===1?15:10,unit*(level===1?12:8.5)))+'px';});
  }
  destroy(){this.destroyed=true;this.abort.abort();this.resize.disconnect();}
 }
