@@ -64,10 +64,10 @@ test('every card has a local photo and attributed image licence',()=>{
 });
 
 
-test('1300 research collection contains ten Castilian cards with bounded modeled scores',()=>{
- assert.equal(CITIES_1300.length,10);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,10);
+test('1300 research collection contains twelve researched Iberian cards with bounded modeled scores',()=>{
+ assert.equal(CITIES_1300.length,12);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,12);
  for(const c of CITIES_1300){
-  assert.equal(c.country,'Crown of Castile');assert.equal(CITY_1300[c.id].id,c.id);
+  assert.ok(['Crown of Castile','Crown of Aragon'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
   assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
   for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
   assert.ok(c.lon>-10&&c.lon<0&&c.lat>37&&c.lat<43,c.id+' coordinates');
@@ -79,4 +79,12 @@ test('1300 research collection contains ten Castilian cards with bounded modeled
 test('1300 map uses the separate research catalogue instead of the 600 CE cards',()=>{
  const map=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
  assert.match(map,/data1300\.js/);assert.doesNotMatch(map,/from '\.\/data\.js'/);
+});
+
+
+test('Murcia belongs to Aragon in the exact 1300 snapshot and new western cards are present',()=>{
+ assert.equal(CITY_1300['1300-murcia'].country,'Crown of Aragon');
+ assert.match(CITY_1300['1300-murcia'].subrealm,/1296–1304/);
+ assert.equal(CITY_1300['1300-santiago'].country,'Crown of Castile');
+ assert.equal(CITY_1300['1300-plasencia'].country,'Crown of Castile');
 });
