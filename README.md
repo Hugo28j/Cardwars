@@ -8,7 +8,7 @@ A static, English-language city-card collection prototype set around **600 CE**.
 - Unlimited **free packs of five cards**. Each draw is independent: Common 50%, Uncommon 28%, Rare 15%, Epic 6%, Legendary 1%.
 - Duplicate rewards: **10 / 25 / 60 / 150 / 400 coins**. Duplicates within one pack count immediately; extra copies remain in the collection.
 - All cards visible from the start: undiscovered cards are grey, collected cards are coloured. Search and filter by country, rarity or ownership.
-- A geographical atlas with pan, zoom, touch gestures, city inspection and approximate political boundaries for c. 1300 CE. The city-card political labels remain the 600 CE edition until the next data pass.
+- A geographical atlas with pan, zoom, touch gestures and a dense c. 1300 political layer: the Holy Roman Empire is shown as an umbrella outline over dozens of constituent polities, while Italy and Anatolia are similarly subdivided. The city-card political labels remain the 600 CE edition until the next data pass.
 - Browser-local progress, JSON export/import and a confirmed reset.
 - A Game tab reserved for the next development phase.
 
@@ -36,7 +36,7 @@ Progress uses `localStorage` key `cardwars.collection.v2`. Saves belong to the c
 - `scripts/city-seeds.json`: authored historical city catalogue, coordinates, c. 600 CE political context, modern geographic references and rarity.
 - `scripts/build-catalogue.py`: regenerates `src/data.js`; numerical stats are deterministic game values.
 - `scripts/prepare-collection-assets.py`: retrieves attributed present-day photographs and modern flags (Pillow required).
-- `scripts/prepare-assets.py`: regenerates the c. 1300 historical atlas from `assets/world-1300.geojson`.
+- `scripts/prepare-assets.py`: regenerates the coarse upstream c. 1300 reference as `assets/atlas-base.json`; the playable `assets/atlas.json` contains additional authored small-state subdivisions for gameplay.
 - `src/engine.js`: pack draws, rewards, formatting and save validation.
 - `src/map.js`: geographic SVG map, interactions and label placement.
 - `tests/engine.test.js`: catalogue, probability boundaries, rewards, saves, reset and asset checks.
