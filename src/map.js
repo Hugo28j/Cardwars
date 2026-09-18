@@ -2,16 +2,29 @@ import {CITIES,CITY} from './data.js';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
-const countryLabels=[['FRANCE',2,47],['SPAIN',-3,40],['PORTUGAL',-8,39],['ITALY',12,43],['GERMANY',10,51],['BELGIUM',4.5,50.6],['NETHERLANDS',5.3,52.5],['SWITZERLAND',8.2,46.7],['AUSTRIA',14,47.6],['CROATIA',16,44.8],['SERBIA',20.7,43.9],['BULGARIA',25.4,42.6],['ROMANIA',25,45.9],['GREECE',23,39],['ALBANIA',20,41.2],['SLOVENIA',14.9,46.2],['TÜRKİYE',29,40.8],['POLAND',19,52],['CZECHIA',15.5,49.9],['HUNGARY',19.7,47.2],['SLOVAKIA',19.7,48.8],['BOSNIA & HERZ.',17.7,44.2],['UKRAINE',31,49],['UNITED KINGDOM',-2,54],['IRELAND',-8,53],['SWEDEN',15,61],['NORWAY',9,62],['N. MACEDONIA',21.7,41.6],['MONTENEGRO',19,42.7]];
-const historicalLabels=[['FRANKISH KINGDOM',5,49],['VISIGOTHIC KINGDOM',-3,40],['EASTERN ROMAN EMPIRE',26,38],['LOMBARD PRINCIPALITIES',10,45],['AVAR KHAGANATE',19,47],['SLAVIC TERRITORIES',14.8,47],['FRISIANS',5.5,52.5],['SAXONS',10,52.5]];
-const palettes=['#879372','#8b7890','#a38d65','#728fa1','#9c8172','#738f82','#9c966f','#8b9a8b'];
-const realmColors={'Eastern Roman Empire':'#8f7796','Frankish Kingdom':'#788fa1','Visigothic Kingdom':'#b09470','Lombard principalities':'#829574','Avars':'#a79c71','Slavic territories':'#738f82','Frisians':'#9c966f','Saxons':'#8b9a8b'};
-const realmOf=f=>f.name==='Slavs'?'Slavic territories':(f.realm||f.name||'Local communities');
+const historicalLabels=[
+ ['KINGDOM OF FRANCE',2,47],['KINGDOM OF ENGLAND',-1.5,52.5],['KINGDOM OF SCOTLAND',-4,56.8],
+ ['KINGDOM OF PORTUGAL',-8,39.4],['CROWN OF CASTILE',-4.5,40.1],['CROWN OF ARAGON',.3,41.2],
+ ['KINGDOM OF NAVARRE',-1.7,42.7],['EMIRATE OF GRANADA',-4.6,36.8],
+ ['HOLY ROMAN EMPIRE',9.5,50],['KINGDOM OF POLAND',19,52],['GRAND DUCHY OF LITHUANIA',24,54.5],
+ ['TEUTONIC ORDER',23.5,55],['KINGDOM OF HUNGARY',20,47],['REPUBLIC OF VENICE',12.8,45.5],
+ ['PAPAL STATES',12.7,42.7],['KINGDOM OF SICILY',14.5,38.6],['KINGDOM OF SERBIA',20.4,43.5],
+ ['SECOND BULGARIAN EMPIRE',25.3,43.2],['BYZANTINE EMPIRE',25.5,39.5],
+ ['SULTANATE OF RUM',31.5,39.5],['GOLDEN HORDE',31.5,48.8],
+ ['KINGDOM OF DENMARK',10.5,56.5],['KINGDOM OF SWEDEN',16,59],['KINGDOM OF NORWAY',9,61]
+];
+const palettes=['#879372','#8b7890','#a38d65','#728fa1','#9c8172','#738f82','#9c966f','#8b9a8b','#947b68','#6f8793','#947b8a','#7d946f'];
+const realmOf=f=>f.realm||f.name||'Local communities';
+const colorForRealm=name=>{
+ let h=7;
+ for(const c of String(name))h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;
+ return palettes[h%palettes.length];
+};
 const cache={};
 export class WorldMap{
  constructor(host,state,onSelect,onRegion){
   this.host=host;this.state=state;this.onSelect=onSelect;this.onRegion=onRegion;this.mode='historical';this.view={x:100,y:220,w:750,h:600};this.pointers=new Map();this.destroyed=false;this.drawn=false;
-  host.innerHTML=`<svg id="world-map" role="img" aria-label="Map of continental European cities. Drag to pan, scroll or pinch to zoom, click or right-click a city to inspect it." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="realm-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">THE EUROPEAN ATLAS</span><span>${CITIES.length} late-antique cities · c. 600 CE</span></div><div class="map-era-badge">REALMS · c. 600 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · Scroll to zoom · Right-click to inspect</span><span id="map-attribution" class="map-attribution">Approximate historical borders · 600 CE · Historical Basemaps</span><span class="map-key"><i></i> Collected <i class="unowned"></i> Undiscovered</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show all cities" aria-label="Show all cities">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
+  host.innerHTML=`<svg id="world-map" role="img" aria-label="Map of continental European cities. Drag to pan, scroll or pinch to zoom, click or right-click a city to inspect it." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="realm-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">THE EUROPEAN ATLAS</span><span>${CITIES.length} city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · Scroll to zoom · Right-click to inspect</span><span id="map-attribution" class="map-attribution">Approximate historical borders · c. 1300 CE · Historical Basemaps</span><span class="map-key"><i></i> Collected <i class="unowned"></i> Undiscovered</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show all cities" aria-label="Show all cities">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
   this.svg=host.querySelector('svg');this.abort=new AbortController();const opts={signal:this.abort.signal};
   this.svg.addEventListener('wheel',e=>{e.preventDefault();const r=this.svg.getBoundingClientRect();this.zoom(Math.exp(e.deltaY*.0013),(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);},{...opts,passive:false});
   this.svg.addEventListener('pointerdown',e=>{if(e.button===2)return;this.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});this.dragStart={x:e.clientX,y:e.clientY};this.dragged=false;this.svg.setPointerCapture(e.pointerId);},opts);
@@ -29,12 +42,12 @@ export class WorldMap{
   const mode=this.mode;
   try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json':'assets/atlas.json').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];if(this.destroyed||this.mode!==mode)return;
    this.svg.querySelector('#land').innerHTML=atlas.map((f,i)=>`<path class="territory" data-realm="${esc(realmOf(f))}" data-country="${esc(f.code||'')}" d="${f.d}" fill="${mode==='historical'?(realmColors[realmOf(f)]||realmColors[f.name]||(f.name?'#85917b':'#596c5d')):palettes[i%palettes.length]}" fill-rule="evenodd" stroke="#22322b" stroke-width=".8" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`).join('');
-   this.svg.querySelector('#realm-labels').innerHTML=(mode==='modern'?countryLabels:historicalLabels).map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="realm-label">${name}</text>`;}).join('');
+   this.svg.querySelector('#realm-labels').innerHTML=historicalLabels.map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="realm-label">${name}</text>`;}).join('');
    this.svg.querySelector('#sea-labels').innerHTML=[['MEDITERRANEAN SEA',14,35],['BLACK SEA',34,43],['ATLANTIC OCEAN',-14,44],['NORTH SEA',3,56]].map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="sea-label">${name}</text>`;}).join('');
-   this.host.querySelector('#map-attribution').textContent=mode==='modern'?'Modern borders for geographical reference · Natural Earth':'Approximate historical borders · 600 CE · Historical Basemaps';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
+   this.host.querySelector('#map-attribution').textContent='Approximate historical borders · c. 1300 CE · Historical Basemaps';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
   }catch{delete cache[mode];const el=this.host.querySelector('.map-loading');if(el)el.textContent='Map could not load. Reload to try again.';}
  }
- pick(target){const c=target.closest('[data-city]');if(c){this.onSelect(c.dataset.city);return;}const r=target.closest('[data-realm]');if(r)this.onRegion(this.mode==='modern'?{code:r.dataset.country,name:r.dataset.realm,mode:this.mode}:{name:r.dataset.realm,mode:this.mode});}
+ pick(target){const c=target.closest('[data-city]');if(c)this.onSelect(c.dataset.city);}
  zoom(f,fx=.5,fy=.5){const w=Math.max(75,Math.min(1600,this.view.w*f)),r=w/this.view.w;this.view.x+=this.view.w*fx*(1-r);this.view.y+=this.view.h*fy*(1-r);this.view.w=w;this.view.h*=r;this.update();}
  focus(id){this.focusRequest=id;const c=CITY[id];if(!c)return;const p=pos(c.lon,c.lat),r=this.host.getBoundingClientRect();this.view.w=310;this.view.h=310*r.height/Math.max(1,r.width);this.view.x=p[0]-this.view.w/2;this.view.y=p[1]-this.view.h/2;this.update();}
  fit(){this.focusRequest=null;const r=this.host.getBoundingClientRect();this.view.w=Math.max(590,420*r.width/Math.max(1,r.height));this.view.h=this.view.w*r.height/Math.max(1,r.width);this.view.x=405-this.view.w/2;this.view.y=405-this.view.h/2;this.update();}
