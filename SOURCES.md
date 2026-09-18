@@ -41,3 +41,13 @@ Cormorant Garamond and DM Sans are self-hosted from Google Fonts under the SIL O
 The playable `assets/atlas.json` keeps the Historical Basemaps land geometry as its broad reference but adds a denser, authored political subdivision for Central Europe, Italy and Anatolia. The list of polities was cross-checked against the public Euratlas Periodis 1300 state/dependency index and, for target density and readability only, against Europa Universalis V's documented 1337 regional map approach. The 37-year difference is respected: later Anatolian powers such as Eretna are not inserted into the 1300 setup, while contemporary powers such as Germiyan, Karaman, Karesi, Menteşe and the still-small Ottoman beylik are represented.
 
 The Holy Roman Empire is therefore rendered as a supranational outline rather than one playable country. Constituent duchies, counties, prince-bishoprics and selected free imperial cities are rendered separately. These fine internal borders are schematic gameplay approximations, not claims of survey-level historical precision; medieval jurisdictions were often overlapping, fragmented and disputed.
+
+## Crown of Castile card research — c. 1300
+
+The separate `src/data1300.js` catalogue begins with ten researched Crown of Castile cities: Seville, Córdoba, Toledo, Valladolid, Burgos, Murcia, Salamanca, Segovia, León and Jaén. The four cities Toledo, Seville, Burgos and Valladolid are independently identified in modern scholarship as principal spaces of Castilian royal power in the period 1252–1350 (Fernando Arias Guillén, *Journal of Medieval History*, 2013, DOI 10.1080/03044181.2013.830981).
+
+Population values are treated as estimates rather than census counts. For Seville, Córdoba, Toledo, Valladolid, Burgos and Murcia the catalogue uses published c. 1300 estimates compiled in historical-demography tables. León uses scholarly reconstruction around the end of the thirteenth century. Salamanca, Segovia and Jaén have lower-confidence ranges because evidence is less precise or reflects household, territorial, or conquest-era data rather than a direct c. 1300 headcount.
+
+The card fields Army, Navy, Food, Technology and Satisfaction are **not presented as measured medieval statistics**. They are Cardwars gameplay estimates informed by population, fortifications, frontier exposure, institutions, economic role and maritime capacity. The detail view exposes this limitation and links the research sources used for each card. Size likewise represents an approximate urban/fortified footprint where a near-period figure is available; low-confidence cards are explicitly marked.
+
+The 1300 card artwork slots are intentionally blank in this research phase. No modern photographs are assigned to these cards yet.

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {CITIES,CITY,MODERN_COUNTRIES,RARITIES,PACK,DUPLICATE_COINS} from '../src/data.js';
 import {freshProfile,formatNumber,openPack,validateProfile} from '../src/engine.js';
+import {CITIES_1300,CITY_1300} from '../src/data1300.js';
 
 test('catalogue contains 123 unique European cities with bounded scores and historical realms',()=>{
  assert.equal(CITIES.length,123);assert.equal(new Set(CITIES.map(c=>c.id)).size,123);
@@ -60,4 +61,22 @@ test('every card has a local photo and attributed image licence',()=>{
   const p=credits.find(p=>p.city===c.id);assert.ok(p?.license,c.id+' licence');assert.ok(p?.source,c.id+' source');
  }
  assert.equal(credits.length,CITIES.length);
+});
+
+
+test('1300 research collection contains ten Castilian cards with bounded modeled scores',()=>{
+ assert.equal(CITIES_1300.length,10);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,10);
+ for(const c of CITIES_1300){
+  assert.equal(c.country,'Crown of Castile');assert.equal(CITY_1300[c.id].id,c.id);
+  assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
+  for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
+  assert.ok(c.lon>-10&&c.lon<0&&c.lat>37&&c.lat<43,c.id+' coordinates');
+  assert.equal(c.image,undefined,c.id+' must not have artwork yet');
+  assert.ok(Array.isArray(c.sources)&&c.sources.length>=2,c.id+' research sources');
+ }
+});
+
+test('1300 map uses the separate research catalogue instead of the 600 CE cards',()=>{
+ const map=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
+ assert.match(map,/data1300\.js/);assert.doesNotMatch(map,/from '\.\/data\.js'/);
 });
