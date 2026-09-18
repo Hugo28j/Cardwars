@@ -64,10 +64,10 @@ test('every card has a local photo and attributed image licence',()=>{
 });
 
 
-test('1300 research collection contains twelve researched Iberian cards with bounded modeled scores',()=>{
- assert.equal(CITIES_1300.length,12);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,12);
+test('1300 research collection contains thirty-one researched Iberian cards with bounded modeled scores',()=>{
+ assert.equal(CITIES_1300.length,31);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,31);
  for(const c of CITIES_1300){
-  assert.ok(['Crown of Castile','Crown of Aragon'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
+  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
   assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
   for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
   assert.ok(c.lon>-10&&c.lon<0&&c.lat>37&&c.lat<43,c.id+' coordinates');
@@ -87,4 +87,13 @@ test('Murcia belongs to Aragon in the exact 1300 snapshot and new western cards 
  assert.match(CITY_1300['1300-murcia'].subrealm,/1296–1304/);
  assert.equal(CITY_1300['1300-santiago'].country,'Crown of Castile');
  assert.equal(CITY_1300['1300-plasencia'].country,'Crown of Castile');
+});
+
+
+test('all nineteen requested expansion cities are present in the 1300 catalogue',()=>{
+ const ids=['porto','braga','guimaraes','coimbra','lisbon','evora','santarem','silves','pamplona','barcelona','zaragoza','girona','valencia','alicante','badajoz','cuenca','guadalajara','granada','malaga'].map(x=>'1300-'+x);
+ for(const id of ids){assert.ok(CITY_1300[id],id);assert.equal(CITY_1300[id].image,undefined,id+' must remain image-free');}
+ assert.equal(CITY_1300['1300-alicante'].country,'Crown of Aragon');
+ assert.equal(CITY_1300['1300-pamplona'].country,'Kingdom of Navarre');
+ assert.equal(CITY_1300['1300-granada'].country,'Emirate of Granada');
 });
