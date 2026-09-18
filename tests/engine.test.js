@@ -1,0 +1,63 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {CITIES,CITY,COUNTRIES,RARITIES,PACK,DUPLICATE_COINS} from '../src/data.js';
+import {freshProfile,formatNumber,openPack,validateProfile} from '../src/engine.js';
+
+test('catalogue contains 123 unique European cities with bounded scores and consistent countries',()=>{
+ assert.equal(CITIES.length,123);assert.equal(new Set(CITIES.map(c=>c.id)).size,123);
+ assert.equal(Object.keys(COUNTRIES).length,17);assert.equal(PACK.odds.reduce((a,b)=>a+b),100);
+ for(const c of CITIES){
+  for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,`${c.id} ${k}`);
+  for(const k of ['army','navy','people','size'])assert.ok(Number.isInteger(c[k])&&c[k]>=0,`${c.id} ${k}`);
+  assert.equal(c.country,COUNTRIES[c.countryCode]);assert.ok(RARITIES[c.rarity]);
+  assert.ok(c.lon>-10&&c.lon<30&&c.lat>36&&c.lat<54,c.id);
+ }
+ for(let r=0;r<5;r++)assert.ok(CITIES.some(c=>c.rarity===r));
+});
+test('number formats respect requested thresholds',()=>{
+ assert.equal(formatNumber(9999),'9,999');assert.equal(formatNumber(10000),'10.0 K');
+ assert.equal(formatNumber(9999999),'10000.0 K');assert.equal(formatNumber(10000000),'10.00 mil');
+ assert.equal(formatNumber(12550000),'12.55 mil');assert.equal(formatNumber(10000,'army'),'10.0 K');
+ assert.equal(formatNumber(9999,'navy'),'9,999');assert.equal(formatNumber(1500,'size'),'1,500 km²');
+});
+test('free packs draw five cards and award within-pack duplicates immediately',()=>{
+ const p=freshProfile(),r=openPack(p,()=>0);
+ assert.equal(r.length,5);assert.equal(r[0].duplicate,false);assert.ok(r.slice(1).every(x=>x.duplicate));
+ assert.equal(p.coins,40);assert.equal(p.drawn,5);assert.equal(p.packsOpened,1);assert.equal(p.collection[r[0].id],5);
+ openPack(p,()=>0);assert.equal(p.coins,90);assert.equal(p.drawn,10);assert.ok(validateProfile(p));
+});
+test('rarity boundaries select the advertised tier and pay correct duplicate rewards',()=>{
+ for(const [roll,tier] of [[0,0],[.49999,0],[.5,1],[.77999,1],[.78,2],[.92999,2],[.93,3],[.98999,3],[.99,4],[1,4]]){
+  const p=freshProfile();let call=0;const r=openPack(p,()=>call++%2===0?roll:0);
+  assert.ok(r.every(x=>CITY[x.id].rarity===tier),`${roll} should draw ${tier}`);
+  assert.equal(p.coins,4*DUPLICATE_COINS[tier]);assert.ok(validateProfile(p));
+ }
+});
+test('saving and importing preserve a real multi-pack collection',()=>{
+ let seed=427;const rng=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/2**32);
+ const p=freshProfile();for(let i=0;i<80;i++)openPack(p,rng);
+ const copy=JSON.parse(JSON.stringify(p));assert.ok(validateProfile(copy));assert.equal(copy.drawn,400);
+ const expected=Object.entries(copy.collection).reduce((s,[id,n])=>s+(n-1)*DUPLICATE_COINS[CITY[id].rarity],0);
+ assert.equal(copy.coins,expected);assert.deepEqual(copy,p);
+});
+test('invalid imports are rejected without throwing',()=>{
+ const good=freshProfile();openPack(good,()=>0);
+ const bads=[null,{},[],{...good,coins:-1},{...good,packsOpened:4},{...good,drawn:0},{...good,collection:{rome:0}},
+  {...good,collection:{toString:5}},{...good,lastPack:[null,null,null,null,null]},
+  {...good,lastPack:good.lastPack.map(x=>({...x,coins:999}))}];
+ for(const p of bads)assert.equal(validateProfile(p),false);
+});
+test('reset returns an independent empty valid profile',()=>{
+ const p=freshProfile();openPack(p,()=>0);const reset=freshProfile();
+ assert.equal(reset.coins,0);assert.equal(reset.drawn,0);assert.equal(reset.packsOpened,0);
+ assert.deepEqual(reset.collection,{});assert.deepEqual(reset.lastPack,[]);assert.ok(validateProfile(reset));
+});
+test('every card has a local photo, flag and attributed image licence',()=>{
+ const credits=JSON.parse(fs.readFileSync(new URL('../assets/photo-credits.json',import.meta.url)));
+ for(const c of CITIES){
+  for(const path of [c.image,c.flag])assert.ok(fs.statSync(new URL('../'+path,import.meta.url)).size>100,path);
+  const p=credits.find(p=>p.city===c.id);assert.ok(p?.license,c.id+' licence');assert.ok(p?.source,c.id+' source');
+ }
+ assert.equal(credits.length,CITIES.length);
+});
