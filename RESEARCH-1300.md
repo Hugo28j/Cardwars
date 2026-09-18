@@ -1,6 +1,6 @@
-# Cardwars 1300 research · Iberia · first 12 cards
+# Cardwars 1300 research · Iberia · first 31 cards
 
-This file records the methodology behind the first country-by-country c. 1300 card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
+This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
 ## Method
 
@@ -54,3 +54,16 @@ For an exact **1300** snapshot, Murcia city is assigned to the **Crown of Aragon
 - Cathedral of Santiago, pilgrimage history: https://catedraldesantiago.es/en/pilgrimage/
 - Salvador Andrés Ordax, *Arte y urbanismo de Plasencia en la Edad Media*: https://dehesa.unex.es/server/api/core/bitstreams/7b9270ad-2dca-4bee-9753-49894da51e9f/content
 - Nicolás Ávila Seoane, lordships in the Plasencia concejo c.1300: https://dialnet.unirioja.es/servlet/articulo?codigo=1226648
+
+## Expansion batch: 19 requested cities
+
+Added: Porto, Braga, Guimarães, Coimbra, Lisbon, Évora, Santarém, Silves, Pamplona, Barcelona, Zaragoza, Girona, Valencia, Alicante, Badajoz, Cuenca, Guadalajara, Granada and Málaga.
+
+Political ownership in the exact 1300 snapshot:
+- **Kingdom of Portugal:** Porto, Braga, Guimarães, Coimbra, Lisbon, Évora, Santarém, Silves.
+- **Kingdom of Navarre:** Pamplona.
+- **Crown of Aragon:** Barcelona, Zaragoza, Girona, Valencia, Alicante. Alicante had been conquered by Jaume II in 1296.
+- **Crown of Castile:** Badajoz, Cuenca, Guadalajara.
+- **Emirate of Granada:** Granada and Málaga.
+
+Near-date population anchors used where available include Lisbon ≈35K, Porto ≈6K, Coimbra ≈6K, Évora ≈12K and Santarém ≈7K from published urban-population tables; Zaragoza ≥22K from the 1302 monedaje; Valencia ≈25K in the early fourteenth century; Barcelona ≈30–40K; and Girona ≈8K at the end of the thirteenth century. Other values are explicitly marked low confidence.
