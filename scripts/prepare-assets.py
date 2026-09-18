@@ -55,8 +55,8 @@ def atlas():
                 if len(pts)<4:continue
                 paths.append("M"+"L".join(f"{(x+22)*12:.2f},{(72-y)*15:.2f}" for x,y,*_ in pts)+"Z")
         if paths:result.append({"name":name,"realm":realm,"d":"".join(paths)})
-    (ASSETS/"atlas.json").write_text(json.dumps(result,separators=(",",":")))
-    print("atlas",len(result),"features · c. 1300 CE",flush=True)
+    (ASSETS/"atlas-base.json").write_text(json.dumps(result,separators=(",",":")))
+    print("base atlas",len(result),"features · c. 1300 CE (playable atlas.json contains authored detailed subdivisions)",flush=True)
 
 if __name__=="__main__":
     atlas()

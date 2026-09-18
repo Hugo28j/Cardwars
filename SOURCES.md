@@ -35,3 +35,9 @@ The dataset and derived `assets/atlas.json` are distributed under **GPL-3.0**; t
 Legacy modern flag SVG assets are still bundled from https://flagcdn.com/ via the country flag artwork service at https://flagpedia.net/download/api, but they are not displayed on the c. 600 CE cards.
 
 Cormorant Garamond and DM Sans are self-hosted from Google Fonts under the SIL Open Font License. Licences are bundled in `assets/fonts/`. Interface icons are original inline SVG drawings.
+
+## Detailed 1300 gameplay layer
+
+The playable `assets/atlas.json` keeps the Historical Basemaps land geometry as its broad reference but adds a denser, authored political subdivision for Central Europe, Italy and Anatolia. The list of polities was cross-checked against the public Euratlas Periodis 1300 state/dependency index and, for target density and readability only, against Europa Universalis V's documented 1337 regional map approach. The 37-year difference is respected: later Anatolian powers such as Eretna are not inserted into the 1300 setup, while contemporary powers such as Germiyan, Karaman, Karesi, Menteşe and the still-small Ottoman beylik are represented.
+
+The Holy Roman Empire is therefore rendered as a supranational outline rather than one playable country. Constituent duchies, counties, prince-bishoprics and selected free imperial cities are rendered separately. These fine internal borders are schematic gameplay approximations, not claims of survey-level historical precision; medieval jurisdictions were often overlapping, fragmented and disputed.
