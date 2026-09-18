@@ -262,7 +262,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-lisbon',name:'Lisbon',modern:'Lisbon',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · principal royal and port city',
-  lon:-9.1393,lat:38.7223,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationConfidence:'medium',
+  lon:-9.1393,lat:38.7223,mapLon:-9.0000,mapLat:38.7350,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationConfidence:'medium',
   sizeText:'≈1.50 km²',sizeConfidence:'low',army:3600,armyText:'≈3.6 K',navy:20,navyText:'≈20',
   food:80,technology:84,satisfaction:71,
   historicalRole:'Largest Portuguese city, major Atlantic-Tagus port and frequent centre of royal government',
@@ -339,7 +339,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-barcelona',name:'Barcelona',modern:'Barcelona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · County of Barcelona',
-  lon:2.1734,lat:41.3851,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'medium',
+  lon:2.1734,lat:41.3851,mapLon:2.1000,mapLat:41.4050,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'medium',
   sizeText:'≈1.20 km²',sizeConfidence:'medium',army:3600,armyText:'≈3.6 K',navy:26,navyText:'≈26',
   food:76,technology:90,satisfaction:73,
   historicalRole:'Leading Catalan city, royal-comital centre and major Mediterranean commercial power',
@@ -385,7 +385,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-valencia',name:'Valencia',modern:'Valencia',country:'Crown of Aragon',subrealm:'Kingdom of Valencia · royal capital',
-  lon:-0.3763,lat:39.4699,rarity:4,year:1300,people:25000,populationText:'≈25.0 K',populationConfidence:'medium',
+  lon:-0.3763,lat:39.4699,mapLon:-0.4400,mapLat:39.4850,rarity:4,year:1300,people:25000,populationText:'≈25.0 K',populationConfidence:'medium',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:2800,armyText:'≈2.8 K',navy:12,navyText:'≈12',
   food:92,technology:81,satisfaction:66,
   historicalRole:'Capital of the Kingdom of Valencia and rapidly growing Mediterranean commercial city',
@@ -400,7 +400,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-alicante',name:'Alicante',modern:'Alicante',country:'Crown of Aragon',subrealm:'Kingdom of Murcia under Aragonese occupation · captured 1296',
-  lon:-0.4810,lat:38.3452,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:-0.4810,lat:38.3452,mapLon:-0.5500,mapLat:38.3600,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:7,navyText:'≈7',
   food:76,technology:66,satisfaction:57,
   historicalRole:'Recently conquered Aragonese fortified port on the contested Murcia-Valencia frontier',
@@ -476,7 +476,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-malaga',name:'Málaga',modern:'Málaga',country:'Emirate of Granada',subrealm:'Nasrid Emirate of Granada · principal Mediterranean port',
-  lon:-4.4214,lat:36.7213,rarity:3,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–35 K',populationConfidence:'low',
+  lon:-4.4214,lat:36.7213,mapLon:-4.4214,mapLat:36.7850,rarity:3,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–35 K',populationConfidence:'low',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:2800,armyText:'≈2.8 K',navy:18,navyText:'≈18',
   food:82,technology:82,satisfaction:68,
   historicalRole:'Major Nasrid Mediterranean port, fortified city and commercial gateway',
