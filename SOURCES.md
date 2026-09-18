@@ -19,16 +19,16 @@ Each image remains under its stated licence (including the applicable Creative C
 - https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_50m_admin_0_countries.geojson
 - https://www.naturalearthdata.com/about/terms-of-use/
 
-Natural Earth data is public domain. Geometry is simplified, projected to the game's SVG coordinates and clipped by the map viewport. The playable atlas uses the historical c. 600 CE layer instead.
+Natural Earth data is public domain. Geometry is simplified, projected to the game's SVG coordinates and clipped by the map viewport. The playable atlas currently uses the historical c. 1300 CE layer instead.
 
 ## Historical geography
 
-`assets/world-600.geojson` comes from **Historical Basemaps**, André Ourednik and contributors:
+`assets/world-1300.geojson` comes from **Historical Basemaps**, André Ourednik and contributors:
 
 - https://github.com/aourednik/historical-basemaps
-- https://github.com/aourednik/historical-basemaps/blob/master/geojson/world_600.geojson
+- https://github.com/aourednik/historical-basemaps/blob/master/geojson/world_1300.geojson
 
-The dataset and derived `assets/atlas.json` are distributed under **GPL-3.0**; the full licence is bundled as `assets/historical-basemaps-LICENSE.txt`. The source GeoJSON and transformation script are included. Boundaries are approximate. Four residual upstream Ostrogoth labels are suppressed because the Ostrogothic kingdom fell before this setting; geometry is retained as unassigned land rather than inventing exact successor borders. Card-level regional descriptions may be more specific than the simplified atlas.
+The dataset and derived `assets/atlas.json` are distributed under **GPL-3.0**; the full licence is bundled as `assets/historical-basemaps-LICENSE.txt`. The source GeoJSON and transformation script are included. Boundaries are approximate. A small display-name normalization is applied for game readability (for example Raška → Kingdom of Serbia and Bulgar Khanate → Second Bulgarian Empire) without changing the source geometry. The card catalogue still uses its 600 CE political labels until that data is updated separately.
 
 ## Flags and fonts
 
