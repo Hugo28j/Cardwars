@@ -1,6 +1,6 @@
-# Cardwars 1300 research · Crown of Castile · first 10 cards
+# Cardwars 1300 research · Iberia · first 12 cards
 
-This file records the methodology behind the first country-by-country c. 1300 card set.
+This file records the methodology behind the first country-by-country c. 1300 card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
 ## Method
 
@@ -22,11 +22,13 @@ The goal is not to pretend medieval evidence is more precise than it is. Direct 
 | Toledo | Kingdom of Toledo | ≈42,000 | Medium | Royal, ecclesiastical and cultural centre |
 | Valladolid | Kingdom of Castile | ≈25,000 | Medium | Principal space of itinerant royal power |
 | Burgos | Kingdom of Castile | ≈21,000 | Medium | Royal, ecclesiastical and commercial centre |
-| Murcia | Kingdom of Murcia | ≈15,000 | Medium | Irrigated southeastern capital in a contested frontier zone |
+| Murcia | Crown of Aragon · occupied Kingdom of Murcia | ≈15,000 | Medium | Irrigated southeastern capital held by Jaume II in 1300 |
 | Salamanca | Kingdom of León | ≈10–14,000 | Low | University city and important Leonese urban centre |
 | Segovia | Kingdom of Castile | ≈7–12,000 | Low | Powerful concejo, livestock/wool economy and strong militia tradition |
 | León | Kingdom of León | ≈5,000 | Medium | Historic royal/episcopal centre with scholarly demographic reconstruction |
 | Jaén | Kingdom of Jaén | ≈10–15,000 | Low | Militarised frontier city facing Nasrid Granada |
+| Santiago de Compostela | Kingdom of Galicia · archiepiscopal lordship | ≈6–10,000 | Low | International pilgrimage centre and powerful ecclesiastical city |
+| Plasencia | Kingdom of Castile · royal town / episcopal see | ≈4–7,000 | Low | Fortified royal centre of a very large Extremaduran alfoz |
 
 ## Core research references
 
@@ -40,3 +42,15 @@ The goal is not to pretend medieval evidence is more precise than it is. Direct 
 - León medieval population study: https://www.researchgate.net/publication/319629913_La_juderia_de_Puente_Castro_y_la_poblacion_altomedieval_de_la_ciudad_de_Leon_siglos_IX_al_XIII
 
 Each card in `src/data1300.js` contains its own additional source links and evidence note.
+
+## Murcia sovereignty note
+
+For an exact **1300** snapshot, Murcia city is assigned to the **Crown of Aragon**. Jaume II occupied the Kingdom of Murcia from 1296; the settlement of Torrellas in 1304 and Elche in 1305 subsequently divided the old kingdom, returning Murcia city and the southern sector to Castile while the northern sector remained with Aragón/Valencia. This is why the map and the card now agree.
+
+## Added western-city references
+
+- Santiago de Compostela (Old Town), UNESCO: https://whc.unesco.org/en/list/347
+- Xosé M. Sánchez Sánchez, medieval council of Santiago de Compostela: https://doi.org/10.5944/ETFIII.32.2019.22411
+- Cathedral of Santiago, pilgrimage history: https://catedraldesantiago.es/en/pilgrimage/
+- Salvador Andrés Ordax, *Arte y urbanismo de Plasencia en la Edad Media*: https://dehesa.unex.es/server/api/core/bitstreams/7b9270ad-2dca-4bee-9753-49894da51e9f/content
+- Nicolás Ávila Seoane, lordships in the Plasencia concejo c.1300: https://dialnet.unirioja.es/servlet/articulo?codigo=1226648
