@@ -97,3 +97,20 @@ test('all nineteen requested expansion cities are present in the 1300 catalogue'
  assert.equal(CITY_1300['1300-pamplona'].country,'Kingdom of Navarre');
  assert.equal(CITY_1300['1300-granada'].country,'Emirate of Granada');
 });
+
+
+test('map-only position offsets keep true city coordinates unchanged',()=>{
+ const expected={
+  '1300-lisbon':[-9.1393,38.7223],
+  '1300-barcelona':[2.1734,41.3851],
+  '1300-valencia':[-0.3763,39.4699],
+  '1300-alicante':[-0.4810,38.3452],
+  '1300-malaga':[-4.4214,36.7213],
+ };
+ for(const [id,[lon,lat]] of Object.entries(expected)){
+  const c=CITY_1300[id];
+  assert.equal(c.lon,lon);assert.equal(c.lat,lat);
+  assert.ok(Number.isFinite(c.mapLon)&&Number.isFinite(c.mapLat),id+' display coords');
+  assert.ok(Math.abs(c.mapLon-c.lon)<0.2&&Math.abs(c.mapLat-c.lat)<0.2,id+' display shift too large');
+ }
+});
