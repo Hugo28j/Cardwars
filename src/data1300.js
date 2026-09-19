@@ -7,6 +7,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 
 // Army audit v1 (entries 000-075): Army counts only a permanent/professional military core or fixed garrison; temporary civic militias, feudal levies and emergency peasant musters are excluded.
 // Army audit v2 (entries 076-150): same conservative rule; household retainers and fixed castle/city garrisons count, temporary civic militias and wartime levies do not.
+// Army audit v3 (entries 151-224): same conservative rule; Italian communal militias are excluded, while paid permanent cores, signorial household troops and fixed wartime garrisons count.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -2016,7 +2017,7 @@ export const CITIES_1300=[
  {
   id:'1300-wurzburg',name:'Würzburg',modern:'Würzburg',country:'Prince-Bishopric of Würzburg',subrealm:'Prince-Bishopric of Würzburg · episcopal capital in Franconia',
   lon:9.9534,lat:49.7913,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:75,technology:80,economyScore:79,stability:66,
   historicalRole:'Capital of a powerful Franconian prince-bishopric',
   economy:'Wine, church wealth, Main river trade, crafts and markets',
@@ -2028,7 +2029,7 @@ export const CITIES_1300=[
  {
   id:'1300-bamberg',name:'Bamberg',modern:'Bamberg',country:'Prince-Bishopric of Bamberg',subrealm:'Prince-Bishopric of Bamberg · cathedral and episcopal city',
   lon:10.8860,lat:49.8988,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:74,technology:82,economyScore:77,stability:70,
   historicalRole:'Important Franconian cathedral city and capital of its prince-bishopric',
   economy:'Church revenues, markets, crafts, river trade and agriculture',
@@ -2040,7 +2041,7 @@ export const CITIES_1300=[
  {
   id:'1300-passau',name:'Passau',modern:'Passau',country:'Prince-Bishopric of Passau',subrealm:'Prince-Bishopric of Passau · Danube-Inn episcopal city',
   lon:13.4319,lat:48.5667,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:76,technology:79,economyScore:78,stability:68,
   historicalRole:'Strategic episcopal city at the confluence of the Danube, Inn and Ilz',
   economy:'River trade, salt traffic, crafts, church revenues and markets',
@@ -2052,7 +2053,7 @@ export const CITIES_1300=[
  {
   id:'1300-dillingen',name:'Dillingen an der Donau',modern:'Dillingen an der Donau',country:'Prince-Bishopric of Augsburg',subrealm:'Prince-Bishopric of Augsburg · episcopal territorial residence acquired in 1258',
   lon:10.4933,lat:48.5817,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:500,armyText:'500',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:63,economyScore:55,stability:73,
   historicalRole:'Small Danube territorial centre of the bishops of Augsburg',
   economy:'Agriculture, markets, church administration and crafts',
@@ -2064,7 +2065,7 @@ export const CITIES_1300=[
  {
   id:'1300-donaustauf',name:'Donaustauf',modern:'Donaustauf',country:'Prince-Bishopric of Regensburg',subrealm:'Prince-Bishopric of Regensburg · episcopal castle-town',
   lon:12.2048,lat:49.0320,rarity:0,year:1300,people:1800,populationText:'1.8 K',populationRange:'1–2.5 K',populationConfidence:'low',
-  sizeText:'0.12 km²',sizeConfidence:'low',army:400,armyText:'400',navy:0,navyText:'0',
+  sizeText:'0.12 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:58,economyScore:48,stability:72,
   historicalRole:'Small fortified territorial centre of the bishops of Regensburg',
   economy:'Agriculture, local markets and episcopal administration',
@@ -2076,7 +2077,7 @@ export const CITIES_1300=[
  {
   id:'1300-bruchsal',name:'Bruchsal',modern:'Bruchsal',country:'Prince-Bishopric of Speyer',subrealm:'Prince-Bishopric of Speyer · episcopal territorial town',
   lon:8.5980,lat:49.1243,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
-  sizeText:'0.18 km²',sizeConfidence:'low',army:450,armyText:'450',navy:0,navyText:'0',
+  sizeText:'0.18 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:60,economyScore:52,stability:73,
   historicalRole:'Territorial town of the bishops of Speyer outside the autonomous city of Speyer',
   economy:'Agriculture, markets and episcopal administration',
@@ -2088,7 +2089,7 @@ export const CITIES_1300=[
  {
   id:'1300-saverne',name:'Saverne / Zabern',modern:'Saverne',country:'Prince-Bishopric of Strasbourg',subrealm:'Prince-Bishopric of Strasbourg · episcopal territorial centre',
   lon:7.3622,lat:48.7414,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:500,armyText:'500',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:62,economyScore:55,stability:71,
   historicalRole:'Territorial centre of the Strasbourg bishopric beyond the independent city',
   economy:'Markets, agriculture, crafts and episcopal administration',
@@ -2100,7 +2101,7 @@ export const CITIES_1300=[
  {
   id:'1300-lubeck',name:'Lübeck',modern:'Lübeck',country:'Free Imperial City of Lübeck',subrealm:'Free Imperial City since the 1226 Reichsfreiheitsprivileg',
   lon:10.6866,lat:53.8655,rarity:3,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–25 K',populationConfidence:'medium',
-  sizeText:'1.1 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:25,navyText:'25',
+  sizeText:'1.1 km²',sizeConfidence:'low',army:50,armyText:'50',navy:25,navyText:'25',
   food:69,technology:88,economyScore:92,stability:82,
   historicalRole:'Leading Baltic merchant republic and future head city of the Hanseatic network',
   economy:'Baltic shipping, salt, fish, grain, cloth, merchant finance and long-distance trade',
@@ -2112,7 +2113,7 @@ export const CITIES_1300=[
  {
   id:'1300-hamburg',name:'Hamburg',modern:'Hamburg',country:'County of Holstein',subrealm:'Highly autonomous city under Schauenburg-Holstein overlordship',
   lon:9.9937,lat:53.5511,rarity:1,year:1300,people:4500,populationText:'4.5 K',populationRange:'4–5 K',populationConfidence:'high',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:750,armyText:'750',navy:12,navyText:'12',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:12,navyText:'12',
   food:69,technology:75,economyScore:80,stability:81,
   historicalRole:'Rapidly self-governing Elbe port with major North Sea and Baltic trade links',
   economy:'Shipping, grain, cloth, timber, metals and merchant trade',
@@ -2124,7 +2125,7 @@ export const CITIES_1300=[
  {
   id:'1300-bremen',name:'Bremen',modern:'Bremen',country:'Archbishopric of Bremen',subrealm:'Self-governing city under the archbishop’s formal lordship',
   lon:8.8017,lat:53.0793,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:10,navyText:'10',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:10,navyText:'10',
   food:71,technology:78,economyScore:82,stability:79,
   historicalRole:'Commercial Weser city with a mature council and substantial civic autonomy',
   economy:'River and maritime trade, markets, crafts and merchant shipping',
@@ -2136,7 +2137,7 @@ export const CITIES_1300=[
  {
   id:'1300-frankfurt-main',name:'Frankfurt am Main',modern:'Frankfurt am Main',country:'Imperial City of Frankfurt',subrealm:'Royal/imperial city directly dependent on king and empire; full Free Imperial status later',
   lon:8.6821,lat:50.1109,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:74,technology:80,economyScore:88,stability:78,
   historicalRole:'Important royal city, fair centre and Main crossing directly linked to the empire',
   economy:'Fairs, long-distance trade, finance, crafts and river commerce',
@@ -2148,7 +2149,7 @@ export const CITIES_1300=[
  {
   id:'1300-nuremberg',name:'Nuremberg',modern:'Nuremberg',country:'Free Imperial City of Nuremberg',subrealm:'Imperial city with civic self-government and major imperial castle',
   lon:11.0767,lat:49.4521,rarity:3,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'1.1 km²',sizeConfidence:'low',army:2300,armyText:'2.3 K',navy:0,navyText:'0',
+  sizeText:'1.1 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:88,economyScore:91,stability:80,
   historicalRole:'One of the Empire’s foremost royal and merchant cities',
   economy:'Long-distance trade, metalwork, crafts, markets and imperial services',
@@ -2160,7 +2161,7 @@ export const CITIES_1300=[
  {
   id:'1300-regensburg',name:'Regensburg',modern:'Regensburg',country:'Free Imperial City of Regensburg',subrealm:'Free Imperial City since 1245',
   lon:12.1016,lat:49.0134,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–25 K',populationConfidence:'low',
-  sizeText:'1.2 km²',sizeConfidence:'low',army:2300,armyText:'2.3 K',navy:0,navyText:'0',
+  sizeText:'1.2 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:75,technology:87,economyScore:89,stability:80,
   historicalRole:'Major Danube trading metropolis and independent imperial city',
   economy:'Danube trade, long-distance commerce, crafts, finance and markets',
@@ -2172,7 +2173,7 @@ export const CITIES_1300=[
  {
   id:'1300-augsburg',name:'Augsburg',modern:'Augsburg',country:'Free Imperial City of Augsburg',subrealm:'Imperial city increasingly independent from its bishop',
   lon:10.8978,lat:48.3705,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'15–22 K',populationConfidence:'low',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:2100,armyText:'2.1 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:87,stability:72,economyScore:88,
   historicalRole:'Large Swabian imperial city, textile and long-distance trading centre',
   economy:'Textiles, crafts, finance, markets and trans-Alpine trade',
@@ -2184,7 +2185,7 @@ export const CITIES_1300=[
  {
   id:'1300-strasbourg',name:'Strasbourg',modern:'Strasbourg',country:'Free Imperial City of Strasbourg',subrealm:'Free city after the 1262 victory over the prince-bishop',
   lon:7.7521,lat:48.5734,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–25 K',populationConfidence:'low',
-  sizeText:'1.1 km²',sizeConfidence:'low',army:2300,armyText:'2.3 K',navy:0,navyText:'0',
+  sizeText:'1.1 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:75,technology:88,stability:76,economyScore:90,
   historicalRole:'Powerful self-governing Rhine city with major trade and cathedral institutions',
   economy:'Rhine trade, crafts, markets, wine and merchant commerce',
@@ -2196,7 +2197,7 @@ export const CITIES_1300=[
  {
   id:'1300-speyer',name:'Speyer',modern:'Speyer',country:'Free Imperial City of Speyer',subrealm:'Free Imperial City since 1294',
   lon:8.4342,lat:49.3173,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:83,stability:77,economyScore:79,
   historicalRole:'Newly free imperial cathedral and Rhine trading city',
   economy:'Rhine trade, crafts, markets, church institutions and wine',
@@ -2208,7 +2209,7 @@ export const CITIES_1300=[
  {
   id:'1300-worms',name:'Worms',modern:'Worms',country:'Free Imperial City of Worms',subrealm:'Imperial city with extensive civic liberties beside its bishopric',
   lon:8.3597,lat:49.6341,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:81,stability:72,economyScore:78,
   historicalRole:'Ancient Rhine cathedral city with strong imperial and civic institutions',
   economy:'Rhine trade, wine, crafts, markets and church activity',
@@ -2220,7 +2221,7 @@ export const CITIES_1300=[
  {
   id:'1300-ulm',name:'Ulm',modern:'Ulm',country:'Free Imperial City of Ulm',subrealm:'Free Imperial City directly attached to emperor and king',
   lon:9.9934,lat:48.4011,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:75,technology:81,stability:78,economyScore:80,
   historicalRole:'Growing Swabian imperial trading city on the Danube',
   economy:'Danube trade, textiles, crafts, markets and regional commerce',
@@ -2232,7 +2233,7 @@ export const CITIES_1300=[
  {
   id:'1300-chambery',name:'Chambéry',modern:'Chambéry',country:'County of Savoy',subrealm:'County of Savoy · principal residence of Amadeus V',
   lon:5.9118,lat:45.5646,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:68,stability:74,economyScore:68,
   historicalRole:'Principal political centre of the expanding County of Savoy',
   economy:'Court services, Alpine transit, markets and crafts',
@@ -2244,7 +2245,7 @@ export const CITIES_1300=[
  {
   id:'1300-susa',name:'Susa',modern:'Susa',country:'County of Savoy',subrealm:'County of Savoy · Alpine gateway in the Susa Valley',
   lon:7.0524,lat:45.1362,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:600,armyText:'600',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:64,technology:62,stability:72,economyScore:58,
   historicalRole:'Strategic Alpine transit town linking Piedmont with the Mont Cenis route',
   economy:'Tolls, transit trade, markets and mountain agriculture',
@@ -2256,7 +2257,7 @@ export const CITIES_1300=[
  {
   id:'1300-aosta',name:'Aosta',modern:'Aosta',country:'County of Savoy',subrealm:'County of Savoy · autonomous Alpine valley centre',
   lon:7.3201,lat:45.7370,rarity:0,year:1300,people:4500,populationText:'4.5 K',populationRange:'3.5–6 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:750,armyText:'750',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:66,technology:65,stability:76,economyScore:62,
   historicalRole:'Principal city of the Aosta Valley under Savoyard overlordship',
   economy:'Alpine trade, tolls, church institutions and agriculture',
@@ -2268,7 +2269,7 @@ export const CITIES_1300=[
  {
   id:'1300-casale-monferrato',name:'Casale Monferrato',modern:'Casale Monferrato',country:'Marquisate of Montferrat',subrealm:'Aleramici Marquisate of Montferrat · Casale di Sant’Evasio',
   lon:8.4527,lat:45.1351,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:76,technology:68,stability:70,economyScore:67,
   historicalRole:'Important Monferrat town before its later rise as the marquisate’s capital',
   economy:'Agriculture, wine, markets, crafts and Po-basin trade',
@@ -2280,7 +2281,7 @@ export const CITIES_1300=[
  {
   id:'1300-saluzzo',name:'Saluzzo',modern:'Saluzzo',country:'Marquisate of Saluzzo',subrealm:'Marquisate of Saluzzo · capital under Manfred IV',
   lon:7.4911,lat:44.6460,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:1000,armyText:'1.0 K',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:68,stability:74,economyScore:65,
   historicalRole:'Capital of an independent Alpine marquisate under Manfred IV',
   economy:'Markets, agriculture, crafts and Alpine-French trade connections',
@@ -2292,7 +2293,7 @@ export const CITIES_1300=[
  {
   id:'1300-milan',name:'Milan',modern:'Milan',country:'Lordship of Milan',subrealm:'Visconti Lordship of Milan · ruled by Matteo I Visconti',
   lon:9.1900,lat:45.4642,rarity:4,year:1300,people:100000,populationText:'100 K',populationRange:'90–120 K',populationConfidence:'low',
-  sizeText:'3.5 km²',sizeConfidence:'low',army:9000,armyText:'9.0 K',navy:0,navyText:'0',
+  sizeText:'3.5 km²',sizeConfidence:'low',army:500,armyText:'500',navy:0,navyText:'0',
   food:80,technology:94,economyScore:96,stability:60,
   historicalRole:'One of northern Italy’s largest cities and the centre of Visconti power',
   economy:'Textiles, metalwork, finance, crafts, markets and Lombard trade',
@@ -2304,7 +2305,7 @@ export const CITIES_1300=[
  {
   id:'1300-monza',name:'Monza',modern:'Monza',country:'Lordship of Milan',subrealm:'Visconti Milanese sphere · major Lombard town',
   lon:9.2744,lat:45.5845,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.5 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:0,navyText:'0',
+  sizeText:'0.5 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:76,technology:72,stability:68,economyScore:70,
   historicalRole:'Important town north of Milan with royal and ecclesiastical prestige',
   economy:'Markets, crafts, agriculture and regional trade',
@@ -2316,7 +2317,7 @@ export const CITIES_1300=[
  {
   id:'1300-como',name:'Como',modern:'Como',country:'Commune of Como',subrealm:'Commune of Como · autonomous Lombard city-state',
   lon:9.0852,lat:45.8081,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:75,stability:67,economyScore:78,
   historicalRole:'Independent Lombard commune controlling Lake Como trade routes',
   economy:'Lake trade, textiles, crafts and Alpine commerce',
@@ -2328,7 +2329,7 @@ export const CITIES_1300=[
  {
   id:'1300-brescia',name:'Brescia',modern:'Brescia',country:'Commune of Brescia',subrealm:'Commune of Brescia · Lombard communal republic',
   lon:10.2118,lat:45.5416,rarity:2,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'1.2 km²',sizeConfidence:'low',army:3200,armyText:'3.2 K',navy:0,navyText:'0',
+  sizeText:'1.2 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:78,technology:82,stability:62,economyScore:86,
   historicalRole:'Large and wealthy Lombard commune between Milan and Verona',
   economy:'Textiles, metalwork, agriculture, crafts and regional trade',
@@ -2340,7 +2341,7 @@ export const CITIES_1300=[
  {
   id:'1300-pavia',name:'Pavia',modern:'Pavia',country:'Commune of Pavia',subrealm:'Commune of Pavia · Lombard city-state',
   lon:9.1582,lat:45.1847,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.9 km²',sizeConfidence:'low',army:2300,armyText:'2.3 K',navy:0,navyText:'0',
+  sizeText:'0.9 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:80,technology:79,stability:64,economyScore:82,
   historicalRole:'Ancient royal city and important Po-region commune',
   economy:'Agriculture, river trade, crafts and markets',
@@ -2352,7 +2353,7 @@ export const CITIES_1300=[
  {
   id:'1300-cremona',name:'Cremona',modern:'Cremona',country:'Commune of Cremona',subrealm:'Commune of Cremona · Po-valley city-state',
   lon:10.0227,lat:45.1332,rarity:2,year:1300,people:25000,populationText:'25.0 K',populationRange:'20–30 K',populationConfidence:'low',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:2700,armyText:'2.7 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:84,technology:78,stability:62,economyScore:84,
   historicalRole:'Prosperous agricultural and commercial Lombard commune',
   economy:'Po trade, grain, crafts, textiles and agriculture',
@@ -2364,7 +2365,7 @@ export const CITIES_1300=[
  {
   id:'1300-alessandria',name:'Alessandria',modern:'Alessandria',country:'Commune of Alessandria',subrealm:'Commune of Alessandria · fortified anti-imperial foundation',
   lon:8.6158,lat:44.9120,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:80,technology:70,stability:68,economyScore:72,
   historicalRole:'Strategic Piedmontese commune founded by the Lombard League',
   economy:'Agriculture, markets, crafts and route trade',
@@ -2376,7 +2377,7 @@ export const CITIES_1300=[
  {
   id:'1300-piacenza',name:'Piacenza',modern:'Piacenza',country:'Commune of Piacenza',subrealm:'Commune of Piacenza · Po commercial city-state',
   lon:9.6930,lat:45.0526,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.85 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:0,navyText:'0',
+  sizeText:'0.85 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:83,technology:77,stability:64,economyScore:84,
   historicalRole:'Major Po crossing and commercial commune',
   economy:'River trade, grain, textiles, crafts and markets',
@@ -2388,7 +2389,7 @@ export const CITIES_1300=[
  {
   id:'1300-parma',name:'Parma',modern:'Parma',country:'Commune of Parma',subrealm:'Commune of Parma · Emilian communal city',
   lon:10.3279,lat:44.8015,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'15–22 K',populationConfidence:'low',
-  sizeText:'0.8 km²',sizeConfidence:'low',army:2100,armyText:'2.1 K',navy:0,navyText:'0',
+  sizeText:'0.8 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:84,technology:76,stability:66,economyScore:82,
   historicalRole:'Important Emilian commune with strong agricultural hinterland',
   economy:'Agriculture, food production, crafts, markets and road trade',
@@ -2400,7 +2401,7 @@ export const CITIES_1300=[
  {
   id:'1300-verona',name:'Verona',modern:'Verona',country:'Lordship of Verona',subrealm:'Scaliger Lordship of Verona · ruled by Bartolomeo I della Scala',
   lon:10.9916,lat:45.4384,rarity:3,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'1.2 km²',sizeConfidence:'low',army:3500,armyText:'3.5 K',navy:0,navyText:'0',
+  sizeText:'1.2 km²',sizeConfidence:'low',army:300,armyText:'300',navy:0,navyText:'0',
   food:80,technology:83,stability:72,economyScore:88,
   historicalRole:'Powerful north-Italian lordship at a strategic Adige crossing',
   economy:'Trade, textiles, crafts, agriculture and Alpine-route commerce',
@@ -2412,7 +2413,7 @@ export const CITIES_1300=[
  {
   id:'1300-padua',name:'Padua',modern:'Padua',country:'Commune of Padua',subrealm:'Commune of Padua · major autonomous city before the Carraresi signoria',
   lon:11.8768,lat:45.4064,rarity:3,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'1.2 km²',sizeConfidence:'low',army:3300,armyText:'3.3 K',navy:0,navyText:'0',
+  sizeText:'1.2 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:83,technology:92,stability:67,economyScore:90,
   historicalRole:'Large Venetian-region commune and major university city',
   economy:'University, markets, agriculture, crafts and regional trade',
@@ -2424,7 +2425,7 @@ export const CITIES_1300=[
  {
   id:'1300-vicenza',name:'Vicenza',modern:'Vicenza',country:'Commune of Padua',subrealm:'Vicenza · under Paduan political dominance around 1300',
   lon:11.5403,lat:45.5455,rarity:1,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:79,technology:73,stability:58,economyScore:74,
   historicalRole:'Prosperous but politically subordinated city in the Paduan sphere',
   economy:'Textiles, crafts, agriculture and regional trade',
@@ -2436,7 +2437,7 @@ export const CITIES_1300=[
  {
   id:'1300-mantua',name:'Mantua',modern:'Mantua',country:'Lordship of Mantua',subrealm:'Bonacolsi Lordship of Mantua · ruled by Guido Bonacolsi',
   lon:10.7914,lat:45.1564,rarity:1,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:81,technology:75,stability:70,economyScore:76,
   historicalRole:'Independent Lombard lordship under the Bonacolsi dynasty',
   economy:'Agriculture, river/lake trade, crafts and regional markets',
@@ -2448,7 +2449,7 @@ export const CITIES_1300=[
  {
   id:'1300-ferrara',name:'Ferrara',modern:'Ferrara',country:'Marquisate of Ferrara',subrealm:'Este Lordship / Marquisate of Ferrara · under Azzo VIII d’Este',
   lon:11.6198,lat:44.8381,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.9 km²',sizeConfidence:'low',army:2300,armyText:'2.3 K',navy:0,navyText:'0',
+  sizeText:'0.9 km²',sizeConfidence:'low',army:250,armyText:'250',navy:0,navyText:'0',
   food:84,technology:78,stability:68,economyScore:82,
   historicalRole:'Este dynastic capital controlling a strategic lower-Po region',
   economy:'Po trade, agriculture, crafts, markets and lordly administration',
@@ -2460,7 +2461,7 @@ export const CITIES_1300=[
  {
   id:'1300-modena',name:'Modena',modern:'Modena',country:'Lordship of Modena',subrealm:'Este Lordship of Modena',
   lon:10.9252,lat:44.6471,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:82,technology:73,stability:64,economyScore:74,
   historicalRole:'Important Emilian city under Este lordship',
   economy:'Agriculture, crafts, markets and regional road trade',
@@ -2472,7 +2473,7 @@ export const CITIES_1300=[
  {
   id:'1300-bologna',name:'Bologna',modern:'Bologna',country:'Commune of Bologna',subrealm:'Commune of Bologna · major university republic',
   lon:11.3426,lat:44.4949,rarity:3,year:1300,people:50000,populationText:'50.0 K',populationRange:'50–60 K',populationConfidence:'high',
-  sizeText:'2.0 km²',sizeConfidence:'medium',army:5000,armyText:'5.0 K',navy:0,navyText:'0',
+  sizeText:'2.0 km²',sizeConfidence:'medium',army:200,armyText:'200',navy:0,navyText:'0',
   food:82,technology:97,economyScore:93,stability:67,
   historicalRole:'One of Italy’s largest communes and the leading university city of Latin Europe',
   economy:'University, law, textiles, crafts, markets and long-distance trade',
@@ -2484,7 +2485,7 @@ export const CITIES_1300=[
  {
   id:'1300-udine',name:'Udine',modern:'Udine',country:'Patriarchate of Aquileia',subrealm:'Patriarchate of Aquileia · growing inland patriarchal centre',
   lon:13.2346,lat:46.0711,rarity:0,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.5 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:0,navyText:'0',
+  sizeText:'0.5 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:74,technology:70,stability:70,economyScore:70,
   historicalRole:'Growing political and commercial centre of the Aquileian patriarchal state',
   economy:'Markets, crafts, agriculture and trans-Alpine trade',
@@ -2496,7 +2497,7 @@ export const CITIES_1300=[
  {
   id:'1300-aquileia',name:'Aquileia',modern:'Aquileia',country:'Patriarchate of Aquileia',subrealm:'Patriarchate of Aquileia · historic ecclesiastical seat',
   lon:13.3700,lat:45.7686,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:600,armyText:'600',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:78,stability:66,economyScore:60,
   historicalRole:'Ancient patriarchal seat with enormous ecclesiastical prestige but reduced urban scale',
   economy:'Church institutions, agriculture, pilgrimage and regional trade',
@@ -2508,7 +2509,7 @@ export const CITIES_1300=[
  {
   id:'1300-cividale',name:'Cividale del Friuli',modern:'Cividale del Friuli',country:'Patriarchate of Aquileia',subrealm:'Patriarchate of Aquileia · major Friulian town',
   lon:13.4320,lat:46.0907,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:72,stability:69,economyScore:67,
   historicalRole:'Important Friulian town with Lombard and patriarchal traditions',
   economy:'Markets, crafts, agriculture and Alpine-route commerce',
@@ -2520,7 +2521,7 @@ export const CITIES_1300=[
  {
   id:'1300-gorizia',name:'Gorizia',modern:'Gorizia',country:'County of Gorizia',subrealm:'County of Gorizia · comital castle-town',
   lon:13.6202,lat:45.9402,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:64,stability:73,economyScore:61,
   historicalRole:'Capital of the increasingly influential Counts of Gorizia',
   economy:'Court services, agriculture, markets and Alpine-Adriatic transit',
@@ -2532,7 +2533,7 @@ export const CITIES_1300=[
  {
   id:'1300-venice',name:'Venice',modern:'Venice',country:'Republic of Venice',subrealm:'Most Serene Republic of Venice · Doge Pietro Gradenigo',
   lon:12.3155,lat:45.4408,rarity:4,year:1300,people:110000,populationText:'110 K',populationRange:'100–130 K',populationConfidence:'medium',
-  sizeText:'4.5 km²',sizeConfidence:'low',army:7000,armyText:'7.0 K',navy:55,navyText:'55',
+  sizeText:'4.5 km²',sizeConfidence:'low',army:200,armyText:'200',navy:55,navyText:'55',
   food:72,technology:96,economyScore:100,stability:84,
   historicalRole:'Mediterranean maritime superpower and one of Europe’s largest cities',
   economy:'Shipping, finance, luxury goods, salt, eastern trade, shipbuilding and crafts',
@@ -2544,7 +2545,7 @@ export const CITIES_1300=[
  {
   id:'1300-chioggia',name:'Chioggia',modern:'Chioggia',country:'Republic of Venice',subrealm:'Republic of Venice · lagoon port and salt centre',
   lon:12.2790,lat:45.2180,mapLon:12.1800,mapLat:45.2200,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:900,armyText:'900',navy:10,navyText:'10',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:50,armyText:'50',navy:10,navyText:'10',
   food:73,technology:70,stability:78,economyScore:72,
   historicalRole:'Important lagoon port and salt-producing community of Venice',
   economy:'Salt, fisheries, lagoon shipping and regional trade',
@@ -2556,7 +2557,7 @@ export const CITIES_1300=[
  {
   id:'1300-genoa',name:'Genoa',modern:'Genoa',country:'Republic of Genoa',subrealm:'Republic of Genoa · major Mediterranean maritime republic',
   lon:8.9463,lat:44.4056,rarity:4,year:1300,people:100000,populationText:'100 K',populationRange:'80–110 K',populationConfidence:'low',
-  sizeText:'3.0 km²',sizeConfidence:'low',army:6500,armyText:'6.5 K',navy:50,navyText:'50',
+  sizeText:'3.0 km²',sizeConfidence:'low',army:200,armyText:'200',navy:50,navyText:'50',
   food:68,technology:95,economyScore:99,stability:52,
   historicalRole:'Mediterranean naval and commercial superpower rivaling Venice',
   economy:'Shipping, banking, Black Sea trade, textiles, finance and shipbuilding',
@@ -2568,7 +2569,7 @@ export const CITIES_1300=[
  {
   id:'1300-florence',name:'Florence',modern:'Florence',country:'Republic of Florence',subrealm:'Florentine Republic · merchant and banking powerhouse',
   lon:11.2558,lat:43.7696,rarity:4,year:1300,people:95000,populationText:'95.0 K',populationRange:'90–105 K',populationConfidence:'medium',
-  sizeText:'3.0 km²',sizeConfidence:'medium',army:7000,armyText:'7.0 K',navy:0,navyText:'0',
+  sizeText:'3.0 km²',sizeConfidence:'medium',army:300,armyText:'300',navy:0,navyText:'0',
   food:78,technology:96,economyScore:100,stability:55,
   historicalRole:'One of Europe’s largest cities and a leading banking, cloth and commercial republic',
   economy:'Banking, wool, cloth finishing, finance, crafts and international trade',
@@ -2580,7 +2581,7 @@ export const CITIES_1300=[
  {
   id:'1300-pisa',name:'Pisa',modern:'Pisa',country:'Republic of Pisa',subrealm:'Republic of Pisa · maritime republic after the Meloria defeat',
   lon:10.4017,lat:43.7228,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–45 K',populationConfidence:'low',
-  sizeText:'1.6 km²',sizeConfidence:'low',army:3500,armyText:'3.5 K',navy:25,navyText:'25',
+  sizeText:'1.6 km²',sizeConfidence:'low',army:200,armyText:'200',navy:25,navyText:'25',
   food:73,technology:87,economyScore:88,stability:52,
   historicalRole:'Still-powerful Tuscan maritime republic recovering from its 1284 defeat by Genoa',
   economy:'Mediterranean shipping, trade, crafts, finance and Tuscan commerce',
@@ -2592,7 +2593,7 @@ export const CITIES_1300=[
  {
   id:'1300-lucca',name:'Lucca',modern:'Lucca',country:'Republic of Lucca',subrealm:'Republic of Lucca · independent Tuscan commune',
   lon:10.5027,lat:43.8429,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.9 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:0,navyText:'0',
+  sizeText:'0.9 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:78,technology:82,stability:76,economyScore:88,
   historicalRole:'Independent Tuscan merchant republic with a strong silk and banking economy',
   economy:'Silk, banking, crafts, markets and long-distance trade',
@@ -2604,7 +2605,7 @@ export const CITIES_1300=[
  {
   id:'1300-siena',name:'Siena',modern:'Siena',country:'Republic of Siena',subrealm:'Republic of Siena · wealthy Tuscan commune',
   lon:11.3308,lat:43.3188,rarity:3,year:1300,people:50000,populationText:'50.0 K',populationRange:'45–55 K',populationConfidence:'medium',
-  sizeText:'1.5 km²',sizeConfidence:'low',army:4200,armyText:'4.2 K',navy:0,navyText:'0',
+  sizeText:'1.5 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:77,technology:90,economyScore:95,stability:78,
   historicalRole:'Major Tuscan banking, commercial and artistic republic',
   economy:'Banking, wool, trade, crafts and agriculture',
@@ -2616,7 +2617,7 @@ export const CITIES_1300=[
  {
   id:'1300-ravenna',name:'Ravenna',modern:'Ravenna',country:'Lordship of Ravenna',subrealm:'Da Polenta Lordship of Ravenna',
   lon:12.2035,lat:44.4184,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:2,navyText:'2',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:150,armyText:'150',navy:2,navyText:'2',
   food:76,technology:78,stability:72,economyScore:74,
   historicalRole:'Historic Adriatic city ruled by the da Polenta family',
   economy:'Agriculture, crafts, church wealth and Adriatic trade',
@@ -2628,7 +2629,7 @@ export const CITIES_1300=[
  {
   id:'1300-rimini',name:'Rimini',modern:'Rimini',country:'Lordship of Rimini',subrealm:'Malatesta Lordship of Rimini',
   lon:12.5683,lat:44.0678,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:4,navyText:'4',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:250,armyText:'250',navy:4,navyText:'4',
   food:74,technology:74,stability:68,economyScore:73,
   historicalRole:'Adriatic lordship and power base of the Malatesta family',
   economy:'Adriatic trade, agriculture, crafts and markets',
@@ -2640,7 +2641,7 @@ export const CITIES_1300=[
  {
   id:'1300-urbino',name:'Urbino',modern:'Urbino',country:'Lordship of Urbino',subrealm:'Montefeltro Lordship / County of Urbino',
   lon:12.6372,lat:43.7263,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:0,navyText:'0',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:250,armyText:'250',navy:0,navyText:'0',
   food:68,technology:70,stability:70,economyScore:63,
   historicalRole:'Hilltop political centre of the Montefeltro family',
   economy:'Court services, agriculture, crafts and regional trade',
@@ -2652,7 +2653,7 @@ export const CITIES_1300=[
  {
   id:'1300-ancona',name:'Ancona',modern:'Ancona',country:'Commune of Ancona',subrealm:'Maritime Commune of Ancona',
   lon:13.5189,lat:43.6158,mapLon:13.4800,mapLat:43.6000,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:12,navyText:'12',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:100,armyText:'100',navy:12,navyText:'12',
   food:73,technology:78,stability:73,economyScore:82,
   historicalRole:'Autonomous Adriatic maritime commune with eastern Mediterranean trade',
   economy:'Shipping, trade, fisheries, crafts and markets',
@@ -2664,7 +2665,7 @@ export const CITIES_1300=[
  {
   id:'1300-perugia',name:'Perugia',modern:'Perugia',country:'Commune of Perugia',subrealm:'Commune of Perugia · papal-aligned but self-governing',
   lon:12.3908,lat:43.1107,rarity:2,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'1.2 km²',sizeConfidence:'low',army:3000,armyText:'3.0 K',navy:0,navyText:'0',
+  sizeText:'1.2 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:76,technology:83,stability:68,economyScore:84,
   historicalRole:'Large Umbrian commune with strong civic institutions',
   economy:'Textiles, agriculture, markets, crafts and regional finance',
@@ -2676,7 +2677,7 @@ export const CITIES_1300=[
  {
   id:'1300-san-marino',name:'San Marino',modern:'San Marino',country:'Republic of San Marino',subrealm:'Commune of San Marino · autonomous mountain republic',
   lon:12.4578,lat:43.9424,rarity:0,year:1300,people:1500,populationText:'1.5 K',populationRange:'1–2 K',populationConfidence:'low',
-  sizeText:'0.10 km²',sizeConfidence:'low',army:350,armyText:'350',navy:0,navyText:'0',
+  sizeText:'0.10 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:62,technology:55,stability:86,economyScore:45,
   historicalRole:'Tiny autonomous mountain commune with strong communal traditions',
   economy:'Pastoral agriculture, local crafts and small markets',
@@ -2688,7 +2689,7 @@ export const CITIES_1300=[
  {
   id:'1300-rome',name:'Rome',modern:'Rome',country:'Papal States',subrealm:'Papal States · city of Pope Boniface VIII and the 1300 Jubilee',
   lon:12.4964,lat:41.9028,rarity:3,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'2.0 km²',sizeConfidence:'low',army:3000,armyText:'3.0 K',navy:0,navyText:'0',
+  sizeText:'2.0 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:68,technology:94,economyScore:84,stability:45,
   historicalRole:'Spiritual centre of Latin Christianity and capital of the papal state',
   economy:'Pilgrimage, church institutions, markets, crafts and elite services',
@@ -2700,7 +2701,7 @@ export const CITIES_1300=[
  {
   id:'1300-viterbo',name:'Viterbo',modern:'Viterbo',country:'Papal States',subrealm:'Papal States · major papal and Tuscia city',
   lon:12.1077,lat:42.4207,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.8 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.8 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:73,technology:82,stability:62,economyScore:76,
   historicalRole:'Important papal residence city in the Patrimony of St Peter',
   economy:'Church institutions, markets, crafts and agriculture',
@@ -2712,7 +2713,7 @@ export const CITIES_1300=[
  {
   id:'1300-benevento',name:'Benevento',modern:'Benevento',country:'Papal States',subrealm:'Papal enclave of Benevento inside the Kingdom of Naples',
   lon:14.7822,lat:41.1298,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:74,technology:73,stability:61,economyScore:66,
   historicalRole:'Papal enclave and strategic southern Italian city surrounded by Angevin territory',
   economy:'Markets, agriculture, crafts and church administration',
@@ -2724,7 +2725,7 @@ export const CITIES_1300=[
  {
   id:'1300-naples',name:'Naples',modern:'Naples',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · capital of Charles II',
   lon:14.2681,lat:40.8518,mapLon:14.2200,mapLat:40.8600,rarity:4,year:1300,people:60000,populationText:'60.0 K',populationRange:'50–70 K',populationConfidence:'low',
-  sizeText:'2.2 km²',sizeConfidence:'low',army:5500,armyText:'5.5 K',navy:25,navyText:'25',
+  sizeText:'2.2 km²',sizeConfidence:'low',army:500,armyText:'500',navy:25,navyText:'25',
   food:82,technology:88,economyScore:92,stability:72,
   historicalRole:'Capital of the Angevin mainland kingdom and one of the Mediterranean’s largest royal cities',
   economy:'Court, Mediterranean shipping, markets, crafts, finance and regional trade',
@@ -2736,7 +2737,7 @@ export const CITIES_1300=[
  {
   id:'1300-salerno',name:'Salerno',modern:'Salerno',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · Campanian port',
   lon:14.7681,lat:40.6824,mapLon:14.7300,mapLat:40.7000,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:7,navyText:'7',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:7,navyText:'7',
   food:78,technology:80,stability:69,economyScore:75,
   historicalRole:'Important Campanian port with enduring medical and commercial traditions',
   economy:'Shipping, markets, crafts, agriculture and medical learning',
@@ -2748,7 +2749,7 @@ export const CITIES_1300=[
  {
   id:'1300-bari',name:'Bari',modern:'Bari',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · Adriatic Apulian port',
   lon:16.8719,lat:41.1171,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:10,navyText:'10',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:150,armyText:'150',navy:10,navyText:'10',
   food:78,technology:76,stability:70,economyScore:80,
   historicalRole:'Major Adriatic port and pilgrimage city of Apulia',
   economy:'Shipping, pilgrimage, grain, olive oil, crafts and trade',
@@ -2760,7 +2761,7 @@ export const CITIES_1300=[
  {
   id:'1300-laquila',name:'L’Aquila',modern:'L’Aquila',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · communal mountain city rebuilt under Charles I',
   lon:13.3995,lat:42.3498,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:70,technology:70,stability:76,economyScore:68,
   historicalRole:'Young but rapidly growing communal city in the Abruzzi',
   economy:'Wool, agriculture, markets and trans-Apennine trade',
@@ -2772,7 +2773,7 @@ export const CITIES_1300=[
  {
   id:'1300-taranto',name:'Taranto',modern:'Taranto',country:'Kingdom of Naples',subrealm:'Principality of Taranto · held by Philip I, son of Charles II',
   lon:17.2470,lat:40.4644,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:12,navyText:'12',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:200,armyText:'200',navy:12,navyText:'12',
   food:76,technology:74,stability:68,economyScore:75,
   historicalRole:'Strategic southern port and capital of the Angevin Principality of Taranto',
   economy:'Mediterranean shipping, fisheries, agriculture and regional trade',
@@ -2784,7 +2785,7 @@ export const CITIES_1300=[
  {
   id:'1300-palermo',name:'Palermo',modern:'Palermo',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III of Aragon',
   lon:13.3614,lat:38.1157,rarity:3,year:1300,people:50000,populationText:'50.0 K',populationRange:'40–60 K',populationConfidence:'low',
-  sizeText:'1.8 km²',sizeConfidence:'low',army:4500,armyText:'4.5 K',navy:22,navyText:'22',
+  sizeText:'1.8 km²',sizeConfidence:'low',army:500,armyText:'500',navy:22,navyText:'22',
   food:83,technology:86,economyScore:88,stability:65,
   historicalRole:'Largest western Sicilian city and a royal centre of Frederick III’s island kingdom',
   economy:'Mediterranean shipping, grain, citrus, crafts, markets and royal administration',
@@ -2796,7 +2797,7 @@ export const CITIES_1300=[
  {
   id:'1300-messina',name:'Messina',modern:'Messina',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III · Strait stronghold',
   lon:15.5540,lat:38.1938,mapLon:15.4800,mapLat:38.1700,rarity:3,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'low',
-  sizeText:'1.3 km²',sizeConfidence:'low',army:3600,armyText:'3.6 K',navy:24,navyText:'24',
+  sizeText:'1.3 km²',sizeConfidence:'low',army:800,armyText:'800',navy:24,navyText:'24',
   food:78,technology:84,economyScore:86,stability:62,
   historicalRole:'Strategic Strait of Messina port and one of Sicily’s most important cities',
   economy:'Shipping, trade, fisheries, crafts and Mediterranean commerce',
@@ -2808,7 +2809,7 @@ export const CITIES_1300=[
  {
   id:'1300-catania',name:'Catania',modern:'Catania',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III',
   lon:15.0873,lat:37.5027,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'15–22 K',populationConfidence:'low',
-  sizeText:'0.8 km²',sizeConfidence:'low',army:2100,armyText:'2.1 K',navy:8,navyText:'8',
+  sizeText:'0.8 km²',sizeConfidence:'low',army:300,armyText:'300',navy:8,navyText:'8',
   food:82,technology:75,stability:64,economyScore:77,
   historicalRole:'Major eastern Sicilian city beneath Mount Etna',
   economy:'Agriculture, grain, wine, crafts and coastal trade',
@@ -2820,7 +2821,7 @@ export const CITIES_1300=[
  {
   id:'1300-syracuse',name:'Syracuse',modern:'Syracuse',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III',
   lon:15.2866,lat:37.0755,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:10,navyText:'10',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:300,armyText:'300',navy:10,navyText:'10',
   food:80,technology:75,stability:65,economyScore:72,
   historicalRole:'Historic fortified harbour city of southeastern Sicily',
   economy:'Shipping, grain, fisheries, crafts and regional trade',
@@ -2832,7 +2833,7 @@ export const CITIES_1300=[
  {
   id:'1300-trapani',name:'Trapani',modern:'Trapani',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III · western maritime port',
   lon:12.5365,lat:38.0176,mapLon:12.5000,mapLat:38.0000,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:14,navyText:'14',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:300,armyText:'300',navy:14,navyText:'14',
   food:78,technology:74,stability:70,economyScore:78,
   historicalRole:'Western Sicilian port with strong maritime and salt-trade functions',
   economy:'Salt, fishing, shipping, grain and Mediterranean trade',
@@ -2844,7 +2845,7 @@ export const CITIES_1300=[
  {
   id:'1300-oristano',name:'Oristano',modern:'Oristano',country:'Judicate of Arborea',subrealm:'Judicate of Arborea · capital under Judge Giovanni of Arborea',
   lon:8.5919,lat:39.9036,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:3,navyText:'3',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:3,navyText:'3',
   food:80,technology:69,stability:74,economyScore:65,
   historicalRole:'Capital of the last fully sovereign Sardinian judicate',
   economy:'Agriculture, markets, crafts and regional trade',
@@ -2856,7 +2857,7 @@ export const CITIES_1300=[
  {
   id:'1300-olbia',name:'Olbia / Terranova',modern:'Olbia',country:'Republic of Pisa',subrealm:'Former Judicate of Gallura · de facto Pisan control after Nino Visconti’s death in 1296',
   lon:9.4964,lat:40.9236,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:800,armyText:'800',navy:5,navyText:'5',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:5,navyText:'5',
   food:73,technology:65,stability:48,economyScore:56,
   historicalRole:'Principal town of former Gallura under disputed but effective Pisan domination',
   economy:'Maritime trade, agriculture, fisheries and local markets',
@@ -2868,7 +2869,7 @@ export const CITIES_1300=[
  {
   id:'1300-cagliari',name:'Cagliari / Castel di Castro',modern:'Cagliari',country:'Republic of Pisa',subrealm:'Pisan Castel di Castro · direct Pisan stronghold after the 1258 fall of the Judicate of Cagliari',
   lon:9.1217,lat:39.2238,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:12,navyText:'12',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:200,armyText:'200',navy:12,navyText:'12',
   food:76,technology:72,stability:54,economyScore:74,
   historicalRole:'Pisan fortress-port and principal urban stronghold in southern Sardinia',
   economy:'Shipping, trade, salt, markets and agriculture',
@@ -2880,7 +2881,7 @@ export const CITIES_1300=[
  {
   id:'1300-bonifacio',name:'Bonifacio',modern:'Bonifacio',country:'Republic of Genoa',subrealm:'Genoese colony and fortified commune since 1195',
   lon:9.1594,lat:41.3872,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.28 km²',sizeConfidence:'low',army:700,armyText:'700',navy:8,navyText:'8',
+  sizeText:'0.28 km²',sizeConfidence:'low',army:150,armyText:'150',navy:8,navyText:'8',
   food:66,technology:67,stability:76,economyScore:62,
   historicalRole:'Strong Genoese fortress-port controlling the Strait of Bonifacio',
   economy:'Shipping, fisheries, trade and military provisioning',
@@ -2892,7 +2893,7 @@ export const CITIES_1300=[
  {
   id:'1300-calvi',name:'Calvi',modern:'Calvi',country:'Republic of Genoa',subrealm:'Genoese-aligned fortified town after the 1278 submission',
   lon:8.7570,lat:42.5660,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:550,armyText:'550',navy:6,navyText:'6',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:100,armyText:'100',navy:6,navyText:'6',
   food:65,technology:64,stability:78,economyScore:56,
   historicalRole:'Small but strategically valuable Genoese stronghold in northwestern Corsica',
   economy:'Shipping, fisheries, timber, local trade and agriculture',
