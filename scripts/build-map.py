@@ -2,7 +2,7 @@
 The preserved input is the authored map at commit 2ebedba; small borders remain
 schematic. This improves rendering, not the historical precision of that source.
 """
-import json,re,pathlib,math
+import json,re,pathlib,math,runpy
 from collections import defaultdict
 from shapely import make_valid, coverage_simplify, coverage_is_valid, set_precision, voronoi_polygons
 from shapely.geometry import Polygon, GeometryCollection, box, Point, MultiPoint, shape
@@ -106,6 +106,8 @@ if not missing.is_empty:
         if not piece.is_empty: extras[owner].append(piece)
     geometries=[set_precision(unary_union([g,*extra]),.001) for g,extra in zip(geometries,extras)]
 print('Coastline gaps repaired',flush=True)
+apply_gameplay=runpy.run_path(str(ROOT/'scripts/map/gameplay.py'))['apply_gameplay']
+resolved,geometries=apply_gameplay(resolved,geometries,land,geo,polygons)
 # Node every junction before simplifying: adjacent source shapes can encode
 # the same edge with different intermediate vertices.
 faces=[set_precision(g,.001) for g in polygonize(unary_union([g.boundary for g in geometries]))]

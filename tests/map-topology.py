@@ -34,3 +34,36 @@ for lon,lat in [(8.3,46.8),(9.0,45.8),(10.5,47.2),(6.9,48.1),(13.2,47.4),(14.3,4
     p=Point((lon+22)*12,(72-lat)*15)
     assert sum(g.covers(p) for g in geoms)==1, f'Missing or overlapping land at {lon},{lat}'
 print(f'PASS: {len(states)} unique states; valid shared edges; no land gaps, overlaps or duplicate envelope.')
+
+# Gameplay merges must affect both rendered ownership and the card allegiance.
+import subprocess
+cards=json.loads(subprocess.check_output(['node','--input-type=module','-e',
+    "import {CITIES_1300} from './src/data1300.js';console.log(JSON.stringify(CITIES_1300))"],cwd=ROOT,text=True))
+by_name={f['name']:g for f,g in zip(states,geoms)}
+for old in ['Free Imperial City of Strasbourg','Free Imperial City of Speyer','Prince-Bishopric of Speyer','Free Imperial City of Worms','Prince-Bishopric of Augsburg','Free Imperial City of Augsburg']:
+    assert old not in by_name, f'Removed gameplay state survived: {old}'
+expected={'Strasbourg':'Prince-Bishopric of Strasbourg','Speyer':'County Palatine of the Rhine','Worms':'County Palatine of the Rhine','Bruchsal':'County Palatine of the Rhine','Augsburg':'Duchy of Upper Bavaria'}
+for c in cards:
+    if c['name'] in expected:
+        assert c['country']==expected[c['name']], f'Wrong card allegiance: {c["name"]}'
+        assert c.get('historicalCountry') and c.get('gameplayNote')
+        p=Point((c['lon']+22)*12,(72-c['lat'])*15)
+        assert by_name[c['country']].covers(p), f'City marker outside assigned state: {c["name"]}'
+assert by_name['Duchy of Saxe-Lauenburg'].geom_type=='Polygon', 'Detached Lauenburg survived'
+assert by_name['Archbishopric of Cologne'].geom_type=='Polygon', 'Detached Cologne survived'
+for name in ['Free Imperial City of Bremen','Kingdom of Majorca']:
+    g=by_name[name]
+    if name=='Kingdom of Majorca':
+        from shapely.geometry import box
+        g=g.intersection(box((3.5+22)*12,(72-44)*15,(4.3+22)*12,(72-43.3)*15))
+    assert g.area/g.envelope.area<.9, f'Rectangular enclave survived: {name}'
+# All of mainland southern Italy must be Naples, not stray coarse Sicily.
+mainland=max(list(land.geoms),key=lambda p:p.area) if land.geom_type=='MultiPolygon' else land
+assert by_name['Kingdom of Sicily'].intersection(mainland).area<.001
+print('PASS: requested mergers, card ownership, enclave shapes and coastal remnant removal.')
+
+# The entire old French intrusion must be gone, not cropped into tiny wedges.
+envelope=unary_union([by_name[n] for n in ['County of Champagne','Duchy of Lorraine','Duchy of Burgundy']]).convex_hull
+assert by_name['Kingdom of France'].intersection(envelope).area<.1, 'French corridor fragments survived'
+c=next(c for c in cards if c['name']=='Montpellier')
+assert by_name[c['country']].covers(Point((c['lon']+22)*12,(72-c['lat'])*15))

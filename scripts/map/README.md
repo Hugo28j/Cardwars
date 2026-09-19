@@ -4,7 +4,7 @@
 `2ebedba0bc8065a42f41efb86b1f86ea8fed697e`, under the same GPL-3.0 terms
 as the existing historical map assets.
 
-Rebuild with Python and Shapely 2.1+: `python scripts/build-map.py`.
+Rebuild with Python, Shapely 2.1+ and Node.js (to read city positions): `python scripts/build-map.py`.
 The script merges the old scanline rectangles, clips to the bundled physical
 coastline and the Europe/Anatolia viewport, resolves overlapping paint layers,
 nodes shared boundaries, and simplifies them together. Runtime uses only the
@@ -58,3 +58,27 @@ independent overlapping paths.
 `python tests/map-topology.py` checks the rendered SVG paths against
 `assets/map-land.json`: land coverage, overlaps, matching shared edges,
 duplicate realms and the screenshot's central-European gap locations.
+
+## Gameplay grouping and border cleanup
+
+`scripts/map/gameplay.py` applies the requested playable-state changes after
+coast alignment and before shared-edge simplification:
+
+- Strasbourg city joins the Strasbourg bishopric as one labelled state.
+- Speyer (city and bishopric, including Bruchsal) and Worms join the Palatinate.
+- Augsburg (city and bishopric) joins Upper Bavaria.
+- Cologne and Bremen receive compact authored outlines; Saxe-Lauenburg loses
+  its detached fragment to its adjoining neighbour.
+- The French corridor between Champagne and Lorraine is divided among
+  Champagne, Lorraine and Burgundy.
+- Montpellier stays Majorcan but gets an irregular footprint.
+
+These are explicitly gameplay choices, not claims about historical annexations.
+Changed cards retain their original affiliations in `historicalCountry` and
+`historicalSubrealm`, shown in the card inspector; stats and IDs are retained.
+
+The coarse source's mainland Sicilian remnants are reassigned to Naples.
+Other small coastal scraps touching a larger neighbour are merged into that
+neighbour, retaining islands, complete small states and fragments with city
+markers. This removes the visible old-map fringe rather than covering it with
+another layer.

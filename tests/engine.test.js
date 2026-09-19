@@ -180,8 +180,10 @@ test('all final twenty-two central Europe cards are present with exact-1300 owne
  assert.equal(CITY_1300['1300-bremen'].country,'Archbishopric of Bremen');
  assert.equal(CITY_1300['1300-frankfurt-main'].country,'Imperial City of Frankfurt');
  assert.equal(CITY_1300['1300-regensburg'].country,'Free Imperial City of Regensburg');
- assert.equal(CITY_1300['1300-strasbourg'].country,'Free Imperial City of Strasbourg');
- assert.equal(CITY_1300['1300-speyer'].country,'Free Imperial City of Speyer');
+ assert.equal(CITY_1300['1300-strasbourg'].country,'Prince-Bishopric of Strasbourg');
+ assert.equal(CITY_1300['1300-strasbourg'].historicalCountry,'Free Imperial City of Strasbourg');
+ assert.equal(CITY_1300['1300-speyer'].country,'County Palatine of the Rhine');
+ assert.equal(CITY_1300['1300-speyer'].historicalCountry,'Free Imperial City of Speyer');
 });
 
 

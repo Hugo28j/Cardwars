@@ -38,7 +38,7 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json':'assets/atlas.json').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];if(this.destroyed||this.mode!==mode)return;
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json':'assets/atlas.json').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
    this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i)=>`<path class="territory ${f.detail?'detail-polity':''}" data-realm="${esc(realmOf(f))}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${mode==='historical'?colorForRealm(realmOf(f)):palettes[i%palettes.length]}" fill-rule="evenodd" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`).join('');
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.realmLabels=[...this.svg.querySelectorAll('.realm-label')].sort((a,b)=>+(a.dataset.level)-+(b.dataset.level));
@@ -46,7 +46,7 @@ export class WorldMap{
    this.host.querySelector('#map-attribution').textContent='Approximate 1300 borders · Historical Basemaps · Natural Earth coastline';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
   }catch{delete cache[mode];const el=this.host.querySelector('.map-loading');if(el)el.textContent='Map could not load. Reload to try again.';}
  }
- pick(target){const c=target.closest('[data-city]');if(c){this.onSelect(c.dataset.city);return;}const r=target.closest('[data-realm]');if(r&&this.onRegion)this.onRegion({name:r.dataset.realm,detail:r.dataset.detail==='1',mode:'historical'});}
+ pick(target){const c=target.closest('[data-city]');if(c){this.onSelect(c.dataset.city);return;}const r=target.closest('[data-realm]');if(r&&this.onRegion)this.onRegion({name:r.dataset.realm,detail:r.dataset.detail==='1',mode:'historical',gameplayNote:this.realmInfo?.get(r.dataset.realm)?.gameplayNote});}
  zoom(f,fx=.5,fy=.5){const w=Math.max(28,Math.min(this.overviewWidth||900,this.view.w*f)),r=w/this.view.w;this.view.x+=this.view.w*fx*(1-r);this.view.y+=this.view.h*fy*(1-r);this.view.w=w;this.view.h*=r;this.update();}
  focus(id){this.focusRequest=id;const c=CITY[id];if(!c)return;const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),r=this.host.getBoundingClientRect();this.view.w=310;this.view.h=310*r.height/Math.max(1,r.width);this.view.x=p[0]-this.view.w/2;this.view.y=p[1]-this.view.h/2;this.update();}
  fit(){this.focusRequest=null;const r=this.host.getBoundingClientRect(),aspect=r.width/Math.max(1,r.height);this.overviewWidth=Math.max(bounds.w+30,(bounds.h+70)*aspect);this.view.w=this.overviewWidth;this.view.h=this.view.w/aspect;this.view.x=bounds.x+(bounds.w-this.view.w)/2;this.view.y=bounds.y+(bounds.h-this.view.h)/2;this.update();}

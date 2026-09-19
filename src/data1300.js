@@ -2078,7 +2078,8 @@ export const CITIES_1300=[
   sources:[['Donaustauf','https://en.wikipedia.org/wiki/Donaustauf'],['Prince-Bishopric of Regensburg','https://en.wikipedia.org/wiki/Prince-Bishopric_of_Regensburg']]
  },
  {
-  id:'1300-bruchsal',name:'Bruchsal',modern:'Bruchsal',country:'Prince-Bishopric of Speyer',subrealm:'Prince-Bishopric of Speyer · episcopal territorial town',
+  id:'1300-bruchsal',name:'Bruchsal',modern:'Bruchsal',country:'County Palatine of the Rhine',subrealm:'Palatinate · former Speyer bishopric',
+  historicalCountry:'Prince-Bishopric of Speyer',historicalSubrealm:'Prince-Bishopric of Speyer · episcopal territorial town',gameplayNote:'Political grouping simplified for gameplay; the historical affiliation is retained below.',
   lon:8.5980,lat:49.1243,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
   sizeText:'0.18 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:60,economyScore:52,stability:73,
@@ -2174,7 +2175,8 @@ export const CITIES_1300=[
   sources:[['Regensburg Tourism — Free Imperial City since 1245','https://tourismus.regensburg.de/en/experience-discover/sightseeing-unesco-world-heritage/old-town-hall'],['Regensburg','https://en.wikipedia.org/wiki/Regensburg']]
  },
  {
-  id:'1300-augsburg',name:'Augsburg',modern:'Augsburg',country:'Free Imperial City of Augsburg',subrealm:'Imperial city increasingly independent from its bishop',
+  id:'1300-augsburg',name:'Augsburg',modern:'Augsburg',country:'Duchy of Upper Bavaria',subrealm:'Upper Bavaria · gameplay grouping',
+  historicalCountry:'Free Imperial City of Augsburg',historicalSubrealm:'Imperial city increasingly independent from its bishop',gameplayNote:'Political grouping simplified for gameplay; the historical affiliation is retained below.',
   lon:10.8978,lat:48.3705,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'15–22 K',populationConfidence:'low',
   sizeText:'1.0 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:87,stability:72,economyScore:88,
@@ -2186,7 +2188,8 @@ export const CITIES_1300=[
   sources:[['Augsburg','https://en.wikipedia.org/wiki/Augsburg'],['Free Imperial City of Augsburg','https://en.wikipedia.org/wiki/Free_Imperial_City_of_Augsburg']]
  },
  {
-  id:'1300-strasbourg',name:'Strasbourg',modern:'Strasbourg',country:'Free Imperial City of Strasbourg',subrealm:'Free city after the 1262 victory over the prince-bishop',
+  id:'1300-strasbourg',name:'Strasbourg',modern:'Strasbourg',country:'Prince-Bishopric of Strasbourg',subrealm:'Unified Strasbourg state · city and bishopric',
+  historicalCountry:'Free Imperial City of Strasbourg',historicalSubrealm:'Free city after the 1262 victory over the prince-bishop',gameplayNote:'Political grouping simplified for gameplay; the historical affiliation is retained below.',
   lon:7.7521,lat:48.5734,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–25 K',populationConfidence:'low',
   sizeText:'1.1 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:75,technology:88,stability:76,economyScore:90,
@@ -2198,7 +2201,8 @@ export const CITIES_1300=[
   sources:[['Strasbourg.eu — Free city after 1262','https://int.strasbourg.eu/free-city-germanic-holy-roman-empire'],['Strasbourg city history','https://int.strasbourg.eu/history-of-the-city']]
  },
  {
-  id:'1300-speyer',name:'Speyer',modern:'Speyer',country:'Free Imperial City of Speyer',subrealm:'Free Imperial City since 1294',
+  id:'1300-speyer',name:'Speyer',modern:'Speyer',country:'County Palatine of the Rhine',subrealm:'Palatinate · gameplay grouping',
+  historicalCountry:'Free Imperial City of Speyer',historicalSubrealm:'Free Imperial City since 1294',gameplayNote:'Political grouping simplified for gameplay; the historical affiliation is retained below.',
   lon:8.4342,lat:49.3173,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:83,stability:77,economyScore:79,
@@ -2210,7 +2214,8 @@ export const CITIES_1300=[
   sources:[['Speyer official history — Free Imperial City in 1294','https://www.speyer.de/en/tourism/service/downloads/brochures/meeting-place-broschuere-englisch-081121.pdf'],['Speyer','https://en.wikipedia.org/wiki/Speyer']]
  },
  {
-  id:'1300-worms',name:'Worms',modern:'Worms',country:'Free Imperial City of Worms',subrealm:'Imperial city with extensive civic liberties beside its bishopric',
+  id:'1300-worms',name:'Worms',modern:'Worms',country:'County Palatine of the Rhine',subrealm:'Palatinate · gameplay grouping',
+  historicalCountry:'Free Imperial City of Worms',historicalSubrealm:'Imperial city with extensive civic liberties beside its bishopric',gameplayNote:'Political grouping simplified for gameplay; the historical affiliation is retained below.',
   lon:8.3597,lat:49.6341,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:81,stability:72,economyScore:78,
