@@ -462,13 +462,13 @@ export const CITIES_1300=[
  {
   id:'1300-granada',name:'Granada',modern:'Granada',country:'Emirate of Granada',subrealm:'Nasrid Emirate of Granada · capital',
   lon:-3.5986,lat:37.1773,rarity:4,year:1300,people:90000,populationText:'90.0 K',populationRange:'90–150 K',populationConfidence:'low',
-  sizeText:'1.80 km²',sizeConfidence:'low',army:8000,armyText:'8.0 K',navy:0,navyText:'0',
+  sizeText:'1.80 km²',sizeConfidence:'low',army:2000,armyText:'2.0 K',navy:0,navyText:'0',
   food:90,technology:93,economyScore:91,stability:64,
   historicalRole:'Capital of the Nasrid Emirate and one of the largest, richest cities in Iberia',
   economy:'Silk, crafts, irrigated agriculture, taxation and long-distance Mediterranean trade',
   militaryRole:'Heavily fortified mountain-basin capital protected by the Alhambra and surrounding defensive system',
   researchSummary:'Granada was the capital of the Nasrid state founded in 1238, the last Muslim polity in medieval Iberia. Around 1300 it was already a major political, cultural and economic centre.',
-  evidenceNote:'Published reconstructions vary sharply, roughly from 90,000 to 150,000 for 1300. The card conservatively uses 90,000 and marks the range low confidence.',
+  evidenceNote:'Published population reconstructions vary sharply, roughly from 90,000 to 150,000 for 1300. The card conservatively uses 90,000. Army uses a conservative estimate for the permanent/regular military core associated with Granada city; the wider Nasrid state could mobilise substantially more troops.',
   sources:[
    ['Oxford Bibliographies — Nasrids of Granada','https://doi.org/10.1093/obo/9780195390155-0308'],
    ['Historical city-population source compilation for Granada','https://www.worldcitypop.com/data_source.asp?disp_city=Granada&disp_time=1300'],
