@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Europe · first 169 cards
+# Cardwars 1300 research · Europe · first 199 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -146,3 +146,16 @@ Exact-period political corrections:
 - Bremen is **not** back-projected as a formal Free Imperial City. Its council existed by 1225 and the city was highly autonomous, but formal imperial immediacy was not recognised until 1646; the card therefore keeps the Archbishopric of Bremen as the formal polity.
 - Frankfurt is labelled **Imperial City of Frankfurt**, not Free Imperial City, because the city's official history places the decisive 1372 constitutional milestone later.
 - Dillingen, Donaustauf, Bruchsal and Saverne deliberately represent the territorial prince-bishoprics separately from Augsburg, Regensburg, Speyer and Strasbourg city cards.
+
+
+## Italy batch A: 30 cities
+
+Added Chambéry, Susa, Aosta, Casale Monferrato, Saluzzo, Milan, Monza, Como, Brescia, Pavia, Cremona, Alessandria, Piacenza, Parma, Verona, Padua, Vicenza, Mantua, Ferrara, Modena, Bologna, Udine, Aquileia, Cividale del Friuli, Gorizia, Venice, Chioggia, Genoa, Florence and Pisa.
+
+Exact-period handling:
+- Milan is the Visconti Lordship under Matteo I.
+- Verona is a Scaliger lordship; Mantua is under the Bonacolsi; Ferrara and Modena are under Este domination.
+- Padua remains a commune in 1300; Vicenza is represented inside the Paduan political sphere.
+- Venice, Genoa, Florence and Pisa are separate republics. Pisa’s post-Meloria weakness is reflected in its gameplay stats without erasing its continued importance.
+- The Patriarchate of Aquileia gets separate cards for Aquileia, Udine and Cividale because the nominal seat, emerging administrative centre and major Friulian town had different roles.
+- Saluzzo is an independent marquisate under Manfred IV. Casale belongs to Montferrat but is not falsely described as already being the later capital.
