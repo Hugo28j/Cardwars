@@ -2,9 +2,10 @@
 The preserved input is the authored map at commit 2ebedba; small borders remain
 schematic. This improves rendering, not the historical precision of that source.
 """
-import json,re,pathlib
-from shapely import make_valid, coverage_simplify, coverage_is_valid, set_precision
-from shapely.geometry import Polygon, GeometryCollection, box, Point, shape
+import json,re,pathlib,math
+from collections import defaultdict
+from shapely import make_valid, coverage_simplify, coverage_is_valid, set_precision, voronoi_polygons
+from shapely.geometry import Polygon, GeometryCollection, box, Point, MultiPoint, shape
 from shapely.ops import unary_union, polygonize
 from shapely.strtree import STRtree
 from shapely.affinity import affine_transform
@@ -23,7 +24,7 @@ def parse(d):
 def project(lon,lat): return ((lon+22)*12,(72-lat)*15)
 def geo(points): return Polygon([project(*p) for p in points])
 def path(g):
-    return ''.join('M'+'L'.join(f'{x:.3f},{y:.3f}' for x,y in ring.coords)+'Z' for p in polygons(g) for ring in [p.exterior,*p.interiors])
+    return ''.join('M'+'L'.join(f'{x},{y}' for x,y in ring.coords)+'Z' for p in polygons(g) for ring in [p.exterior,*p.interiors])
 source=json.loads((ROOT/'scripts/map/atlas-source.json').read_text())
 # Geographic scope includes neighbouring land for orientation, not the whole world.
 clip=box(*project(-12,60),*project(45,34))
@@ -48,7 +49,7 @@ additions=[
  ('Kingdom of Majorca','MONTPELLIER',3.87,43.62,3,[(3.65,43.48),(4.05,43.48),(4.08,43.8),(3.65,43.82)]),
  ('Kingdom of Majorca','ROUSSILLON',2.7,42.65,3,[(1.9,42.45),(2.8,42.4),(3.2,42.45),(3.1,42.9),(2.6,42.95),(2.05,42.8)])
 ]
-world=json.loads((ROOT/'assets/world-1300.geojson').read_text())
+world=json.loads((ROOT/'scripts/map/physical-land.geojson').read_text())
 land=set_precision(unary_union([make_valid(affine_transform(shape(f['geometry']),[12,0,0,-15,264,1080])).intersection(clip) for f in world['features']]).intersection(clip),.001)
 features=[(f,g.intersection(land)) for f,g in features]
 
@@ -56,7 +57,7 @@ for name,label,x,y,level,points in additions:
     features.append((dict(name=name,realm=name,label=label,lx=x,ly=y,labelLevel=level,detail=True),set_precision(geo(points).intersection(land),.001)))
 # The old grid accidentally assigned a Ligurian strip to Waldstaette.
 # Restore the Swiss core and the Genoese mainland; retain Genoese Corsica.
-features=[(f,g.difference(geo([(7,43),(10.2,43),(10.2,45),(7,45)]))) if f['name']=='Waldstatte' else (f,g) for f,g in features]
+features=[(f,g) for f,g in features if f['name']!='Waldstatte']
 features.append((dict(name='Republic of Genoa',realm='Republic of Genoa',detail=True,label='GENOA',lx=8.9,ly=44.35,labelLevel=2),geo([(7.45,43.72),(7.8,44.1),(8.35,44.5),(8.8,44.65),(9.25,44.6),(9.8,44.3),(10.1,44.05),(9.7,43.8),(8.7,43.6)]).intersection(land)))
 features.append((dict(name='Waldstatte',realm='Waldstatte',detail=True,label='WALDSTÄTTE',lx=8.55,ly=46.9,labelLevel=2),geo([(8.05,46.8),(8.3,47.1),(8.75,47.15),(8.95,46.95),(8.65,46.55),(8.35,46.6)]).intersection(land)))
 # Correct anachronistic rank (the duchy title is later than this snapshot).
@@ -74,17 +75,48 @@ for f,g in reversed(features):
     covered=unary_union([covered,g])
     if not visible.is_empty: resolved.append((f,visible))
 resolved.reverse()
+# A state can have several disjoint components, but only one geometry/label.
+merged=defaultdict(list); metadata={}
+for f,g in resolved:
+    name=f.get('realm') or f.get('name') or 'Local communities'
+    merged[name].append(g)
+    metadata[name]=dict(f,name=name,realm=name)
+resolved=[(metadata[name],unary_union(parts)) for name,parts in merged.items()]
 geometries=[unary_union(polygons(g)) for _,g in resolved]
+# Historical coastlines do not coincide with physical land. Partition ONLY the
+# missing land by nearest boundary, without repainting existing ownership.
+# Sampling is deterministic; this is a cartographic repair, not new evidence.
+missing=land.difference(unary_union(geometries))
+if not missing.is_empty:
+    seeds={}
+    nearby=missing.buffer(2)
+    for owner,g in enumerate(geometries):
+        edge=g.boundary.intersection(nearby)
+        lines=[edge] if edge.geom_type=='LineString' else list(getattr(edge,'geoms',[]))
+        for line in lines:
+            if line.geom_type!='LineString' or line.is_empty: continue
+            count=max(1,math.ceil(line.length/.75))
+            for i in range(count+1):
+                point=line.interpolate(i/count,normalized=True)
+                seeds.setdefault((round(point.x,6),round(point.y,6)),owner)
+    cells=voronoi_polygons(MultiPoint(list(seeds)),extend_to=land.envelope,ordered=True)
+    extras=[[] for _ in geometries]
+    for owner,cell in zip(seeds.values(),cells.geoms):
+        piece=cell.intersection(missing)
+        if not piece.is_empty: extras[owner].append(piece)
+    geometries=[set_precision(unary_union([g,*extra]),.001) for g,extra in zip(geometries,extras)]
+print('Coastline gaps repaired',flush=True)
 # Node every junction before simplifying: adjacent source shapes can encode
 # the same edge with different intermediate vertices.
-faces=list(polygonize(unary_union([g.boundary for g in geometries])))
+faces=[set_precision(g,.001) for g in polygonize(unary_union([g.boundary for g in geometries]))]
+faces=[g for g in faces if not g.is_empty]
 tree=STRtree(geometries); owners=[]; kept=[]
 for face in faces:
     p=face.representative_point()
     candidates=[int(i) for i in tree.query(p) if geometries[i].covers(p)]
     if candidates: kept.append(face);owners.append(max(candidates))
 assert coverage_is_valid(kept), 'Invalid noded coverage'
-smooth=coverage_simplify(kept,1.8,simplify_boundary=False)
+smooth=coverage_simplify(kept,2.2,simplify_boundary=False)
 groups=[[] for _ in geometries]
 for owner,g in zip(owners,smooth): groups[owner].append(g)
 geometries=[unary_union(group) for group in groups]
@@ -97,7 +129,13 @@ for (f,_),g in zip(resolved,geometries):
             p=max(polygons(g),key=lambda p:p.area).representative_point()
             f['lx']=round(p.x/12-22,5);f['ly']=round(72-p.y/15,5)
     result.append(dict(f,d=path(g)))
-for f,g in outlines: result.append(dict(f,d=path(g)))
+# The imperial envelope supplies one umbrella label, not a second border map.
+for f,g in outlines: result.append(dict(f,d=''))
 (ROOT/'assets/atlas.json').write_text(json.dumps(result,separators=(',',':'),ensure_ascii=False)+'\n')
 assert all(g.is_valid for g in geometries)
+assert coverage_is_valid(geometries), 'Overlapping territories or mismatched borders'
+assert land.symmetric_difference(unary_union(geometries)).area<.05, 'Missing land after topology repair'
+assert len([f['realm'] for f in result if not f.get('outline')])==len(set(f['realm'] for f in result if not f.get('outline'))), 'Duplicate polity layer'
+# Persist canonical land alongside the paths for an independent coverage test.
+(ROOT/'assets/map-land.json').write_text(json.dumps({'d':path(land)},separators=(',',':'))+'\n')
 print(f'{len(result)} features; continuous polygons; coverage valid: {coverage_is_valid(geometries)}')
