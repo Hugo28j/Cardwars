@@ -2649,7 +2649,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ancona',name:'Ancona',modern:'Ancona',country:'Commune of Ancona',subrealm:'Maritime Commune of Ancona',
-  lon:13.5189,lat:43.6158,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:13.5189,lat:43.6158,mapLon:13.4400,mapLat:43.6100,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:12,navyText:'≈12',
   food:73,technology:78,satisfaction:74,
   historicalRole:'Autonomous Adriatic maritime commune with eastern Mediterranean trade',
@@ -2721,7 +2721,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-naples',name:'Naples',modern:'Naples',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · capital of Charles II',
-  lon:14.2681,lat:40.8518,rarity:4,year:1300,people:60000,populationText:'≈60.0 K',populationRange:'≈50–70 K',populationConfidence:'low',
+  lon:14.2681,lat:40.8518,mapLon:14.2200,mapLat:40.8600,rarity:4,year:1300,people:60000,populationText:'≈60.0 K',populationRange:'≈50–70 K',populationConfidence:'low',
   sizeText:'≈2.2 km²',sizeConfidence:'low',army:5500,armyText:'≈5.5 K',navy:25,navyText:'≈25',
   food:82,technology:88,satisfaction:66,
   historicalRole:'Capital of the Angevin mainland kingdom and one of the Mediterranean’s largest royal cities',
@@ -2733,7 +2733,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-salerno',name:'Salerno',modern:'Salerno',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · Campanian port',
-  lon:14.7681,lat:40.6824,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:14.7681,lat:40.6824,mapLon:14.7300,mapLat:40.7000,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:7,navyText:'≈7',
   food:78,technology:80,satisfaction:69,
   historicalRole:'Important Campanian port with enduring medical and commercial traditions',
@@ -2793,7 +2793,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-messina',name:'Messina',modern:'Messina',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III · Strait stronghold',
-  lon:15.5540,lat:38.1938,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
+  lon:15.5540,lat:38.1938,mapLon:15.4800,mapLat:38.1700,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
   sizeText:'≈1.3 km²',sizeConfidence:'low',army:3600,armyText:'≈3.6 K',navy:24,navyText:'≈24',
   food:78,technology:84,satisfaction:70,
   historicalRole:'Strategic Strait of Messina port and one of Sicily’s most important cities',
@@ -2829,7 +2829,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-trapani',name:'Trapani',modern:'Trapani',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III · western maritime port',
-  lon:12.5365,lat:38.0176,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:12.5365,lat:38.0176,mapLon:12.5000,mapLat:38.0000,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:14,navyText:'≈14',
   food:78,technology:74,satisfaction:72,
   historicalRole:'Western Sicilian port with strong maritime and salt-trade functions',
