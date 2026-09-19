@@ -5,11 +5,12 @@
 export const RARITIES_1300=['Common','Uncommon','Rare','Epic','Legendary'];
 export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b869'];
 
+// Army audit v1 (entries 000-075): Army counts only a permanent/professional military core or fixed garrison; temporary civic militias, feudal levies and emergency peasant musters are excluded.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
   lon:-5.9845,lat:37.3891,rarity:4,year:1300,people:90000,populationText:'90.0 K',populationConfidence:'medium',
-  sizeText:'2.7 km²',sizeConfidence:'high',army:7000,armyText:'7.0 K',navy:12,navyText:'12',
+  sizeText:'2.7 km²',sizeConfidence:'high',army:250,armyText:'250',navy:12,navyText:'12',
   food:82,technology:78,economyScore:90,stability:68,
   historicalRole:'Major royal city, Guadalquivir port and Atlantic-facing commercial centre',
   economy:'River port, regional agriculture, crafts and long-distance trade',
@@ -26,7 +27,7 @@ export const CITIES_1300=[
  {
   id:'1300-cordoba',name:'Córdoba',modern:'Córdoba',country:'Crown of Castile',subrealm:'Kingdom of Córdoba',
   lon:-4.7794,lat:37.8882,rarity:2,year:1300,people:60000,populationText:'60.0 K',populationConfidence:'medium',
-  sizeText:'2.0 km²',sizeConfidence:'low',army:4800,armyText:'4.8 K',navy:0,navyText:'0',
+  sizeText:'2.0 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:80,technology:74,economyScore:78,stability:60,
   historicalRole:'Large Guadalquivir city and former caliphal capital integrated into Castile after 1236',
   economy:'Agriculture, crafts, regional exchange and river-valley commerce',
@@ -42,7 +43,7 @@ export const CITIES_1300=[
  {
   id:'1300-toledo',name:'Toledo',modern:'Toledo',country:'Crown of Castile',subrealm:'Kingdom of Toledo',
   lon:-4.0273,lat:39.8628,rarity:2,year:1300,people:42000,populationText:'42.0 K',populationConfidence:'medium',
-  sizeText:'1.15 km²',sizeConfidence:'high',army:4200,armyText:'4.2 K',navy:0,navyText:'0',
+  sizeText:'1.15 km²',sizeConfidence:'high',army:0,armyText:'0',navy:0,navyText:'0',
   food:70,technology:86,economyScore:82,stability:72,
   historicalRole:'Archiepiscopal, cultural and royal centre with major Christian, Jewish and Mudéjar communities',
   economy:'Crafts, regional trade, ecclesiastical wealth and court-related services',
@@ -59,7 +60,7 @@ export const CITIES_1300=[
  {
   id:'1300-valladolid',name:'Valladolid',modern:'Valladolid',country:'Crown of Castile',subrealm:'Kingdom of Castile',
   lon:-4.7245,lat:41.6523,rarity:1,year:1300,people:25000,populationText:'25.0 K',populationConfidence:'medium',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:2500,armyText:'2.5 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:74,technology:70,economyScore:68,stability:72,
   historicalRole:'Frequent royal residence and one of Castile’s principal centres of itinerant kingship',
   economy:'Market services, crafts, agriculture and court-related demand',
@@ -75,7 +76,7 @@ export const CITIES_1300=[
  {
   id:'1300-burgos',name:'Burgos',modern:'Burgos',country:'Crown of Castile',subrealm:'Kingdom of Castile',
   lon:-3.6969,lat:42.3439,rarity:1,year:1300,people:21000,populationText:'21.0 K',populationConfidence:'medium',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:2400,armyText:'2.4 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:68,technology:72,economyScore:74,stability:72,
   historicalRole:'Royal, ecclesiastical and commercial centre on the north-south routes of Castile',
   economy:'Trade, crafts, rents and growing connections to Castilian wool commerce',
@@ -91,7 +92,7 @@ export const CITIES_1300=[
  {
   id:'1300-murcia',name:'Murcia',modern:'Murcia',country:'Crown of Aragon',subrealm:'Kingdom of Murcia · Aragonese occupation (1296–1304)',
   lon:-1.1307,lat:37.9922,rarity:1,year:1300,people:15000,populationText:'15.0 K',populationConfidence:'medium',
-  sizeText:'1.1 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:0,navyText:'0',
+  sizeText:'1.1 km²',sizeConfidence:'low',army:300,armyText:'300',navy:0,navyText:'0',
   food:88,technology:70,economyScore:72,stability:50,
   historicalRole:'Irrigated southeastern regional capital under the Crown of Aragon in the 1300 snapshot',
   economy:'Huerta irrigation, agriculture, crafts and Mediterranean-oriented trade through regional ports',
@@ -108,7 +109,7 @@ export const CITIES_1300=[
  {
   id:'1300-salamanca',name:'Salamanca',modern:'Salamanca',country:'Crown of Castile',subrealm:'Kingdom of León',
   lon:-5.6635,lat:40.9701,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–14 K',populationConfidence:'low',
-  sizeText:'0.9 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.9 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:66,technology:90,economyScore:68,stability:74,
   historicalRole:'University city, ecclesiastical centre and major urban community of the Leonese part of the Crown',
   economy:'University services, wool, crafts, agriculture and regional trade',
@@ -124,7 +125,7 @@ export const CITIES_1300=[
  {
   id:'1300-segovia',name:'Segovia',modern:'Segovia',country:'Crown of Castile',subrealm:'Kingdom of Castile',
   lon:-4.1192,lat:40.9429,rarity:0,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–12 K',populationConfidence:'low',
-  sizeText:'0.8 km²',sizeConfidence:'low',army:2000,armyText:'2.0 K',navy:0,navyText:'0',
+  sizeText:'0.8 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:62,technology:66,economyScore:63,stability:72,
   historicalRole:'Powerful concejo controlling a very large territory, with livestock, wool and military traditions',
   economy:'Pastoral economy, wool, agriculture, crafts and control of an extensive municipal hinterland',
@@ -139,7 +140,7 @@ export const CITIES_1300=[
  {
   id:'1300-leon',name:'León',modern:'León',country:'Crown of Castile',subrealm:'Kingdom of León',
   lon:-5.5671,lat:42.5987,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationConfidence:'medium',
-  sizeText:'0.33 km²',sizeConfidence:'medium',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.33 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:0,navyText:'0',
   food:64,technology:62,economyScore:58,stability:70,
   historicalRole:'Historic royal and episcopal centre whose demographic scale was modest by 1300',
   economy:'Regional market, church institutions, pilgrimage traffic and surrounding agriculture',
@@ -154,7 +155,7 @@ export const CITIES_1300=[
  {
   id:'1300-jaen',name:'Jaén',modern:'Jaén',country:'Crown of Castile',subrealm:'Kingdom of Jaén',
   lon:-3.7903,lat:37.7796,rarity:0,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.45 km²',sizeConfidence:'medium',army:2500,armyText:'2.5 K',navy:0,navyText:'0',
+  sizeText:'0.45 km²',sizeConfidence:'medium',army:400,armyText:'400',navy:0,navyText:'0',
   food:74,technology:58,economyScore:60,stability:50,
   historicalRole:'Frontier city and royal concejo facing the Nasrid Kingdom of Granada',
   economy:'Agriculture, livestock and a frontier economy tied to the surrounding concejo',
@@ -169,7 +170,7 @@ export const CITIES_1300=[
  {
   id:'1300-santiago',name:'Santiago de Compostela',modern:'Santiago de Compostela',country:'Crown of Castile',subrealm:'Kingdom of Galicia · lordship of the Archbishop of Santiago',
   lon:-8.5448,lat:42.8782,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:66,technology:82,economyScore:66,stability:75,
   historicalRole:'Archiepiscopal capital and one of medieval Europe’s foremost pilgrimage destinations',
   economy:'Pilgrimage services, ecclesiastical rents, crafts, markets and regional trade',
@@ -186,7 +187,7 @@ export const CITIES_1300=[
  {
   id:'1300-plasencia',name:'Plasencia',modern:'Plasencia',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal town and episcopal see',
   lon:-6.0883,lat:40.0312,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.30 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:79,technology:64,economyScore:58,stability:72,
   historicalRole:'Fortified royal city, episcopal see and organising centre of a very large north-eastern Extremaduran territory',
   economy:'Agriculture, livestock, communal pasture, timber, market exchange and ecclesiastical activity',
@@ -202,7 +203,7 @@ export const CITIES_1300=[
  {
   id:'1300-porto',name:'Porto',modern:'Porto',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · episcopal city and Atlantic-Douro port',
   lon:-8.6291,lat:41.1579,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationConfidence:'medium',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:900,armyText:'900',navy:6,navyText:'6',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:0,armyText:'0',navy:6,navyText:'6',
   food:74,technology:70,economyScore:72,stability:76,
   historicalRole:'Northern Portuguese port and commercial centre on the Douro',
   economy:'River and maritime trade, crafts, wine and regional exchange',
@@ -217,7 +218,7 @@ export const CITIES_1300=[
  {
   id:'1300-braga',name:'Braga',modern:'Braga',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · archiepiscopal lordship of Braga',
   lon:-8.4265,lat:41.5454,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:76,economyScore:61,stability:73,
   historicalRole:'Seat of the Archbishop of Braga and a major ecclesiastical centre of Portugal',
   economy:'Church rents, markets, crafts and agriculture from the fertile Minho region',
@@ -232,7 +233,7 @@ export const CITIES_1300=[
  {
   id:'1300-guimaraes',name:'Guimarães',modern:'Guimarães',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · royal town',
   lon:-8.2962,lat:41.4444,rarity:0,year:1300,people:4500,populationText:'4.5 K',populationRange:'3.5–5.5 K',populationConfidence:'low',
-  sizeText:'0.30 km²',sizeConfidence:'low',army:750,armyText:'750',navy:0,navyText:'0',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:65,economyScore:60,stability:76,
   historicalRole:'Historic royal town, pilgrimage centre and symbolically important birthplace of Portuguese kingship',
   economy:'Textiles, leather, metal crafts, markets and agriculture',
@@ -247,7 +248,7 @@ export const CITIES_1300=[
  {
   id:'1300-coimbra',name:'Coimbra',modern:'Coimbra',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · royal city',
   lon:-8.4292,lat:40.2033,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationConfidence:'medium',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:950,armyText:'950',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:76,technology:76,economyScore:66,stability:76,
   historicalRole:'Former royal capital, fortified Mondego city and major ecclesiastical centre',
   economy:'River trade, agriculture, crafts, court and church services',
@@ -263,7 +264,7 @@ export const CITIES_1300=[
  {
   id:'1300-lisbon',name:'Lisbon',modern:'Lisbon',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · principal royal and port city',
   lon:-9.1393,lat:38.7223,mapLon:-9.0000,mapLat:38.7350,rarity:3,year:1300,people:35000,populationText:'35.0 K',populationConfidence:'medium',
-  sizeText:'1.50 km²',sizeConfidence:'low',army:3600,armyText:'3.6 K',navy:20,navyText:'20',
+  sizeText:'1.50 km²',sizeConfidence:'low',army:150,armyText:'150',navy:20,navyText:'20',
   food:80,technology:84,economyScore:87,stability:80,
   historicalRole:'Largest Portuguese city, major Atlantic-Tagus port and frequent centre of royal government',
   economy:'International maritime trade, shipbuilding, fisheries, crafts and Tagus-region commerce',
@@ -279,7 +280,7 @@ export const CITIES_1300=[
  {
   id:'1300-evora',name:'Évora',modern:'Évora',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · major southern royal city',
   lon:-7.9135,lat:38.5714,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationConfidence:'medium',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:84,technology:70,economyScore:69,stability:75,
   historicalRole:'Principal urban, religious and military centre of southern Portugal',
   economy:'Agriculture, livestock, crafts, regional trade and ecclesiastical activity',
@@ -294,7 +295,7 @@ export const CITIES_1300=[
  {
   id:'1300-santarem',name:'Santarém',modern:'Santarém',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · royal town on the Tagus',
   lon:-8.6868,lat:39.2362,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationConfidence:'medium',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:90,technology:68,economyScore:68,stability:78,
   historicalRole:'Strategic Tagus town, royal residence and major market centre',
   economy:'Fertile Tagus agriculture, markets, river commerce and court demand',
@@ -310,7 +311,7 @@ export const CITIES_1300=[
  {
   id:'1300-silves',name:'Silves',modern:'Silves',country:'Kingdom of Portugal',subrealm:'Kingdom of the Algarve · episcopal capital',
   lon:-8.4382,lat:37.1890,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationRange:'4–8 K',populationConfidence:'low',
-  sizeText:'0.50 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:6,navyText:'6',
+  sizeText:'0.50 km²',sizeConfidence:'low',army:100,armyText:'100',navy:6,navyText:'6',
   food:82,technology:67,economyScore:61,stability:68,
   historicalRole:'Capital of the Algarve, episcopal seat and important fortified river-port city',
   economy:'Agriculture, river-port commerce, crafts and regional administration',
@@ -325,7 +326,7 @@ export const CITIES_1300=[
  {
   id:'1300-pamplona',name:'Pamplona',modern:'Pamplona',country:'Kingdom of Navarre',subrealm:'Kingdom of Navarre · Navarrería, San Cernin and San Nicolás',
   lon:-1.6440,lat:42.8125,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationConfidence:'low',
-  sizeText:'0.70 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:64,technology:75,economyScore:65,stability:58,
   historicalRole:'Capital and administrative centre of the Kingdom of Navarre, divided among three rival fortified boroughs',
   economy:'Crafts, markets, pilgrimage traffic and royal-administrative services',
@@ -340,7 +341,7 @@ export const CITIES_1300=[
  {
   id:'1300-barcelona',name:'Barcelona',modern:'Barcelona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · County of Barcelona',
   lon:2.1734,lat:41.3851,mapLon:2.1000,mapLat:41.4050,rarity:4,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'medium',
-  sizeText:'1.20 km²',sizeConfidence:'medium',army:3600,armyText:'3.6 K',navy:26,navyText:'26',
+  sizeText:'1.20 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:26,navyText:'26',
   food:76,technology:90,economyScore:95,stability:73,
   historicalRole:'Leading Catalan city, royal-comital centre and major Mediterranean commercial power',
   economy:'Maritime trade, finance, textiles, crafts and Mediterranean shipping',
@@ -356,7 +357,7 @@ export const CITIES_1300=[
  {
   id:'1300-zaragoza',name:'Zaragoza',modern:'Zaragoza',country:'Crown of Aragon',subrealm:'Kingdom of Aragon · royal and administrative capital',
   lon:-0.8891,lat:41.6488,rarity:2,year:1300,people:22000,populationText:'≥22.0 K',populationConfidence:'high',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:2800,armyText:'2.8 K',navy:0,navyText:'0',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:84,technology:79,economyScore:80,stability:72,
   historicalRole:'Principal city of the Kingdom of Aragon and major Ebro commercial centre',
   economy:'Ebro agriculture, crafts, markets, river trade and royal administration',
@@ -371,7 +372,7 @@ export const CITIES_1300=[
  {
   id:'1300-girona',name:'Girona',modern:'Girona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · episcopal and royal city',
   lon:2.8214,lat:41.9794,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationConfidence:'medium',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:79,economyScore:69,stability:68,
   historicalRole:'Important Catalan episcopal city and strategic fortress on the route from France',
   economy:'Crafts, cloth, markets, church activity and regional trade',
@@ -386,7 +387,7 @@ export const CITIES_1300=[
  {
   id:'1300-valencia',name:'Valencia',modern:'Valencia',country:'Crown of Aragon',subrealm:'Kingdom of Valencia · royal capital',
   lon:-0.3763,lat:39.4699,mapLon:-0.4400,mapLat:39.4850,rarity:3,year:1300,people:25000,populationText:'25.0 K',populationConfidence:'medium',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:2800,armyText:'2.8 K',navy:12,navyText:'12',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:150,armyText:'150',navy:12,navyText:'12',
   food:92,technology:81,economyScore:86,stability:70,
   historicalRole:'Capital of the Kingdom of Valencia and rapidly growing Mediterranean commercial city',
   economy:'Intensive irrigated agriculture, ceramics, crafts, regional trade and Mediterranean shipping',
@@ -401,7 +402,7 @@ export const CITIES_1300=[
  {
   id:'1300-alicante',name:'Alicante',modern:'Alicante',country:'Crown of Aragon',subrealm:'Kingdom of Murcia under Aragonese occupation · captured 1296',
   lon:-0.4810,lat:38.3452,mapLon:-0.5500,mapLat:38.3600,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:7,navyText:'7',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:200,armyText:'200',navy:7,navyText:'7',
   food:76,technology:66,economyScore:62,stability:60,
   historicalRole:'Recently conquered Aragonese fortified port on the contested Murcia-Valencia frontier',
   economy:'Port trade, fishing, agriculture and regional exchange',
@@ -416,7 +417,7 @@ export const CITIES_1300=[
  {
   id:'1300-badajoz',name:'Badajoz',modern:'Badajoz',country:'Crown of Castile',subrealm:'Kingdom of León · Extremaduran bishopric and frontier city',
   lon:-6.9707,lat:38.8794,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
-  sizeText:'0.50 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.50 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:78,technology:60,economyScore:60,stability:64,
   historicalRole:'Fortified episcopal city guarding the western Castilian-Leonese frontier against Portugal',
   economy:'Agriculture, livestock, frontier markets and episcopal administration',
@@ -431,7 +432,7 @@ export const CITIES_1300=[
  {
   id:'1300-cuenca',name:'Cuenca',modern:'Cuenca',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal concejo',
   lon:-2.1374,lat:40.0704,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:66,technology:73,economyScore:66,stability:72,
   historicalRole:'Fortified royal city with an important textile economy and large municipal territory',
   economy:'Wool, textiles, crafts, livestock and regional markets',
@@ -446,7 +447,7 @@ export const CITIES_1300=[
  {
   id:'1300-guadalajara',name:'Guadalajara',modern:'Guadalajara',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal town',
   lon:-3.1669,lat:40.6330,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:64,economyScore:58,stability:72,
   historicalRole:'Privileged royal town and market centre on the route between central Castile and the northeast',
   economy:'Agriculture, fairs, crafts and regional commerce',
@@ -477,7 +478,7 @@ export const CITIES_1300=[
  {
   id:'1300-malaga',name:'Málaga',modern:'Málaga',country:'Emirate of Granada',subrealm:'Nasrid Emirate of Granada · principal Mediterranean port',
   lon:-4.4214,lat:36.7213,mapLon:-4.4214,mapLat:36.7850,rarity:2,year:1300,people:25000,populationText:'25.0 K',populationRange:'20–35 K',populationConfidence:'low',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:2800,armyText:'2.8 K',navy:18,navyText:'18',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:400,armyText:'400',navy:18,navyText:'18',
   food:82,technology:82,economyScore:82,stability:72,
   historicalRole:'Major Nasrid Mediterranean port, fortified city and commercial gateway',
   economy:'Maritime trade, ceramics, agriculture, crafts and Mediterranean commerce',
@@ -493,7 +494,7 @@ export const CITIES_1300=[
  {
   id:'1300-nantes',name:'Nantes',modern:'Nantes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · ducal city on the Loire',
   lon:-1.5536,lat:47.2184,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.70 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:10,navyText:'10',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:50,armyText:'50',navy:10,navyText:'10',
   food:78,technology:72,economyScore:72,stability:74,
   historicalRole:'One of the principal economic and ducal centres of independent Brittany',
   economy:'Loire trade, maritime commerce, crafts and regional agriculture',
@@ -508,7 +509,7 @@ export const CITIES_1300=[
  {
   id:'1300-rennes',name:'Rennes',modern:'Rennes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · major eastern ducal centre',
   lon:-1.6778,lat:48.1173,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1600,armyText:'1.6 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:76,technology:70,economyScore:68,stability:72,
   historicalRole:'One of Brittany’s foremost political and commercial cities',
   economy:'Markets, crafts, regional agriculture and ducal administration',
@@ -523,7 +524,7 @@ export const CITIES_1300=[
  {
   id:'1300-vannes',name:'Vannes',modern:'Vannes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · episcopal and port city',
   lon:-2.7608,lat:47.6582,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.30 km²',sizeConfidence:'low',army:800,armyText:'800',navy:4,navyText:'4',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:0,armyText:'0',navy:4,navyText:'4',
   food:75,technology:67,economyScore:60,stability:75,
   historicalRole:'Episcopal port city and established Breton urban centre',
   economy:'Port trade, agriculture, church activity and local crafts',
@@ -538,7 +539,7 @@ export const CITIES_1300=[
  {
   id:'1300-rouen',name:'Rouen',modern:'Rouen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · capital and Seine port',
   lon:1.0993,lat:49.4432,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–45 K',populationConfidence:'medium',
-  sizeText:'1.50 km²',sizeConfidence:'low',army:4500,armyText:'4.5 K',navy:14,navyText:'14',
+  sizeText:'1.50 km²',sizeConfidence:'low',army:100,armyText:'100',navy:14,navyText:'14',
   food:79,technology:83,economyScore:88,stability:74,
   historicalRole:'Capital of Normandy and one of the largest commercial cities in the French kingdom',
   economy:'Textiles, Seine shipping, wine, salt, fish and international trade',
@@ -553,7 +554,7 @@ export const CITIES_1300=[
  {
   id:'1300-caen',name:'Caen',modern:'Caen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · major Norman city',
   lon:-0.3707,lat:49.1829,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–22 K',populationConfidence:'low',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:2600,armyText:'2.6 K',navy:3,navyText:'3',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:100,armyText:'100',navy:3,navyText:'3',
   food:77,technology:76,economyScore:75,stability:73,
   historicalRole:'Major Norman administrative, religious and commercial city',
   economy:'Markets, textiles, crafts, agriculture and regional trade',
@@ -568,7 +569,7 @@ export const CITIES_1300=[
  {
   id:'1300-amiens',name:'Amiens',modern:'Amiens',country:'Kingdom of France',subrealm:'Amiénois · French royal sphere',
   lon:2.2958,lat:49.8941,rarity:1,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.90 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:0,navyText:'0',
+  sizeText:'0.90 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:74,technology:79,economyScore:78,stability:74,
   historicalRole:'Wealthy northern textile city and episcopal centre',
   economy:'Wool and cloth, woad, markets, crafts and river commerce',
@@ -583,7 +584,7 @@ export const CITIES_1300=[
  {
   id:'1300-paris',name:'Paris',modern:'Paris',country:'Kingdom of France',subrealm:'Royal domain · capital of Capetian government',
   lon:2.3522,lat:48.8566,rarity:4,year:1300,people:200000,populationText:'200 K',populationRange:'170–220 K',populationConfidence:'medium',
-  sizeText:'4.4 km²',sizeConfidence:'medium',army:12000,armyText:'12.0 K',navy:0,navyText:'0',
+  sizeText:'4.4 km²',sizeConfidence:'medium',army:500,armyText:'500',navy:0,navyText:'0',
   food:70,technology:96,economyScore:98,stability:75,
   historicalRole:'Political, intellectual and economic centre of the Capetian kingdom and one of Europe’s largest cities',
   economy:'Court, university, crafts, luxury production, markets and Seine commerce',
@@ -598,7 +599,7 @@ export const CITIES_1300=[
  {
   id:'1300-reims',name:'Reims',modern:'Reims',country:'Kingdom of France',subrealm:'Archbishopric of Reims · coronation city within the French kingdom',
   lon:4.0317,lat:49.2583,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.90 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:0,navyText:'0',
+  sizeText:'0.90 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:73,technology:87,economyScore:79,stability:73,
   historicalRole:'Archiepiscopal metropolis and traditional coronation city of the French kings',
   economy:'Church wealth, cloth, wine, markets and regional commerce',
@@ -613,7 +614,7 @@ export const CITIES_1300=[
  {
   id:'1300-troyes',name:'Troyes',modern:'Troyes',country:'County of Champagne',subrealm:'County of Champagne · personal union with the French crown through Joan I and Philip IV',
   lon:4.0744,lat:48.2973,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:0,navyText:'0',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:76,technology:82,economyScore:86,stability:74,
   historicalRole:'Principal city of Champagne and international fair centre',
   economy:'Champagne fairs, cloth, finance, crafts and long-distance commerce',
@@ -628,7 +629,7 @@ export const CITIES_1300=[
  {
   id:'1300-provins',name:'Provins',modern:'Provins',country:'County of Champagne',subrealm:'County of Champagne · international fair city',
   lon:3.2990,lat:48.5601,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–15 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:70,technology:83,economyScore:84,stability:72,
   historicalRole:'Merchant city of the Champagne fairs at the end of their great 12th–13th-century apogee',
   economy:'International fairs, money-changing, cloth, warehousing and crafts',
@@ -643,7 +644,7 @@ export const CITIES_1300=[
  {
   id:'1300-dijon',name:'Dijon',modern:'Dijon',country:'Duchy of Burgundy',subrealm:'Duchy of Burgundy · ducal capital under Robert II',
   lon:5.0415,lat:47.3220,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1800,armyText:'1.8 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:79,technology:75,economyScore:72,stability:75,
   historicalRole:'Capital of the Capetian Duchy of Burgundy',
   economy:'Ducal administration, wine, crafts, markets and regional trade',
@@ -658,7 +659,7 @@ export const CITIES_1300=[
  {
   id:'1300-tours',name:'Tours',modern:'Tours',country:'Kingdom of France',subrealm:'Touraine · French royal domain',
   lon:0.6848,lat:47.3941,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:82,technology:76,economyScore:70,stability:76,
   historicalRole:'Important Loire city, pilgrimage centre and regional commercial hub',
   economy:'Pilgrimage, river commerce, agriculture, crafts and church activity',
@@ -673,7 +674,7 @@ export const CITIES_1300=[
  {
   id:'1300-angers',name:'Angers',modern:'Angers',country:'County of Anjou',subrealm:'County of Anjou · held by Charles of Valois from 1290',
   lon:-0.5632,lat:47.4784,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.80 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:0,navyText:'0',
+  sizeText:'0.80 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:82,technology:76,economyScore:69,stability:73,
   historicalRole:'Capital of the County of Anjou and major fortress-city on the Maine',
   economy:'Agriculture, river trade, crafts, church institutions and princely administration',
@@ -688,7 +689,7 @@ export const CITIES_1300=[
  {
   id:'1300-poitiers',name:'Poitiers',modern:'Poitiers',country:'Kingdom of France',subrealm:'Poitou · reverted to the French royal domain in 1271',
   lon:0.3404,lat:46.5802,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–13 K',populationConfidence:'low',
-  sizeText:'0.80 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.80 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:76,technology:75,economyScore:67,stability:73,
   historicalRole:'Major administrative and ecclesiastical centre of Poitou',
   economy:'Markets, crafts, agriculture, church institutions and regional exchange',
@@ -703,7 +704,7 @@ export const CITIES_1300=[
  {
   id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
   lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.70 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:15,navyText:'15',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:100,armyText:'100',navy:15,navyText:'15',
   food:75,technology:78,economyScore:80,stability:75,
   historicalRole:'Important Atlantic trading port of the French crown',
   economy:'Wine, salt, Atlantic shipping, fisheries and merchant trade',
@@ -718,7 +719,7 @@ export const CITIES_1300=[
  {
   id:'1300-orleans',name:'Orléans',modern:'Orléans',country:'Kingdom of France',subrealm:'Orléanais · core Capetian royal domain',
   lon:1.9093,lat:47.9029,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.85 km²',sizeConfidence:'low',army:1800,armyText:'1.8 K',navy:0,navyText:'0',
+  sizeText:'0.85 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:85,technology:82,economyScore:76,stability:76,
   historicalRole:'Core royal-domain city and strategic Loire crossing',
   economy:'Loire river trade, agriculture, crafts, markets and legal learning',
@@ -733,7 +734,7 @@ export const CITIES_1300=[
  {
   id:'1300-bourges',name:'Bourges',modern:'Bourges',country:'Kingdom of France',subrealm:'Berry · French royal domain',
   lon:2.3988,lat:47.0810,rarity:1,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.85 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.85 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:78,technology:79,economyScore:72,stability:75,
   historicalRole:'Major central royal city and archiepiscopal centre of Berry',
   economy:'Agriculture, crafts, markets, ecclesiastical wealth and regional administration',
@@ -748,7 +749,7 @@ export const CITIES_1300=[
  {
   id:'1300-limoges',name:'Limoges',modern:'Limoges',country:'Viscounty of Limoges',subrealm:'Bipartite city: Château under viscomital/communal power; Cité under the bishop',
   lon:1.2611,lat:45.8336,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:88,economyScore:74,stability:66,
   historicalRole:'Famous enamel-production and pilgrimage centre divided between two urban jurisdictions',
   economy:'Limoges enamels, pilgrimage, crafts, trade and church institutions',
@@ -763,7 +764,7 @@ export const CITIES_1300=[
  {
   id:'1300-bordeaux',name:'Bordeaux',modern:'Bordeaux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Duchy of Aquitaine/Gascony · held by Edward I as duke',
   lon:-0.5792,lat:44.8378,rarity:3,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'1.20 km²',sizeConfidence:'low',army:3200,armyText:'3.2 K',navy:18,navyText:'18',
+  sizeText:'1.20 km²',sizeConfidence:'low',army:200,armyText:'200',navy:18,navyText:'18',
   food:80,technology:82,economyScore:88,stability:70,
   historicalRole:'Principal city of English-ruled Gascony and major wine-export port',
   economy:'Wine exports, Atlantic shipping, finance, crafts and regional trade',
@@ -778,7 +779,7 @@ export const CITIES_1300=[
  {
   id:'1300-bayonne',name:'Bayonne',modern:'Bayonne',country:'Duchy of Aquitaine (English Crown)',subrealm:'English-held Gascony · directly administered royal port',
   lon:-1.4748,lat:43.4929,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.60 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:16,navyText:'16',
+  sizeText:'0.60 km²',sizeConfidence:'low',army:100,armyText:'100',navy:16,navyText:'16',
   food:76,technology:73,economyScore:73,stability:78,
   historicalRole:'Important English-Gascon fortified port and shipbuilding centre',
   economy:'Shipping, shipbuilding, wine transport, fisheries and Atlantic trade',
@@ -793,7 +794,7 @@ export const CITIES_1300=[
  {
   id:'1300-toulouse',name:'Toulouse',modern:'Toulouse',country:'Kingdom of France',subrealm:'Former County of Toulouse · direct royal domain since 1271',
   lon:1.4442,lat:43.6047,rarity:3,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'low',
-  sizeText:'1.60 km²',sizeConfidence:'low',army:3600,armyText:'3.6 K',navy:0,navyText:'0',
+  sizeText:'1.60 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:89,technology:91,economyScore:87,stability:68,
   historicalRole:'Great southern commercial, university and administrative city newly integrated into the royal domain',
   economy:'Grain, crafts, mills, regional trade and university activity',
@@ -808,7 +809,7 @@ export const CITIES_1300=[
  {
   id:'1300-carcassonne',name:'Carcassonne',modern:'Carcassonne',country:'Kingdom of France',subrealm:'Royal sénéchaussée and frontier fortress of Languedoc',
   lon:2.3537,lat:43.2130,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:250,armyText:'250',navy:0,navyText:'0',
   food:72,technology:72,economyScore:60,stability:64,
   historicalRole:'One of the French crown’s premier southern fortresses',
   economy:'Regional markets, crafts, military administration and agriculture',
@@ -823,7 +824,7 @@ export const CITIES_1300=[
  {
   id:'1300-montpellier',name:'Montpellier',modern:'Montpellier',country:'Kingdom of Majorca',subrealm:'Lordship of Montpellier · possession of the kings of Majorca',
   lon:3.8767,lat:43.6108,rarity:2,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'medium',
-  sizeText:'1.10 km²',sizeConfidence:'low',army:2600,armyText:'2.6 K',navy:4,navyText:'4',
+  sizeText:'1.10 km²',sizeConfidence:'low',army:0,armyText:'0',navy:4,navyText:'4',
   food:81,technology:93,economyScore:90,stability:76,
   historicalRole:'Major Mediterranean commercial and medical-learning centre under the kings of Majorca',
   economy:'Mediterranean trade, medicine, textiles, finance, spices and Lattes port traffic',
@@ -838,7 +839,7 @@ export const CITIES_1300=[
  {
   id:'1300-lyon',name:'Lyon',modern:'Lyon',country:'Archbishopric of Lyon (Holy Roman Empire)',subrealm:'Imperial archiepiscopal city · not annexed to France until 1312',
   lon:4.8357,lat:45.7640,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–20 K',populationConfidence:'low',
-  sizeText:'0.90 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.90 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:77,technology:82,economyScore:78,stability:58,
   historicalRole:'Imperial archiepiscopal city at a major Rhône-Saône crossroads',
   economy:'River trade, crafts, church wealth and long-distance transit',
@@ -853,7 +854,7 @@ export const CITIES_1300=[
  {
   id:'1300-vienne',name:'Vienne',modern:'Vienne',country:'Archbishopric of Vienne (Holy Roman Empire)',subrealm:'Imperial prince-archbishopric · city ruled by the Archbishop of Vienne',
   lon:4.8747,lat:45.5256,rarity:1,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
-  sizeText:'0.50 km²',sizeConfidence:'low',army:1000,armyText:'1.0 K',navy:0,navyText:'0',
+  sizeText:'0.50 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:75,technology:79,economyScore:62,stability:68,
   historicalRole:'Imperial archiepiscopal city and major ecclesiastical centre on the Rhône',
   economy:'Church institutions, Rhône trade, crafts and surrounding agriculture',
@@ -868,7 +869,7 @@ export const CITIES_1300=[
  {
   id:'1300-marseille',name:'Marseille',modern:'Marseille',country:'County of Provence',subrealm:'Angevin County of Provence · under Charles II of Naples',
   lon:5.3698,lat:43.2965,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–20 K',populationConfidence:'low',
-  sizeText:'0.85 km²',sizeConfidence:'low',army:1800,armyText:'1.8 K',navy:20,navyText:'20',
+  sizeText:'0.85 km²',sizeConfidence:'low',army:100,armyText:'100',navy:20,navyText:'20',
   food:72,technology:80,economyScore:84,stability:63,
   historicalRole:'Leading Provençal Mediterranean port under Angevin comital rule',
   economy:'Mediterranean shipping, trade, fisheries, crafts and provisioning',
@@ -883,7 +884,7 @@ export const CITIES_1300=[
  {
   id:'1300-aix-en-provence',name:'Aix-en-Provence',modern:'Aix-en-Provence',country:'County of Provence',subrealm:'Angevin County of Provence · principal comital capital',
   lon:5.4474,lat:43.5297,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.60 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.60 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:78,technology:78,economyScore:70,stability:73,
   historicalRole:'Political and administrative capital of Angevin Provence',
   economy:'Comital administration, markets, crafts, agriculture and regional trade',
@@ -898,7 +899,7 @@ export const CITIES_1300=[
  {
   id:'1300-bruges',name:'Bruges',modern:'Bruges',country:'County of Flanders',subrealm:'County of Flanders · under French occupation during 1300',
   lon:3.2247,lat:51.2093,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–45 K',populationConfidence:'medium',
-  sizeText:'2.0 km²',sizeConfidence:'low',army:4200,armyText:'4.2 K',navy:18,navyText:'18',
+  sizeText:'2.0 km²',sizeConfidence:'low',army:300,armyText:'300',navy:18,navyText:'18',
   food:74,technology:90,economyScore:96,stability:55,
   historicalRole:'One of north-west Europe’s foremost cloth, finance and international trading cities',
   economy:'Cloth, wool, merchant finance, fairs, maritime trade through the Zwin and luxury crafts',
@@ -910,7 +911,7 @@ export const CITIES_1300=[
  {
   id:'1300-ghent',name:'Ghent',modern:'Ghent',country:'County of Flanders',subrealm:'County of Flanders · under French occupation during 1300',
   lon:3.7174,lat:51.0543,rarity:3,year:1300,people:50000,populationText:'50.0 K',populationRange:'45–60 K',populationConfidence:'medium',
-  sizeText:'2.2 km²',sizeConfidence:'low',army:5200,armyText:'5.2 K',navy:4,navyText:'4',
+  sizeText:'2.2 km²',sizeConfidence:'low',army:150,armyText:'150',navy:4,navyText:'4',
   food:79,technology:88,economyScore:95,stability:58,
   historicalRole:'Huge cloth-producing commune and one of the largest cities north of the Alps',
   economy:'Wool textiles, grain trade, crafts, river transport and merchant capital',
@@ -922,7 +923,7 @@ export const CITIES_1300=[
  {
   id:'1300-ypres',name:'Ypres',modern:'Ypres',country:'County of Flanders',subrealm:'County of Flanders · major cloth city',
   lon:2.8860,lat:50.8514,rarity:2,year:1300,people:25000,populationText:'25.0 K',populationRange:'20–30 K',populationConfidence:'low',
-  sizeText:'1.2 km²',sizeConfidence:'low',army:2800,armyText:'2.8 K',navy:0,navyText:'0',
+  sizeText:'1.2 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:71,technology:86,economyScore:91,stability:59,
   historicalRole:'Internationally important Flemish cloth-manufacturing city',
   economy:'Fine woollen cloth, markets, guild crafts and long-distance trade',
@@ -934,7 +935,7 @@ export const CITIES_1300=[
  {
   id:'1300-leuven',name:'Leuven',modern:'Leuven',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · historic ducal centre',
   lon:4.7005,lat:50.8798,rarity:1,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:77,technology:77,economyScore:78,stability:70,
   historicalRole:'Historic seat of the dukes of Brabant and important cloth-producing town',
   economy:'Cloth, crafts, markets, brewing and regional agriculture',
@@ -946,7 +947,7 @@ export const CITIES_1300=[
  {
   id:'1300-brussels',name:'Brussels',modern:'Brussels',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · growing ducal residence',
   lon:4.3517,lat:50.8503,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.9 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.9 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:75,technology:76,economyScore:79,stability:71,
   historicalRole:'Fast-growing Brabantine commercial city and increasingly important ducal residence',
   economy:'Cloth, crafts, markets, brewing and ducal services',
@@ -958,7 +959,7 @@ export const CITIES_1300=[
  {
   id:'1300-antwerp',name:'Antwerp',modern:'Antwerp',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · Scheldt port',
   lon:4.4025,lat:51.2194,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:10,navyText:'10',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:0,armyText:'0',navy:10,navyText:'10',
   food:73,technology:75,economyScore:82,stability:68,
   historicalRole:'Growing Scheldt port and fortified commercial city of Brabant',
   economy:'River shipping, markets, crafts, grain storage and regional trade',
@@ -970,7 +971,7 @@ export const CITIES_1300=[
  {
   id:'1300-s-hertogenbosch',name:'’s-Hertogenbosch',modern:'’s-Hertogenbosch',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · northern fortified ducal town',
   lon:5.3037,lat:51.6978,rarity:0,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:74,technology:68,economyScore:68,stability:72,
   historicalRole:'Northern Brabantine market and fortress city founded by the dukes',
   economy:'Markets, crafts, livestock, agriculture and regional trade',
@@ -982,7 +983,7 @@ export const CITIES_1300=[
  {
   id:'1300-mons',name:'Mons',modern:'Mons',country:'County of Hainaut',subrealm:'County of Hainaut · comital centre',
   lon:3.9517,lat:50.4542,rarity:0,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:68,economyScore:67,stability:70,
   historicalRole:'One of the principal political centres of the County of Hainaut',
   economy:'Markets, crafts, agriculture and comital administration',
@@ -994,7 +995,7 @@ export const CITIES_1300=[
  {
   id:'1300-valenciennes',name:'Valenciennes',modern:'Valenciennes',country:'County of Hainaut',subrealm:'County of Hainaut · major Scheldt commercial town',
   lon:3.5183,lat:50.3571,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:74,economyScore:76,stability:68,
   historicalRole:'Prosperous commercial and textile centre of Hainaut',
   economy:'Cloth, crafts, markets and Scheldt-basin trade',
@@ -1006,7 +1007,7 @@ export const CITIES_1300=[
  {
   id:'1300-dordrecht',name:'Dordrecht',modern:'Dordrecht',country:'County of Holland',subrealm:'County of Holland · principal river-trading city',
   lon:4.6901,lat:51.8133,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:12,navyText:'12',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:12,navyText:'12',
   food:78,technology:76,economyScore:82,stability:74,
   historicalRole:'Leading commercial city of Holland at a major Rhine-Meuse waterway junction',
   economy:'Wine, grain, timber, shipping and river tolls',
@@ -1018,7 +1019,7 @@ export const CITIES_1300=[
  {
   id:'1300-haarlem',name:'Haarlem',modern:'Haarlem',country:'County of Holland',subrealm:'County of Holland · chartered town',
   lon:4.6462,lat:52.3874,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'4–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:800,armyText:'800',navy:2,navyText:'2',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:2,navyText:'2',
   food:72,technology:67,economyScore:67,stability:73,
   historicalRole:'Growing chartered town controlling routes through central Holland',
   economy:'Brewing, crafts, markets and surrounding agriculture',
@@ -1030,7 +1031,7 @@ export const CITIES_1300=[
  {
   id:'1300-leiden',name:'Leiden',modern:'Leiden',country:'County of Holland',subrealm:'County of Holland · growing Rhine town',
   lon:4.4970,lat:52.1601,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:700,armyText:'700',navy:2,navyText:'2',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:2,navyText:'2',
   food:72,technology:68,economyScore:70,stability:72,
   historicalRole:'Growing market town on the Old Rhine',
   economy:'Crafts, cloth, regional markets and river trade',
@@ -1042,7 +1043,7 @@ export const CITIES_1300=[
  {
   id:'1300-delft',name:'Delft',modern:'Delft',country:'County of Holland',subrealm:'County of Holland · chartered canal town',
   lon:4.3571,lat:52.0116,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:700,armyText:'700',navy:2,navyText:'2',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:2,navyText:'2',
   food:71,technology:68,economyScore:69,stability:73,
   historicalRole:'Young but expanding chartered town in the core of Holland',
   economy:'Markets, crafts, canal transport and agriculture',
@@ -1054,7 +1055,7 @@ export const CITIES_1300=[
  {
   id:'1300-nijmegen',name:'Nijmegen',modern:'Nijmegen',country:'County of Guelders',subrealm:'County of Guelders · former imperial city pledged to Guelders',
   lon:5.8528,lat:51.8426,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.5 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.5 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:72,economyScore:71,stability:65,
   historicalRole:'Important Waal crossing and politically prestigious city of Guelders',
   economy:'River trade, markets, crafts and tolls',
@@ -1066,7 +1067,7 @@ export const CITIES_1300=[
  {
   id:'1300-zutphen',name:'Zutphen',modern:'Zutphen',country:'County of Guelders',subrealm:'County of Guelders · major IJssel town',
   lon:6.2017,lat:52.1400,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:800,armyText:'800',navy:1,navyText:'1',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:1,navyText:'1',
   food:72,technology:69,economyScore:69,stability:71,
   historicalRole:'Old comital centre and important IJssel trading town',
   economy:'River trade, markets, crafts and surrounding agriculture',
@@ -1078,7 +1079,7 @@ export const CITIES_1300=[
  {
   id:'1300-arnhem',name:'Arnhem',modern:'Arnhem',country:'County of Guelders',subrealm:'County of Guelders · chartered Rhine-area town',
   lon:5.8987,lat:51.9851,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:650,armyText:'650',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:63,economyScore:63,stability:73,
   historicalRole:'Growing chartered town in central Guelders',
   economy:'Markets, crafts, agriculture and regional trade',
@@ -1090,7 +1091,7 @@ export const CITIES_1300=[
  {
   id:'1300-stavoren',name:'Stavoren',modern:'Stavoren',country:'Frisian Freedom',subrealm:'Frisian Freedom · autonomous maritime community',
   lon:5.3595,lat:52.8836,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.2 km²',sizeConfidence:'low',army:450,armyText:'450',navy:9,navyText:'9',
+  sizeText:'0.2 km²',sizeConfidence:'low',army:0,armyText:'0',navy:9,navyText:'9',
   food:67,technology:68,economyScore:77,stability:76,
   historicalRole:'Important Frisian maritime trading town within the lordless Frisian political order',
   economy:'Baltic and North Sea shipping, fisheries and trade',
@@ -1102,7 +1103,7 @@ export const CITIES_1300=[
  {
   id:'1300-oldenburg',name:'Oldenburg',modern:'Oldenburg',country:'County of Oldenburg',subrealm:'County of Oldenburg · comital seat',
   lon:8.2146,lat:53.1435,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
-  sizeText:'0.2 km²',sizeConfidence:'low',army:450,armyText:'450',navy:0,navyText:'0',
+  sizeText:'0.2 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:58,economyScore:55,stability:72,
   historicalRole:'Small comital centre of the House of Oldenburg',
   economy:'Agriculture, livestock, markets and comital administration',
