@@ -108,3 +108,12 @@ Lübeck's official chronology records imperial immediacy in 1226. Regensburg's o
 Hamburg is intentionally not called a Free Imperial City in 1300: the city's own historical portal describes continued Schauenburg-Holstein lordship alongside growing legal autonomy, including the 1292 confirmation of autonomous lawmaking, and gives roughly 4,000–5,000 inhabitants around 1300. Bremen's State Archive similarly distinguishes its strong medieval civic self-government from formal Free Imperial recognition in 1646. Frankfurt's official history treats 1372 as the point at which the city became a Free Imperial City, so the 1300 card uses the more cautious Imperial City label.
 
 All population values remain estimates unless a source provides a near-date figure. Gameplay scores are comparative Cardwars values, not measured medieval statistics.
+
+
+## Italy batch A — northern and central Italy
+
+This batch adds 30 cards across Savoy, Montferrat, Saluzzo, Lombardy, Emilia, the Veneto/Friuli borderlands and the four major northern/central Italian republics.
+
+Near-date demographic anchors were used where available. Scholarly work places Bologna near roughly 55,000–65,000 inhabitants in the late 13th century and around 50,000 close to 1300. Florence is modelled around 95,000 based on scholarly reconstructions for c.1300. Treccani notes that Venice exceeded roughly 100,000 inhabitants before 1330, so the game uses 110,000 as a cautious rounded value rather than the highest published estimates.
+
+Political labels follow the exact game-map snapshot: Visconti Milan, Scaliger Verona, Bonacolsi Mantua, Este Ferrara/Modena, communal Padua, the Aquileian patriarchal state, and the separate republics of Venice, Genoa, Florence and Pisa.
