@@ -2560,13 +2560,13 @@ export const CITIES_1300=[
  {
   id:'1300-genoa',name:'Genoa',modern:'Genoa',country:'Republic of Genoa',subrealm:'Republic of Genoa · major Mediterranean maritime republic',
   lon:8.9463,lat:44.4056,rarity:4,year:1300,people:100000,populationText:'100 K',populationRange:'80–110 K',populationConfidence:'low',
-  sizeText:'0.50 km²',sizeConfidence:'medium',army:200,armyText:'200',navy:50,navyText:'50',
+  sizeText:'0.55 km²',sizeConfidence:'medium',army:200,armyText:'200',navy:50,navyText:'50',
   food:68,technology:95,economyScore:99,stability:52,
   historicalRole:'Mediterranean naval and commercial superpower rivaling Venice',
   economy:'Shipping, banking, Black Sea trade, textiles, finance and shipbuilding',
   militaryRole:'Exceptional naval republic with large merchant and war fleets',
   researchSummary:'Genoa around 1300 was one of the Mediterranean’s dominant maritime powers, with colonies and commercial networks reaching the Black Sea.',
-  evidenceNote:'Population estimates for Genoa around 1300 vary widely. Urban-history research estimates the actually built-up surface at the start of the 14th century at roughly 50 hectares; major wall extensions began only in 1320.',
+  evidenceNote:'Population estimates for Genoa around 1300 vary widely. The Barbarossa wall circuit still defining the fortified city around 1300 enclosed roughly 55 hectares; the major new wall extensions began only in 1320.',
   sources:[['Genoa','https://en.wikipedia.org/wiki/Genoa'],['Republic of Genoa','https://en.wikipedia.org/wiki/Republic_of_Genoa']]
  },
  {
