@@ -69,7 +69,13 @@ test('1300 research collection contains two hundred twenty-five researched Europ
  for(const c of CITIES_1300){
   assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada','Duchy of Brittany','Kingdom of France','County of Champagne','Duchy of Burgundy','County of Anjou','Viscounty of Limoges','Duchy of Aquitaine (English Crown)','Kingdom of Majorca','Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Vienne (Holy Roman Empire)','County of Provence','County of Flanders','Duchy of Brabant','County of Hainaut','County of Holland','County of Guelders','Frisian Freedom','County of Oldenburg','County of Cleves','County of Jülich','County of Berg','County of Mark','County of Luxembourg','County of Nassau','Duchy of Lorraine','Archbishopric of Trier','Archbishopric of Mainz','Archbishopric of Cologne','Independent City of Cologne','County Palatine of the Rhine','Margraviate of Baden','County of Württemberg','Landgraviate of Hesse','Landgraviate of Thuringia','Margraviate of Meissen','Margraviate of Brandenburg','Duchy of Saxony-Wittenberg','Duchy of Saxe-Lauenburg','Duchy of Brunswick-Lüneburg','Principality of Anhalt','County of Holstein','Lordship of Mecklenburg','Lordship of Werle','Duchy of Pomerania-Stettin','Duchy of Pomerania-Wolgast','Duchy of Upper Bavaria','Duchy of Lower Bavaria','Archbishopric of Salzburg','Duchy of Austria','Duchy of Styria','Duchy of Carinthia','County of Tyrol','Kingdom of Bohemia','Margraviate of Moravia','Waldstätte','County of Freiburg','Prince-Bishopric of Basel','Prince-Bishopric of Münster','Prince-Bishopric of Osnabrück','Prince-Bishopric of Paderborn','Prince-Bishopric of Würzburg','Prince-Bishopric of Bamberg','Prince-Bishopric of Passau','Prince-Bishopric of Augsburg','Prince-Bishopric of Regensburg','Prince-Bishopric of Speyer','Prince-Bishopric of Strasbourg','Free Imperial City of Lübeck','Archbishopric of Bremen','Imperial City of Frankfurt','Free Imperial City of Nuremberg','Free Imperial City of Regensburg','Free Imperial City of Augsburg','Free Imperial City of Strasbourg','Free Imperial City of Speyer','Free Imperial City of Worms','Free Imperial City of Ulm','County of Savoy','Marquisate of Montferrat','Marquisate of Saluzzo','Lordship of Milan','Commune of Como','Commune of Brescia','Commune of Pavia','Commune of Cremona','Commune of Alessandria','Commune of Piacenza','Commune of Parma','Lordship of Verona','Commune of Padua','Lordship of Mantua','Marquisate of Ferrara','Lordship of Modena','Commune of Bologna','Patriarchate of Aquileia','County of Gorizia','Republic of Venice','Republic of Genoa','Republic of Florence','Republic of Pisa','Republic of Lucca','Republic of Siena','Lordship of Ravenna','Lordship of Rimini','Lordship of Urbino','Commune of Ancona','Commune of Perugia','Republic of San Marino','Papal States','Kingdom of Naples','Kingdom of Sicily','Judicate of Arborea'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
   assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
-  for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
+  for(const k of ['food','technology'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
+  const upgraded=Number.isFinite(c.economyScore)||Number.isFinite(c.stability);
+  if(upgraded){
+   assert.ok(Number.isFinite(c.economyScore)&&c.economyScore>=0&&c.economyScore<=100,c.id+' economyScore');
+   assert.ok(Number.isFinite(c.stability)&&c.stability>=0&&c.stability<=100,c.id+' stability');
+   assert.equal(c.satisfaction,undefined,c.id+' migrated away from satisfaction');
+  }else assert.ok(c.satisfaction>=0&&c.satisfaction<=100,c.id+' satisfaction');
   assert.ok(c.lon>-10&&c.lon<18&&c.lat>36&&c.lat<55,c.id+' coordinates');
   assert.equal(c.image,undefined,c.id+' must not have artwork yet');
   assert.ok(Array.isArray(c.sources)&&c.sources.length>=2,c.id+' research sources');
@@ -206,4 +212,13 @@ test('all twenty-six requested Italy batch B cards are present with exact-1300 o
  assert.equal(CITY_1300['1300-olbia'].country,'Republic of Pisa');
  assert.equal(CITY_1300['1300-bonifacio'].country,'Republic of Genoa');
  assert.equal(CITY_1300['1300-calvi'].country,'Republic of Genoa');
+});
+
+
+test('exactly twenty-five 1300 cards use the Economy and Stability pilot',()=>{
+ const ids=["1300-seville","1300-toledo","1300-granada","1300-lisbon","1300-barcelona","1300-paris","1300-bordeaux","1300-marseille","1300-bruges","1300-ghent","1300-cologne","1300-vienna","1300-prague","1300-kutna-hora","1300-milan","1300-venice","1300-genoa","1300-florence","1300-bologna","1300-pisa","1300-siena","1300-rome","1300-naples","1300-palermo","1300-messina"];
+ const migrated=CITIES_1300.filter(c=>Number.isFinite(c.economyScore)||Number.isFinite(c.stability));
+ assert.equal(migrated.length,25);assert.equal(CITIES_1300.length-migrated.length,200);
+ assert.deepEqual(new Set(migrated.map(c=>c.id)),new Set(ids));
+ for(const id of ids){const c=CITY_1300[id];assert.ok(c);assert.ok(Number.isFinite(c.economyScore));assert.ok(Number.isFinite(c.stability));assert.equal(c.satisfaction,undefined);}
 });
