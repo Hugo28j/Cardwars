@@ -1533,7 +1533,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-kiel',name:'Kiel',modern:'Kiel',country:'County of Holstein',subrealm:'County of Holstein · Baltic port town',
-  lon:10.1228,lat:54.3233,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:10.1228,lat:54.3233,mapLon:10.1000,mapLat:54.3000,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:8,navyText:'≈8',
   food:68,technology:68,satisfaction:73,
   historicalRole:'Baltic port and chartered town of the counts of Holstein',
@@ -1593,7 +1593,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-wolgast',name:'Wolgast',modern:'Wolgast',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · ducal residence after 1295',
-  lon:13.7729,lat:54.0528,rarity:2,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:13.7729,lat:54.0528,mapLon:13.7500,mapLat:54.0200,rarity:2,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.25 km²',sizeConfidence:'low',army:600,armyText:'≈600',navy:5,navyText:'≈5',
   food:68,technology:65,satisfaction:71,
   historicalRole:'Namesake ducal residence of the Pomerania-Wolgast branch',
@@ -1617,7 +1617,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-stralsund',name:'Stralsund',modern:'Stralsund',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · major Hanseatic Baltic port',
-  lon:13.0850,lat:54.3091,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:13.0850,lat:54.3091,mapLon:13.0400,mapLat:54.2000,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:15,navyText:'≈15',
   food:69,technology:80,satisfaction:75,
   historicalRole:'One of the strongest Baltic merchant cities of the Pomeranian coast',
