@@ -70,3 +70,12 @@ Political ownership for the 27-city expansion was checked separately from modern
 Bordeaux and Bayonne are classified under the English-held Duchy of Aquitaine/Gascony. Montpellier belonged to the kings of Majorca and was not sold to France until 1349. Lyon still belonged to the Empire in 1300 and was incorporated into the French kingdom only in 1312; Vienne remained an imperial archiepiscopal city even longer. Marseille and Aix are classified under the Angevin County of Provence, ruled by Charles II in 1300; Provence was not united to France until the late 15th century.
 
 As elsewhere in the research catalogue, the exact-looking gameplay fields Army, Navy, Food, Technology and Satisfaction are modeled comparative indices, not claimed medieval measurements.
+
+
+## Low Countries and western German territories — c. 1300 batch
+
+This 36-card expansion uses city histories together with polity-level references for Flanders, Brabant, Hainaut, Holland, Guelders, the Frisian Freedom and the fragmented western Holy Roman Empire. The catalogue deliberately distinguishes formal political status from effective urban autonomy.
+
+Notable exact-period anchors include Antwerp archaeological evidence for a major city-wall/harbour expansion around 1300; Dordrecht's 1220 city rights and late-13th-century growth as a trading centre; Mainz's documented 13th–15th-century free-city phase and the archbishop's position as imperial archchancellor/elector; and Cologne's effective municipal independence after the 1288 Battle of Worringen.
+
+As with the rest of the 1300 research collection, population estimates are ranges where possible. Army, Navy, Food, Technology and Satisfaction are comparative Cardwars indices, not claimed historical measurements.

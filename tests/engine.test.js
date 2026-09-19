@@ -64,13 +64,13 @@ test('every card has a local photo and attributed image licence',()=>{
 });
 
 
-test('1300 research collection contains fifty-eight researched European cards with bounded modeled scores',()=>{
- assert.equal(CITIES_1300.length,58);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,58);
+test('1300 research collection contains ninety-four researched European cards with bounded modeled scores',()=>{
+ assert.equal(CITIES_1300.length,94);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,94);
  for(const c of CITIES_1300){
-  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada','Duchy of Brittany','Kingdom of France','County of Champagne','Duchy of Burgundy','County of Anjou','Viscounty of Limoges','Duchy of Aquitaine (English Crown)','Kingdom of Majorca','Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Vienne (Holy Roman Empire)','County of Provence'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
+  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada','Duchy of Brittany','Kingdom of France','County of Champagne','Duchy of Burgundy','County of Anjou','Viscounty of Limoges','Duchy of Aquitaine (English Crown)','Kingdom of Majorca','Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Vienne (Holy Roman Empire)','County of Provence','County of Flanders','Duchy of Brabant','County of Hainaut','County of Holland','County of Guelders','Frisian Freedom','County of Oldenburg','County of Cleves','County of Jülich','County of Berg','County of Mark','County of Luxembourg','County of Nassau','Duchy of Lorraine','Archbishopric of Trier','Archbishopric of Mainz','Archbishopric of Cologne','Independent City of Cologne','County Palatine of the Rhine','Margraviate of Baden','County of Württemberg'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
   assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
   for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
-  assert.ok(c.lon>-10&&c.lon<6&&c.lat>36&&c.lat<51,c.id+' coordinates');
+  assert.ok(c.lon>-10&&c.lon<10&&c.lat>36&&c.lat<54,c.id+' coordinates');
   assert.equal(c.image,undefined,c.id+' must not have artwork yet');
   assert.ok(Array.isArray(c.sources)&&c.sources.length>=2,c.id+' research sources');
  }
@@ -127,4 +127,17 @@ test('all twenty-seven requested France-region expansion cities are present with
  assert.equal(CITY_1300['1300-vienne'].country,'Archbishopric of Vienne (Holy Roman Empire)');
  assert.equal(CITY_1300['1300-marseille'].country,'County of Provence');
  assert.equal(CITY_1300['1300-aix-en-provence'].country,'County of Provence');
+});
+
+
+test('all thirty-six requested Low Countries and western German cards are present with exact-1300 owners',()=>{
+ const ids=['bruges','ghent','ypres','leuven','brussels','antwerp','s-hertogenbosch','mons','valenciennes','dordrecht','haarlem','leiden','delft','nijmegen','zutphen','arnhem','stavoren','oldenburg','kleve','julich','dusseldorf','hamm','luxembourg','idstein','siegen','nancy','epinal','trier','mainz','bonn','cologne','heidelberg','pforzheim','baden-baden','stuttgart','tubingen'].map(x=>'1300-'+x);
+ for(const id of ids){assert.ok(CITY_1300[id],id);assert.equal(CITY_1300[id].image,undefined,id+' must remain image-free');}
+ assert.equal(CITY_1300['1300-bruges'].country,'County of Flanders');
+ assert.equal(CITY_1300['1300-antwerp'].country,'Duchy of Brabant');
+ assert.equal(CITY_1300['1300-dordrecht'].country,'County of Holland');
+ assert.equal(CITY_1300['1300-stavoren'].country,'Frisian Freedom');
+ assert.equal(CITY_1300['1300-cologne'].country,'Independent City of Cologne');
+ assert.equal(CITY_1300['1300-mainz'].country,'Archbishopric of Mainz');
+ assert.equal(CITY_1300['1300-stuttgart'].country,'County of Württemberg');
 });

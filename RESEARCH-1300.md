@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Europe · first 58 cards
+# Cardwars 1300 research · Europe · first 94 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -86,3 +86,19 @@ Exact-1300 political handling:
 - **County of Provence:** Marseille and Aix-en-Provence under Charles II of Anjou-Naples.
 
 Population values for this batch are intentionally marked low or medium confidence unless a near-date estimate is especially strong. They are not presented as census counts.
+
+
+## Low Countries and western German batch: 36 cities
+
+Added 36 cards across the County of Flanders, Duchy of Brabant, County of Hainaut, County of Holland, County of Guelders, Frisian Freedom, Oldenburg, Cleves, Jülich, Berg, Mark, Luxembourg, Nassau, Lorraine, the archbishoprics of Trier/Mainz/Cologne, independent Cologne, the Rhine Palatinate, Baden and Württemberg.
+
+Special political handling:
+- Flanders remains labelled **County of Flanders**, with card notes explaining the French occupation that began in 1300 rather than pretending the county ceased to exist.
+- Holland and Hainaut remain distinct political labels despite their personal union under John II of Avesnes from 1299.
+- Guelders is still a **county** in 1300; ducal rank came later.
+- Cologne is a separate **Independent City of Cologne** card after the 1288 Battle of Worringen. It is described as de facto autonomous rather than prematurely calling it a formal Free Imperial City.
+- Bonn represents the territorial **Archbishopric of Cologne** after the archbishops lost effective political control inside Cologne.
+- Mainz remains under the Archbishopric label while its card explicitly notes the broad civic freedoms it enjoyed in the 13th–15th centuries.
+- Nassau is treated as a practical umbrella for the divided Walramian and Ottonian branches represented by Idstein and Siegen.
+
+Population figures are mostly low-confidence ranges. Relative urban weight is intentionally much higher for Ghent, Bruges and Cologne than for small comital centres such as Idstein, Jülich or Oldenburg.
