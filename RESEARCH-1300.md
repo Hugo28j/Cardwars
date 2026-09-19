@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Europe · first 199 cards
+# Cardwars 1300 research · Europe · first 225 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -159,3 +159,17 @@ Exact-period handling:
 - Venice, Genoa, Florence and Pisa are separate republics. Pisa’s post-Meloria weakness is reflected in its gameplay stats without erasing its continued importance.
 - The Patriarchate of Aquileia gets separate cards for Aquileia, Udine and Cividale because the nominal seat, emerging administrative centre and major Friulian town had different roles.
 - Saluzzo is an independent marquisate under Manfred IV. Casale belongs to Montferrat but is not falsely described as already being the later capital.
+
+
+## Italy batch B: final 26 cities
+
+Added Lucca, Siena, Ravenna, Rimini, Urbino, Ancona, Perugia, San Marino, Rome, Viterbo, Benevento, Naples, Salerno, Bari, L’Aquila, Taranto, Palermo, Messina, Catania, Syracuse, Trapani, Oristano, Olbia/Terranova, Cagliari/Castel di Castro, Bonifacio and Calvi.
+
+Exact-period handling:
+- Benevento is a papal enclave and is therefore kept under the **Papal States** rather than the surrounding Kingdom of Naples.
+- Taranto is inside the Angevin Kingdom of Naples but its subrealm identifies Philip I’s **Principality of Taranto**.
+- Sicily is treated as the island kingdom under **Frederick III** during the still-ongoing War of the Sicilian Vespers; the Peace of Caltabellotta follows only in 1302.
+- Oristano remains the capital of the sovereign **Judicate of Arborea**, the only Sardinian judicate still fully independent.
+- Cagliari/Castel di Castro is assigned to **Pisa** because the Judicate of Cagliari had been destroyed in 1258 and the Pisan fortress remained in Pisan hands until 1326.
+- Olbia/Terranova is also assigned to Pisa as the practical 1300 controller of former Gallura, while the card explicitly records the disputed Visconti inheritance after Nino Visconti’s 1296 death.
+- Bonifacio and Calvi are assigned to **Genoa** based on direct Genoese control/alignment, rather than treating the papal 1297 investiture of Sardinia and Corsica to Aragón as already implemented on the ground.
