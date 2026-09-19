@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Europe · first 147 cards
+# Cardwars 1300 research · Europe · first 169 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -131,3 +131,18 @@ Political handling for exact 1300:
 - Moravia is kept as the Margraviate of Moravia within the Bohemian crown lands.
 - Schwyz and Altdorf are grouped as **Waldstätte**, reflecting the early confederate alliance after the Federal Charter of 1291 while remaining inside the Holy Roman Empire.
 - Freiburg im Breisgau is assigned to the **County of Freiburg**, not treated as a Free Imperial City.
+
+
+## Central Europe batch B2: final 22 cities
+
+Added Basel, Münster, Osnabrück, Paderborn, Würzburg, Bamberg, Passau, Dillingen an der Donau, Donaustauf, Bruchsal, Saverne/Zabern, Lübeck, Hamburg, Bremen, Frankfurt am Main, Nuremberg, Regensburg, Augsburg, Strasbourg, Speyer, Worms and Ulm.
+
+Exact-period political corrections:
+- Lübeck is securely a **Free Imperial City** from 1226.
+- Regensburg is securely a **Free Imperial City** from 1245.
+- Strasbourg is free from the prince-bishop after the 1262 conflict.
+- Speyer becomes a Free Imperial City in 1294, making the status especially close to the 1300 snapshot.
+- Hamburg is **not** labelled a Free Imperial City: around 1300 it was a highly autonomous city under Schauenburg-Holstein overlordship. Hamburg's own history places its population around 4,000–5,000 and records the counts confirming its right to make its own laws in 1292.
+- Bremen is **not** back-projected as a formal Free Imperial City. Its council existed by 1225 and the city was highly autonomous, but formal imperial immediacy was not recognised until 1646; the card therefore keeps the Archbishopric of Bremen as the formal polity.
+- Frankfurt is labelled **Imperial City of Frankfurt**, not Free Imperial City, because the city's official history places the decisive 1372 constitutional milestone later.
+- Dillingen, Donaustauf, Bruchsal and Saverne deliberately represent the territorial prince-bishoprics separately from Augsburg, Regensburg, Speyer and Strasbourg city cards.

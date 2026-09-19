@@ -97,3 +97,14 @@ This 22-card batch adds the Austrian and Alpine duchies, Tyrol, the Bohemian and
 Special dating checks include the Meinhardiner ownership of Carinthia and Tyrol around 1300, Wenceslaus II's Bohemian monarchy, the silver boom at Kutná Hora and its 1300 mining/monetary reforms, Plzeň's very recent 1295 foundation, and the 1291 Federal Charter context for Uri and Schwyz. Freiburg is deliberately kept under the Counts of Freiburg rather than back-projecting later constitutional status.
 
 Population estimates remain explicitly uncertain. Army, Navy, Food, Technology and Satisfaction are comparative gameplay indices, not measured historical statistics.
+
+
+## Central Europe batch B2 — prince-bishoprics and imperial cities
+
+The final 22-card central-European batch separates ecclesiastical territorial states from increasingly autonomous or imperial cities. Official city-history sources were used for especially sensitive constitutional cases.
+
+Lübeck's official chronology records imperial immediacy in 1226. Regensburg's official tourism history records Free Imperial City status in 1245. Strasbourg's official history dates its free-city status to 1262. Speyer's official materials state that episcopal rule ended and the city became a Free Imperial City in 1294.
+
+Hamburg is intentionally not called a Free Imperial City in 1300: the city's own historical portal describes continued Schauenburg-Holstein lordship alongside growing legal autonomy, including the 1292 confirmation of autonomous lawmaking, and gives roughly 4,000–5,000 inhabitants around 1300. Bremen's State Archive similarly distinguishes its strong medieval civic self-government from formal Free Imperial recognition in 1646. Frankfurt's official history treats 1372 as the point at which the city became a Free Imperial City, so the 1300 card uses the more cautious Imperial City label.
+
+All population values remain estimates unless a source provides a near-date figure. Gameplay scores are comparative Cardwars values, not measured medieval statistics.
