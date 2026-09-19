@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Europe · first 94 cards
+# Cardwars 1300 research · Europe · first 125 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -102,3 +102,18 @@ Special political handling:
 - Nassau is treated as a practical umbrella for the divided Walramian and Ottonian branches represented by Idstein and Siegen.
 
 Population figures are mostly low-confidence ranges. Relative urban weight is intentionally much higher for Ghent, Bruges and Cologne than for small comital centres such as Idstein, Jülich or Oldenburg.
+
+
+## Central Europe batch A: 31 cities
+
+Added Marburg, Kassel, Eisenach, Gotha, Meissen, Leipzig, Dresden, Brandenburg an der Havel, Berlin-Cölln, Frankfurt an der Oder, Wittenberg, Lauenburg, Brunswick, Lüneburg, Zerbst, Bernburg, Aschersleben, Kiel, Wismar, Güstrow, Stettin/Szczecin, Stargard, Wolgast, Greifswald, Stralsund, Munich, Ingolstadt, Landshut, Straubing, Salzburg and Hallein.
+
+Exact-period corrections are built into the cards:
+- Hesse is still the unified **Landgraviate of Hesse**; later Hesse-Kassel/Hesse-Marburg labels are not back-projected.
+- Berlin and Cölln are treated as twin towns; their formal joint union came in 1307.
+- Saxony-Wittenberg and Saxe-Lauenburg reflect the 1296 Ascanian division.
+- Brunswick and Lüneburg are kept under the Welf Duchy of Brunswick-Lüneburg, with their constituent branches named in subrealm text.
+- The three Anhalt cards identify the Zerbst, Bernburg and Aschersleben branches; Anhalt-Aschersleben still exists in 1300 and ends only in 1315.
+- Wismar is labelled **Lordship of Mecklenburg**, not an anachronistic duchy. Güstrow is labelled **Lordship of Werle**, which had been reunited under Nicholas II by c.1292.
+- Pomerania-Stettin and Pomerania-Wolgast reflect the 1295 partition.
+- Upper and Lower Bavaria reflect the Wittelsbach division begun in 1255.
