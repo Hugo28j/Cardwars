@@ -6,6 +6,7 @@ export const RARITIES_1300=['Common','Uncommon','Rare','Epic','Legendary'];
 export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b869'];
 
 // Army audit v1 (entries 000-075): Army counts only a permanent/professional military core or fixed garrison; temporary civic militias, feudal levies and emergency peasant musters are excluded.
+// Army audit v2 (entries 076-150): same conservative rule; household retainers and fixed castle/city garrisons count, temporary civic militias and wartime levies do not.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -1115,7 +1116,7 @@ export const CITIES_1300=[
  {
   id:'1300-kleve',name:'Kleve',modern:'Kleve',country:'County of Cleves',subrealm:'County of Cleves · comital seat',
   lon:6.1381,lat:51.7893,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:500,armyText:'500',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:61,economyScore:57,stability:71,
   historicalRole:'Capital town of the County of Cleves near the lower Rhine',
   economy:'Markets, agriculture, tolls and comital administration',
@@ -1127,7 +1128,7 @@ export const CITIES_1300=[
  {
   id:'1300-julich',name:'Jülich',modern:'Jülich',country:'County of Jülich',subrealm:'County of Jülich · comital centre',
   lon:6.3648,lat:50.9221,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
-  sizeText:'0.2 km²',sizeConfidence:'low',army:450,armyText:'450',navy:0,navyText:'0',
+  sizeText:'0.2 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:71,technology:59,economyScore:54,stability:70,
   historicalRole:'Administrative and fortified centre of the County of Jülich',
   economy:'Agriculture, markets and comital administration',
@@ -1139,7 +1140,7 @@ export const CITIES_1300=[
  {
   id:'1300-dusseldorf',name:'Düsseldorf',modern:'Düsseldorf',country:'County of Berg',subrealm:'County of Berg · newly chartered town',
   lon:6.7735,lat:51.2277,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
-  sizeText:'0.18 km²',sizeConfidence:'low',army:350,armyText:'350',navy:0,navyText:'0',
+  sizeText:'0.18 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:58,economyScore:59,stability:72,
   historicalRole:'New Rhine town of the counts of Berg after receiving city rights in 1288',
   economy:'Markets, Rhine traffic, crafts and agriculture',
@@ -1151,7 +1152,7 @@ export const CITIES_1300=[
  {
   id:'1300-hamm',name:'Hamm',modern:'Hamm',country:'County of Mark',subrealm:'County of Mark · planned comital town',
   lon:7.8178,lat:51.6739,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
-  sizeText:'0.2 km²',sizeConfidence:'low',army:450,armyText:'450',navy:0,navyText:'0',
+  sizeText:'0.2 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:59,economyScore:56,stability:73,
   historicalRole:'Purpose-built urban centre of the counts of Mark',
   economy:'Markets, crafts, agriculture and comital administration',
@@ -1163,7 +1164,7 @@ export const CITIES_1300=[
  {
   id:'1300-luxembourg',name:'Luxembourg',modern:'Luxembourg',country:'County of Luxembourg',subrealm:'County of Luxembourg · fortified comital capital',
   lon:6.1319,lat:49.6116,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:67,technology:68,economyScore:63,stability:69,
   historicalRole:'Fortress-capital of the rising House of Luxembourg',
   economy:'Markets, crafts, regional trade and comital administration',
@@ -1175,7 +1176,7 @@ export const CITIES_1300=[
  {
   id:'1300-idstein',name:'Idstein',modern:'Idstein',country:'County of Nassau',subrealm:'Walramian Nassau · Idstein lordship',
   lon:8.2689,lat:50.2216,rarity:0,year:1300,people:1500,populationText:'1.5 K',populationRange:'1–2.5 K',populationConfidence:'low',
-  sizeText:'0.12 km²',sizeConfidence:'low',army:300,armyText:'300',navy:0,navyText:'0',
+  sizeText:'0.12 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:68,technology:56,economyScore:50,stability:71,
   historicalRole:'Small fortified residence in the divided Nassau lands',
   economy:'Agriculture, local markets and lordly administration',
@@ -1187,7 +1188,7 @@ export const CITIES_1300=[
  {
   id:'1300-siegen',name:'Siegen',modern:'Siegen',country:'County of Nassau',subrealm:'Ottonian Nassau · Siegen centre',
   lon:8.0243,lat:50.8748,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:500,armyText:'500',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:66,technology:65,economyScore:65,stability:70,
   historicalRole:'Mining and administrative centre of the northern Nassau lands',
   economy:'Iron mining, metalworking, markets and agriculture',
@@ -1199,7 +1200,7 @@ export const CITIES_1300=[
  {
   id:'1300-nancy',name:'Nancy',modern:'Nancy',country:'Duchy of Lorraine',subrealm:'Duchy of Lorraine · ducal capital',
   lon:6.1844,lat:48.6921,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:0,navyText:'0',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:68,economyScore:65,stability:70,
   historicalRole:'Principal residence and political centre of the dukes of Lorraine',
   economy:'Ducal administration, markets, crafts and agriculture',
@@ -1211,7 +1212,7 @@ export const CITIES_1300=[
  {
   id:'1300-epinal',name:'Épinal',modern:'Épinal',country:'Duchy of Lorraine',subrealm:'Duchy of Lorraine · fortified Moselle town',
   lon:6.4494,lat:48.1740,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:61,economyScore:56,stability:71,
   historicalRole:'Fortified regional town on the upper Moselle',
   economy:'Markets, crafts, agriculture and church-related activity',
@@ -1223,7 +1224,7 @@ export const CITIES_1300=[
  {
   id:'1300-trier',name:'Trier',modern:'Trier',country:'Archbishopric of Trier',subrealm:'Electoral Archbishopric of Trier · archiepiscopal capital',
   lon:6.6412,lat:49.7490,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.8 km²',sizeConfidence:'low',army:1600,armyText:'1.6 K',navy:0,navyText:'0',
+  sizeText:'0.8 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:69,technology:84,economyScore:78,stability:67,
   historicalRole:'Capital of one of the Empire’s leading ecclesiastical principalities and an electoral see',
   economy:'Church wealth, Moselle trade, wine, crafts and pilgrimage',
@@ -1235,7 +1236,7 @@ export const CITIES_1300=[
  {
   id:'1300-mainz',name:'Mainz',modern:'Mainz',country:'Archbishopric of Mainz',subrealm:'Electoral Archbishopric of Mainz · free-city privileges under the archchancellor',
   lon:8.2473,lat:49.9929,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:2200,armyText:'2.2 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:91,economyScore:85,stability:63,
   historicalRole:'Seat of the Empire’s archchancellor and one of the richest cities of the Rhineland',
   economy:'Rhine trade, wine, crafts, church institutions and imperial politics',
@@ -1247,7 +1248,7 @@ export const CITIES_1300=[
  {
   id:'1300-bonn',name:'Bonn',modern:'Bonn',country:'Archbishopric of Cologne',subrealm:'Archbishopric/Electorate of Cologne · principal archiepiscopal residence after 1288',
   lon:7.0982,lat:50.7374,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:70,economyScore:66,stability:69,
   historicalRole:'Important residence and territorial centre of the archbishops of Cologne after their loss of political control inside Cologne',
   economy:'Archiepiscopal administration, Rhine trade, markets and agriculture',
@@ -1259,7 +1260,7 @@ export const CITIES_1300=[
  {
   id:'1300-cologne',name:'Cologne',modern:'Cologne',country:'Independent City of Cologne',subrealm:'De facto autonomous city after the Battle of Worringen (1288)',
   lon:6.9603,lat:50.9375,rarity:3,year:1300,people:45000,populationText:'45.0 K',populationRange:'40–50 K',populationConfidence:'medium',
-  sizeText:'4.0 km²',sizeConfidence:'medium',army:5200,armyText:'5.2 K',navy:0,navyText:'0',
+  sizeText:'4.0 km²',sizeConfidence:'medium',army:100,armyText:'100',navy:0,navyText:'0',
   food:73,technology:91,economyScore:94,stability:78,
   historicalRole:'One of the largest cities of the Empire, a major Rhine trading centre and effectively self-governing commune',
   economy:'Rhine trade, crafts, finance, wine, markets and international commerce',
@@ -1271,7 +1272,7 @@ export const CITIES_1300=[
  {
   id:'1300-heidelberg',name:'Heidelberg',modern:'Heidelberg',country:'County Palatine of the Rhine',subrealm:'Electoral Palatinate · principal residence of the counts palatine',
   lon:8.6724,lat:49.3988,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:1000,armyText:'1.0 K',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:71,technology:70,economyScore:68,stability:71,
   historicalRole:'Growing residence and administrative centre of the Rhine Palatinate',
   economy:'Court services, markets, wine, crafts and Neckar trade',
@@ -1283,7 +1284,7 @@ export const CITIES_1300=[
  {
   id:'1300-pforzheim',name:'Pforzheim',modern:'Pforzheim',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · important northern market town',
   lon:8.4037,lat:48.8922,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:64,economyScore:60,stability:72,
   historicalRole:'Important Baden market and administrative centre at the northern edge of the margraviate',
   economy:'Markets, crafts, agriculture and regional trade',
@@ -1295,7 +1296,7 @@ export const CITIES_1300=[
  {
   id:'1300-baden-baden',name:'Baden',modern:'Baden-Baden',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · dynastic seat around Hohenbaden',
   lon:8.2398,lat:48.7606,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:550,armyText:'550',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:69,technology:61,economyScore:57,stability:72,
   historicalRole:'Dynastic centre that gave the Margraviate of Baden its name',
   economy:'Court services, baths, markets, agriculture and crafts',
@@ -1307,7 +1308,7 @@ export const CITIES_1300=[
  {
   id:'1300-stuttgart',name:'Stuttgart',modern:'Stuttgart',country:'County of Württemberg',subrealm:'County of Württemberg · comital residence',
   lon:9.1829,lat:48.7758,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:66,economyScore:65,stability:72,
   historicalRole:'Growing residence of the counts of Württemberg',
   economy:'Court services, wine, markets, crafts and agriculture',
@@ -1319,7 +1320,7 @@ export const CITIES_1300=[
  {
   id:'1300-tubingen',name:'Tübingen',modern:'Tübingen',country:'County of Württemberg',subrealm:'County of Württemberg · recently acquired former palatine town',
   lon:9.0576,lat:48.5216,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:71,technology:65,economyScore:61,stability:68,
   historicalRole:'Fortified Neckar town with strong castle and regional market functions',
   economy:'Markets, wine, crafts and agriculture',
@@ -1331,7 +1332,7 @@ export const CITIES_1300=[
  {
   id:'1300-marburg',name:'Marburg',modern:'Marburg',country:'Landgraviate of Hesse',subrealm:'Landgraviate of Hesse · dynastic centre of Henry I',
   lon:8.7709,lat:50.8075,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:75,economyScore:68,stability:72,
   historicalRole:'Core dynastic and ecclesiastical centre of the newly established Landgraviate of Hesse',
   economy:'Court services, markets, crafts, pilgrimage and agriculture',
@@ -1343,7 +1344,7 @@ export const CITIES_1300=[
  {
   id:'1300-kassel',name:'Kassel',modern:'Kassel',country:'Landgraviate of Hesse',subrealm:'Landgraviate of Hesse · residence used by Henry I from 1277',
   lon:9.4797,lat:51.3127,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:67,economyScore:62,stability:73,
   historicalRole:'Growing Hessian residence and market town on the Fulda',
   economy:'Markets, court services, crafts and agriculture',
@@ -1355,7 +1356,7 @@ export const CITIES_1300=[
  {
   id:'1300-eisenach',name:'Eisenach',modern:'Eisenach',country:'Landgraviate of Thuringia',subrealm:'Landgraviate of Thuringia · Wartburg centre',
   lon:10.3150,lat:50.9804,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
-  sizeText:'0.5 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.5 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:69,technology:73,economyScore:65,stability:69,
   historicalRole:'Major Thuringian castle-town below the Wartburg',
   economy:'Markets, crafts, court activity and regional agriculture',
@@ -1367,7 +1368,7 @@ export const CITIES_1300=[
  {
   id:'1300-gotha',name:'Gotha',modern:'Gotha',country:'Landgraviate of Thuringia',subrealm:'Landgraviate of Thuringia · market and administrative town',
   lon:10.7042,lat:50.9482,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:750,armyText:'750',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:64,economyScore:57,stability:72,
   historicalRole:'Established market town in central Thuringia',
   economy:'Markets, crafts and surrounding agriculture',
@@ -1379,7 +1380,7 @@ export const CITIES_1300=[
  {
   id:'1300-meissen',name:'Meissen',modern:'Meissen',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · margravial and episcopal centre',
   lon:13.4730,lat:51.1634,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:1000,armyText:'1.0 K',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:69,technology:75,economyScore:68,stability:70,
   historicalRole:'Namesake political centre of the Margraviate of Meissen and episcopal seat',
   economy:'Court, church institutions, wine, crafts and Elbe trade',
@@ -1391,7 +1392,7 @@ export const CITIES_1300=[
  {
   id:'1300-leipzig',name:'Leipzig',modern:'Leipzig',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · major fair and trading town',
   lon:12.3731,lat:51.3397,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:73,technology:79,economyScore:80,stability:74,
   historicalRole:'Fast-growing commercial town at the crossroads of major central European routes',
   economy:'Fairs, long-distance trade, crafts and regional agriculture',
@@ -1403,7 +1404,7 @@ export const CITIES_1300=[
  {
   id:'1300-dresden',name:'Dresden',modern:'Dresden',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · Elbe residence town',
   lon:13.7373,lat:51.0504,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:66,economyScore:62,stability:72,
   historicalRole:'Elbe crossing and developing Wettin residence town',
   economy:'River trade, markets, crafts and agriculture',
@@ -1415,7 +1416,7 @@ export const CITIES_1300=[
  {
   id:'1300-brandenburg',name:'Brandenburg an der Havel',modern:'Brandenburg an der Havel',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · historic namesake centre',
   lon:12.5498,lat:52.4125,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
-  sizeText:'0.5 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:0,navyText:'0',
+  sizeText:'0.5 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:68,economyScore:64,stability:70,
   historicalRole:'Historic political and ecclesiastical centre of the Mark Brandenburg',
   economy:'Markets, river trade, crafts and agriculture',
@@ -1427,7 +1428,7 @@ export const CITIES_1300=[
  {
   id:'1300-berlin-colln',name:'Berlin-Cölln',modern:'Berlin',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · twin merchant towns, still administratively separate in 1300',
   lon:13.4050,lat:52.5200,rarity:0,year:1300,people:6500,populationText:'6.5 K',populationRange:'5–7.5 K',populationConfidence:'low',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:68,technology:71,economyScore:68,stability:73,
   historicalRole:'Growing twin merchant settlements on opposite banks of the Spree',
   economy:'Regional trade, crafts, markets and river transport',
@@ -1439,7 +1440,7 @@ export const CITIES_1300=[
  {
   id:'1300-frankfurt-oder',name:'Frankfurt an der Oder',modern:'Frankfurt (Oder)',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · Oder trading town',
   lon:14.5506,lat:52.3471,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:800,armyText:'800',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:68,economyScore:69,stability:72,
   historicalRole:'Important Oder crossing and eastern trading town of Brandenburg',
   economy:'River trade, markets, crafts and regional exchange',
@@ -1451,7 +1452,7 @@ export const CITIES_1300=[
  {
   id:'1300-wittenberg',name:'Wittenberg',modern:'Wittenberg',country:'Duchy of Saxony-Wittenberg',subrealm:'Duchy of Saxony-Wittenberg · Ascanian ducal seat after the 1296 partition',
   lon:12.6489,lat:51.8667,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:65,economyScore:59,stability:70,
   historicalRole:'New ducal centre of the Saxony-Wittenberg branch of the Ascanians',
   economy:'Court services, markets, crafts and agriculture',
@@ -1463,7 +1464,7 @@ export const CITIES_1300=[
  {
   id:'1300-lauenburg',name:'Lauenburg',modern:'Lauenburg/Elbe',country:'Duchy of Saxe-Lauenburg',subrealm:'Duchy of Saxe-Lauenburg · Ascanian ducal centre after the 1296 partition',
   lon:10.5560,lat:53.3714,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
-  sizeText:'0.2 km²',sizeConfidence:'low',army:450,armyText:'450',navy:0,navyText:'0',
+  sizeText:'0.2 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:67,technology:59,economyScore:55,stability:71,
   historicalRole:'Small Elbe castle-town of the Saxe-Lauenburg Ascanian line',
   economy:'River traffic, markets, agriculture and ducal administration',
@@ -1475,7 +1476,7 @@ export const CITIES_1300=[
  {
   id:'1300-brunswick',name:'Brunswick',modern:'Braunschweig',country:'Duchy of Brunswick-Lüneburg',subrealm:'Brunswick principality · major Welf city with extensive civic autonomy',
   lon:10.5268,lat:52.2689,rarity:1,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
-  sizeText:'0.9 km²',sizeConfidence:'low',army:1900,armyText:'1.9 K',navy:0,navyText:'0',
+  sizeText:'0.9 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:78,economyScore:78,stability:69,
   historicalRole:'One of the principal cities of the Welf lands and a major north German commercial centre',
   economy:'Crafts, cloth, markets, long-distance trade and regional administration',
@@ -1487,7 +1488,7 @@ export const CITIES_1300=[
  {
   id:'1300-luneburg',name:'Lüneburg',modern:'Lüneburg',country:'Duchy of Brunswick-Lüneburg',subrealm:'Principality of Lüneburg · salt-rich capital',
   lon:10.4079,lat:53.2464,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:69,technology:81,economyScore:87,stability:74,
   historicalRole:'Capital of the Principality of Lüneburg and a wealthy salt-production centre',
   economy:'Salt mining, trade, crafts and long-distance commerce',
@@ -1499,7 +1500,7 @@ export const CITIES_1300=[
  {
   id:'1300-zerbst',name:'Zerbst',modern:'Zerbst',country:'Principality of Anhalt',subrealm:'Principality of Anhalt-Zerbst',
   lon:12.0850,lat:51.9660,rarity:0,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.25 km²',sizeConfidence:'low',army:550,armyText:'550',navy:0,navyText:'0',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:69,technology:61,economyScore:54,stability:72,
   historicalRole:'Residence and urban centre of the Anhalt-Zerbst branch',
   economy:'Markets, crafts, agriculture and princely administration',
@@ -1511,7 +1512,7 @@ export const CITIES_1300=[
  {
   id:'1300-bernburg',name:'Bernburg',modern:'Bernburg',country:'Principality of Anhalt',subrealm:'Principality of Anhalt-Bernburg',
   lon:11.7400,lat:51.7940,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.22 km²',sizeConfidence:'low',army:500,armyText:'500',navy:0,navyText:'0',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:69,technology:60,economyScore:51,stability:72,
   historicalRole:'Residence town of the Anhalt-Bernburg branch',
   economy:'Agriculture, markets, crafts and princely administration',
@@ -1523,7 +1524,7 @@ export const CITIES_1300=[
  {
   id:'1300-aschersleben',name:'Aschersleben',modern:'Aschersleben',country:'Principality of Anhalt',subrealm:'Principality of Anhalt-Aschersleben',
   lon:11.4600,lat:51.7560,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:750,armyText:'750',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:65,economyScore:60,stability:71,
   historicalRole:'Capital of the short-lived Anhalt-Aschersleben principality',
   economy:'Markets, crafts, agriculture and regional trade',
@@ -1535,7 +1536,7 @@ export const CITIES_1300=[
  {
   id:'1300-kiel',name:'Kiel',modern:'Kiel',country:'County of Holstein',subrealm:'County of Holstein · Baltic port town',
   lon:10.1228,lat:54.3233,mapLon:10.1000,mapLat:54.3000,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:700,armyText:'700',navy:8,navyText:'8',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:8,navyText:'8',
   food:68,technology:68,economyScore:64,stability:75,
   historicalRole:'Baltic port and chartered town of the counts of Holstein',
   economy:'Maritime trade, fisheries, crafts and regional markets',
@@ -1547,7 +1548,7 @@ export const CITIES_1300=[
  {
   id:'1300-wismar',name:'Wismar',modern:'Wismar',country:'Lordship of Mecklenburg',subrealm:'Lordship of Mecklenburg · Baltic Hanseatic port',
   lon:11.4660,lat:53.8920,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1100,armyText:'1.1 K',navy:12,navyText:'12',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:0,armyText:'0',navy:12,navyText:'12',
   food:67,technology:78,economyScore:76,stability:76,
   historicalRole:'Important Baltic merchant port in the Mecklenburg lands',
   economy:'Hanseatic shipping, fish, grain, beer and merchant trade',
@@ -1559,7 +1560,7 @@ export const CITIES_1300=[
  {
   id:'1300-gustrow',name:'Güstrow',modern:'Güstrow',country:'Lordship of Werle',subrealm:'Lordship of Werle · former Werle-Güstrow centre, reunited under Nicholas II by 1300',
   lon:12.1730,lat:53.7930,rarity:0,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.25 km²',sizeConfidence:'low',army:550,armyText:'550',navy:0,navyText:'0',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:69,technology:61,economyScore:57,stability:72,
   historicalRole:'Regional princely centre within the Werle branch of the Mecklenburg dynasty',
   economy:'Markets, crafts, agriculture and princely administration',
@@ -1571,7 +1572,7 @@ export const CITIES_1300=[
  {
   id:'1300-stettin',name:'Stettin / Szczecin',modern:'Szczecin',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · ducal and Oder port city',
   lon:14.5528,lat:53.4285,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:10,navyText:'10',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:10,navyText:'10',
   food:70,technology:74,economyScore:72,stability:68,
   historicalRole:'Capital and major Oder port of the Pomerania-Stettin branch created in 1295',
   economy:'Oder trade, Baltic commerce, crafts and ducal administration',
@@ -1583,7 +1584,7 @@ export const CITIES_1300=[
  {
   id:'1300-stargard',name:'Stargard',modern:'Stargard',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · inland Hanseatic-oriented town',
   lon:15.0499,lat:53.3367,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:800,armyText:'800',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:71,technology:69,economyScore:61,stability:73,
   historicalRole:'Growing fortified trading town of Pomerania-Stettin',
   economy:'Grain, crafts, markets and regional trade',
@@ -1595,7 +1596,7 @@ export const CITIES_1300=[
  {
   id:'1300-wolgast',name:'Wolgast',modern:'Wolgast',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · ducal residence after 1295',
   lon:13.7729,lat:54.0528,mapLon:13.7500,mapLat:54.0200,rarity:0,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.25 km²',sizeConfidence:'low',army:600,armyText:'600',navy:5,navyText:'5',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:5,navyText:'5',
   food:68,technology:65,economyScore:58,stability:69,
   historicalRole:'Namesake ducal residence of the Pomerania-Wolgast branch',
   economy:'Baltic trade, fisheries, agriculture and ducal services',
@@ -1607,7 +1608,7 @@ export const CITIES_1300=[
  {
   id:'1300-greifswald',name:'Greifswald',modern:'Greifswald',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · Baltic merchant city',
   lon:13.3815,lat:54.0958,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:850,armyText:'850',navy:8,navyText:'8',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:8,navyText:'8',
   food:68,technology:72,economyScore:71,stability:76,
   historicalRole:'Prosperous Baltic trading town within Pomerania-Wolgast',
   economy:'Baltic shipping, salt, fish, grain and crafts',
@@ -1619,7 +1620,7 @@ export const CITIES_1300=[
  {
   id:'1300-stralsund',name:'Stralsund',modern:'Stralsund',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · major Hanseatic Baltic port',
   lon:13.0850,lat:54.3091,mapLon:13.0400,mapLat:54.2000,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:15,navyText:'15',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:15,navyText:'15',
   food:69,technology:80,economyScore:82,stability:78,
   historicalRole:'One of the strongest Baltic merchant cities of the Pomeranian coast',
   economy:'Hanseatic shipping, herring, grain, salt and long-distance trade',
@@ -1631,7 +1632,7 @@ export const CITIES_1300=[
  {
   id:'1300-munich',name:'Munich',modern:'Munich',country:'Duchy of Upper Bavaria',subrealm:'Upper Bavaria · ducal capital of the Wittelsbach line',
   lon:11.5820,lat:48.1351,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1700,armyText:'1.7 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:79,technology:75,economyScore:76,stability:72,
   historicalRole:'Capital and principal residence of Upper Bavaria',
   economy:'Court services, salt trade, brewing, crafts and regional markets',
@@ -1643,7 +1644,7 @@ export const CITIES_1300=[
  {
   id:'1300-ingolstadt',name:'Ingolstadt',modern:'Ingolstadt',country:'Duchy of Upper Bavaria',subrealm:'Upper Bavaria · fortified Danube town',
   lon:11.4258,lat:48.7665,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:78,technology:66,economyScore:63,stability:74,
   historicalRole:'Strategic Danube town in Upper Bavaria',
   economy:'Danube trade, markets, crafts and agriculture',
@@ -1655,7 +1656,7 @@ export const CITIES_1300=[
  {
   id:'1300-landshut',name:'Landshut',modern:'Landshut',country:'Duchy of Lower Bavaria',subrealm:'Lower Bavaria · principal ducal capital',
   lon:12.1522,lat:48.5442,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:82,technology:72,economyScore:72,stability:73,
   historicalRole:'Principal capital of Lower Bavaria after the 1255 Wittelsbach partition',
   economy:'Court services, Isar trade, crafts, markets and agriculture',
@@ -1667,7 +1668,7 @@ export const CITIES_1300=[
  {
   id:'1300-straubing',name:'Straubing',modern:'Straubing',country:'Duchy of Lower Bavaria',subrealm:'Lower Bavaria · Danube market and ducal town',
   lon:12.5732,lat:48.8813,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:83,technology:67,economyScore:67,stability:75,
   historicalRole:'Important Danube market town of Lower Bavaria',
   economy:'Grain, livestock, Danube trade, markets and crafts',
@@ -1679,7 +1680,7 @@ export const CITIES_1300=[
  {
   id:'1300-salzburg',name:'Salzburg',modern:'Salzburg',country:'Archbishopric of Salzburg',subrealm:'Prince-Archbishopric of Salzburg · ecclesiastical capital',
   lon:13.0550,lat:47.8095,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:74,technology:84,economyScore:82,stability:69,
   historicalRole:'Capital of a powerful ecclesiastical principality enriched by Alpine salt',
   economy:'Salt, church revenues, markets, crafts and trans-Alpine trade',
@@ -1691,7 +1692,7 @@ export const CITIES_1300=[
  {
   id:'1300-hallein',name:'Hallein',modern:'Hallein',country:'Archbishopric of Salzburg',subrealm:'Prince-Archbishopric of Salzburg · salt-mining town',
   lon:13.0926,lat:47.6833,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.28 km²',sizeConfidence:'low',army:600,armyText:'600',navy:0,navyText:'0',
+  sizeText:'0.28 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:70,technology:76,economyScore:74,stability:72,
   historicalRole:'Key salt-production centre of the Salzburg archbishops',
   economy:'Salt mining, processing, transport and regional markets',
@@ -1703,7 +1704,7 @@ export const CITIES_1300=[
  {
   id:'1300-vienna',name:'Vienna',modern:'Vienna',country:'Duchy of Austria',subrealm:'Habsburg Duchy of Austria · principal ducal city',
   lon:16.3738,lat:48.2082,rarity:3,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–25 K',populationConfidence:'low',
-  sizeText:'1.0 km²',sizeConfidence:'low',army:2500,armyText:'2.5 K',navy:0,navyText:'0',
+  sizeText:'1.0 km²',sizeConfidence:'low',army:250,armyText:'250',navy:0,navyText:'0',
   food:78,technology:85,economyScore:83,stability:74,
   historicalRole:'Principal Habsburg city in Austria and major Danube commercial centre',
   economy:'Danube trade, wine, crafts, court services and regional markets',
@@ -1715,7 +1716,7 @@ export const CITIES_1300=[
  {
   id:'1300-krems',name:'Krems',modern:'Krems an der Donau',country:'Duchy of Austria',subrealm:'Duchy of Austria · Danube wine and trading town paired with Stein',
   lon:15.6042,lat:48.4100,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:79,technology:69,economyScore:68,stability:76,
   historicalRole:'Important Danube market and wine-trading town of Austria',
   economy:'Wine, Danube shipping, markets, crafts and agriculture',
@@ -1727,7 +1728,7 @@ export const CITIES_1300=[
  {
   id:'1300-wiener-neustadt',name:'Wiener Neustadt',modern:'Wiener Neustadt',country:'Duchy of Austria',subrealm:'Duchy of Austria · fortified Babenberg foundation under Habsburg rule',
   lon:16.2497,lat:47.8150,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:1000,armyText:'1.0 K',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:72,technology:68,economyScore:61,stability:72,
   historicalRole:'Planned fortified town guarding Austria’s southeastern approaches',
   economy:'Markets, crafts, agriculture and military provisioning',
@@ -1739,7 +1740,7 @@ export const CITIES_1300=[
  {
   id:'1300-linz',name:'Linz',modern:'Linz',country:'Duchy of Austria',subrealm:'Duchy of Austria · upper Danube market town',
   lon:14.2858,lat:48.3069,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:800,armyText:'800',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:78,technology:67,economyScore:66,stability:75,
   historicalRole:'Important Danube crossing and market centre in Upper Austria',
   economy:'Danube trade, markets, crafts and agriculture',
@@ -1751,7 +1752,7 @@ export const CITIES_1300=[
  {
   id:'1300-graz',name:'Graz',modern:'Graz',country:'Duchy of Styria',subrealm:'Habsburg Duchy of Styria · principal urban and ducal centre',
   lon:15.4395,lat:47.0707,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:78,technology:72,economyScore:73,stability:70,
   historicalRole:'Leading city of Styria under Habsburg rule',
   economy:'Court services, markets, crafts, wine and agriculture',
@@ -1763,7 +1764,7 @@ export const CITIES_1300=[
  {
   id:'1300-judenburg',name:'Judenburg',modern:'Judenburg',country:'Duchy of Styria',subrealm:'Duchy of Styria · alpine trade and market town',
   lon:14.6603,lat:47.1696,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:800,armyText:'800',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:70,economyScore:67,stability:73,
   historicalRole:'Important Styrian trading town on trans-Alpine routes',
   economy:'Transit trade, markets, crafts, iron-region exchange and agriculture',
@@ -1775,7 +1776,7 @@ export const CITIES_1300=[
  {
   id:'1300-st-veit',name:'St. Veit an der Glan',modern:'St. Veit an der Glan',country:'Duchy of Carinthia',subrealm:'Duchy of Carinthia · ducal capital under the Meinhardiner dynasty',
   lon:14.3603,lat:46.7681,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:68,economyScore:61,stability:68,
   historicalRole:'Principal ducal town and political centre of Carinthia',
   economy:'Court services, markets, crafts and regional agriculture',
@@ -1787,7 +1788,7 @@ export const CITIES_1300=[
  {
   id:'1300-klagenfurt',name:'Klagenfurt',modern:'Klagenfurt',country:'Duchy of Carinthia',subrealm:'Duchy of Carinthia · young chartered town',
   lon:14.3050,lat:46.6247,rarity:0,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.25 km²',sizeConfidence:'low',army:550,armyText:'550',navy:0,navyText:'0',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:70,technology:62,economyScore:54,stability:73,
   historicalRole:'Young but growing urban centre in the Carinthian basin',
   economy:'Markets, crafts and agriculture',
@@ -1799,7 +1800,7 @@ export const CITIES_1300=[
  {
   id:'1300-merano',name:'Merano',modern:'Merano',country:'County of Tyrol',subrealm:'County of Tyrol · principal comital town',
   lon:11.1590,lat:46.6713,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:750,armyText:'750',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:70,economyScore:65,stability:75,
   historicalRole:'Principal urban centre of the County of Tyrol before Innsbruck’s later rise',
   economy:'Wine, markets, Alpine transit trade and crafts',
@@ -1811,7 +1812,7 @@ export const CITIES_1300=[
  {
   id:'1300-innsbruck',name:'Innsbruck',modern:'Innsbruck',country:'County of Tyrol',subrealm:'County of Tyrol · Inn bridge and trans-Alpine market town',
   lon:11.4041,lat:47.2692,rarity:0,year:1300,people:4500,populationText:'4.5 K',populationRange:'3.5–6 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:700,armyText:'700',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:68,technology:71,economyScore:66,stability:74,
   historicalRole:'Strategic bridge-town on one of the main trans-Alpine routes',
   economy:'Transit tolls, markets, crafts and Alpine trade',
@@ -1823,7 +1824,7 @@ export const CITIES_1300=[
  {
   id:'1300-prague',name:'Prague',modern:'Prague',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal capital of Wenceslaus II',
   lon:14.4378,lat:50.0755,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–50 K',populationConfidence:'medium',
-  sizeText:'2.0 km²',sizeConfidence:'low',army:4500,armyText:'4.5 K',navy:0,navyText:'0',
+  sizeText:'2.0 km²',sizeConfidence:'low',army:400,armyText:'400',navy:0,navyText:'0',
   food:78,technology:92,economyScore:92,stability:78,
   historicalRole:'Royal capital of Bohemia and one of central Europe’s great political and commercial cities',
   economy:'Court, crafts, markets, long-distance trade and administration',
@@ -1835,7 +1836,7 @@ export const CITIES_1300=[
  {
   id:'1300-kutna-hora',name:'Kutná Hora',modern:'Kutná Hora',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal silver-mining centre',
   lon:15.2682,lat:49.9484,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–15 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:66,technology:96,economyScore:98,stability:70,
   historicalRole:'Explosive silver-mining centre central to Wenceslaus II’s monetary reforms',
   economy:'Silver mining, minting, metallurgy, merchant finance and royal revenue',
@@ -1847,7 +1848,7 @@ export const CITIES_1300=[
  {
   id:'1300-plzen',name:'Plzeň',modern:'Plzeň',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · newly founded royal city',
   lon:13.3776,lat:49.7384,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:650,armyText:'650',navy:0,navyText:'0',
+  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:66,economyScore:56,stability:77,
   historicalRole:'New planned royal town founded by Wenceslaus II in the 1290s',
   economy:'Markets, crafts, agriculture and crossroads trade',
@@ -1859,7 +1860,7 @@ export const CITIES_1300=[
  {
   id:'1300-ceske-budejovice',name:'České Budějovice',modern:'České Budějovice',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal city founded by Přemysl Ottokar II',
   lon:14.4747,lat:48.9745,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:750,armyText:'750',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:76,technology:67,economyScore:60,stability:75,
   historicalRole:'Royal foundation strengthening the monarchy in southern Bohemia',
   economy:'Markets, crafts, agriculture and regional trade',
@@ -1871,7 +1872,7 @@ export const CITIES_1300=[
  {
   id:'1300-hradec-kralove',name:'Hradec Králové',modern:'Hradec Králové',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal town of Hradec',
   lon:15.8328,lat:50.2104,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:850,armyText:'850',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:77,technology:68,economyScore:63,stability:75,
   historicalRole:'Important fortified royal town in eastern Bohemia',
   economy:'Markets, crafts, agriculture and regional administration',
@@ -1883,7 +1884,7 @@ export const CITIES_1300=[
  {
   id:'1300-brno',name:'Brno',modern:'Brno',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · principal southern Moravian city',
   lon:16.6068,lat:49.1951,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:77,technology:77,economyScore:76,stability:72,
   historicalRole:'One of Moravia’s two leading political and commercial cities',
   economy:'Markets, crafts, wine, regional trade and administration',
@@ -1895,7 +1896,7 @@ export const CITIES_1300=[
  {
   id:'1300-olomouc',name:'Olomouc',modern:'Olomouc',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · episcopal and political centre',
   lon:17.2509,lat:49.5938,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:76,technology:82,economyScore:74,stability:70,
   historicalRole:'Major Moravian episcopal city and political centre',
   economy:'Church institutions, markets, crafts and regional trade',
@@ -1907,7 +1908,7 @@ export const CITIES_1300=[
  {
   id:'1300-znojmo',name:'Znojmo',modern:'Znojmo',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · fortified royal and wine town',
   lon:16.0488,lat:48.8555,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:950,armyText:'950',navy:0,navyText:'0',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:80,technology:70,economyScore:65,stability:74,
   historicalRole:'Strong southern Moravian fortress and commercial town',
   economy:'Wine, agriculture, markets and regional trade',
@@ -1919,7 +1920,7 @@ export const CITIES_1300=[
  {
   id:'1300-jihlava',name:'Jihlava',modern:'Jihlava',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · royal silver-mining city',
   lon:15.5912,lat:49.3961,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1400,armyText:'1.4 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:90,economyScore:86,stability:71,
   historicalRole:'Major silver-mining and legal centre of Moravia',
   economy:'Silver mining, metallurgy, mint-related commerce, crafts and trade',
@@ -1931,7 +1932,7 @@ export const CITIES_1300=[
  {
   id:'1300-schwyz',name:'Schwyz',modern:'Schwyz',country:'Waldstätte',subrealm:'Valley community of Schwyz · early Swiss Confederacy within the Holy Roman Empire',
   lon:8.6541,lat:47.0207,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.15 km²',sizeConfidence:'low',army:650,armyText:'650',navy:0,navyText:'0',
+  sizeText:'0.15 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:67,technology:58,economyScore:48,stability:84,
   historicalRole:'One of the three original Waldstätte communities associated by the 1291 Federal Charter',
   economy:'Pastoral agriculture, local markets and Alpine transit connections',
@@ -1943,7 +1944,7 @@ export const CITIES_1300=[
  {
   id:'1300-altdorf',name:'Altdorf',modern:'Altdorf, Uri',country:'Waldstätte',subrealm:'Uri valley community · early Swiss Confederacy within the Holy Roman Empire',
   lon:8.6444,lat:46.8804,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
-  sizeText:'0.12 km²',sizeConfidence:'low',army:550,armyText:'550',navy:0,navyText:'0',
+  sizeText:'0.12 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:64,technology:57,economyScore:45,stability:84,
   historicalRole:'Central settlement of Uri, one of the three original Waldstätte communities',
   economy:'Pastoral farming, Alpine transit and local markets',
@@ -1955,7 +1956,7 @@ export const CITIES_1300=[
  {
   id:'1300-freiburg-breisgau',name:'Freiburg im Breisgau',modern:'Freiburg im Breisgau',country:'County of Freiburg',subrealm:'City of Freiburg · under the Counts of Freiburg',
   lon:7.8421,lat:47.9990,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:1200,armyText:'1.2 K',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:79,economyScore:78,stability:67,
   historicalRole:'Prosperous Upper Rhine market and mining-linked city under the Counts of Freiburg',
   economy:'Silver-region commerce, crafts, markets, wine and trans-regional trade',
@@ -1967,7 +1968,7 @@ export const CITIES_1300=[
  {
   id:'1300-basel',name:'Basel',modern:'Basel',country:'Prince-Bishopric of Basel',subrealm:'Prince-Bishopric of Basel · episcopal city with strong civic institutions',
   lon:7.5886,lat:47.5596,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.75 km²',sizeConfidence:'low',army:1500,armyText:'1.5 K',navy:0,navyText:'0',
+  sizeText:'0.75 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:82,economyScore:82,stability:69,
   historicalRole:'Major Upper Rhine episcopal, commercial and bridge city',
   economy:'Rhine trade, crafts, markets, church institutions and regional commerce',
@@ -1979,7 +1980,7 @@ export const CITIES_1300=[
  {
   id:'1300-munster',name:'Münster',modern:'Münster',country:'Prince-Bishopric of Münster',subrealm:'Prince-Bishopric of Münster · episcopal capital',
   lon:7.6261,lat:51.9607,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:1300,armyText:'1.3 K',navy:0,navyText:'0',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:74,technology:77,economyScore:74,stability:69,
   historicalRole:'Capital of a large Westphalian prince-bishopric and important market city',
   economy:'Church revenues, markets, crafts, agriculture and regional trade',
@@ -1991,7 +1992,7 @@ export const CITIES_1300=[
  {
   id:'1300-osnabruck',name:'Osnabrück',modern:'Osnabrück',country:'Prince-Bishopric of Osnabrück',subrealm:'Prince-Bishopric of Osnabrück · episcopal and merchant city',
   lon:8.0472,lat:52.2799,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
-  sizeText:'0.5 km²',sizeConfidence:'low',army:1000,armyText:'1.0 K',navy:0,navyText:'0',
+  sizeText:'0.5 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:72,economyScore:65,stability:70,
   historicalRole:'Episcopal city and regional commercial centre in western Saxony',
   economy:'Markets, crafts, church activity and regional agriculture',
@@ -2003,7 +2004,7 @@ export const CITIES_1300=[
  {
   id:'1300-paderborn',name:'Paderborn',modern:'Paderborn',country:'Prince-Bishopric of Paderborn',subrealm:'Prince-Bishopric of Paderborn · episcopal capital',
   lon:8.7575,lat:51.7189,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.42 km²',sizeConfidence:'low',army:900,armyText:'900',navy:0,navyText:'0',
+  sizeText:'0.42 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:74,economyScore:63,stability:69,
   historicalRole:'Old episcopal and imperial-meeting centre in eastern Westphalia',
   economy:'Church institutions, markets, crafts and agriculture',
