@@ -1,103 +1,126 @@
-"""Build continuous, non-overlapping 1300 map polygons. Requires shapely>=2.1.
-The preserved input is the authored map at commit 2ebedba; small borders remain
-schematic. This improves rendering, not the historical precision of that source.
+"""Rebuild the continuous c.1300 atlas. Python 3 + Shapely >= 2.1.
+Uses geographic region outlines, never the legacy scanline atlas.
 """
-import json,re,pathlib
-from shapely import make_valid, coverage_simplify, coverage_is_valid, set_precision
-from shapely.geometry import Polygon, GeometryCollection, box, Point, shape
-from shapely.ops import unary_union, polygonize
+import json,sys,pathlib,math
+from collections import defaultdict
+from shapely import make_valid,set_precision
+from shapely.geometry import shape,Polygon,Point,box,GeometryCollection,LineString
+from shapely.ops import unary_union,polygonize,linemerge,polylabel
 from shapely.strtree import STRtree
-from shapely.affinity import affine_transform
 ROOT=pathlib.Path(__file__).resolve().parent.parent
+sys.path.insert(0,str(ROOT/'scripts/map'))
+from regions import REGIONS
+CLIP=box(-12,34,45,60)
+GRID=.000001
 
-def polygons(g):
-    if g.geom_type=='Polygon': return [g]
-    return [p for part in getattr(g,'geoms',[]) for p in polygons(part)]
-def parse(d):
-    rings=[]
-    for ring in d.split('Z'):
-        pts=[tuple(map(float,p)) for p in re.findall(r'(-?[\d.]+),(-?[\d.]+)',ring)]
-        if len(pts)>=3: rings.extend(polygons(make_valid(Polygon(pts))))
-    # Original detail paths are adjacent strips, not holes.
-    return unary_union(rings)
-def project(lon,lat): return ((lon+22)*12,(72-lat)*15)
-def geo(points): return Polygon([project(*p) for p in points])
-def path(g):
-    return ''.join('M'+'L'.join(f'{x:.3f},{y:.3f}' for x,y in ring.coords)+'Z' for p in polygons(g) for ring in [p.exterior,*p.interiors])
-source=json.loads((ROOT/'scripts/map/atlas-source.json').read_text())
-# Geographic scope includes neighbouring land for orientation, not the whole world.
-clip=box(*project(-12,60),*project(45,34))
-features=[]; outlines=[]
-for f in source:
-    g=set_precision(parse(f['d']).intersection(clip),.001)
-    if g.is_empty: continue
-    (outlines if f.get('outline') else features).append(({k:v for k,v in f.items() if k!='d'},g))
-
-# France-region principalities missing from the previous atlas. These are
-# deliberately generalized polygons; they are not digitized cadastral borders.
-additions=[
- ('Duchy of Burgundy','BURGUNDY',4.55,47.15,2,[(3.15,47.65),(3.85,48.05),(4.65,48.02),(5.45,47.75),(5.45,46.5),(4.8,46.15),(4.05,46.55),(3.4,47.1)]),
- ('County of Champagne','CHAMPAGNE',4.15,48.8,2,[(3.1,49.7),(4.25,49.85),(5.15,49.5),(5.45,48.2),(4.65,48.02),(3.85,48.05),(3.15,47.65),(2.9,48.35)]),
- ('County of Anjou','ANJOU',-.5,47.55,2,[(-1.35,47.15),(-1.15,47.85),(-.6,48.15),(.35,47.95),(.55,47.35),(.05,47.05),(-.65,47.0)]),
- ('County of Provence','PROVENCE',6.05,43.8,2,[(4.65,43.3),(4.7,43.85),(5.05,44.25),(5.55,44.65),(6.6,44.65),(7.25,44.15),(7.6,43.75),(6.7,43.0),(5.4,42.95)]),
- ('Dauphine of Viennois','DAUPHINÉ',5.65,45.0,2,[(4.75,45.65),(5.4,45.9),(6.25,45.65),(6.8,45.05),(6.6,44.65),(5.55,44.65),(5.05,44.25),(4.8,44.55)]),
- ('County of Burgundy','FRANCHE-COMTÉ',6.05,47.05,2,[(5.45,47.75),(6.15,47.9),(6.9,47.5),(6.65,46.85),(5.9,46.3),(5.45,46.5)]),
- ('Viscounty of Limoges','LIMOGES',1.25,45.7,3,[(.65,46.0),(1.45,46.1),(1.8,45.7),(1.35,45.35),(.7,45.4)]),
- ('Archbishopric of Lyon','LYON',4.78,45.85,3,[(4.5,46),(4.95,46),(5.05,45.65),(4.65,45.6)]),
- ('Archbishopric of Vienne','VIENNE',4.87,45.52,3,[(4.7,45.6),(5.0,45.65),(5.0,45.4),(4.75,45.4)]),
- ('Kingdom of Majorca','MONTPELLIER',3.87,43.62,3,[(3.65,43.48),(4.05,43.48),(4.08,43.8),(3.65,43.82)]),
- ('Kingdom of Majorca','ROUSSILLON',2.7,42.65,3,[(1.9,42.45),(2.8,42.4),(3.2,42.45),(3.1,42.9),(2.6,42.95),(2.05,42.8)])
-]
+def parts(g,kind='Polygon'):
+    if g.geom_type==kind:return [g]
+    return [p for x in getattr(g,'geoms',[]) for p in parts(x,kind)]
+def clean(g):return set_precision(unary_union(parts(make_valid(g))),GRID)
+def projection(x,y):return ((x+22)*12,(72-y)*15)
+def ringpath(coords,closed=True):
+    return 'M'+'L'.join(f'{x:.3f},{y:.3f}' for x,y in [projection(*p[:2]) for p in coords])+('Z' if closed else '')
+def fillpath(g):return ''.join(ringpath(r.coords) for p in parts(g) for r in [p.exterior,*p.interiors])
+def linepath(g):return ''.join(ringpath(p.coords,False) for p in parts(g,'LineString'))
+def rounded(line):
+    """Round shared junction-free edges, limiting each corner cut to ~10km.
+    Every adjacent state uses the exact same edge. Endpoints never move.
+    """
+    pts=list(line.coords)
+    if len(pts)<3:return line
+    for _ in range(2):
+        out=[pts[0]]
+        for a,b in zip(pts,pts[1:]):
+            length=math.dist(a,b)
+            t=min(.25,.09/max(length,1e-12))
+            out.extend([(a[0]*(1-t)+b[0]*t,a[1]*(1-t)+b[1]*t),(a[0]*t+b[0]*(1-t),a[1]*t+b[1]*(1-t))])
+        out.append(pts[-1]);pts=out
+    return LineString(pts)
+RENAMES={'France':'Kingdom of France','Portugal':'Kingdom of Portugal','Castile':'Crown of Castile','Aragón':'Crown of Aragon','Navarre':'Kingdom of Navarre','Granada':'Emirate of Granada','English territory':'Kingdom of England','Scotland':'Kingdom of Scotland','Britany':'Duchy of Brittany','Poland':'Kingdom of Poland','Lithuania':'Grand Duchy of Lithuania','Hungary':'Kingdom of Hungary','Raška':'Kingdom of Serbia','Bulgar Khanate':'Second Bulgarian Empire','Sicily':'Kingdom of Naples','Venice':'Republic of Venice','Seljuk Caliphate':'Sultanate of Rum','Trebizond':'Empire of Trebizond','Teutonic Knights':'Teutonic Order','Norway':'Kingdom of Norway','Denmark':'Kingdom of Denmark','Sweden':'Kingdom of Sweden','Corsica':'Republic of Genoa','Sardinia':'Sardinian lordships'}
+land=clean(shape(json.loads((ROOT/'scripts/map/coastline.geojson').read_text())).intersection(CLIP))
 world=json.loads((ROOT/'assets/world-1300.geojson').read_text())
-land=set_precision(unary_union([make_valid(affine_transform(shape(f['geometry']),[12,0,0,-15,264,1080])).intersection(clip) for f in world['features']]).intersection(clip),.001)
-features=[(f,g.intersection(land)) for f,g in features]
-
-for name,label,x,y,level,points in additions:
-    features.append((dict(name=name,realm=name,label=label,lx=x,ly=y,labelLevel=level,detail=True),set_precision(geo(points).intersection(land),.001)))
-# The old grid accidentally assigned a Ligurian strip to Waldstaette.
-# Restore the Swiss core and the Genoese mainland; retain Genoese Corsica.
-features=[(f,g.difference(geo([(7,43),(10.2,43),(10.2,45),(7,45)]))) if f['name']=='Waldstatte' else (f,g) for f,g in features]
-features.append((dict(name='Republic of Genoa',realm='Republic of Genoa',detail=True,label='GENOA',lx=8.9,ly=44.35,labelLevel=2),geo([(7.45,43.72),(7.8,44.1),(8.35,44.5),(8.8,44.65),(9.25,44.6),(9.8,44.3),(10.1,44.05),(9.7,43.8),(8.7,43.6)]).intersection(land)))
-features.append((dict(name='Waldstatte',realm='Waldstatte',detail=True,label='WALDSTÄTTE',lx=8.55,ly=46.9,labelLevel=2),geo([(8.05,46.8),(8.3,47.1),(8.75,47.15),(8.95,46.95),(8.65,46.55),(8.35,46.6)]).intersection(land)))
-# Correct anachronistic rank (the duchy title is later than this snapshot).
-for f,g in features:
-    if f['name']=='Republic of Genoa' and g.bounds[3]>450 and g.bounds[1]>430: f.update(label='GENOESE CORSICA',labelLevel=3)
-    if f['name']=='Duchy of Mecklenburg': f['name']=f['realm']='Lordship of Mecklenburg'
-    if f['name'] in ['Duchy of Austria','Margraviate of Brandenburg','Republic of Florence','Republic of Venice','Lordship of Milan','Karamanids','Beylik of Germiyan','Empire of Trebizond']: f['labelLevel']=2
-    if f['name']=='Duchy of Brittany': f.update(label='BRITTANY',lx=-2.8,ly=48.15,labelLevel=2)
-
-# Resolve the paint stack into actual polygons: no hidden territories under
-# another polity and no strip edges within a state.
-covered=GeometryCollection(); resolved=[]
+base=[]
+for f in world['features']:
+    g=clean(shape(f['geometry']).intersection(CLIP)) if shape(f['geometry']).is_valid else clean(make_valid(shape(f['geometry'])).intersection(CLIP))
+    if g.is_empty:continue
+    name=f['properties'].get('NAME') or f['properties'].get('SUBJECTO') or 'Local lordships'
+    name=RENAMES.get(name,name)
+    base.append((dict(name=name,realm=name,detail=False),g))
+# Fit coarse historical coastline to the more detailed land mask. Only coastal
+# gaps are extended; existing inland borders are not buffered.
+missing=land.difference(unary_union([g for _,g in base]))
+base=[(f,clean(g.union(g.buffer(.4).intersection(missing)).intersection(land))) for f,g in base]
+left=land.difference(unary_union([g for _,g in base]))
+for patch in parts(left):
+    owner=min(range(len(base)),key=lambda i:base[i][1].distance(patch))
+    f,g=base[owner];base[owner]=(f,clean(g.union(patch)))
+features=list(base)
+for f in REGIONS:
+    meta={k:v for k,v in f.items() if k!='points'}
+    g=clean(Polygon(f['points']).intersection(land))
+    if not g.is_empty:features.append((meta,g))
+# Resolve priority once, then dissolve pieces of the same polity.
+covered=GeometryCollection();groups=defaultdict(list);metadata={};labels=[]
 for f,g in reversed(features):
-    visible=make_valid(g.difference(covered))
-    covered=unary_union([covered,g])
-    if not visible.is_empty: resolved.append((f,visible))
-resolved.reverse()
-geometries=[unary_union(polygons(g)) for _,g in resolved]
-# Node every junction before simplifying: adjacent source shapes can encode
-# the same edge with different intermediate vertices.
-faces=list(polygonize(unary_union([g.boundary for g in geometries])))
-tree=STRtree(geometries); owners=[]; kept=[]
+    visible=clean(g.difference(covered))
+    covered=clean(covered.union(g))
+    if visible.is_empty:continue
+    groups[f['realm']].append(visible)
+    metadata.setdefault(f['realm'],f)
+    if f.get('label'):labels.append({k:f[k] for k in ['realm','label','lx','ly','labelLevel']})
+names=list(groups);geoms=[clean(unary_union(groups[n])) for n in names]
+# Normalize junctions into a planar network before smoothing shared edges.
+network=unary_union([g.boundary for g in geoms]+[land.boundary])
+internal=network.difference(land.boundary)
+chains=linemerge(internal) if internal.geom_type!='LineString' else internal
+smooth=unary_union([rounded(l) for l in parts(chains,'LineString')])
+faces=list(polygonize(unary_union([smooth,land.boundary])))
+tree=STRtree(geoms);buckets=[[] for _ in names]
 for face in faces:
     p=face.representative_point()
-    candidates=[int(i) for i in tree.query(p) if geometries[i].covers(p)]
-    if candidates: kept.append(face);owners.append(max(candidates))
-assert coverage_is_valid(kept), 'Invalid noded coverage'
-smooth=coverage_simplify(kept,1.8,simplify_boundary=False)
-groups=[[] for _ in geometries]
-for owner,g in zip(owners,smooth): groups[owner].append(g)
-geometries=[unary_union(group) for group in groups]
-result=[]
-for (f,_),g in zip(resolved,geometries):
-    f=dict(f)
-    if f.get('label'):
-        p=Point(project(f['lx'],f['ly']))
-        if not g.covers(p):
-            p=max(polygons(g),key=lambda p:p.area).representative_point()
-            f['lx']=round(p.x/12-22,5);f['ly']=round(72-p.y/15,5)
-    result.append(dict(f,d=path(g)))
-for f,g in outlines: result.append(dict(f,d=path(g)))
-(ROOT/'assets/atlas.json').write_text(json.dumps(result,separators=(',',':'),ensure_ascii=False)+'\n')
-assert all(g.is_valid for g in geometries)
-print(f'{len(result)} features; continuous polygons; coverage valid: {coverage_is_valid(geometries)}')
+    if not land.covers(p):continue
+    hits=[int(i) for i in tree.query(p) if geoms[i].covers(p)]
+    if not hits:
+        hits=[int(tree.nearest(p))]
+    # Representative points of tiny rounded slivers may sit on a moved edge;
+    # assign by greatest overlapping area if this face spans several owners.
+    candidates=list(tree.query(face))
+    owner=max(candidates,key=lambda i:geoms[i].intersection(face).area) if len(candidates)>1 else hits[0]
+    buckets[int(owner)].append(face)
+new=[clean(unary_union(b)) for b in buckets]
+# Any residual rounding fragment stays land and inherits the touching region.
+remainder=clean(land.difference(unary_union(new)))
+for patch in parts(remainder):
+    owner=min(range(len(new)),key=lambda i:new[i].distance(patch))
+    new[owner]=clean(new[owner].union(patch))
+geoms=new
+# Disjoint fills, a single internal-border mesh, and one high-resolution coast.
+mesh=unary_union([g.boundary for g in geoms]).difference(land.boundary)
+base_labels=[('Kingdom of France','FRANCE',1.9,46.65,1),('Kingdom of England','ENGLAND',-1.5,52.5,1),('Kingdom of Scotland','SCOTLAND',-4,56.8,1),('Crown of Castile','CASTILE',-4.5,40.1,1),('Kingdom of Poland','POLAND',19,52,1),('Grand Duchy of Lithuania','LITHUANIA',25,54.5,1),('Kingdom of Hungary','HUNGARY',20,47,1),('Kingdom of Serbia','SERBIA',20.4,43.5,2),('Second Bulgarian Empire','BULGARIA',25.3,43.2,2),('Teutonic Order','TEUTONIC ORDER',20.5,54,2),('Ilkhanate','ILKHANATE',41.1,38.8,1),('Holy Roman Empire','HOLY ROMAN EMPIRE',10.05,50.12,1)]
+for realm,label,x,y,level in base_labels:labels.append(dict(realm=realm,label=label,lx=x,ly=y,labelLevel=level,umbrella=realm=='Holy Roman Empire'))
+byname=dict(zip(names,geoms));final_labels=[];seen=set()
+for l in labels:
+    if l['realm'] not in byname or (l['realm'],l['label']) in seen:continue
+    seen.add((l['realm'],l['label']))
+    g=byname[l['realm']];p=Point(l['lx'],l['ly'])
+    if not g.covers(p) and not l.get('umbrella'):
+        # Keep labels on their own territorial component, never silently move
+        # a mainland label to a distant overseas possession.
+        poly=min(parts(g),key=lambda a:a.distance(p))
+        p=polylabel(poly,tolerance=.01)
+        l['lx'],l['ly']=round(p.x,5),round(p.y,5)
+    final_labels.append(l)
+# Avoid identical colours on neighbours while keeping a stable muted palette.
+adjacency=STRtree(geoms);palette_indices={}
+for i in sorted(range(len(names)),key=lambda i:(-geoms[i].area,names[i])):
+    used={palette_indices[names[int(j)]] for j in adjacency.query(geoms[i],predicate='intersects') if names[int(j)] in palette_indices}
+    h=7
+    for c in names[i]:h=(h*31+ord(c)) & 0xffffffff
+    palette_indices[names[i]]=next((k for step in range(12) if (k:=(h+step)%12) not in used),h%12)
+output={'version':'1300-continuous-v2','features':[dict(name=n,realm=n,paletteIndex=palette_indices[n],detail=metadata[n].get('detail',False),note=metadata[n].get('note',''),d=fillpath(g)) for n,g in zip(names,geoms) if not g.is_empty], 'labels':final_labels,'land':fillpath(land),'borders':linepath(mesh)}
+(ROOT/'assets/atlas-1300-v2.json').write_text(json.dumps(output,ensure_ascii=False,separators=(',',':'))+'\n')
+(ROOT/'scripts/map/compiled-regions.geojson').write_text(json.dumps({'type':'FeatureCollection','features':[{'type':'Feature','properties':{'name':n},'geometry':__import__('shapely.geometry',fromlist=['mapping']).mapping(g)} for n,g in zip(names,geoms) if not g.is_empty]},separators=(',',':'))+'\n')
+assert all(g.is_valid for g in geoms)
+assert sum(g.area for g in geoms)-unary_union(geoms).area<.000001
+assert land.symmetric_difference(unary_union(geoms)).area<.00001
+print(f'{len(output["features"])} polities, {len(final_labels)} labels; no overlap or missing land; {len(json.dumps(output))} bytes')
