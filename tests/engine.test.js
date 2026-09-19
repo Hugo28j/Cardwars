@@ -215,10 +215,10 @@ test('all twenty-six requested Italy batch B cards are present with exact-1300 o
 });
 
 
-test('exactly twenty-five 1300 cards use the Economy and Stability pilot',()=>{
- const ids=["1300-seville","1300-toledo","1300-granada","1300-lisbon","1300-barcelona","1300-paris","1300-bordeaux","1300-marseille","1300-bruges","1300-ghent","1300-cologne","1300-vienna","1300-prague","1300-kutna-hora","1300-milan","1300-venice","1300-genoa","1300-florence","1300-bologna","1300-pisa","1300-siena","1300-rome","1300-naples","1300-palermo","1300-messina"];
+test('exactly seventy-five 1300 cards use Economy and Stability',()=>{
+ const ids=["1300-seville","1300-toledo","1300-granada","1300-lisbon","1300-barcelona","1300-paris","1300-bordeaux","1300-marseille","1300-bruges","1300-ghent","1300-cologne","1300-vienna","1300-prague","1300-kutna-hora","1300-milan","1300-venice","1300-genoa","1300-florence","1300-bologna","1300-pisa","1300-siena","1300-rome","1300-naples","1300-palermo","1300-messina","1300-cordoba","1300-valladolid","1300-burgos","1300-murcia","1300-salamanca","1300-segovia","1300-leon","1300-jaen","1300-santiago","1300-plasencia","1300-porto","1300-braga","1300-guimaraes","1300-coimbra","1300-evora","1300-santarem","1300-silves","1300-pamplona","1300-zaragoza","1300-girona","1300-valencia","1300-alicante","1300-badajoz","1300-cuenca","1300-guadalajara","1300-malaga","1300-nantes","1300-rennes","1300-vannes","1300-rouen","1300-caen","1300-amiens","1300-reims","1300-troyes","1300-provins","1300-dijon","1300-tours","1300-angers","1300-poitiers","1300-la-rochelle","1300-orleans","1300-bourges","1300-limoges","1300-bayonne","1300-toulouse","1300-carcassonne","1300-montpellier","1300-lyon","1300-vienne","1300-aix-en-provence"];
  const migrated=CITIES_1300.filter(c=>Number.isFinite(c.economyScore)||Number.isFinite(c.stability));
- assert.equal(migrated.length,25);assert.equal(CITIES_1300.length-migrated.length,200);
+ assert.equal(migrated.length,75);assert.equal(CITIES_1300.length-migrated.length,150);
  assert.deepEqual(new Set(migrated.map(c=>c.id)),new Set(ids));
- for(const id of ids){const c=CITY_1300[id];assert.ok(c);assert.ok(Number.isFinite(c.economyScore));assert.ok(Number.isFinite(c.stability));assert.equal(c.satisfaction,undefined);}
+ for(const id of ids){const c=CITY_1300[id];assert.ok(c);assert.ok(Number.isFinite(c.economyScore)&&c.economyScore>=0&&c.economyScore<=100);assert.ok(Number.isFinite(c.stability)&&c.stability>=0&&c.stability<=100);assert.equal(c.satisfaction,undefined);}
 });
