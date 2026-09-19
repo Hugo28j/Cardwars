@@ -117,3 +117,14 @@ This batch adds 30 cards across Savoy, Montferrat, Saluzzo, Lombardy, Emilia, th
 Near-date demographic anchors were used where available. Scholarly work places Bologna near roughly 55,000–65,000 inhabitants in the late 13th century and around 50,000 close to 1300. Florence is modelled around 95,000 based on scholarly reconstructions for c.1300. Treccani notes that Venice exceeded roughly 100,000 inhabitants before 1330, so the game uses 110,000 as a cautious rounded value rather than the highest published estimates.
 
 Political labels follow the exact game-map snapshot: Visconti Milan, Scaliger Verona, Bonacolsi Mantua, Este Ferrara/Modena, communal Padua, the Aquileian patriarchal state, and the separate republics of Venice, Genoa, Florence and Pisa.
+
+
+## Italy batch B — central and southern Italy, islands
+
+This final Italy batch adds the Tuscan and Adriatic communes/lordships, the Papal States, the Angevin mainland kingdom, Frederick III’s Sicily and the politically fragmented islands.
+
+Treccani is used for the especially difficult Sardinian chronology: the Judicate of Cagliari was destroyed in 1258 and Castel di Castro remained a Pisan stronghold; only Arborea retained sovereign judicate status into 1300. Nino Visconti of Gallura died in 1296, leaving disputed hereditary claims while Pisa moved against the family’s holdings. The Olbia/Terranova card therefore marks Pisan de facto control with an explicit uncertainty note.
+
+For Corsica, Bonifacio is directly attested under Genoese control from 1195, while Calvi placed itself under Genoese protection in 1278. The papal grant of a nominal Kingdom of Sardinia and Corsica to James II of Aragón in 1297 is not treated as immediate on-the-ground Aragonese rule.
+
+As elsewhere, People is an estimate with confidence notes. Army, Navy, Food, Technology and Satisfaction remain modeled Cardwars indices.
