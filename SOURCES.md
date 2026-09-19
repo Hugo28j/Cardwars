@@ -88,3 +88,12 @@ This batch adds 31 researched city cards from Hesse, Thuringia, Meissen, Branden
 Special chronology checks include Berlin-Cölln's still-separate municipal status in 1300 (their joint union dates to 1307); the 1269 partition of Brunswick-Lüneburg; the 1252 Anhalt branch divisions; the 1295 Pomeranian split into Stettin and Wolgast; and the fact that Mecklenburg was still a lordship rather than a duchy. Güstrow is assigned to the reunited Lordship of Werle around 1300.
 
 As throughout the project, People is a historical estimate with explicit confidence, while Army, Navy, Food, Technology and Satisfaction are modeled Cardwars gameplay indices rather than claimed medieval measurements.
+
+
+## Central Europe batch B1 — Austria to Freiburg
+
+This 22-card batch adds the Austrian and Alpine duchies, Tyrol, the Bohemian and Moravian urban cores, the early Waldstätte and Freiburg im Breisgau.
+
+Special dating checks include the Meinhardiner ownership of Carinthia and Tyrol around 1300, Wenceslaus II's Bohemian monarchy, the silver boom at Kutná Hora and its 1300 mining/monetary reforms, Plzeň's very recent 1295 foundation, and the 1291 Federal Charter context for Uri and Schwyz. Freiburg is deliberately kept under the Counts of Freiburg rather than back-projecting later constitutional status.
+
+Population estimates remain explicitly uncertain. Army, Navy, Food, Technology and Satisfaction are comparative gameplay indices, not measured historical statistics.
