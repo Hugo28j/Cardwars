@@ -9,6 +9,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 // Army audit v2 (entries 076-150): same conservative rule; household retainers and fixed castle/city garrisons count, temporary civic militias and wartime levies do not.
 // Army audit v3 (entries 151-224): same conservative rule; Italian communal militias are excluded, while paid permanent cores, signorial household troops and fixed wartime garrisons count.
 // Population/Navy/Size audit v1 (entries 000-074): population and urban footprint use source-backed c.1300 estimates where available; Navy counts dedicated or regularly maintained military vessels, excluding ordinary merchant/river craft temporarily requisitioned for war.
+// Population/Navy/Size audit v2 (entries 075-149): same source-backed c.1300 rule; Navy excludes ordinary merchant and Hanseatic shipping unless vessels were maintained as a dedicated military fleet.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -1381,38 +1382,38 @@ export const CITIES_1300=[
  },
  {
   id:'1300-meissen',name:'Meissen',modern:'Meissen',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · margravial and episcopal centre',
-  lon:13.4730,lat:51.1634,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
+  lon:13.4730,lat:51.1634,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–2.5 K',populationConfidence:'medium',
   sizeText:'0.4 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:69,technology:75,economyScore:68,stability:70,
   historicalRole:'Namesake political centre of the Margraviate of Meissen and episcopal seat',
   economy:'Court, church institutions, wine, crafts and Elbe trade',
   militaryRole:'Strong hilltop castle-cathedral complex above the Elbe',
   researchSummary:'Meissen remained symbolically central to the Wettin margraviate, even as Leipzig grew commercially.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'A comparative reconstruction of Saxon towns around 1300 places Meissen at roughly 2,000 inhabitants; the exact total remains an estimate.',
   sources:[['Meissen','https://en.wikipedia.org/wiki/Meissen'],['Margraviate of Meissen','https://en.wikipedia.org/wiki/Margraviate_of_Meissen']]
  },
  {
   id:'1300-leipzig',name:'Leipzig',modern:'Leipzig',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · major fair and trading town',
-  lon:12.3731,lat:51.3397,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
+  lon:12.3731,lat:51.3397,rarity:1,year:1300,people:3000,populationText:'3.0 K',populationRange:'2.5–3.5 K',populationConfidence:'medium',
   sizeText:'0.55 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:73,technology:79,economyScore:80,stability:74,
   historicalRole:'Fast-growing commercial town at the crossroads of major central European routes',
   economy:'Fairs, long-distance trade, crafts and regional agriculture',
   militaryRole:'Walled merchant town with growing civic resources',
   researchSummary:'Leipzig’s location on major trade routes had already made it one of the most commercially important towns in the Meissen lands.',
-  evidenceNote:'Population is low-confidence; commercial significance is higher confidence.',
+  evidenceNote:'A comparative reconstruction of Saxon towns around 1300 places Leipzig at roughly 3,000 inhabitants; later medieval growth should not be projected backward to 1300.',
   sources:[['Leipzig','https://en.wikipedia.org/wiki/Leipzig'],['Margraviate of Meissen','https://en.wikipedia.org/wiki/Margraviate_of_Meissen']]
  },
  {
   id:'1300-dresden',name:'Dresden',modern:'Dresden',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · Elbe residence town',
-  lon:13.7373,lat:51.0504,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
+  lon:13.7373,lat:51.0504,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3 K',populationConfidence:'medium',
   sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:66,economyScore:62,stability:72,
   historicalRole:'Elbe crossing and developing Wettin residence town',
   economy:'River trade, markets, crafts and agriculture',
   militaryRole:'Fortified bridge-town controlling an Elbe crossing',
   researchSummary:'Dresden was still smaller than Leipzig around 1300 but already strategically useful as an Elbe crossing and residence.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'A comparative reconstruction of Saxon towns around 1300 places Dresden at roughly 2,500 inhabitants.',
   sources:[['Dresden','https://en.wikipedia.org/wiki/Dresden'],['Margraviate of_Meissen','https://en.wikipedia.org/wiki/Margraviate_of_Meissen']]
  },
  {
@@ -1429,14 +1430,14 @@ export const CITIES_1300=[
  },
  {
   id:'1300-berlin-colln',name:'Berlin-Cölln',modern:'Berlin',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · twin merchant towns, still administratively separate in 1300',
-  lon:13.4050,lat:52.5200,rarity:0,year:1300,people:6500,populationText:'6.5 K',populationRange:'5–7.5 K',populationConfidence:'low',
+  lon:13.4050,lat:52.5200,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3.5–4.5 K',populationConfidence:'medium',
   sizeText:'0.45 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:68,technology:71,economyScore:68,stability:73,
   historicalRole:'Growing twin merchant settlements on opposite banks of the Spree',
   economy:'Regional trade, crafts, markets and river transport',
   militaryRole:'Two fortified towns controlling a Spree crossing',
   researchSummary:'Berlin and Cölln already formed a closely linked commercial pair around 1300, although their formal union for joint external action dates from 1307.',
-  evidenceNote:'Berlin’s official history confirms the two-town structure and their first documentary mentions in the 13th century. Population is a conservative low-confidence estimate extrapolated backward from later medieval figures.',
+  evidenceNote:'Berlin and Cölln were still separate twin towns in 1300; reconstructed estimates place their combined population at roughly 4,000 rather than later-medieval levels.',
   sources:[['Berlin.de — medieval trading centre','https://www.berlin.de/en/history/8476760-8619314-the-medieval-trading-center.en.html'],['Margraviate of Brandenburg','https://en.wikipedia.org/wiki/Margraviate_of_Brandenburg']]
  },
  {
@@ -1538,25 +1539,25 @@ export const CITIES_1300=[
  {
   id:'1300-kiel',name:'Kiel',modern:'Kiel',country:'County of Holstein',subrealm:'County of Holstein · Baltic port town',
   lon:10.1228,lat:54.3233,mapLon:10.1000,mapLat:54.3000,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:8,navyText:'8',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:68,technology:68,economyScore:64,stability:75,
   historicalRole:'Baltic port and chartered town of the counts of Holstein',
   economy:'Maritime trade, fisheries, crafts and regional markets',
   militaryRole:'Small but useful Baltic harbour',
   researchSummary:'Kiel had urban privileges and a strategically valuable Baltic harbour by the 13th century.',
-  evidenceNote:'Population is low-confidence; Navy is a gameplay estimate based on port function.',
+  evidenceNote:'Population is low-confidence. Navy is zero under the Cardwars standing-fleet definition: ordinary merchant shipping or vessels armed only for a campaign are not counted.',
   sources:[['Kiel','https://en.wikipedia.org/wiki/Kiel'],['Holstein','https://en.wikipedia.org/wiki/Holstein']]
  },
  {
   id:'1300-wismar',name:'Wismar',modern:'Wismar',country:'Lordship of Mecklenburg',subrealm:'Lordship of Mecklenburg · Baltic Hanseatic port',
   lon:11.4660,lat:53.8920,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:0,armyText:'0',navy:12,navyText:'12',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:67,technology:78,economyScore:76,stability:76,
   historicalRole:'Important Baltic merchant port in the Mecklenburg lands',
   economy:'Hanseatic shipping, fish, grain, beer and merchant trade',
   militaryRole:'Walled port with significant merchant-maritime capacity',
   researchSummary:'Wismar had become an important Baltic trading city by the late 13th century and belonged to the Mecklenburg lordship, which was not raised to a duchy until the 14th century.',
-  evidenceNote:'Population is low-confidence; the political label intentionally uses Lordship rather than anachronistic Duchy.',
+  evidenceNote:'Population is low-confidence. Wismar had important Baltic merchant shipping, but no dedicated permanent war fleet is counted here.',
   sources:[['Wismar','https://en.wikipedia.org/wiki/Wismar'],['Mecklenburg','https://en.wikipedia.org/wiki/Mecklenburg']]
  },
  {
@@ -1574,13 +1575,13 @@ export const CITIES_1300=[
  {
   id:'1300-stettin',name:'Stettin / Szczecin',modern:'Szczecin',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · ducal and Oder port city',
   lon:14.5528,lat:53.4285,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
-  sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:10,navyText:'10',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:74,economyScore:72,stability:68,
   historicalRole:'Capital and major Oder port of the Pomerania-Stettin branch created in 1295',
   economy:'Oder trade, Baltic commerce, crafts and ducal administration',
   militaryRole:'Fortified river-port with strategic access to the Baltic',
   researchSummary:'The 1295 partition of Pomerania created distinct Stettin and Wolgast branches; Stettin became the key centre of the eastern branch.',
-  evidenceNote:'Population is low-confidence; 1295 political division is high confidence.',
+  evidenceNote:'Population is low-confidence; the 1295 political division is high confidence. Navy excludes merchant shipping temporarily requisitioned or armed for war.',
   sources:[['Duchy of Pomerania','https://en.wikipedia.org/wiki/Duchy_of_Pomerania'],['Szczecin','https://en.wikipedia.org/wiki/Szczecin']]
  },
  {
@@ -1598,37 +1599,37 @@ export const CITIES_1300=[
  {
   id:'1300-wolgast',name:'Wolgast',modern:'Wolgast',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · ducal residence after 1295',
   lon:13.7729,lat:54.0528,mapLon:13.7500,mapLat:54.0200,rarity:0,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:5,navyText:'5',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:65,economyScore:58,stability:69,
   historicalRole:'Namesake ducal residence of the Pomerania-Wolgast branch',
   economy:'Baltic trade, fisheries, agriculture and ducal services',
   militaryRole:'Small fortified coastal residence with useful maritime position',
   researchSummary:'Wolgast became the dynastic centre of the western Pomeranian branch created by the 1295 division.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'Population is low-confidence. Its maritime position does not by itself demonstrate a permanent dedicated war fleet.',
   sources:[['Wolgast','https://en.wikipedia.org/wiki/Wolgast'],['Duchy of Pomerania','https://en.wikipedia.org/wiki/Duchy_of_Pomerania']]
  },
  {
   id:'1300-greifswald',name:'Greifswald',modern:'Greifswald',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · Baltic merchant city',
   lon:13.3815,lat:54.0958,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:8,navyText:'8',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:68,technology:72,economyScore:71,stability:76,
   historicalRole:'Prosperous Baltic trading town within Pomerania-Wolgast',
   economy:'Baltic shipping, salt, fish, grain and crafts',
   militaryRole:'Walled port-oriented town with strong merchant resources',
   researchSummary:'Greifswald grew rapidly in the 13th century and belonged to the Wolgast branch after the 1295 partition.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'Population is low-confidence. Merchant and Hanseatic shipping is excluded from Navy unless maintained as a dedicated military fleet.',
   sources:[['Greifswald','https://en.wikipedia.org/wiki/Greifswald'],['Duchy of Pomerania','https://en.wikipedia.org/wiki/Duchy_of_Pomerania']]
  },
  {
   id:'1300-stralsund',name:'Stralsund',modern:'Stralsund',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · major Hanseatic Baltic port',
   lon:13.0850,lat:54.3091,mapLon:13.0400,mapLat:54.2000,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:15,navyText:'15',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:69,technology:80,economyScore:82,stability:78,
   historicalRole:'One of the strongest Baltic merchant cities of the Pomeranian coast',
   economy:'Hanseatic shipping, herring, grain, salt and long-distance trade',
   militaryRole:'Strongly fortified maritime city with notable merchant fleet capacity',
   researchSummary:'Stralsund’s position and merchant wealth made it one of the standout urban centres of Pomerania-Wolgast.',
-  evidenceNote:'Population is low-confidence; high Navy reflects maritime commerce, not a permanent state fleet.',
+  evidenceNote:'Population is low-confidence. Stralsund had major maritime capacity, but Navy is zero because merchant vessels assembled or armed for wartime are not treated as a standing fleet.',
   sources:[['Stralsund','https://en.wikipedia.org/wiki/Stralsund'],['Duchy of Pomerania','https://en.wikipedia.org/wiki/Duchy_of_Pomerania']]
  },
  {
@@ -1753,14 +1754,14 @@ export const CITIES_1300=[
  },
  {
   id:'1300-graz',name:'Graz',modern:'Graz',country:'Duchy of Styria',subrealm:'Habsburg Duchy of Styria · principal urban and ducal centre',
-  lon:15.4395,lat:47.0707,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
+  lon:15.4395,lat:47.0707,rarity:1,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.8–2.2 K',populationConfidence:'high',
   sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:78,technology:72,economyScore:73,stability:70,
   historicalRole:'Leading city of Styria under Habsburg rule',
   economy:'Court services, markets, crafts, wine and agriculture',
   militaryRole:'Castle-backed city controlling routes through central Styria',
   researchSummary:'Graz had developed into the chief urban centre of Styria and became increasingly important under Habsburg government.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'The City of Graz population statistics give about 2,000 inhabitants at the end of the 13th century.',
   sources:[['Graz','https://en.wikipedia.org/wiki/Graz'],['Duchy of Styria','https://en.wikipedia.org/wiki/Duchy_of_Styria']]
  },
  {
@@ -1777,14 +1778,14 @@ export const CITIES_1300=[
  },
  {
   id:'1300-st-veit',name:'St. Veit an der Glan',modern:'St. Veit an der Glan',country:'Duchy of Carinthia',subrealm:'Duchy of Carinthia · ducal capital under the Meinhardiner dynasty',
-  lon:14.3603,lat:46.7681,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  lon:14.3603,lat:46.7681,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2.5–3 K',populationConfidence:'medium',
   sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:68,economyScore:61,stability:68,
   historicalRole:'Principal ducal town and political centre of Carinthia',
   economy:'Court services, markets, crafts and regional agriculture',
   militaryRole:'Fortified ducal centre on routes across Carinthia',
   researchSummary:'St. Veit served as the medieval capital of Carinthia while the duchy remained under the Meinhardiner line around 1300.',
-  evidenceNote:'Population is low-confidence; capital status is high confidence.',
+  evidenceNote:'Historical summaries place medieval St. Veit at up to roughly 3,000 inhabitants; the card uses that upper-end estimate because it was the ducal capital.',
   sources:[['Sankt Veit an der Glan','https://en.wikipedia.org/wiki/Sankt_Veit_an_der_Glan'],['Duchy of Carinthia','https://en.wikipedia.org/wiki/Duchy_of_Carinthia']]
  },
  {
@@ -1801,74 +1802,74 @@ export const CITIES_1300=[
  },
  {
   id:'1300-merano',name:'Merano',modern:'Merano',country:'County of Tyrol',subrealm:'County of Tyrol · principal comital town',
-  lon:11.1590,lat:46.6713,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  lon:11.1590,lat:46.6713,rarity:0,year:1300,people:1300,populationText:'1.3 K',populationRange:'1–1.5 K',populationConfidence:'medium',
   sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:70,economyScore:65,stability:75,
   historicalRole:'Principal urban centre of the County of Tyrol before Innsbruck’s later rise',
   economy:'Wine, markets, Alpine transit trade and crafts',
   militaryRole:'Fortified town on key Alpine routes',
   researchSummary:'Merano was the leading town of the County of Tyrol around 1300 under the Meinhardiner counts.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'Research on Tyrolean towns places Merano at roughly 1,000–1,500 inhabitants around 1300; a 1304 fiscal record is consistent with a small town of this order.',
   sources:[['Merano','https://en.wikipedia.org/wiki/Merano'],['County of Tyrol','https://en.wikipedia.org/wiki/County_of_Tyrol']]
  },
  {
   id:'1300-innsbruck',name:'Innsbruck',modern:'Innsbruck',country:'County of Tyrol',subrealm:'County of Tyrol · Inn bridge and trans-Alpine market town',
-  lon:11.4041,lat:47.2692,rarity:0,year:1300,people:4500,populationText:'4.5 K',populationRange:'3.5–6 K',populationConfidence:'low',
+  lon:11.4041,lat:47.2692,rarity:0,year:1300,people:1300,populationText:'1.3 K',populationRange:'1–1.5 K',populationConfidence:'high',
   sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:68,technology:71,economyScore:66,stability:74,
   historicalRole:'Strategic bridge-town on one of the main trans-Alpine routes',
   economy:'Transit tolls, markets, crafts and Alpine trade',
   militaryRole:'Fortified crossing controlling the Inn valley',
   researchSummary:'Innsbruck already benefited from its bridge and Alpine transit route but had not yet displaced Merano as Tyrol’s principal political centre.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'Innsbruck’s city archive gives roughly 1,000–1,500 inhabitants around 1300.',
   sources:[['Innsbruck','https://en.wikipedia.org/wiki/Innsbruck'],['County of Tyrol','https://en.wikipedia.org/wiki/County_of_Tyrol']]
  },
  {
   id:'1300-prague',name:'Prague',modern:'Prague',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal capital of Wenceslaus II',
-  lon:14.4378,lat:50.0755,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–50 K',populationConfidence:'medium',
+  lon:14.4378,lat:50.0755,rarity:3,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–22 K',populationConfidence:'medium',
   sizeText:'2.0 km²',sizeConfidence:'low',army:400,armyText:'400',navy:0,navyText:'0',
   food:78,technology:92,economyScore:92,stability:78,
   historicalRole:'Royal capital of Bohemia and one of central Europe’s great political and commercial cities',
   economy:'Court, crafts, markets, long-distance trade and administration',
   militaryRole:'Large fortified royal city dominated by Prague Castle and river crossings',
   researchSummary:'Under Wenceslaus II, Prague was the political heart of a rapidly strengthening Bohemian monarchy whose influence extended into Poland and Hungary.',
-  evidenceNote:'Population is a medium-confidence order-of-magnitude estimate rather than a census.',
+  evidenceNote:'Published estimates for Prague around 1300 vary substantially. The card uses a conservative roughly 20,000, consistent with the New Cambridge Medieval History, rather than projecting the 30–40K scale reached after later 14th-century expansion backward.',
   sources:[['Prague','https://en.wikipedia.org/wiki/Prague'],['Kingdom of Bohemia','https://en.wikipedia.org/wiki/Kingdom_of_Bohemia']]
  },
  {
   id:'1300-kutna-hora',name:'Kutná Hora',modern:'Kutná Hora',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal silver-mining centre',
-  lon:15.2682,lat:49.9484,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–15 K',populationConfidence:'low',
+  lon:15.2682,lat:49.9484,rarity:2,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.7 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:66,technology:96,economyScore:98,stability:70,
   historicalRole:'Explosive silver-mining centre central to Wenceslaus II’s monetary reforms',
   economy:'Silver mining, minting, metallurgy, merchant finance and royal revenue',
   militaryRole:'Economically strategic royal town whose mines justified substantial protection',
   researchSummary:'Kutná Hora’s silver boom transformed Bohemia. In 1300 Wenceslaus II issued the Ius regale montanorum and concentrated minting of the Prague groschen there.',
-  evidenceNote:'Population is low-confidence, but the 1300 mining law and monetary importance are unusually well dated; Technology is therefore exceptionally high.',
+  evidenceNote:'Kutná Hora was only emerging as a major silver centre around 1300 and was not yet the much larger 14th-century mining city; the card therefore uses a conservative early-growth estimate.',
   sources:[['UNESCO — Kutná Hora','https://whc.unesco.org/en/list/732/'],['Kutná Hora','https://en.wikipedia.org/wiki/Kutn%C3%A1_Hora']]
  },
  {
   id:'1300-plzen',name:'Plzeň',modern:'Plzeň',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · newly founded royal city',
-  lon:13.3776,lat:49.7384,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
-  sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  lon:13.3776,lat:49.7384,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–2.5 K',populationConfidence:'low',
+  sizeText:'0.20 km²',sizeConfidence:'high',army:50,armyText:'50',navy:0,navyText:'0',
   food:73,technology:66,economyScore:56,stability:77,
   historicalRole:'New planned royal town founded by Wenceslaus II in the 1290s',
   economy:'Markets, crafts, agriculture and crossroads trade',
   militaryRole:'Planned fortified royal settlement',
   researchSummary:'New Plzeň was founded in 1295, making it one of the youngest cards in the set at the exact 1300 snapshot.',
-  evidenceNote:'Population is deliberately conservative because the planned city was only a few years old.',
+  evidenceNote:'New Plzeň was founded only around 1295. The official city history gives the original Gothic town an area of about 20 hectares and about 3,000 inhabitants in the 14th century, so the exact 1300 snapshot is set conservatively below that later level.',
   sources:[['Plzeň','https://en.wikipedia.org/wiki/Plze%C5%88'],['Kingdom of Bohemia','https://en.wikipedia.org/wiki/Kingdom_of_Bohemia']]
  },
  {
   id:'1300-ceske-budejovice',name:'České Budějovice',modern:'České Budějovice',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal city founded by Přemysl Ottokar II',
-  lon:14.4747,lat:48.9745,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  lon:14.4747,lat:48.9745,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–2.5 K',populationConfidence:'medium',
   sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:76,technology:67,economyScore:60,stability:75,
   historicalRole:'Royal foundation strengthening the monarchy in southern Bohemia',
   economy:'Markets, crafts, agriculture and regional trade',
   militaryRole:'Planned fortified royal town',
   researchSummary:'Founded in 1265, České Budějovice was designed as a royal counterweight to powerful noble families in southern Bohemia.',
-  evidenceNote:'Population is low-confidence.',
+  evidenceNote:'The city was founded in 1265. Its first usable demographic reconstruction gives about 2,600 inhabitants in 1384, so 5,000 in 1300 was too high; the card uses a conservative earlier estimate.',
   sources:[['České Budějovice','https://en.wikipedia.org/wiki/%C4%8Cesk%C3%A9_Bud%C4%9Bjovice'],['Kingdom of Bohemia','https://en.wikipedia.org/wiki/Kingdom_of_Bohemia']]
  },
  {
