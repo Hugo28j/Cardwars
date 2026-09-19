@@ -2649,7 +2649,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ancona',name:'Ancona',modern:'Ancona',country:'Commune of Ancona',subrealm:'Maritime Commune of Ancona',
-  lon:13.5189,lat:43.6158,mapLon:13.4400,mapLat:43.6100,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:13.5189,lat:43.6158,mapLon:13.4800,mapLat:43.6000,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:12,navyText:'≈12',
   food:73,technology:78,satisfaction:74,
   historicalRole:'Autonomous Adriatic maritime commune with eastern Mediterranean trade',
