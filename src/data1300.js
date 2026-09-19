@@ -25,7 +25,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-cordoba',name:'Córdoba',modern:'Córdoba',country:'Crown of Castile',subrealm:'Kingdom of Córdoba',
-  lon:-4.7794,lat:37.8882,rarity:3,year:1300,people:60000,populationText:'≈60.0 K',populationConfidence:'medium',
+  lon:-4.7794,lat:37.8882,rarity:2,year:1300,people:60000,populationText:'≈60.0 K',populationConfidence:'medium',
   sizeText:'≈2.0 km²',sizeConfidence:'low',army:4800,armyText:'≈4.8 K',navy:0,navyText:'0',
   food:80,technology:74,satisfaction:58,
   historicalRole:'Large Guadalquivir city and former caliphal capital integrated into Castile after 1236',
@@ -41,7 +41,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-toledo',name:'Toledo',modern:'Toledo',country:'Crown of Castile',subrealm:'Kingdom of Toledo',
-  lon:-4.0273,lat:39.8628,rarity:3,year:1300,people:42000,populationText:'≈42.0 K',populationConfidence:'medium',
+  lon:-4.0273,lat:39.8628,rarity:2,year:1300,people:42000,populationText:'≈42.0 K',populationConfidence:'medium',
   sizeText:'≈1.15 km²',sizeConfidence:'high',army:4200,armyText:'≈4.2 K',navy:0,navyText:'0',
   food:70,technology:86,satisfaction:64,
   historicalRole:'Archiepiscopal, cultural and royal centre with major Christian, Jewish and Mudéjar communities',
@@ -58,7 +58,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-valladolid',name:'Valladolid',modern:'Valladolid',country:'Crown of Castile',subrealm:'Kingdom of Castile',
-  lon:-4.7245,lat:41.6523,rarity:2,year:1300,people:25000,populationText:'≈25.0 K',populationConfidence:'medium',
+  lon:-4.7245,lat:41.6523,rarity:1,year:1300,people:25000,populationText:'≈25.0 K',populationConfidence:'medium',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:2500,armyText:'≈2.5 K',navy:0,navyText:'0',
   food:74,technology:70,satisfaction:70,
   historicalRole:'Frequent royal residence and one of Castile’s principal centres of itinerant kingship',
@@ -74,7 +74,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-burgos',name:'Burgos',modern:'Burgos',country:'Crown of Castile',subrealm:'Kingdom of Castile',
-  lon:-3.6969,lat:42.3439,rarity:3,year:1300,people:21000,populationText:'≈21.0 K',populationConfidence:'medium',
+  lon:-3.6969,lat:42.3439,rarity:1,year:1300,people:21000,populationText:'≈21.0 K',populationConfidence:'medium',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:2400,armyText:'≈2.4 K',navy:0,navyText:'0',
   food:68,technology:72,satisfaction:72,
   historicalRole:'Royal, ecclesiastical and commercial centre on the north-south routes of Castile',
@@ -90,7 +90,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-murcia',name:'Murcia',modern:'Murcia',country:'Crown of Aragon',subrealm:'Kingdom of Murcia · Aragonese occupation (1296–1304)',
-  lon:-1.1307,lat:37.9922,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationConfidence:'medium',
+  lon:-1.1307,lat:37.9922,rarity:1,year:1300,people:15000,populationText:'≈15.0 K',populationConfidence:'medium',
   sizeText:'≈1.1 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:88,technology:70,satisfaction:52,
   historicalRole:'Irrigated southeastern regional capital under the Crown of Aragon in the 1300 snapshot',
@@ -107,7 +107,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-salamanca',name:'Salamanca',modern:'Salamanca',country:'Crown of Castile',subrealm:'Kingdom of León',
-  lon:-5.6635,lat:40.9701,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–14 K',populationConfidence:'low',
+  lon:-5.6635,lat:40.9701,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–14 K',populationConfidence:'low',
   sizeText:'≈0.9 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:66,technology:90,satisfaction:72,
   historicalRole:'University city, ecclesiastical centre and major urban community of the Leonese part of the Crown',
@@ -123,7 +123,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-segovia',name:'Segovia',modern:'Segovia',country:'Crown of Castile',subrealm:'Kingdom of Castile',
-  lon:-4.1192,lat:40.9429,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–12 K',populationConfidence:'low',
+  lon:-4.1192,lat:40.9429,rarity:0,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–12 K',populationConfidence:'low',
   sizeText:'≈0.8 km²',sizeConfidence:'low',army:2000,armyText:'≈2.0 K',navy:0,navyText:'0',
   food:62,technology:66,satisfaction:70,
   historicalRole:'Powerful concejo controlling a very large territory, with livestock, wool and military traditions',
@@ -138,7 +138,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-leon',name:'León',modern:'León',country:'Crown of Castile',subrealm:'Kingdom of León',
-  lon:-5.5671,lat:42.5987,rarity:1,year:1300,people:5000,populationText:'≈5.0 K',populationConfidence:'medium',
+  lon:-5.5671,lat:42.5987,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationConfidence:'medium',
   sizeText:'≈0.33 km²',sizeConfidence:'medium',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:64,technology:62,satisfaction:68,
   historicalRole:'Historic royal and episcopal centre whose demographic scale was modest by 1300',
@@ -153,7 +153,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-jaen',name:'Jaén',modern:'Jaén',country:'Crown of Castile',subrealm:'Kingdom of Jaén',
-  lon:-3.7903,lat:37.7796,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:-3.7903,lat:37.7796,rarity:0,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'medium',army:2500,armyText:'≈2.5 K',navy:0,navyText:'0',
   food:74,technology:58,satisfaction:48,
   historicalRole:'Frontier city and royal concejo facing the Nasrid Kingdom of Granada',
@@ -168,7 +168,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-santiago',name:'Santiago de Compostela',modern:'Santiago de Compostela',country:'Crown of Castile',subrealm:'Kingdom of Galicia · lordship of the Archbishop of Santiago',
-  lon:-8.5448,lat:42.8782,rarity:3,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:-8.5448,lat:42.8782,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:66,technology:82,satisfaction:71,
   historicalRole:'Archiepiscopal capital and one of medieval Europe’s foremost pilgrimage destinations',
@@ -185,7 +185,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-plasencia',name:'Plasencia',modern:'Plasencia',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal town and episcopal see',
-  lon:-6.0883,lat:40.0312,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:-6.0883,lat:40.0312,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.30 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:79,technology:64,satisfaction:67,
   historicalRole:'Fortified royal city, episcopal see and organising centre of a very large north-eastern Extremaduran territory',
@@ -201,7 +201,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-porto',name:'Porto',modern:'Porto',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · episcopal city and Atlantic-Douro port',
-  lon:-8.6291,lat:41.1579,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationConfidence:'medium',
+  lon:-8.6291,lat:41.1579,rarity:1,year:1300,people:6000,populationText:'≈6.0 K',populationConfidence:'medium',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:6,navyText:'≈6',
   food:74,technology:70,satisfaction:72,
   historicalRole:'Northern Portuguese port and commercial centre on the Douro',
@@ -216,7 +216,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-braga',name:'Braga',modern:'Braga',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · archiepiscopal lordship of Braga',
-  lon:-8.4265,lat:41.5454,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:-8.4265,lat:41.5454,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:72,technology:76,satisfaction:69,
   historicalRole:'Seat of the Archbishop of Braga and a major ecclesiastical centre of Portugal',
@@ -231,7 +231,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-guimaraes',name:'Guimarães',modern:'Guimarães',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · royal town',
-  lon:-8.2962,lat:41.4444,rarity:1,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈3.5–5.5 K',populationConfidence:'low',
+  lon:-8.2962,lat:41.4444,rarity:0,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈3.5–5.5 K',populationConfidence:'low',
   sizeText:'≈0.30 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:0,navyText:'0',
   food:70,technology:65,satisfaction:74,
   historicalRole:'Historic royal town, pilgrimage centre and symbolically important birthplace of Portuguese kingship',
@@ -246,7 +246,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-coimbra',name:'Coimbra',modern:'Coimbra',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · royal city',
-  lon:-8.4292,lat:40.2033,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationConfidence:'medium',
+  lon:-8.4292,lat:40.2033,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationConfidence:'medium',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:950,armyText:'≈950',navy:0,navyText:'0',
   food:76,technology:76,satisfaction:72,
   historicalRole:'Former royal capital, fortified Mondego city and major ecclesiastical centre',
@@ -262,7 +262,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-lisbon',name:'Lisbon',modern:'Lisbon',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · principal royal and port city',
-  lon:-9.1393,lat:38.7223,mapLon:-9.0000,mapLat:38.7350,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationConfidence:'medium',
+  lon:-9.1393,lat:38.7223,mapLon:-9.0000,mapLat:38.7350,rarity:3,year:1300,people:35000,populationText:'≈35.0 K',populationConfidence:'medium',
   sizeText:'≈1.50 km²',sizeConfidence:'low',army:3600,armyText:'≈3.6 K',navy:20,navyText:'≈20',
   food:80,technology:84,satisfaction:71,
   historicalRole:'Largest Portuguese city, major Atlantic-Tagus port and frequent centre of royal government',
@@ -278,7 +278,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-evora',name:'Évora',modern:'Évora',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · major southern royal city',
-  lon:-7.9135,lat:38.5714,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationConfidence:'medium',
+  lon:-7.9135,lat:38.5714,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationConfidence:'medium',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:84,technology:70,satisfaction:72,
   historicalRole:'Principal urban, religious and military centre of southern Portugal',
@@ -293,7 +293,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-santarem',name:'Santarém',modern:'Santarém',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · royal town on the Tagus',
-  lon:-8.6868,lat:39.2362,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationConfidence:'medium',
+  lon:-8.6868,lat:39.2362,rarity:0,year:1300,people:7000,populationText:'≈7.0 K',populationConfidence:'medium',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:90,technology:68,satisfaction:75,
   historicalRole:'Strategic Tagus town, royal residence and major market centre',
@@ -309,7 +309,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-silves',name:'Silves',modern:'Silves',country:'Kingdom of Portugal',subrealm:'Kingdom of the Algarve · episcopal capital',
-  lon:-8.4382,lat:37.1890,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈4–8 K',populationConfidence:'low',
+  lon:-8.4382,lat:37.1890,rarity:1,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈4–8 K',populationConfidence:'low',
   sizeText:'≈0.50 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:6,navyText:'≈6',
   food:82,technology:67,satisfaction:65,
   historicalRole:'Capital of the Algarve, episcopal seat and important fortified river-port city',
@@ -324,7 +324,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-pamplona',name:'Pamplona',modern:'Pamplona',country:'Kingdom of Navarre',subrealm:'Kingdom of Navarre · Navarrería, San Cernin and San Nicolás',
-  lon:-1.6440,lat:42.8125,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationConfidence:'low',
+  lon:-1.6440,lat:42.8125,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationConfidence:'low',
   sizeText:'≈0.70 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:64,technology:75,satisfaction:54,
   historicalRole:'Capital and administrative centre of the Kingdom of Navarre, divided among three rival fortified boroughs',
@@ -355,7 +355,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-zaragoza',name:'Zaragoza',modern:'Zaragoza',country:'Crown of Aragon',subrealm:'Kingdom of Aragon · royal and administrative capital',
-  lon:-0.8891,lat:41.6488,rarity:3,year:1300,people:22000,populationText:'≥22.0 K',populationConfidence:'high',
+  lon:-0.8891,lat:41.6488,rarity:2,year:1300,people:22000,populationText:'≥22.0 K',populationConfidence:'high',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:2800,armyText:'≈2.8 K',navy:0,navyText:'0',
   food:84,technology:79,satisfaction:69,
   historicalRole:'Principal city of the Kingdom of Aragon and major Ebro commercial centre',
@@ -370,7 +370,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-girona',name:'Girona',modern:'Girona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · episcopal and royal city',
-  lon:2.8214,lat:41.9794,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationConfidence:'medium',
+  lon:2.8214,lat:41.9794,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationConfidence:'medium',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:68,technology:79,satisfaction:64,
   historicalRole:'Important Catalan episcopal city and strategic fortress on the route from France',
@@ -385,7 +385,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-valencia',name:'Valencia',modern:'Valencia',country:'Crown of Aragon',subrealm:'Kingdom of Valencia · royal capital',
-  lon:-0.3763,lat:39.4699,mapLon:-0.4400,mapLat:39.4850,rarity:4,year:1300,people:25000,populationText:'≈25.0 K',populationConfidence:'medium',
+  lon:-0.3763,lat:39.4699,mapLon:-0.4400,mapLat:39.4850,rarity:3,year:1300,people:25000,populationText:'≈25.0 K',populationConfidence:'medium',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:2800,armyText:'≈2.8 K',navy:12,navyText:'≈12',
   food:92,technology:81,satisfaction:66,
   historicalRole:'Capital of the Kingdom of Valencia and rapidly growing Mediterranean commercial city',
@@ -400,7 +400,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-alicante',name:'Alicante',modern:'Alicante',country:'Crown of Aragon',subrealm:'Kingdom of Murcia under Aragonese occupation · captured 1296',
-  lon:-0.4810,lat:38.3452,mapLon:-0.5500,mapLat:38.3600,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:-0.4810,lat:38.3452,mapLon:-0.5500,mapLat:38.3600,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:7,navyText:'≈7',
   food:76,technology:66,satisfaction:57,
   historicalRole:'Recently conquered Aragonese fortified port on the contested Murcia-Valencia frontier',
@@ -415,7 +415,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-badajoz',name:'Badajoz',modern:'Badajoz',country:'Crown of Castile',subrealm:'Kingdom of León · Extremaduran bishopric and frontier city',
-  lon:-6.9707,lat:38.8794,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  lon:-6.9707,lat:38.8794,rarity:0,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
   sizeText:'≈0.50 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:78,technology:60,satisfaction:61,
   historicalRole:'Fortified episcopal city guarding the western Castilian-Leonese frontier against Portugal',
@@ -430,7 +430,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-cuenca',name:'Cuenca',modern:'Cuenca',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal concejo',
-  lon:-2.1374,lat:40.0704,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:-2.1374,lat:40.0704,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:66,technology:73,satisfaction:69,
   historicalRole:'Fortified royal city with an important textile economy and large municipal territory',
@@ -445,7 +445,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-guadalajara',name:'Guadalajara',modern:'Guadalajara',country:'Crown of Castile',subrealm:'Kingdom of Castile · royal town',
-  lon:-3.1669,lat:40.6330,rarity:1,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:-3.1669,lat:40.6330,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:72,technology:64,satisfaction:70,
   historicalRole:'Privileged royal town and market centre on the route between central Castile and the northeast',
@@ -476,7 +476,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-malaga',name:'Málaga',modern:'Málaga',country:'Emirate of Granada',subrealm:'Nasrid Emirate of Granada · principal Mediterranean port',
-  lon:-4.4214,lat:36.7213,mapLon:-4.4214,mapLat:36.7850,rarity:3,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–35 K',populationConfidence:'low',
+  lon:-4.4214,lat:36.7213,mapLon:-4.4214,mapLat:36.7850,rarity:2,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–35 K',populationConfidence:'low',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:2800,armyText:'≈2.8 K',navy:18,navyText:'≈18',
   food:82,technology:82,satisfaction:68,
   historicalRole:'Major Nasrid Mediterranean port, fortified city and commercial gateway',
@@ -492,7 +492,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-nantes',name:'Nantes',modern:'Nantes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · ducal city on the Loire',
-  lon:-1.5536,lat:47.2184,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:-1.5536,lat:47.2184,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.70 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:10,navyText:'≈10',
   food:78,technology:72,satisfaction:70,
   historicalRole:'One of the principal economic and ducal centres of independent Brittany',
@@ -507,7 +507,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-rennes',name:'Rennes',modern:'Rennes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · major eastern ducal centre',
-  lon:-1.6778,lat:48.1173,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:-1.6778,lat:48.1173,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1600,armyText:'≈1.6 K',navy:0,navyText:'0',
   food:76,technology:70,satisfaction:68,
   historicalRole:'One of Brittany’s foremost political and commercial cities',
@@ -522,7 +522,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-vannes',name:'Vannes',modern:'Vannes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · episcopal and port city',
-  lon:-2.7608,lat:47.6582,rarity:1,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:-2.7608,lat:47.6582,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.30 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:4,navyText:'≈4',
   food:75,technology:67,satisfaction:72,
   historicalRole:'Episcopal port city and established Breton urban centre',
@@ -537,7 +537,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-rouen',name:'Rouen',modern:'Rouen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · capital and Seine port',
-  lon:1.0993,lat:49.4432,rarity:4,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'medium',
+  lon:1.0993,lat:49.4432,rarity:3,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'medium',
   sizeText:'≈1.50 km²',sizeConfidence:'low',army:4500,armyText:'≈4.5 K',navy:14,navyText:'≈14',
   food:79,technology:83,satisfaction:71,
   historicalRole:'Capital of Normandy and one of the largest commercial cities in the French kingdom',
@@ -552,7 +552,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-caen',name:'Caen',modern:'Caen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · major Norman city',
-  lon:-0.3707,lat:49.1829,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
+  lon:-0.3707,lat:49.1829,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:2600,armyText:'≈2.6 K',navy:3,navyText:'≈3',
   food:77,technology:76,satisfaction:70,
   historicalRole:'Major Norman administrative, religious and commercial city',
@@ -567,7 +567,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-amiens',name:'Amiens',modern:'Amiens',country:'Kingdom of France',subrealm:'Amiénois · French royal sphere',
-  lon:2.2958,lat:49.8941,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:2.2958,lat:49.8941,rarity:1,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈0.90 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:74,technology:79,satisfaction:71,
   historicalRole:'Wealthy northern textile city and episcopal centre',
@@ -597,7 +597,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-reims',name:'Reims',modern:'Reims',country:'Kingdom of France',subrealm:'Archbishopric of Reims · coronation city within the French kingdom',
-  lon:4.0317,lat:49.2583,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:4.0317,lat:49.2583,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈0.90 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
   food:73,technology:87,satisfaction:70,
   historicalRole:'Archiepiscopal metropolis and traditional coronation city of the French kings',
@@ -612,7 +612,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-troyes',name:'Troyes',modern:'Troyes',country:'County of Champagne',subrealm:'County of Champagne · personal union with the French crown through Joan I and Philip IV',
-  lon:4.0744,lat:48.2973,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:4.0744,lat:48.2973,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈1.00 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
   food:76,technology:82,satisfaction:70,
   historicalRole:'Principal city of Champagne and international fair centre',
@@ -627,7 +627,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-provins',name:'Provins',modern:'Provins',country:'County of Champagne',subrealm:'County of Champagne · international fair city',
-  lon:3.2990,lat:48.5601,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–15 K',populationConfidence:'low',
+  lon:3.2990,lat:48.5601,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
   food:70,technology:83,satisfaction:68,
   historicalRole:'Merchant city of the Champagne fairs at the end of their great 12th–13th-century apogee',
@@ -642,7 +642,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-dijon',name:'Dijon',modern:'Dijon',country:'Duchy of Burgundy',subrealm:'Duchy of Burgundy · ducal capital under Robert II',
-  lon:5.0415,lat:47.3220,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:5.0415,lat:47.3220,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1800,armyText:'≈1.8 K',navy:0,navyText:'0',
   food:79,technology:75,satisfaction:72,
   historicalRole:'Capital of the Capetian Duchy of Burgundy',
@@ -657,7 +657,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-tours',name:'Tours',modern:'Tours',country:'Kingdom of France',subrealm:'Touraine · French royal domain',
-  lon:0.6848,lat:47.3941,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:0.6848,lat:47.3941,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:82,technology:76,satisfaction:73,
   historicalRole:'Important Loire city, pilgrimage centre and regional commercial hub',
@@ -672,7 +672,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-angers',name:'Angers',modern:'Angers',country:'County of Anjou',subrealm:'County of Anjou · held by Charles of Valois from 1290',
-  lon:-0.5632,lat:47.4784,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:-0.5632,lat:47.4784,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.80 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
   food:82,technology:76,satisfaction:70,
   historicalRole:'Capital of the County of Anjou and major fortress-city on the Maine',
@@ -687,7 +687,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-poitiers',name:'Poitiers',modern:'Poitiers',country:'Kingdom of France',subrealm:'Poitou · reverted to the French royal domain in 1271',
-  lon:0.3404,lat:46.5802,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–13 K',populationConfidence:'low',
+  lon:0.3404,lat:46.5802,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–13 K',populationConfidence:'low',
   sizeText:'≈0.80 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:76,technology:75,satisfaction:70,
   historicalRole:'Major administrative and ecclesiastical centre of Poitou',
@@ -702,7 +702,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
-  lon:-1.1511,lat:46.1603,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.70 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:15,navyText:'≈15',
   food:75,technology:78,satisfaction:72,
   historicalRole:'Important Atlantic trading port of the French crown',
@@ -717,7 +717,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-orleans',name:'Orléans',modern:'Orléans',country:'Kingdom of France',subrealm:'Orléanais · core Capetian royal domain',
-  lon:1.9093,lat:47.9029,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:1.9093,lat:47.9029,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.85 km²',sizeConfidence:'low',army:1800,armyText:'≈1.8 K',navy:0,navyText:'0',
   food:85,technology:82,satisfaction:73,
   historicalRole:'Core royal-domain city and strategic Loire crossing',
@@ -732,7 +732,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bourges',name:'Bourges',modern:'Bourges',country:'Kingdom of France',subrealm:'Berry · French royal domain',
-  lon:2.3988,lat:47.0810,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:2.3988,lat:47.0810,rarity:1,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.85 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:78,technology:79,satisfaction:72,
   historicalRole:'Major central royal city and archiepiscopal centre of Berry',
@@ -747,7 +747,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-limoges',name:'Limoges',modern:'Limoges',country:'Viscounty of Limoges',subrealm:'Bipartite city: Château under viscomital/communal power; Cité under the bishop',
-  lon:1.2611,lat:45.8336,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:1.2611,lat:45.8336,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:72,technology:88,satisfaction:64,
   historicalRole:'Famous enamel-production and pilgrimage centre divided between two urban jurisdictions',
@@ -762,7 +762,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bordeaux',name:'Bordeaux',modern:'Bordeaux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Duchy of Aquitaine/Gascony · held by Edward I as duke',
-  lon:-0.5792,lat:44.8378,rarity:4,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  lon:-0.5792,lat:44.8378,rarity:3,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
   sizeText:'≈1.20 km²',sizeConfidence:'low',army:3200,armyText:'≈3.2 K',navy:18,navyText:'≈18',
   food:80,technology:82,satisfaction:74,
   historicalRole:'Principal city of English-ruled Gascony and major wine-export port',
@@ -777,7 +777,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bayonne',name:'Bayonne',modern:'Bayonne',country:'Duchy of Aquitaine (English Crown)',subrealm:'English-held Gascony · directly administered royal port',
-  lon:-1.4748,lat:43.4929,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:-1.4748,lat:43.4929,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.60 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:16,navyText:'≈16',
   food:76,technology:73,satisfaction:76,
   historicalRole:'Important English-Gascon fortified port and shipbuilding centre',
@@ -792,7 +792,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-toulouse',name:'Toulouse',modern:'Toulouse',country:'Kingdom of France',subrealm:'Former County of Toulouse · direct royal domain since 1271',
-  lon:1.4442,lat:43.6047,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
+  lon:1.4442,lat:43.6047,rarity:3,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
   sizeText:'≈1.60 km²',sizeConfidence:'low',army:3600,armyText:'≈3.6 K',navy:0,navyText:'0',
   food:89,technology:91,satisfaction:67,
   historicalRole:'Great southern commercial, university and administrative city newly integrated into the royal domain',
@@ -807,7 +807,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-carcassonne',name:'Carcassonne',modern:'Carcassonne',country:'Kingdom of France',subrealm:'Royal sénéchaussée and frontier fortress of Languedoc',
-  lon:2.3537,lat:43.2130,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:2.3537,lat:43.2130,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:72,technology:72,satisfaction:61,
   historicalRole:'One of the French crown’s premier southern fortresses',
@@ -822,7 +822,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-montpellier',name:'Montpellier',modern:'Montpellier',country:'Kingdom of Majorca',subrealm:'Lordship of Montpellier · possession of the kings of Majorca',
-  lon:3.8767,lat:43.6108,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'medium',
+  lon:3.8767,lat:43.6108,rarity:2,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'medium',
   sizeText:'≈1.10 km²',sizeConfidence:'low',army:2600,armyText:'≈2.6 K',navy:4,navyText:'≈4',
   food:81,technology:93,satisfaction:74,
   historicalRole:'Major Mediterranean commercial and medical-learning centre under the kings of Majorca',
@@ -837,7 +837,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-lyon',name:'Lyon',modern:'Lyon',country:'Archbishopric of Lyon (Holy Roman Empire)',subrealm:'Imperial archiepiscopal city · not annexed to France until 1312',
-  lon:4.8357,lat:45.7640,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–20 K',populationConfidence:'low',
+  lon:4.8357,lat:45.7640,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–20 K',populationConfidence:'low',
   sizeText:'≈0.90 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:77,technology:82,satisfaction:55,
   historicalRole:'Imperial archiepiscopal city at a major Rhône-Saône crossroads',
@@ -852,7 +852,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-vienne',name:'Vienne',modern:'Vienne',country:'Archbishopric of Vienne (Holy Roman Empire)',subrealm:'Imperial prince-archbishopric · city ruled by the Archbishop of Vienne',
-  lon:4.8747,lat:45.5256,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  lon:4.8747,lat:45.5256,rarity:1,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
   sizeText:'≈0.50 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
   food:75,technology:79,satisfaction:65,
   historicalRole:'Imperial archiepiscopal city and major ecclesiastical centre on the Rhône',
@@ -867,7 +867,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-marseille',name:'Marseille',modern:'Marseille',country:'County of Provence',subrealm:'Angevin County of Provence · under Charles II of Naples',
-  lon:5.3698,lat:43.2965,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–20 K',populationConfidence:'low',
+  lon:5.3698,lat:43.2965,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–20 K',populationConfidence:'low',
   sizeText:'≈0.85 km²',sizeConfidence:'low',army:1800,armyText:'≈1.8 K',navy:20,navyText:'≈20',
   food:72,technology:80,satisfaction:62,
   historicalRole:'Leading Provençal Mediterranean port under Angevin comital rule',
@@ -882,7 +882,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-aix-en-provence',name:'Aix-en-Provence',modern:'Aix-en-Provence',country:'County of Provence',subrealm:'Angevin County of Provence · principal comital capital',
-  lon:5.4474,lat:43.5297,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:5.4474,lat:43.5297,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.60 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:78,technology:78,satisfaction:70,
   historicalRole:'Political and administrative capital of Angevin Provence',
@@ -897,7 +897,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bruges',name:'Bruges',modern:'Bruges',country:'County of Flanders',subrealm:'County of Flanders · under French occupation during 1300',
-  lon:3.2247,lat:51.2093,rarity:4,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'medium',
+  lon:3.2247,lat:51.2093,rarity:3,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'medium',
   sizeText:'≈2.0 km²',sizeConfidence:'low',army:4200,armyText:'≈4.2 K',navy:18,navyText:'≈18',
   food:74,technology:90,satisfaction:58,
   historicalRole:'One of north-west Europe’s foremost cloth, finance and international trading cities',
@@ -909,7 +909,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ghent',name:'Ghent',modern:'Ghent',country:'County of Flanders',subrealm:'County of Flanders · under French occupation during 1300',
-  lon:3.7174,lat:51.0543,rarity:4,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈45–60 K',populationConfidence:'medium',
+  lon:3.7174,lat:51.0543,rarity:3,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈45–60 K',populationConfidence:'medium',
   sizeText:'≈2.2 km²',sizeConfidence:'low',army:5200,armyText:'≈5.2 K',navy:4,navyText:'≈4',
   food:79,technology:88,satisfaction:60,
   historicalRole:'Huge cloth-producing commune and one of the largest cities north of the Alps',
@@ -921,7 +921,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ypres',name:'Ypres',modern:'Ypres',country:'County of Flanders',subrealm:'County of Flanders · major cloth city',
-  lon:2.8860,lat:50.8514,rarity:3,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–30 K',populationConfidence:'low',
+  lon:2.8860,lat:50.8514,rarity:2,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–30 K',populationConfidence:'low',
   sizeText:'≈1.2 km²',sizeConfidence:'low',army:2800,armyText:'≈2.8 K',navy:0,navyText:'0',
   food:71,technology:86,satisfaction:59,
   historicalRole:'Internationally important Flemish cloth-manufacturing city',
@@ -933,7 +933,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-leuven',name:'Leuven',modern:'Leuven',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · historic ducal centre',
-  lon:4.7005,lat:50.8798,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:4.7005,lat:50.8798,rarity:1,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
   food:77,technology:77,satisfaction:70,
   historicalRole:'Historic seat of the dukes of Brabant and important cloth-producing town',
@@ -945,7 +945,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-brussels',name:'Brussels',modern:'Brussels',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · growing ducal residence',
-  lon:4.3517,lat:50.8503,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:4.3517,lat:50.8503,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.9 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:75,technology:76,satisfaction:71,
   historicalRole:'Fast-growing Brabantine commercial city and increasingly important ducal residence',
@@ -957,7 +957,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-antwerp',name:'Antwerp',modern:'Antwerp',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · Scheldt port',
-  lon:4.4025,lat:51.2194,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:4.4025,lat:51.2194,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.7 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:10,navyText:'≈10',
   food:73,technology:75,satisfaction:68,
   historicalRole:'Growing Scheldt port and fortified commercial city of Brabant',
@@ -969,7 +969,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-s-hertogenbosch',name:'’s-Hertogenbosch',modern:'’s-Hertogenbosch',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · northern fortified ducal town',
-  lon:5.3037,lat:51.6978,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:5.3037,lat:51.6978,rarity:0,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:74,technology:68,satisfaction:72,
   historicalRole:'Northern Brabantine market and fortress city founded by the dukes',
@@ -981,7 +981,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-mons',name:'Mons',modern:'Mons',country:'County of Hainaut',subrealm:'County of Hainaut · comital centre',
-  lon:3.9517,lat:50.4542,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:3.9517,lat:50.4542,rarity:0,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:73,technology:68,satisfaction:70,
   historicalRole:'One of the principal political centres of the County of Hainaut',
@@ -993,7 +993,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-valenciennes',name:'Valenciennes',modern:'Valenciennes',country:'County of Hainaut',subrealm:'County of Hainaut · major Scheldt commercial town',
-  lon:3.5183,lat:50.3571,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:3.5183,lat:50.3571,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.7 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:72,technology:74,satisfaction:68,
   historicalRole:'Prosperous commercial and textile centre of Hainaut',
@@ -1005,7 +1005,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-dordrecht',name:'Dordrecht',modern:'Dordrecht',country:'County of Holland',subrealm:'County of Holland · principal river-trading city',
-  lon:4.6901,lat:51.8133,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:4.6901,lat:51.8133,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:12,navyText:'≈12',
   food:78,technology:76,satisfaction:74,
   historicalRole:'Leading commercial city of Holland at a major Rhine-Meuse waterway junction',
@@ -1017,7 +1017,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-haarlem',name:'Haarlem',modern:'Haarlem',country:'County of Holland',subrealm:'County of Holland · chartered town',
-  lon:4.6462,lat:52.3874,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈4–8 K',populationConfidence:'low',
+  lon:4.6462,lat:52.3874,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈4–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:2,navyText:'≈2',
   food:72,technology:67,satisfaction:73,
   historicalRole:'Growing chartered town controlling routes through central Holland',
@@ -1029,7 +1029,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-leiden',name:'Leiden',modern:'Leiden',country:'County of Holland',subrealm:'County of Holland · growing Rhine town',
-  lon:4.4970,lat:52.1601,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:4.4970,lat:52.1601,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:2,navyText:'≈2',
   food:72,technology:68,satisfaction:72,
   historicalRole:'Growing market town on the Old Rhine',
@@ -1041,7 +1041,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-delft',name:'Delft',modern:'Delft',country:'County of Holland',subrealm:'County of Holland · chartered canal town',
-  lon:4.3571,lat:52.0116,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:4.3571,lat:52.0116,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:2,navyText:'≈2',
   food:71,technology:68,satisfaction:73,
   historicalRole:'Young but expanding chartered town in the core of Holland',
@@ -1053,7 +1053,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-nijmegen',name:'Nijmegen',modern:'Nijmegen',country:'County of Guelders',subrealm:'County of Guelders · former imperial city pledged to Guelders',
-  lon:5.8528,lat:51.8426,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:5.8528,lat:51.8426,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.5 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:73,technology:72,satisfaction:65,
   historicalRole:'Important Waal crossing and politically prestigious city of Guelders',
@@ -1065,7 +1065,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-zutphen',name:'Zutphen',modern:'Zutphen',country:'County of Guelders',subrealm:'County of Guelders · major IJssel town',
-  lon:6.2017,lat:52.1400,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:6.2017,lat:52.1400,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:1,navyText:'≈1',
   food:72,technology:69,satisfaction:71,
   historicalRole:'Old comital centre and important IJssel trading town',
@@ -1077,7 +1077,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-arnhem',name:'Arnhem',modern:'Arnhem',country:'County of Guelders',subrealm:'County of Guelders · chartered Rhine-area town',
-  lon:5.8987,lat:51.9851,rarity:1,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:5.8987,lat:51.9851,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:650,armyText:'≈650',navy:0,navyText:'0',
   food:72,technology:63,satisfaction:73,
   historicalRole:'Growing chartered town in central Guelders',
@@ -1089,7 +1089,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-stavoren',name:'Stavoren',modern:'Stavoren',country:'Frisian Freedom',subrealm:'Frisian Freedom · autonomous maritime community',
-  lon:5.3595,lat:52.8836,rarity:2,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:5.3595,lat:52.8836,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.2 km²',sizeConfidence:'low',army:450,armyText:'≈450',navy:9,navyText:'≈9',
   food:67,technology:68,satisfaction:76,
   historicalRole:'Important Frisian maritime trading town within the lordless Frisian political order',
@@ -1101,7 +1101,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-oldenburg',name:'Oldenburg',modern:'Oldenburg',country:'County of Oldenburg',subrealm:'County of Oldenburg · comital seat',
-  lon:8.2146,lat:53.1435,rarity:1,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
+  lon:8.2146,lat:53.1435,rarity:0,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
   sizeText:'≈0.2 km²',sizeConfidence:'low',army:450,armyText:'≈450',navy:0,navyText:'0',
   food:70,technology:58,satisfaction:72,
   historicalRole:'Small comital centre of the House of Oldenburg',
@@ -1113,7 +1113,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-kleve',name:'Kleve',modern:'Kleve',country:'County of Cleves',subrealm:'County of Cleves · comital seat',
-  lon:6.1381,lat:51.7893,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:6.1381,lat:51.7893,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:500,armyText:'≈500',navy:0,navyText:'0',
   food:72,technology:61,satisfaction:71,
   historicalRole:'Capital town of the County of Cleves near the lower Rhine',
@@ -1125,7 +1125,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-julich',name:'Jülich',modern:'Jülich',country:'County of Jülich',subrealm:'County of Jülich · comital centre',
-  lon:6.3648,lat:50.9221,rarity:1,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
+  lon:6.3648,lat:50.9221,rarity:0,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
   sizeText:'≈0.2 km²',sizeConfidence:'low',army:450,armyText:'≈450',navy:0,navyText:'0',
   food:71,technology:59,satisfaction:70,
   historicalRole:'Administrative and fortified centre of the County of Jülich',
@@ -1137,7 +1137,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-dusseldorf',name:'Düsseldorf',modern:'Düsseldorf',country:'County of Berg',subrealm:'County of Berg · newly chartered town',
-  lon:6.7735,lat:51.2277,rarity:1,year:1300,people:2000,populationText:'≈2.0 K',populationRange:'≈1.5–3 K',populationConfidence:'low',
+  lon:6.7735,lat:51.2277,rarity:0,year:1300,people:2000,populationText:'≈2.0 K',populationRange:'≈1.5–3 K',populationConfidence:'low',
   sizeText:'≈0.18 km²',sizeConfidence:'low',army:350,armyText:'≈350',navy:0,navyText:'0',
   food:70,technology:58,satisfaction:72,
   historicalRole:'New Rhine town of the counts of Berg after receiving city rights in 1288',
@@ -1149,7 +1149,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-hamm',name:'Hamm',modern:'Hamm',country:'County of Mark',subrealm:'County of Mark · planned comital town',
-  lon:7.8178,lat:51.6739,rarity:1,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
+  lon:7.8178,lat:51.6739,rarity:0,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
   sizeText:'≈0.2 km²',sizeConfidence:'low',army:450,armyText:'≈450',navy:0,navyText:'0',
   food:72,technology:59,satisfaction:73,
   historicalRole:'Purpose-built urban centre of the counts of Mark',
@@ -1161,7 +1161,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-luxembourg',name:'Luxembourg',modern:'Luxembourg',country:'County of Luxembourg',subrealm:'County of Luxembourg · fortified comital capital',
-  lon:6.1319,lat:49.6116,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:6.1319,lat:49.6116,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:67,technology:68,satisfaction:69,
   historicalRole:'Fortress-capital of the rising House of Luxembourg',
@@ -1173,7 +1173,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-idstein',name:'Idstein',modern:'Idstein',country:'County of Nassau',subrealm:'Walramian Nassau · Idstein lordship',
-  lon:8.2689,lat:50.2216,rarity:1,year:1300,people:1500,populationText:'≈1.5 K',populationRange:'≈1–2.5 K',populationConfidence:'low',
+  lon:8.2689,lat:50.2216,rarity:0,year:1300,people:1500,populationText:'≈1.5 K',populationRange:'≈1–2.5 K',populationConfidence:'low',
   sizeText:'≈0.12 km²',sizeConfidence:'low',army:300,armyText:'≈300',navy:0,navyText:'0',
   food:68,technology:56,satisfaction:71,
   historicalRole:'Small fortified residence in the divided Nassau lands',
@@ -1185,7 +1185,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-siegen',name:'Siegen',modern:'Siegen',country:'County of Nassau',subrealm:'Ottonian Nassau · Siegen centre',
-  lon:8.0243,lat:50.8748,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:8.0243,lat:50.8748,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:500,armyText:'≈500',navy:0,navyText:'0',
   food:66,technology:65,satisfaction:70,
   historicalRole:'Mining and administrative centre of the northern Nassau lands',
@@ -1197,7 +1197,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-nancy',name:'Nancy',modern:'Nancy',country:'Duchy of Lorraine',subrealm:'Duchy of Lorraine · ducal capital',
-  lon:6.1844,lat:48.6921,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:6.1844,lat:48.6921,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
   food:72,technology:68,satisfaction:70,
   historicalRole:'Principal residence and political centre of the dukes of Lorraine',
@@ -1209,7 +1209,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-epinal',name:'Épinal',modern:'Épinal',country:'Duchy of Lorraine',subrealm:'Duchy of Lorraine · fortified Moselle town',
-  lon:6.4494,lat:48.1740,rarity:1,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:6.4494,lat:48.1740,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:70,technology:61,satisfaction:71,
   historicalRole:'Fortified regional town on the upper Moselle',
@@ -1221,7 +1221,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-trier',name:'Trier',modern:'Trier',country:'Archbishopric of Trier',subrealm:'Electoral Archbishopric of Trier · archiepiscopal capital',
-  lon:6.6412,lat:49.7490,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:6.6412,lat:49.7490,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.8 km²',sizeConfidence:'low',army:1600,armyText:'≈1.6 K',navy:0,navyText:'0',
   food:69,technology:84,satisfaction:67,
   historicalRole:'Capital of one of the Empire’s leading ecclesiastical principalities and an electoral see',
@@ -1233,7 +1233,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-mainz',name:'Mainz',modern:'Mainz',country:'Archbishopric of Mainz',subrealm:'Electoral Archbishopric of Mainz · free-city privileges under the archchancellor',
-  lon:8.2473,lat:49.9929,rarity:4,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:8.2473,lat:49.9929,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:73,technology:91,satisfaction:63,
   historicalRole:'Seat of the Empire’s archchancellor and one of the richest cities of the Rhineland',
@@ -1245,7 +1245,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bonn',name:'Bonn',modern:'Bonn',country:'Archbishopric of Cologne',subrealm:'Archbishopric/Electorate of Cologne · principal archiepiscopal residence after 1288',
-  lon:7.0982,lat:50.7374,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:7.0982,lat:50.7374,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:72,technology:70,satisfaction:69,
   historicalRole:'Important residence and territorial centre of the archbishops of Cologne after their loss of political control inside Cologne',
@@ -1257,7 +1257,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-cologne',name:'Cologne',modern:'Cologne',country:'Independent City of Cologne',subrealm:'De facto autonomous city after the Battle of Worringen (1288)',
-  lon:6.9603,lat:50.9375,rarity:4,year:1300,people:45000,populationText:'≈45.0 K',populationRange:'≈40–50 K',populationConfidence:'medium',
+  lon:6.9603,lat:50.9375,rarity:3,year:1300,people:45000,populationText:'≈45.0 K',populationRange:'≈40–50 K',populationConfidence:'medium',
   sizeText:'≈4.0 km²',sizeConfidence:'medium',army:5200,armyText:'≈5.2 K',navy:0,navyText:'0',
   food:73,technology:91,satisfaction:76,
   historicalRole:'One of the largest cities of the Empire, a major Rhine trading centre and effectively self-governing commune',
@@ -1269,7 +1269,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-heidelberg',name:'Heidelberg',modern:'Heidelberg',country:'County Palatine of the Rhine',subrealm:'Electoral Palatinate · principal residence of the counts palatine',
-  lon:8.6724,lat:49.3988,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:8.6724,lat:49.3988,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
   food:71,technology:70,satisfaction:71,
   historicalRole:'Growing residence and administrative centre of the Rhine Palatinate',
@@ -1281,7 +1281,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-pforzheim',name:'Pforzheim',modern:'Pforzheim',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · important northern market town',
-  lon:8.4037,lat:48.8922,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:8.4037,lat:48.8922,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:70,technology:64,satisfaction:72,
   historicalRole:'Important Baden market and administrative centre at the northern edge of the margraviate',
@@ -1293,7 +1293,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-baden-baden',name:'Baden',modern:'Baden-Baden',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · dynastic seat around Hohenbaden',
-  lon:8.2398,lat:48.7606,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:8.2398,lat:48.7606,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:550,armyText:'≈550',navy:0,navyText:'0',
   food:69,technology:61,satisfaction:72,
   historicalRole:'Dynastic centre that gave the Margraviate of Baden its name',
@@ -1305,7 +1305,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-stuttgart',name:'Stuttgart',modern:'Stuttgart',country:'County of Württemberg',subrealm:'County of Württemberg · comital residence',
-  lon:9.1829,lat:48.7758,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:9.1829,lat:48.7758,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:72,technology:66,satisfaction:72,
   historicalRole:'Growing residence of the counts of Württemberg',
@@ -1317,7 +1317,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-tubingen',name:'Tübingen',modern:'Tübingen',country:'County of Württemberg',subrealm:'County of Württemberg · recently acquired former palatine town',
-  lon:9.0576,lat:48.5216,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:9.0576,lat:48.5216,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:71,technology:65,satisfaction:68,
   historicalRole:'Fortified Neckar town with strong castle and regional market functions',
@@ -1329,7 +1329,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-marburg',name:'Marburg',modern:'Marburg',country:'Landgraviate of Hesse',subrealm:'Landgraviate of Hesse · dynastic centre of Henry I',
-  lon:8.7709,lat:50.8075,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:8.7709,lat:50.8075,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:70,technology:75,satisfaction:72,
   historicalRole:'Core dynastic and ecclesiastical centre of the newly established Landgraviate of Hesse',
@@ -1341,7 +1341,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-kassel',name:'Kassel',modern:'Kassel',country:'Landgraviate of Hesse',subrealm:'Landgraviate of Hesse · residence used by Henry I from 1277',
-  lon:9.4797,lat:51.3127,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:9.4797,lat:51.3127,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:72,technology:67,satisfaction:73,
   historicalRole:'Growing Hessian residence and market town on the Fulda',
@@ -1353,7 +1353,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-eisenach',name:'Eisenach',modern:'Eisenach',country:'Landgraviate of Thuringia',subrealm:'Landgraviate of Thuringia · Wartburg centre',
-  lon:10.3150,lat:50.9804,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  lon:10.3150,lat:50.9804,rarity:0,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
   sizeText:'≈0.5 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:69,technology:73,satisfaction:69,
   historicalRole:'Major Thuringian castle-town below the Wartburg',
@@ -1365,7 +1365,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-gotha',name:'Gotha',modern:'Gotha',country:'Landgraviate of Thuringia',subrealm:'Landgraviate of Thuringia · market and administrative town',
-  lon:10.7042,lat:50.9482,rarity:1,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:10.7042,lat:50.9482,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:0,navyText:'0',
   food:72,technology:64,satisfaction:72,
   historicalRole:'Established market town in central Thuringia',
@@ -1377,7 +1377,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-meissen',name:'Meissen',modern:'Meissen',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · margravial and episcopal centre',
-  lon:13.4730,lat:51.1634,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:13.4730,lat:51.1634,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
   food:69,technology:75,satisfaction:70,
   historicalRole:'Namesake political centre of the Margraviate of Meissen and episcopal seat',
@@ -1389,7 +1389,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-leipzig',name:'Leipzig',modern:'Leipzig',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · major fair and trading town',
-  lon:12.3731,lat:51.3397,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:12.3731,lat:51.3397,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:73,technology:79,satisfaction:74,
   historicalRole:'Fast-growing commercial town at the crossroads of major central European routes',
@@ -1401,7 +1401,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-dresden',name:'Dresden',modern:'Dresden',country:'Margraviate of Meissen',subrealm:'Margraviate of Meissen · Elbe residence town',
-  lon:13.7373,lat:51.0504,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:13.7373,lat:51.0504,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:72,technology:66,satisfaction:72,
   historicalRole:'Elbe crossing and developing Wettin residence town',
@@ -1413,7 +1413,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-brandenburg',name:'Brandenburg an der Havel',modern:'Brandenburg an der Havel',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · historic namesake centre',
-  lon:12.5498,lat:52.4125,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  lon:12.5498,lat:52.4125,rarity:0,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
   sizeText:'≈0.5 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
   food:68,technology:68,satisfaction:70,
   historicalRole:'Historic political and ecclesiastical centre of the Mark Brandenburg',
@@ -1425,7 +1425,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-berlin-colln',name:'Berlin-Cölln',modern:'Berlin',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · twin merchant towns, still administratively separate in 1300',
-  lon:13.4050,lat:52.5200,rarity:2,year:1300,people:6500,populationText:'≈6.5 K',populationRange:'≈5–7.5 K',populationConfidence:'low',
+  lon:13.4050,lat:52.5200,rarity:0,year:1300,people:6500,populationText:'≈6.5 K',populationRange:'≈5–7.5 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:68,technology:71,satisfaction:73,
   historicalRole:'Growing twin merchant settlements on opposite banks of the Spree',
@@ -1437,7 +1437,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-frankfurt-oder',name:'Frankfurt an der Oder',modern:'Frankfurt (Oder)',country:'Margraviate of Brandenburg',subrealm:'Margraviate of Brandenburg · Oder trading town',
-  lon:14.5506,lat:52.3471,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:14.5506,lat:52.3471,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:0,navyText:'0',
   food:70,technology:68,satisfaction:72,
   historicalRole:'Important Oder crossing and eastern trading town of Brandenburg',
@@ -1449,7 +1449,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-wittenberg',name:'Wittenberg',modern:'Wittenberg',country:'Duchy of Saxony-Wittenberg',subrealm:'Duchy of Saxony-Wittenberg · Ascanian ducal seat after the 1296 partition',
-  lon:12.6489,lat:51.8667,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:12.6489,lat:51.8667,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:68,technology:65,satisfaction:70,
   historicalRole:'New ducal centre of the Saxony-Wittenberg branch of the Ascanians',
@@ -1461,7 +1461,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-lauenburg',name:'Lauenburg',modern:'Lauenburg/Elbe',country:'Duchy of Saxe-Lauenburg',subrealm:'Duchy of Saxe-Lauenburg · Ascanian ducal centre after the 1296 partition',
-  lon:10.5560,lat:53.3714,rarity:1,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
+  lon:10.5560,lat:53.3714,rarity:0,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
   sizeText:'≈0.2 km²',sizeConfidence:'low',army:450,armyText:'≈450',navy:0,navyText:'0',
   food:67,technology:59,satisfaction:71,
   historicalRole:'Small Elbe castle-town of the Saxe-Lauenburg Ascanian line',
@@ -1473,7 +1473,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-brunswick',name:'Brunswick',modern:'Braunschweig',country:'Duchy of Brunswick-Lüneburg',subrealm:'Brunswick principality · major Welf city with extensive civic autonomy',
-  lon:10.5268,lat:52.2689,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:10.5268,lat:52.2689,rarity:1,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.9 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
   food:72,technology:78,satisfaction:69,
   historicalRole:'One of the principal cities of the Welf lands and a major north German commercial centre',
@@ -1485,7 +1485,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-luneburg',name:'Lüneburg',modern:'Lüneburg',country:'Duchy of Brunswick-Lüneburg',subrealm:'Principality of Lüneburg · salt-rich capital',
-  lon:10.4079,lat:53.2464,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:10.4079,lat:53.2464,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:69,technology:81,satisfaction:74,
   historicalRole:'Capital of the Principality of Lüneburg and a wealthy salt-production centre',
@@ -1497,7 +1497,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-zerbst',name:'Zerbst',modern:'Zerbst',country:'Principality of Anhalt',subrealm:'Principality of Anhalt-Zerbst',
-  lon:12.0850,lat:51.9660,rarity:1,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:12.0850,lat:51.9660,rarity:0,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.25 km²',sizeConfidence:'low',army:550,armyText:'≈550',navy:0,navyText:'0',
   food:69,technology:61,satisfaction:72,
   historicalRole:'Residence and urban centre of the Anhalt-Zerbst branch',
@@ -1509,7 +1509,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bernburg',name:'Bernburg',modern:'Bernburg',country:'Principality of Anhalt',subrealm:'Principality of Anhalt-Bernburg',
-  lon:11.7400,lat:51.7940,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:11.7400,lat:51.7940,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:500,armyText:'≈500',navy:0,navyText:'0',
   food:69,technology:60,satisfaction:72,
   historicalRole:'Residence town of the Anhalt-Bernburg branch',
@@ -1521,7 +1521,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-aschersleben',name:'Aschersleben',modern:'Aschersleben',country:'Principality of Anhalt',subrealm:'Principality of Anhalt-Aschersleben',
-  lon:11.4600,lat:51.7560,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:11.4600,lat:51.7560,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:0,navyText:'0',
   food:70,technology:65,satisfaction:71,
   historicalRole:'Capital of the short-lived Anhalt-Aschersleben principality',
@@ -1533,7 +1533,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-kiel',name:'Kiel',modern:'Kiel',country:'County of Holstein',subrealm:'County of Holstein · Baltic port town',
-  lon:10.1228,lat:54.3233,mapLon:10.1000,mapLat:54.3000,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
+  lon:10.1228,lat:54.3233,mapLon:10.1000,mapLat:54.3000,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–6 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:8,navyText:'≈8',
   food:68,technology:68,satisfaction:73,
   historicalRole:'Baltic port and chartered town of the counts of Holstein',
@@ -1545,7 +1545,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-wismar',name:'Wismar',modern:'Wismar',country:'Lordship of Mecklenburg',subrealm:'Lordship of Mecklenburg · Baltic Hanseatic port',
-  lon:11.4660,lat:53.8920,rarity:3,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:11.4660,lat:53.8920,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:12,navyText:'≈12',
   food:67,technology:78,satisfaction:74,
   historicalRole:'Important Baltic merchant port in the Mecklenburg lands',
@@ -1557,7 +1557,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-gustrow',name:'Güstrow',modern:'Güstrow',country:'Lordship of Werle',subrealm:'Lordship of Werle · former Werle-Güstrow centre, reunited under Nicholas II by 1300',
-  lon:12.1730,lat:53.7930,rarity:1,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:12.1730,lat:53.7930,rarity:0,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.25 km²',sizeConfidence:'low',army:550,armyText:'≈550',navy:0,navyText:'0',
   food:69,technology:61,satisfaction:71,
   historicalRole:'Regional princely centre within the Werle branch of the Mecklenburg dynasty',
@@ -1569,7 +1569,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-stettin',name:'Stettin / Szczecin',modern:'Szczecin',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · ducal and Oder port city',
-  lon:14.5528,lat:53.4285,rarity:3,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:14.5528,lat:53.4285,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:10,navyText:'≈10',
   food:70,technology:74,satisfaction:70,
   historicalRole:'Capital and major Oder port of the Pomerania-Stettin branch created in 1295',
@@ -1581,7 +1581,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-stargard',name:'Stargard',modern:'Stargard',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · inland Hanseatic-oriented town',
-  lon:15.0499,lat:53.3367,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:15.0499,lat:53.3367,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:0,navyText:'0',
   food:71,technology:69,satisfaction:72,
   historicalRole:'Growing fortified trading town of Pomerania-Stettin',
@@ -1593,7 +1593,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-wolgast',name:'Wolgast',modern:'Wolgast',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · ducal residence after 1295',
-  lon:13.7729,lat:54.0528,mapLon:13.7500,mapLat:54.0200,rarity:2,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:13.7729,lat:54.0528,mapLon:13.7500,mapLat:54.0200,rarity:0,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.25 km²',sizeConfidence:'low',army:600,armyText:'≈600',navy:5,navyText:'≈5',
   food:68,technology:65,satisfaction:71,
   historicalRole:'Namesake ducal residence of the Pomerania-Wolgast branch',
@@ -1605,7 +1605,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-greifswald',name:'Greifswald',modern:'Greifswald',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · Baltic merchant city',
-  lon:13.3815,lat:54.0958,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:13.3815,lat:54.0958,rarity:1,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:8,navyText:'≈8',
   food:68,technology:72,satisfaction:74,
   historicalRole:'Prosperous Baltic trading town within Pomerania-Wolgast',
@@ -1617,7 +1617,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-stralsund',name:'Stralsund',modern:'Stralsund',country:'Duchy of Pomerania-Wolgast',subrealm:'Duchy of Pomerania-Wolgast · major Hanseatic Baltic port',
-  lon:13.0850,lat:54.3091,mapLon:13.0400,mapLat:54.2000,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:13.0850,lat:54.3091,mapLon:13.0400,mapLat:54.2000,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:15,navyText:'≈15',
   food:69,technology:80,satisfaction:75,
   historicalRole:'One of the strongest Baltic merchant cities of the Pomeranian coast',
@@ -1629,7 +1629,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-munich',name:'Munich',modern:'Munich',country:'Duchy of Upper Bavaria',subrealm:'Upper Bavaria · ducal capital of the Wittelsbach line',
-  lon:11.5820,lat:48.1351,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:11.5820,lat:48.1351,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:79,technology:75,satisfaction:71,
   historicalRole:'Capital and principal residence of Upper Bavaria',
@@ -1641,7 +1641,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ingolstadt',name:'Ingolstadt',modern:'Ingolstadt',country:'Duchy of Upper Bavaria',subrealm:'Upper Bavaria · fortified Danube town',
-  lon:11.4258,lat:48.7665,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:11.4258,lat:48.7665,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:78,technology:66,satisfaction:72,
   historicalRole:'Strategic Danube town in Upper Bavaria',
@@ -1653,7 +1653,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-landshut',name:'Landshut',modern:'Landshut',country:'Duchy of Lower Bavaria',subrealm:'Lower Bavaria · principal ducal capital',
-  lon:12.1522,lat:48.5442,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:12.1522,lat:48.5442,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:82,technology:72,satisfaction:72,
   historicalRole:'Principal capital of Lower Bavaria after the 1255 Wittelsbach partition',
@@ -1665,7 +1665,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-straubing',name:'Straubing',modern:'Straubing',country:'Duchy of Lower Bavaria',subrealm:'Lower Bavaria · Danube market and ducal town',
-  lon:12.5732,lat:48.8813,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:12.5732,lat:48.8813,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:83,technology:67,satisfaction:73,
   historicalRole:'Important Danube market town of Lower Bavaria',
@@ -1677,7 +1677,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-salzburg',name:'Salzburg',modern:'Salzburg',country:'Archbishopric of Salzburg',subrealm:'Prince-Archbishopric of Salzburg · ecclesiastical capital',
-  lon:13.0550,lat:47.8095,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:13.0550,lat:47.8095,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:74,technology:84,satisfaction:68,
   historicalRole:'Capital of a powerful ecclesiastical principality enriched by Alpine salt',
@@ -1689,7 +1689,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-hallein',name:'Hallein',modern:'Hallein',country:'Archbishopric of Salzburg',subrealm:'Prince-Archbishopric of Salzburg · salt-mining town',
-  lon:13.0926,lat:47.6833,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:13.0926,lat:47.6833,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.28 km²',sizeConfidence:'low',army:600,armyText:'≈600',navy:0,navyText:'0',
   food:70,technology:76,satisfaction:70,
   historicalRole:'Key salt-production centre of the Salzburg archbishops',
@@ -1701,7 +1701,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-vienna',name:'Vienna',modern:'Vienna',country:'Duchy of Austria',subrealm:'Habsburg Duchy of Austria · principal ducal city',
-  lon:16.3738,lat:48.2082,rarity:4,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'low',
+  lon:16.3738,lat:48.2082,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'low',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:2500,armyText:'≈2.5 K',navy:0,navyText:'0',
   food:78,technology:85,satisfaction:69,
   historicalRole:'Principal Habsburg city in Austria and major Danube commercial centre',
@@ -1713,7 +1713,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-krems',name:'Krems',modern:'Krems an der Donau',country:'Duchy of Austria',subrealm:'Duchy of Austria · Danube wine and trading town paired with Stein',
-  lon:15.6042,lat:48.4100,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:15.6042,lat:48.4100,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:79,technology:69,satisfaction:74,
   historicalRole:'Important Danube market and wine-trading town of Austria',
@@ -1725,7 +1725,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-wiener-neustadt',name:'Wiener Neustadt',modern:'Wiener Neustadt',country:'Duchy of Austria',subrealm:'Duchy of Austria · fortified Babenberg foundation under Habsburg rule',
-  lon:16.2497,lat:47.8150,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:16.2497,lat:47.8150,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
   food:72,technology:68,satisfaction:70,
   historicalRole:'Planned fortified town guarding Austria’s southeastern approaches',
@@ -1737,7 +1737,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-linz',name:'Linz',modern:'Linz',country:'Duchy of Austria',subrealm:'Duchy of Austria · upper Danube market town',
-  lon:14.2858,lat:48.3069,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:14.2858,lat:48.3069,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:0,navyText:'0',
   food:78,technology:67,satisfaction:73,
   historicalRole:'Important Danube crossing and market centre in Upper Austria',
@@ -1749,7 +1749,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-graz',name:'Graz',modern:'Graz',country:'Duchy of Styria',subrealm:'Habsburg Duchy of Styria · principal urban and ducal centre',
-  lon:15.4395,lat:47.0707,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:15.4395,lat:47.0707,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:78,technology:72,satisfaction:71,
   historicalRole:'Leading city of Styria under Habsburg rule',
@@ -1761,7 +1761,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-judenburg',name:'Judenburg',modern:'Judenburg',country:'Duchy of Styria',subrealm:'Duchy of Styria · alpine trade and market town',
-  lon:14.6603,lat:47.1696,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:14.6603,lat:47.1696,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:0,navyText:'0',
   food:72,technology:70,satisfaction:72,
   historicalRole:'Important Styrian trading town on trans-Alpine routes',
@@ -1773,7 +1773,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-st-veit',name:'St. Veit an der Glan',modern:'St. Veit an der Glan',country:'Duchy of Carinthia',subrealm:'Duchy of Carinthia · ducal capital under the Meinhardiner dynasty',
-  lon:14.3603,lat:46.7681,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:14.3603,lat:46.7681,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:70,technology:68,satisfaction:70,
   historicalRole:'Principal ducal town and political centre of Carinthia',
@@ -1785,7 +1785,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-klagenfurt',name:'Klagenfurt',modern:'Klagenfurt',country:'Duchy of Carinthia',subrealm:'Duchy of Carinthia · young chartered town',
-  lon:14.3050,lat:46.6247,rarity:1,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:14.3050,lat:46.6247,rarity:0,year:1300,people:3500,populationText:'≈3.5 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.25 km²',sizeConfidence:'low',army:550,armyText:'≈550',navy:0,navyText:'0',
   food:70,technology:62,satisfaction:72,
   historicalRole:'Young but growing urban centre in the Carinthian basin',
@@ -1797,7 +1797,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-merano',name:'Merano',modern:'Merano',country:'County of Tyrol',subrealm:'County of Tyrol · principal comital town',
-  lon:11.1590,lat:46.6713,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:11.1590,lat:46.6713,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:0,navyText:'0',
   food:72,technology:70,satisfaction:73,
   historicalRole:'Principal urban centre of the County of Tyrol before Innsbruck’s later rise',
@@ -1809,7 +1809,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-innsbruck',name:'Innsbruck',modern:'Innsbruck',country:'County of Tyrol',subrealm:'County of Tyrol · Inn bridge and trans-Alpine market town',
-  lon:11.4041,lat:47.2692,rarity:2,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈3.5–6 K',populationConfidence:'low',
+  lon:11.4041,lat:47.2692,rarity:0,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈3.5–6 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:68,technology:71,satisfaction:72,
   historicalRole:'Strategic bridge-town on one of the main trans-Alpine routes',
@@ -1821,7 +1821,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-prague',name:'Prague',modern:'Prague',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal capital of Wenceslaus II',
-  lon:14.4378,lat:50.0755,rarity:4,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–50 K',populationConfidence:'medium',
+  lon:14.4378,lat:50.0755,rarity:3,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–50 K',populationConfidence:'medium',
   sizeText:'≈2.0 km²',sizeConfidence:'low',army:4500,armyText:'≈4.5 K',navy:0,navyText:'0',
   food:78,technology:92,satisfaction:72,
   historicalRole:'Royal capital of Bohemia and one of central Europe’s great political and commercial cities',
@@ -1833,7 +1833,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-kutna-hora',name:'Kutná Hora',modern:'Kutná Hora',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal silver-mining centre',
-  lon:15.2682,lat:49.9484,rarity:4,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–15 K',populationConfidence:'low',
+  lon:15.2682,lat:49.9484,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–15 K',populationConfidence:'low',
   sizeText:'≈0.7 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:66,technology:96,satisfaction:68,
   historicalRole:'Explosive silver-mining centre central to Wenceslaus II’s monetary reforms',
@@ -1845,7 +1845,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-plzen',name:'Plzeň',modern:'Plzeň',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · newly founded royal city',
-  lon:13.3776,lat:49.7384,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:13.3776,lat:49.7384,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:650,armyText:'≈650',navy:0,navyText:'0',
   food:73,technology:66,satisfaction:74,
   historicalRole:'New planned royal town founded by Wenceslaus II in the 1290s',
@@ -1857,7 +1857,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ceske-budejovice',name:'České Budějovice',modern:'České Budějovice',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal city founded by Přemysl Ottokar II',
-  lon:14.4747,lat:48.9745,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:14.4747,lat:48.9745,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:0,navyText:'0',
   food:76,technology:67,satisfaction:73,
   historicalRole:'Royal foundation strengthening the monarchy in southern Bohemia',
@@ -1869,7 +1869,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-hradec-kralove',name:'Hradec Králové',modern:'Hradec Králové',country:'Kingdom of Bohemia',subrealm:'Kingdom of Bohemia · royal town of Hradec',
-  lon:15.8328,lat:50.2104,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:15.8328,lat:50.2104,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:77,technology:68,satisfaction:73,
   historicalRole:'Important fortified royal town in eastern Bohemia',
@@ -1881,7 +1881,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-brno',name:'Brno',modern:'Brno',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · principal southern Moravian city',
-  lon:16.6068,lat:49.1951,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:16.6068,lat:49.1951,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:77,technology:77,satisfaction:71,
   historicalRole:'One of Moravia’s two leading political and commercial cities',
@@ -1893,7 +1893,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-olomouc',name:'Olomouc',modern:'Olomouc',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · episcopal and political centre',
-  lon:17.2509,lat:49.5938,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:17.2509,lat:49.5938,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:76,technology:82,satisfaction:70,
   historicalRole:'Major Moravian episcopal city and political centre',
@@ -1905,7 +1905,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-znojmo',name:'Znojmo',modern:'Znojmo',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · fortified royal and wine town',
-  lon:16.0488,lat:48.8555,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:16.0488,lat:48.8555,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:950,armyText:'≈950',navy:0,navyText:'0',
   food:80,technology:70,satisfaction:72,
   historicalRole:'Strong southern Moravian fortress and commercial town',
@@ -1917,7 +1917,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-jihlava',name:'Jihlava',modern:'Jihlava',country:'Margraviate of Moravia',subrealm:'Margraviate of Moravia · royal silver-mining city',
-  lon:15.5912,lat:49.3961,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:15.5912,lat:49.3961,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:68,technology:90,satisfaction:70,
   historicalRole:'Major silver-mining and legal centre of Moravia',
@@ -1929,7 +1929,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-schwyz',name:'Schwyz',modern:'Schwyz',country:'Waldstätte',subrealm:'Valley community of Schwyz · early Swiss Confederacy within the Holy Roman Empire',
-  lon:8.6541,lat:47.0207,rarity:2,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:8.6541,lat:47.0207,rarity:0,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.15 km²',sizeConfidence:'low',army:650,armyText:'≈650',navy:0,navyText:'0',
   food:67,technology:58,satisfaction:82,
   historicalRole:'One of the three original Waldstätte communities associated by the 1291 Federal Charter',
@@ -1941,7 +1941,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-altdorf',name:'Altdorf',modern:'Altdorf, Uri',country:'Waldstätte',subrealm:'Uri valley community · early Swiss Confederacy within the Holy Roman Empire',
-  lon:8.6444,lat:46.8804,rarity:2,year:1300,people:2000,populationText:'≈2.0 K',populationRange:'≈1.5–3 K',populationConfidence:'low',
+  lon:8.6444,lat:46.8804,rarity:0,year:1300,people:2000,populationText:'≈2.0 K',populationRange:'≈1.5–3 K',populationConfidence:'low',
   sizeText:'≈0.12 km²',sizeConfidence:'low',army:550,armyText:'≈550',navy:0,navyText:'0',
   food:64,technology:57,satisfaction:82,
   historicalRole:'Central settlement of Uri, one of the three original Waldstätte communities',
@@ -1953,7 +1953,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-freiburg-breisgau',name:'Freiburg im Breisgau',modern:'Freiburg im Breisgau',country:'County of Freiburg',subrealm:'City of Freiburg · under the Counts of Freiburg',
-  lon:7.8421,lat:47.9990,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:7.8421,lat:47.9990,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:72,technology:79,satisfaction:70,
   historicalRole:'Prosperous Upper Rhine market and mining-linked city under the Counts of Freiburg',
@@ -1965,7 +1965,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-basel',name:'Basel',modern:'Basel',country:'Prince-Bishopric of Basel',subrealm:'Prince-Bishopric of Basel · episcopal city with strong civic institutions',
-  lon:7.5886,lat:47.5596,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:7.5886,lat:47.5596,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:70,technology:82,satisfaction:68,
   historicalRole:'Major Upper Rhine episcopal, commercial and bridge city',
@@ -1977,7 +1977,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-munster',name:'Münster',modern:'Münster',country:'Prince-Bishopric of Münster',subrealm:'Prince-Bishopric of Münster · episcopal capital',
-  lon:7.6261,lat:51.9607,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:7.6261,lat:51.9607,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:74,technology:77,satisfaction:68,
   historicalRole:'Capital of a large Westphalian prince-bishopric and important market city',
@@ -1989,7 +1989,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-osnabruck',name:'Osnabrück',modern:'Osnabrück',country:'Prince-Bishopric of Osnabrück',subrealm:'Prince-Bishopric of Osnabrück · episcopal and merchant city',
-  lon:8.0472,lat:52.2799,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  lon:8.0472,lat:52.2799,rarity:0,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
   sizeText:'≈0.5 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
   food:72,technology:72,satisfaction:69,
   historicalRole:'Episcopal city and regional commercial centre in western Saxony',
@@ -2001,7 +2001,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-paderborn',name:'Paderborn',modern:'Paderborn',country:'Prince-Bishopric of Paderborn',subrealm:'Prince-Bishopric of Paderborn · episcopal capital',
-  lon:8.7575,lat:51.7189,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:8.7575,lat:51.7189,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.42 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:72,technology:74,satisfaction:68,
   historicalRole:'Old episcopal and imperial-meeting centre in eastern Westphalia',
@@ -2013,7 +2013,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-wurzburg',name:'Würzburg',modern:'Würzburg',country:'Prince-Bishopric of Würzburg',subrealm:'Prince-Bishopric of Würzburg · episcopal capital in Franconia',
-  lon:9.9534,lat:49.7913,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:9.9534,lat:49.7913,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:75,technology:80,satisfaction:67,
   historicalRole:'Capital of a powerful Franconian prince-bishopric',
@@ -2025,7 +2025,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bamberg',name:'Bamberg',modern:'Bamberg',country:'Prince-Bishopric of Bamberg',subrealm:'Prince-Bishopric of Bamberg · cathedral and episcopal city',
-  lon:10.8860,lat:49.8988,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:10.8860,lat:49.8988,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:74,technology:82,satisfaction:69,
   historicalRole:'Important Franconian cathedral city and capital of its prince-bishopric',
@@ -2037,7 +2037,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-passau',name:'Passau',modern:'Passau',country:'Prince-Bishopric of Passau',subrealm:'Prince-Bishopric of Passau · Danube-Inn episcopal city',
-  lon:13.4319,lat:48.5667,rarity:3,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
+  lon:13.4319,lat:48.5667,rarity:1,year:1300,people:9000,populationText:'≈9.0 K',populationRange:'≈7–11 K',populationConfidence:'low',
   sizeText:'≈0.55 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:76,technology:79,satisfaction:69,
   historicalRole:'Strategic episcopal city at the confluence of the Danube, Inn and Ilz',
@@ -2049,7 +2049,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-dillingen',name:'Dillingen an der Donau',modern:'Dillingen an der Donau',country:'Prince-Bishopric of Augsburg',subrealm:'Prince-Bishopric of Augsburg · episcopal territorial residence acquired in 1258',
-  lon:10.4933,lat:48.5817,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:10.4933,lat:48.5817,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:500,armyText:'≈500',navy:0,navyText:'0',
   food:73,technology:63,satisfaction:71,
   historicalRole:'Small Danube territorial centre of the bishops of Augsburg',
@@ -2061,7 +2061,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-donaustauf',name:'Donaustauf',modern:'Donaustauf',country:'Prince-Bishopric of Regensburg',subrealm:'Prince-Bishopric of Regensburg · episcopal castle-town',
-  lon:12.2048,lat:49.0320,rarity:1,year:1300,people:1800,populationText:'≈1.8 K',populationRange:'≈1–2.5 K',populationConfidence:'low',
+  lon:12.2048,lat:49.0320,rarity:0,year:1300,people:1800,populationText:'≈1.8 K',populationRange:'≈1–2.5 K',populationConfidence:'low',
   sizeText:'≈0.12 km²',sizeConfidence:'low',army:400,armyText:'≈400',navy:0,navyText:'0',
   food:70,technology:58,satisfaction:70,
   historicalRole:'Small fortified territorial centre of the bishops of Regensburg',
@@ -2073,7 +2073,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bruchsal',name:'Bruchsal',modern:'Bruchsal',country:'Prince-Bishopric of Speyer',subrealm:'Prince-Bishopric of Speyer · episcopal territorial town',
-  lon:8.5980,lat:49.1243,rarity:1,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
+  lon:8.5980,lat:49.1243,rarity:0,year:1300,people:2500,populationText:'≈2.5 K',populationRange:'≈2–3.5 K',populationConfidence:'low',
   sizeText:'≈0.18 km²',sizeConfidence:'low',army:450,armyText:'≈450',navy:0,navyText:'0',
   food:72,technology:60,satisfaction:71,
   historicalRole:'Territorial town of the bishops of Speyer outside the autonomous city of Speyer',
@@ -2085,7 +2085,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-saverne',name:'Saverne / Zabern',modern:'Saverne',country:'Prince-Bishopric of Strasbourg',subrealm:'Prince-Bishopric of Strasbourg · episcopal territorial centre',
-  lon:7.3622,lat:48.7414,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:7.3622,lat:48.7414,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:500,armyText:'≈500',navy:0,navyText:'0',
   food:70,technology:62,satisfaction:70,
   historicalRole:'Territorial centre of the Strasbourg bishopric beyond the independent city',
@@ -2097,7 +2097,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-lubeck',name:'Lübeck',modern:'Lübeck',country:'Free Imperial City of Lübeck',subrealm:'Free Imperial City since the 1226 Reichsfreiheitsprivileg',
-  lon:10.6866,lat:53.8655,rarity:4,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'medium',
+  lon:10.6866,lat:53.8655,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'medium',
   sizeText:'≈1.1 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:25,navyText:'≈25',
   food:69,technology:88,satisfaction:79,
   historicalRole:'Leading Baltic merchant republic and future head city of the Hanseatic network',
@@ -2109,7 +2109,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-hamburg',name:'Hamburg',modern:'Hamburg',country:'County of Holstein',subrealm:'Highly autonomous city under Schauenburg-Holstein overlordship',
-  lon:9.9937,lat:53.5511,rarity:3,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈4–5 K',populationConfidence:'high',
+  lon:9.9937,lat:53.5511,rarity:1,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈4–5 K',populationConfidence:'high',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:12,navyText:'≈12',
   food:69,technology:75,satisfaction:79,
   historicalRole:'Rapidly self-governing Elbe port with major North Sea and Baltic trade links',
@@ -2121,7 +2121,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bremen',name:'Bremen',modern:'Bremen',country:'Archbishopric of Bremen',subrealm:'Self-governing city under the archbishop’s formal lordship',
-  lon:8.8017,lat:53.0793,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:8.8017,lat:53.0793,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:10,navyText:'≈10',
   food:71,technology:78,satisfaction:77,
   historicalRole:'Commercial Weser city with a mature council and substantial civic autonomy',
@@ -2133,7 +2133,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-frankfurt-main',name:'Frankfurt am Main',modern:'Frankfurt am Main',country:'Imperial City of Frankfurt',subrealm:'Royal/imperial city directly dependent on king and empire; full Free Imperial status later',
-  lon:8.6821,lat:50.1109,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:8.6821,lat:50.1109,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.7 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:74,technology:80,satisfaction:75,
   historicalRole:'Important royal city, fair centre and Main crossing directly linked to the empire',
@@ -2145,7 +2145,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-nuremberg',name:'Nuremberg',modern:'Nuremberg',country:'Free Imperial City of Nuremberg',subrealm:'Imperial city with civic self-government and major imperial castle',
-  lon:11.0767,lat:49.4521,rarity:4,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:11.0767,lat:49.4521,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈1.1 km²',sizeConfidence:'low',army:2300,armyText:'≈2.3 K',navy:0,navyText:'0',
   food:72,technology:88,satisfaction:77,
   historicalRole:'One of the Empire’s foremost royal and merchant cities',
@@ -2157,7 +2157,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-regensburg',name:'Regensburg',modern:'Regensburg',country:'Free Imperial City of Regensburg',subrealm:'Free Imperial City since 1245',
-  lon:12.1016,lat:49.0134,rarity:4,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'low',
+  lon:12.1016,lat:49.0134,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'low',
   sizeText:'≈1.2 km²',sizeConfidence:'low',army:2300,armyText:'≈2.3 K',navy:0,navyText:'0',
   food:75,technology:87,satisfaction:78,
   historicalRole:'Major Danube trading metropolis and independent imperial city',
@@ -2169,7 +2169,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-augsburg',name:'Augsburg',modern:'Augsburg',country:'Free Imperial City of Augsburg',subrealm:'Imperial city increasingly independent from its bishop',
-  lon:10.8978,lat:48.3705,rarity:4,year:1300,people:18000,populationText:'≈18.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
+  lon:10.8978,lat:48.3705,rarity:2,year:1300,people:18000,populationText:'≈18.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:2100,armyText:'≈2.1 K',navy:0,navyText:'0',
   food:73,technology:87,satisfaction:76,
   historicalRole:'Large Swabian imperial city, textile and long-distance trading centre',
@@ -2181,7 +2181,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-strasbourg',name:'Strasbourg',modern:'Strasbourg',country:'Free Imperial City of Strasbourg',subrealm:'Free city after the 1262 victory over the prince-bishop',
-  lon:7.7521,lat:48.5734,rarity:4,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'low',
+  lon:7.7521,lat:48.5734,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈18–25 K',populationConfidence:'low',
   sizeText:'≈1.1 km²',sizeConfidence:'low',army:2300,armyText:'≈2.3 K',navy:0,navyText:'0',
   food:75,technology:88,satisfaction:80,
   historicalRole:'Powerful self-governing Rhine city with major trade and cathedral institutions',
@@ -2193,7 +2193,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-speyer',name:'Speyer',modern:'Speyer',country:'Free Imperial City of Speyer',subrealm:'Free Imperial City since 1294',
-  lon:8.4342,lat:49.3173,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:8.4342,lat:49.3173,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:72,technology:83,satisfaction:78,
   historicalRole:'Newly free imperial cathedral and Rhine trading city',
@@ -2205,7 +2205,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-worms',name:'Worms',modern:'Worms',country:'Free Imperial City of Worms',subrealm:'Imperial city with extensive civic liberties beside its bishopric',
-  lon:8.3597,lat:49.6341,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:8.3597,lat:49.6341,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1300,armyText:'≈1.3 K',navy:0,navyText:'0',
   food:72,technology:81,satisfaction:76,
   historicalRole:'Ancient Rhine cathedral city with strong imperial and civic institutions',
@@ -2217,7 +2217,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ulm',name:'Ulm',modern:'Ulm',country:'Free Imperial City of Ulm',subrealm:'Free Imperial City directly attached to emperor and king',
-  lon:9.9934,lat:48.4011,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:9.9934,lat:48.4011,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:75,technology:81,satisfaction:78,
   historicalRole:'Growing Swabian imperial trading city on the Danube',
@@ -2229,7 +2229,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-chambery',name:'Chambéry',modern:'Chambéry',country:'County of Savoy',subrealm:'County of Savoy · principal residence of Amadeus V',
-  lon:5.9118,lat:45.5646,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:5.9118,lat:45.5646,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:70,technology:68,satisfaction:72,
   historicalRole:'Principal political centre of the expanding County of Savoy',
@@ -2241,7 +2241,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-susa',name:'Susa',modern:'Susa',country:'County of Savoy',subrealm:'County of Savoy · Alpine gateway in the Susa Valley',
-  lon:7.0524,lat:45.1362,rarity:1,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:7.0524,lat:45.1362,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:600,armyText:'≈600',navy:0,navyText:'0',
   food:64,technology:62,satisfaction:70,
   historicalRole:'Strategic Alpine transit town linking Piedmont with the Mont Cenis route',
@@ -2253,7 +2253,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-aosta',name:'Aosta',modern:'Aosta',country:'County of Savoy',subrealm:'County of Savoy · autonomous Alpine valley centre',
-  lon:7.3201,lat:45.7370,rarity:2,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈3.5–6 K',populationConfidence:'low',
+  lon:7.3201,lat:45.7370,rarity:0,year:1300,people:4500,populationText:'≈4.5 K',populationRange:'≈3.5–6 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:750,armyText:'≈750',navy:0,navyText:'0',
   food:66,technology:65,satisfaction:74,
   historicalRole:'Principal city of the Aosta Valley under Savoyard overlordship',
@@ -2265,7 +2265,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-casale-monferrato',name:'Casale Monferrato',modern:'Casale Monferrato',country:'Marquisate of Montferrat',subrealm:'Aleramici Marquisate of Montferrat · Casale di Sant’Evasio',
-  lon:8.4527,lat:45.1351,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:8.4527,lat:45.1351,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:0,navyText:'0',
   food:76,technology:68,satisfaction:69,
   historicalRole:'Important Monferrat town before its later rise as the marquisate’s capital',
@@ -2277,7 +2277,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-saluzzo',name:'Saluzzo',modern:'Saluzzo',country:'Marquisate of Saluzzo',subrealm:'Marquisate of Saluzzo · capital under Manfred IV',
-  lon:7.4911,lat:44.6460,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:7.4911,lat:44.6460,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:1000,armyText:'≈1.0 K',navy:0,navyText:'0',
   food:72,technology:68,satisfaction:71,
   historicalRole:'Capital of an independent Alpine marquisate under Manfred IV',
@@ -2301,7 +2301,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-monza',name:'Monza',modern:'Monza',country:'Lordship of Milan',subrealm:'Visconti Milanese sphere · major Lombard town',
-  lon:9.2744,lat:45.5845,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:9.2744,lat:45.5845,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.5 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
   food:76,technology:72,satisfaction:68,
   historicalRole:'Important town north of Milan with royal and ecclesiastical prestige',
@@ -2313,7 +2313,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-como',name:'Como',modern:'Como',country:'Commune of Como',subrealm:'Commune of Como · autonomous Lombard city-state',
-  lon:9.0852,lat:45.8081,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:9.0852,lat:45.8081,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:0,navyText:'0',
   food:70,technology:75,satisfaction:70,
   historicalRole:'Independent Lombard commune controlling Lake Como trade routes',
@@ -2325,7 +2325,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-brescia',name:'Brescia',modern:'Brescia',country:'Commune of Brescia',subrealm:'Commune of Brescia · Lombard communal republic',
-  lon:10.2118,lat:45.5416,rarity:3,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  lon:10.2118,lat:45.5416,rarity:2,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
   sizeText:'≈1.2 km²',sizeConfidence:'low',army:3200,armyText:'≈3.2 K',navy:0,navyText:'0',
   food:78,technology:82,satisfaction:67,
   historicalRole:'Large and wealthy Lombard commune between Milan and Verona',
@@ -2337,7 +2337,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-pavia',name:'Pavia',modern:'Pavia',country:'Commune of Pavia',subrealm:'Commune of Pavia · Lombard city-state',
-  lon:9.1582,lat:45.1847,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:9.1582,lat:45.1847,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈0.9 km²',sizeConfidence:'low',army:2300,armyText:'≈2.3 K',navy:0,navyText:'0',
   food:80,technology:79,satisfaction:68,
   historicalRole:'Ancient royal city and important Po-region commune',
@@ -2349,7 +2349,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-cremona',name:'Cremona',modern:'Cremona',country:'Commune of Cremona',subrealm:'Commune of Cremona · Po-valley city-state',
-  lon:10.0227,lat:45.1332,rarity:3,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–30 K',populationConfidence:'low',
+  lon:10.0227,lat:45.1332,rarity:2,year:1300,people:25000,populationText:'≈25.0 K',populationRange:'≈20–30 K',populationConfidence:'low',
   sizeText:'≈1.0 km²',sizeConfidence:'low',army:2700,armyText:'≈2.7 K',navy:0,navyText:'0',
   food:84,technology:78,satisfaction:66,
   historicalRole:'Prosperous agricultural and commercial Lombard commune',
@@ -2361,7 +2361,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-alessandria',name:'Alessandria',modern:'Alessandria',country:'Commune of Alessandria',subrealm:'Commune of Alessandria · fortified anti-imperial foundation',
-  lon:8.6158,lat:44.9120,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:8.6158,lat:44.9120,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:80,technology:70,satisfaction:70,
   historicalRole:'Strategic Piedmontese commune founded by the Lombard League',
@@ -2373,7 +2373,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-piacenza',name:'Piacenza',modern:'Piacenza',country:'Commune of Piacenza',subrealm:'Commune of Piacenza · Po commercial city-state',
-  lon:9.6930,lat:45.0526,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:9.6930,lat:45.0526,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈0.85 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:83,technology:77,satisfaction:67,
   historicalRole:'Major Po crossing and commercial commune',
@@ -2385,7 +2385,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-parma',name:'Parma',modern:'Parma',country:'Commune of Parma',subrealm:'Commune of Parma · Emilian communal city',
-  lon:10.3279,lat:44.8015,rarity:3,year:1300,people:18000,populationText:'≈18.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
+  lon:10.3279,lat:44.8015,rarity:2,year:1300,people:18000,populationText:'≈18.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
   sizeText:'≈0.8 km²',sizeConfidence:'low',army:2100,armyText:'≈2.1 K',navy:0,navyText:'0',
   food:84,technology:76,satisfaction:68,
   historicalRole:'Important Emilian commune with strong agricultural hinterland',
@@ -2397,7 +2397,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-verona',name:'Verona',modern:'Verona',country:'Lordship of Verona',subrealm:'Scaliger Lordship of Verona · ruled by Bartolomeo I della Scala',
-  lon:10.9916,lat:45.4384,rarity:4,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  lon:10.9916,lat:45.4384,rarity:3,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
   sizeText:'≈1.2 km²',sizeConfidence:'low',army:3500,armyText:'≈3.5 K',navy:0,navyText:'0',
   food:80,technology:83,satisfaction:69,
   historicalRole:'Powerful north-Italian lordship at a strategic Adige crossing',
@@ -2409,7 +2409,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-padua',name:'Padua',modern:'Padua',country:'Commune of Padua',subrealm:'Commune of Padua · major autonomous city before the Carraresi signoria',
-  lon:11.8768,lat:45.4064,rarity:4,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  lon:11.8768,lat:45.4064,rarity:3,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
   sizeText:'≈1.2 km²',sizeConfidence:'low',army:3300,armyText:'≈3.3 K',navy:0,navyText:'0',
   food:83,technology:92,satisfaction:72,
   historicalRole:'Large Venetian-region commune and major university city',
@@ -2421,7 +2421,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-vicenza',name:'Vicenza',modern:'Vicenza',country:'Commune of Padua',subrealm:'Vicenza · under Paduan political dominance around 1300',
-  lon:11.5403,lat:45.5455,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:11.5403,lat:45.5455,rarity:1,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.7 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:79,technology:73,satisfaction:62,
   historicalRole:'Prosperous but politically subordinated city in the Paduan sphere',
@@ -2433,7 +2433,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-mantua',name:'Mantua',modern:'Mantua',country:'Lordship of Mantua',subrealm:'Bonacolsi Lordship of Mantua · ruled by Guido Bonacolsi',
-  lon:10.7914,lat:45.1564,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:10.7914,lat:45.1564,rarity:1,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:0,navyText:'0',
   food:81,technology:75,satisfaction:66,
   historicalRole:'Independent Lombard lordship under the Bonacolsi dynasty',
@@ -2445,7 +2445,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ferrara',name:'Ferrara',modern:'Ferrara',country:'Marquisate of Ferrara',subrealm:'Este Lordship / Marquisate of Ferrara · under Azzo VIII d’Este',
-  lon:11.6198,lat:44.8381,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:11.6198,lat:44.8381,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈0.9 km²',sizeConfidence:'low',army:2300,armyText:'≈2.3 K',navy:0,navyText:'0',
   food:84,technology:78,satisfaction:67,
   historicalRole:'Este dynastic capital controlling a strategic lower-Po region',
@@ -2457,7 +2457,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-modena',name:'Modena',modern:'Modena',country:'Lordship of Modena',subrealm:'Este Lordship of Modena',
-  lon:10.9252,lat:44.6471,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:10.9252,lat:44.6471,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:82,technology:73,satisfaction:66,
   historicalRole:'Important Emilian city under Este lordship',
@@ -2469,7 +2469,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bologna',name:'Bologna',modern:'Bologna',country:'Commune of Bologna',subrealm:'Commune of Bologna · major university republic',
-  lon:11.3426,lat:44.4949,rarity:4,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈50–60 K',populationConfidence:'high',
+  lon:11.3426,lat:44.4949,rarity:3,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈50–60 K',populationConfidence:'high',
   sizeText:'≈2.0 km²',sizeConfidence:'medium',army:5000,armyText:'≈5.0 K',navy:0,navyText:'0',
   food:82,technology:97,satisfaction:70,
   historicalRole:'One of Italy’s largest communes and the leading university city of Latin Europe',
@@ -2481,7 +2481,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-udine',name:'Udine',modern:'Udine',country:'Patriarchate of Aquileia',subrealm:'Patriarchate of Aquileia · growing inland patriarchal centre',
-  lon:13.2346,lat:46.0711,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:13.2346,lat:46.0711,rarity:0,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.5 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
   food:74,technology:70,satisfaction:70,
   historicalRole:'Growing political and commercial centre of the Aquileian patriarchal state',
@@ -2493,7 +2493,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-aquileia',name:'Aquileia',modern:'Aquileia',country:'Patriarchate of Aquileia',subrealm:'Patriarchate of Aquileia · historic ecclesiastical seat',
-  lon:13.3700,lat:45.7686,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:13.3700,lat:45.7686,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:600,armyText:'≈600',navy:0,navyText:'0',
   food:70,technology:78,satisfaction:68,
   historicalRole:'Ancient patriarchal seat with enormous ecclesiastical prestige but reduced urban scale',
@@ -2505,7 +2505,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-cividale',name:'Cividale del Friuli',modern:'Cividale del Friuli',country:'Patriarchate of Aquileia',subrealm:'Patriarchate of Aquileia · major Friulian town',
-  lon:13.4320,lat:46.0907,rarity:2,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
+  lon:13.4320,lat:46.0907,rarity:0,year:1300,people:6000,populationText:'≈6.0 K',populationRange:'≈5–8 K',populationConfidence:'low',
   sizeText:'≈0.4 km²',sizeConfidence:'low',army:850,armyText:'≈850',navy:0,navyText:'0',
   food:73,technology:72,satisfaction:70,
   historicalRole:'Important Friulian town with Lombard and patriarchal traditions',
@@ -2517,7 +2517,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-gorizia',name:'Gorizia',modern:'Gorizia',country:'County of Gorizia',subrealm:'County of Gorizia · comital castle-town',
-  lon:13.6202,lat:45.9402,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:13.6202,lat:45.9402,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.3 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:0,navyText:'0',
   food:70,technology:64,satisfaction:70,
   historicalRole:'Capital of the increasingly influential Counts of Gorizia',
@@ -2541,7 +2541,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-chioggia',name:'Chioggia',modern:'Chioggia',country:'Republic of Venice',subrealm:'Republic of Venice · lagoon port and salt centre',
-  lon:12.2790,lat:45.2180,mapLon:12.1800,mapLat:45.2200,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:12.2790,lat:45.2180,mapLon:12.1800,mapLat:45.2200,rarity:1,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:10,navyText:'≈10',
   food:73,technology:70,satisfaction:72,
   historicalRole:'Important lagoon port and salt-producing community of Venice',
@@ -2577,7 +2577,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-pisa',name:'Pisa',modern:'Pisa',country:'Republic of Pisa',subrealm:'Republic of Pisa · maritime republic after the Meloria defeat',
-  lon:10.4017,lat:43.7228,rarity:4,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'low',
+  lon:10.4017,lat:43.7228,rarity:3,year:1300,people:40000,populationText:'≈40.0 K',populationRange:'≈35–45 K',populationConfidence:'low',
   sizeText:'≈1.6 km²',sizeConfidence:'low',army:3500,armyText:'≈3.5 K',navy:25,navyText:'≈25',
   food:73,technology:87,satisfaction:60,
   historicalRole:'Still-powerful Tuscan maritime republic recovering from its 1284 defeat by Genoa',
@@ -2589,7 +2589,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-lucca',name:'Lucca',modern:'Lucca',country:'Republic of Lucca',subrealm:'Republic of Lucca · independent Tuscan commune',
-  lon:10.5027,lat:43.8429,rarity:3,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
+  lon:10.5027,lat:43.8429,rarity:2,year:1300,people:20000,populationText:'≈20.0 K',populationRange:'≈15–25 K',populationConfidence:'low',
   sizeText:'≈0.9 km²',sizeConfidence:'low',army:2200,armyText:'≈2.2 K',navy:0,navyText:'0',
   food:78,technology:82,satisfaction:73,
   historicalRole:'Independent Tuscan merchant republic with a strong silk and banking economy',
@@ -2601,7 +2601,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-siena',name:'Siena',modern:'Siena',country:'Republic of Siena',subrealm:'Republic of Siena · wealthy Tuscan commune',
-  lon:11.3308,lat:43.3188,rarity:4,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈45–55 K',populationConfidence:'medium',
+  lon:11.3308,lat:43.3188,rarity:3,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈45–55 K',populationConfidence:'medium',
   sizeText:'≈1.5 km²',sizeConfidence:'low',army:4200,armyText:'≈4.2 K',navy:0,navyText:'0',
   food:77,technology:90,satisfaction:71,
   historicalRole:'Major Tuscan banking, commercial and artistic republic',
@@ -2613,7 +2613,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ravenna',name:'Ravenna',modern:'Ravenna',country:'Lordship of Ravenna',subrealm:'Da Polenta Lordship of Ravenna',
-  lon:12.2035,lat:44.4184,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:12.2035,lat:44.4184,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.7 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:2,navyText:'≈2',
   food:76,technology:78,satisfaction:68,
   historicalRole:'Historic Adriatic city ruled by the da Polenta family',
@@ -2625,7 +2625,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-rimini',name:'Rimini',modern:'Rimini',country:'Lordship of Rimini',subrealm:'Malatesta Lordship of Rimini',
-  lon:12.5683,lat:44.0678,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:12.5683,lat:44.0678,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:4,navyText:'≈4',
   food:74,technology:74,satisfaction:66,
   historicalRole:'Adriatic lordship and power base of the Malatesta family',
@@ -2637,7 +2637,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-urbino',name:'Urbino',modern:'Urbino',country:'Lordship of Urbino',subrealm:'Montefeltro Lordship / County of Urbino',
-  lon:12.6372,lat:43.7263,rarity:2,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
+  lon:12.6372,lat:43.7263,rarity:0,year:1300,people:7000,populationText:'≈7.0 K',populationRange:'≈5–9 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:1100,armyText:'≈1.1 K',navy:0,navyText:'0',
   food:68,technology:70,satisfaction:68,
   historicalRole:'Hilltop political centre of the Montefeltro family',
@@ -2649,7 +2649,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-ancona',name:'Ancona',modern:'Ancona',country:'Commune of Ancona',subrealm:'Maritime Commune of Ancona',
-  lon:13.5189,lat:43.6158,mapLon:13.4800,mapLat:43.6000,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:13.5189,lat:43.6158,mapLon:13.4800,mapLat:43.6000,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:12,navyText:'≈12',
   food:73,technology:78,satisfaction:74,
   historicalRole:'Autonomous Adriatic maritime commune with eastern Mediterranean trade',
@@ -2661,7 +2661,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-perugia',name:'Perugia',modern:'Perugia',country:'Commune of Perugia',subrealm:'Commune of Perugia · papal-aligned but self-governing',
-  lon:12.3908,lat:43.1107,rarity:3,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  lon:12.3908,lat:43.1107,rarity:2,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
   sizeText:'≈1.2 km²',sizeConfidence:'low',army:3000,armyText:'≈3.0 K',navy:0,navyText:'0',
   food:76,technology:83,satisfaction:72,
   historicalRole:'Large Umbrian commune with strong civic institutions',
@@ -2673,7 +2673,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-san-marino',name:'San Marino',modern:'San Marino',country:'Republic of San Marino',subrealm:'Commune of San Marino · autonomous mountain republic',
-  lon:12.4578,lat:43.9424,rarity:1,year:1300,people:1500,populationText:'≈1.5 K',populationRange:'≈1–2 K',populationConfidence:'low',
+  lon:12.4578,lat:43.9424,rarity:0,year:1300,people:1500,populationText:'≈1.5 K',populationRange:'≈1–2 K',populationConfidence:'low',
   sizeText:'≈0.10 km²',sizeConfidence:'low',army:350,armyText:'≈350',navy:0,navyText:'0',
   food:62,technology:55,satisfaction:84,
   historicalRole:'Tiny autonomous mountain commune with strong communal traditions',
@@ -2685,7 +2685,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-rome',name:'Rome',modern:'Rome',country:'Papal States',subrealm:'Papal States · city of Pope Boniface VIII and the 1300 Jubilee',
-  lon:12.4964,lat:41.9028,rarity:4,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
+  lon:12.4964,lat:41.9028,rarity:3,year:1300,people:30000,populationText:'≈30.0 K',populationRange:'≈25–35 K',populationConfidence:'low',
   sizeText:'≈2.0 km²',sizeConfidence:'low',army:3000,armyText:'≈3.0 K',navy:0,navyText:'0',
   food:68,technology:94,satisfaction:60,
   historicalRole:'Spiritual centre of Latin Christianity and capital of the papal state',
@@ -2697,7 +2697,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-viterbo',name:'Viterbo',modern:'Viterbo',country:'Papal States',subrealm:'Papal States · major papal and Tuscia city',
-  lon:12.1077,lat:42.4207,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:12.1077,lat:42.4207,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.8 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:0,navyText:'0',
   food:73,technology:82,satisfaction:67,
   historicalRole:'Important papal residence city in the Patrimony of St Peter',
@@ -2709,7 +2709,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-benevento',name:'Benevento',modern:'Benevento',country:'Papal States',subrealm:'Papal enclave of Benevento inside the Kingdom of Naples',
-  lon:14.7822,lat:41.1298,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:14.7822,lat:41.1298,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1200,armyText:'≈1.2 K',navy:0,navyText:'0',
   food:74,technology:73,satisfaction:65,
   historicalRole:'Papal enclave and strategic southern Italian city surrounded by Angevin territory',
@@ -2733,7 +2733,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-salerno',name:'Salerno',modern:'Salerno',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · Campanian port',
-  lon:14.7681,lat:40.6824,mapLon:14.7300,mapLat:40.7000,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:14.7681,lat:40.6824,mapLon:14.7300,mapLat:40.7000,rarity:1,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1400,armyText:'≈1.4 K',navy:7,navyText:'≈7',
   food:78,technology:80,satisfaction:69,
   historicalRole:'Important Campanian port with enduring medical and commercial traditions',
@@ -2745,7 +2745,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bari',name:'Bari',modern:'Bari',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · Adriatic Apulian port',
-  lon:16.8719,lat:41.1171,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:16.8719,lat:41.1171,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:10,navyText:'≈10',
   food:78,technology:76,satisfaction:69,
   historicalRole:'Major Adriatic port and pilgrimage city of Apulia',
@@ -2757,7 +2757,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-laquila',name:'L’Aquila',modern:'L’Aquila',country:'Kingdom of Naples',subrealm:'Angevin Kingdom of Naples · communal mountain city rebuilt under Charles I',
-  lon:13.3995,lat:42.3498,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:13.3995,lat:42.3498,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:0,navyText:'0',
   food:70,technology:70,satisfaction:74,
   historicalRole:'Young but rapidly growing communal city in the Abruzzi',
@@ -2769,7 +2769,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-taranto',name:'Taranto',modern:'Taranto',country:'Kingdom of Naples',subrealm:'Principality of Taranto · held by Philip I, son of Charles II',
-  lon:17.2470,lat:40.4644,rarity:3,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
+  lon:17.2470,lat:40.4644,rarity:2,year:1300,people:15000,populationText:'≈15.0 K',populationRange:'≈12–18 K',populationConfidence:'low',
   sizeText:'≈0.75 km²',sizeConfidence:'low',army:1900,armyText:'≈1.9 K',navy:12,navyText:'≈12',
   food:76,technology:74,satisfaction:67,
   historicalRole:'Strategic southern port and capital of the Angevin Principality of Taranto',
@@ -2781,7 +2781,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-palermo',name:'Palermo',modern:'Palermo',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III of Aragon',
-  lon:13.3614,lat:38.1157,rarity:4,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈40–60 K',populationConfidence:'low',
+  lon:13.3614,lat:38.1157,rarity:3,year:1300,people:50000,populationText:'≈50.0 K',populationRange:'≈40–60 K',populationConfidence:'low',
   sizeText:'≈1.8 km²',sizeConfidence:'low',army:4500,armyText:'≈4.5 K',navy:22,navyText:'≈22',
   food:83,technology:86,satisfaction:72,
   historicalRole:'Largest western Sicilian city and a royal centre of Frederick III’s island kingdom',
@@ -2793,7 +2793,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-messina',name:'Messina',modern:'Messina',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III · Strait stronghold',
-  lon:15.5540,lat:38.1938,mapLon:15.4800,mapLat:38.1700,rarity:4,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
+  lon:15.5540,lat:38.1938,mapLon:15.4800,mapLat:38.1700,rarity:3,year:1300,people:35000,populationText:'≈35.0 K',populationRange:'≈30–40 K',populationConfidence:'low',
   sizeText:'≈1.3 km²',sizeConfidence:'low',army:3600,armyText:'≈3.6 K',navy:24,navyText:'≈24',
   food:78,technology:84,satisfaction:70,
   historicalRole:'Strategic Strait of Messina port and one of Sicily’s most important cities',
@@ -2805,7 +2805,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-catania',name:'Catania',modern:'Catania',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III',
-  lon:15.0873,lat:37.5027,rarity:3,year:1300,people:18000,populationText:'≈18.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
+  lon:15.0873,lat:37.5027,rarity:2,year:1300,people:18000,populationText:'≈18.0 K',populationRange:'≈15–22 K',populationConfidence:'low',
   sizeText:'≈0.8 km²',sizeConfidence:'low',army:2100,armyText:'≈2.1 K',navy:8,navyText:'≈8',
   food:82,technology:75,satisfaction:70,
   historicalRole:'Major eastern Sicilian city beneath Mount Etna',
@@ -2817,7 +2817,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-syracuse',name:'Syracuse',modern:'Syracuse',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III',
-  lon:15.2866,lat:37.0755,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:15.2866,lat:37.0755,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:10,navyText:'≈10',
   food:80,technology:75,satisfaction:70,
   historicalRole:'Historic fortified harbour city of southeastern Sicily',
@@ -2829,7 +2829,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-trapani',name:'Trapani',modern:'Trapani',country:'Kingdom of Sicily',subrealm:'Island Kingdom of Sicily under Frederick III · western maritime port',
-  lon:12.5365,lat:38.0176,mapLon:12.5000,mapLat:38.0000,rarity:3,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
+  lon:12.5365,lat:38.0176,mapLon:12.5000,mapLat:38.0000,rarity:2,year:1300,people:12000,populationText:'≈12.0 K',populationRange:'≈10–15 K',populationConfidence:'low',
   sizeText:'≈0.65 km²',sizeConfidence:'low',army:1500,armyText:'≈1.5 K',navy:14,navyText:'≈14',
   food:78,technology:74,satisfaction:72,
   historicalRole:'Western Sicilian port with strong maritime and salt-trade functions',
@@ -2841,7 +2841,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-oristano',name:'Oristano',modern:'Oristano',country:'Judicate of Arborea',subrealm:'Judicate of Arborea · capital under Judge Giovanni of Arborea',
-  lon:8.5919,lat:39.9036,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:8.5919,lat:39.9036,rarity:1,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:3,navyText:'≈3',
   food:80,technology:69,satisfaction:77,
   historicalRole:'Capital of the last fully sovereign Sardinian judicate',
@@ -2853,7 +2853,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-olbia',name:'Olbia / Terranova',modern:'Olbia',country:'Republic of Pisa',subrealm:'Former Judicate of Gallura · de facto Pisan control after Nino Visconti’s death in 1296',
-  lon:9.4964,lat:40.9236,rarity:2,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
+  lon:9.4964,lat:40.9236,rarity:0,year:1300,people:5000,populationText:'≈5.0 K',populationRange:'≈4–7 K',populationConfidence:'low',
   sizeText:'≈0.35 km²',sizeConfidence:'low',army:800,armyText:'≈800',navy:5,navyText:'≈5',
   food:73,technology:65,satisfaction:58,
   historicalRole:'Principal town of former Gallura under disputed but effective Pisan domination',
@@ -2865,7 +2865,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-cagliari',name:'Cagliari / Castel di Castro',modern:'Cagliari',country:'Republic of Pisa',subrealm:'Pisan Castel di Castro · direct Pisan stronghold after the 1258 fall of the Judicate of Cagliari',
-  lon:9.1217,lat:39.2238,rarity:3,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
+  lon:9.1217,lat:39.2238,rarity:2,year:1300,people:10000,populationText:'≈10.0 K',populationRange:'≈8–12 K',populationConfidence:'low',
   sizeText:'≈0.6 km²',sizeConfidence:'low',army:1700,armyText:'≈1.7 K',navy:12,navyText:'≈12',
   food:76,technology:72,satisfaction:58,
   historicalRole:'Pisan fortress-port and principal urban stronghold in southern Sardinia',
@@ -2877,7 +2877,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-bonifacio',name:'Bonifacio',modern:'Bonifacio',country:'Republic of Genoa',subrealm:'Genoese colony and fortified commune since 1195',
-  lon:9.1594,lat:41.3872,rarity:2,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
+  lon:9.1594,lat:41.3872,rarity:0,year:1300,people:4000,populationText:'≈4.0 K',populationRange:'≈3–5 K',populationConfidence:'low',
   sizeText:'≈0.28 km²',sizeConfidence:'low',army:700,armyText:'≈700',navy:8,navyText:'≈8',
   food:66,technology:67,satisfaction:72,
   historicalRole:'Strong Genoese fortress-port controlling the Strait of Bonifacio',
@@ -2889,7 +2889,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-calvi',name:'Calvi',modern:'Calvi',country:'Republic of Genoa',subrealm:'Genoese-aligned fortified town after the 1278 submission',
-  lon:8.7570,lat:42.5660,rarity:2,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
+  lon:8.7570,lat:42.5660,rarity:0,year:1300,people:3000,populationText:'≈3.0 K',populationRange:'≈2–4 K',populationConfidence:'low',
   sizeText:'≈0.22 km²',sizeConfidence:'low',army:550,armyText:'≈550',navy:6,navyText:'≈6',
   food:65,technology:64,satisfaction:74,
   historicalRole:'Small but strategically valuable Genoese stronghold in northwestern Corsica',
