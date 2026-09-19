@@ -219,3 +219,12 @@ test('exactly one hundred seventy-five 1300 cards use Economy and Stability',()=
  assert.deepEqual(new Set(migrated.map(c=>c.id)),new Set(ids));
  for(const id of ids){const c=CITY_1300[id];assert.ok(c);assert.ok(Number.isFinite(c.economyScore)&&c.economyScore>=0&&c.economyScore<=100);assert.ok(Number.isFinite(c.stability)&&c.stability>=0&&c.stability<=100);assert.equal(c.satisfaction,undefined);}
 });
+
+
+test('1300 card renderer defines upgraded state before using the four-score layout',()=>{
+ const appSource=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
+ const match=appSource.match(/function card1300\(c,compact=false\)\{([^]*?)\nfunction render\(\)/);
+ assert.ok(match,'card1300 renderer exists');
+ assert.match(match[1],/upgraded=Number\.isFinite\(c\.economyScore\)&&Number\.isFinite\(c\.stability\)/);
+ assert.ok(match[1].indexOf('upgraded=')<match[1].indexOf("card-scores-4"),'upgraded must be defined before the layout class uses it');
+});
