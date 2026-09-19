@@ -2541,7 +2541,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-chioggia',name:'Chioggia',modern:'Chioggia',country:'Republic of Venice',subrealm:'Republic of Venice · lagoon port and salt centre',
-  lon:12.2790,lat:45.2180,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
+  lon:12.2790,lat:45.2180,mapLon:12.1800,mapLat:45.2200,rarity:2,year:1300,people:8000,populationText:'≈8.0 K',populationRange:'≈6–10 K',populationConfidence:'low',
   sizeText:'≈0.45 km²',sizeConfidence:'low',army:900,armyText:'≈900',navy:10,navyText:'≈10',
   food:73,technology:70,satisfaction:72,
   historicalRole:'Important lagoon port and salt-producing community of Venice',
