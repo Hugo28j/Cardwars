@@ -1,4 +1,4 @@
-# Cardwars 1300 research · Europe · first 125 cards
+# Cardwars 1300 research · Europe · first 147 cards
 
 This file records the methodology behind the country-by-country c. 1300 Iberian card set. Political ownership is pinned to the exact 1300 snapshot, so temporary occupations are represented.
 
@@ -117,3 +117,17 @@ Exact-period corrections are built into the cards:
 - Wismar is labelled **Lordship of Mecklenburg**, not an anachronistic duchy. Güstrow is labelled **Lordship of Werle**, which had been reunited under Nicholas II by c.1292.
 - Pomerania-Stettin and Pomerania-Wolgast reflect the 1295 partition.
 - Upper and Lower Bavaria reflect the Wittelsbach division begun in 1255.
+
+
+## Central Europe batch B1: 22 cities
+
+Added Vienna, Krems, Wiener Neustadt, Linz, Graz, Judenburg, St. Veit an der Glan, Klagenfurt, Merano, Innsbruck, Prague, Kutná Hora, Plzeň, České Budějovice, Hradec Králové, Brno, Olomouc, Znojmo, Jihlava, Schwyz, Altdorf and Freiburg im Breisgau.
+
+Political handling for exact 1300:
+- Austria and Styria are Habsburg duchies.
+- Carinthia is still under the Meinhardiner line, not yet Habsburg.
+- Tyrol remains the County of Tyrol under the Meinhardiner dynasty.
+- Bohemia is ruled by Wenceslaus II; Kutná Hora receives an unusually high Technology value because its silver boom and the Ius regale montanorum are directly tied to 1300.
+- Moravia is kept as the Margraviate of Moravia within the Bohemian crown lands.
+- Schwyz and Altdorf are grouped as **Waldstätte**, reflecting the early confederate alliance after the Federal Charter of 1291 while remaining inside the Holy Roman Empire.
+- Freiburg im Breisgau is assigned to the **County of Freiburg**, not treated as a Free Imperial City.
