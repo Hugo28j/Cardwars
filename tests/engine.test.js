@@ -64,13 +64,13 @@ test('every card has a local photo and attributed image licence',()=>{
 });
 
 
-test('1300 research collection contains one hundred twenty-five researched European cards with bounded modeled scores',()=>{
- assert.equal(CITIES_1300.length,125);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,125);
+test('1300 research collection contains one hundred forty-seven researched European cards with bounded modeled scores',()=>{
+ assert.equal(CITIES_1300.length,147);assert.equal(new Set(CITIES_1300.map(c=>c.id)).size,147);
  for(const c of CITIES_1300){
-  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada','Duchy of Brittany','Kingdom of France','County of Champagne','Duchy of Burgundy','County of Anjou','Viscounty of Limoges','Duchy of Aquitaine (English Crown)','Kingdom of Majorca','Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Vienne (Holy Roman Empire)','County of Provence','County of Flanders','Duchy of Brabant','County of Hainaut','County of Holland','County of Guelders','Frisian Freedom','County of Oldenburg','County of Cleves','County of Jülich','County of Berg','County of Mark','County of Luxembourg','County of Nassau','Duchy of Lorraine','Archbishopric of Trier','Archbishopric of Mainz','Archbishopric of Cologne','Independent City of Cologne','County Palatine of the Rhine','Margraviate of Baden','County of Württemberg','Landgraviate of Hesse','Landgraviate of Thuringia','Margraviate of Meissen','Margraviate of Brandenburg','Duchy of Saxony-Wittenberg','Duchy of Saxe-Lauenburg','Duchy of Brunswick-Lüneburg','Principality of Anhalt','County of Holstein','Lordship of Mecklenburg','Lordship of Werle','Duchy of Pomerania-Stettin','Duchy of Pomerania-Wolgast','Duchy of Upper Bavaria','Duchy of Lower Bavaria','Archbishopric of Salzburg'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
+  assert.ok(['Crown of Castile','Crown of Aragon','Kingdom of Portugal','Kingdom of Navarre','Emirate of Granada','Duchy of Brittany','Kingdom of France','County of Champagne','Duchy of Burgundy','County of Anjou','Viscounty of Limoges','Duchy of Aquitaine (English Crown)','Kingdom of Majorca','Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Vienne (Holy Roman Empire)','County of Provence','County of Flanders','Duchy of Brabant','County of Hainaut','County of Holland','County of Guelders','Frisian Freedom','County of Oldenburg','County of Cleves','County of Jülich','County of Berg','County of Mark','County of Luxembourg','County of Nassau','Duchy of Lorraine','Archbishopric of Trier','Archbishopric of Mainz','Archbishopric of Cologne','Independent City of Cologne','County Palatine of the Rhine','Margraviate of Baden','County of Württemberg','Landgraviate of Hesse','Landgraviate of Thuringia','Margraviate of Meissen','Margraviate of Brandenburg','Duchy of Saxony-Wittenberg','Duchy of Saxe-Lauenburg','Duchy of Brunswick-Lüneburg','Principality of Anhalt','County of Holstein','Lordship of Mecklenburg','Lordship of Werle','Duchy of Pomerania-Stettin','Duchy of Pomerania-Wolgast','Duchy of Upper Bavaria','Duchy of Lower Bavaria','Archbishopric of Salzburg','Duchy of Austria','Duchy of Styria','Duchy of Carinthia','County of Tyrol','Kingdom of Bohemia','Margraviate of Moravia','Waldstätte','County of Freiburg'].includes(c.country));assert.equal(CITY_1300[c.id].id,c.id);
   assert.ok(c.people>0&&Number.isInteger(c.people),c.id+' people');
   for(const k of ['food','technology','satisfaction'])assert.ok(c[k]>=0&&c[k]<=100,c.id+' '+k);
-  assert.ok(c.lon>-10&&c.lon<16&&c.lat>36&&c.lat<55,c.id+' coordinates');
+  assert.ok(c.lon>-10&&c.lon<18&&c.lat>36&&c.lat<55,c.id+' coordinates');
   assert.equal(c.image,undefined,c.id+' must not have artwork yet');
   assert.ok(Array.isArray(c.sources)&&c.sources.length>=2,c.id+' research sources');
  }
@@ -153,4 +153,16 @@ test('all thirty-one requested central Europe batch A cards are present with exa
  assert.equal(CITY_1300['1300-stettin'].country,'Duchy of Pomerania-Stettin');
  assert.equal(CITY_1300['1300-munich'].country,'Duchy of Upper Bavaria');
  assert.equal(CITY_1300['1300-salzburg'].country,'Archbishopric of Salzburg');
+});
+
+
+test('all twenty-two requested central Europe batch B1 cards are present with exact-1300 owners',()=>{
+ const ids=['vienna','krems','wiener-neustadt','linz','graz','judenburg','st-veit','klagenfurt','merano','innsbruck','prague','kutna-hora','plzen','ceske-budejovice','hradec-kralove','brno','olomouc','znojmo','jihlava','schwyz','altdorf','freiburg-breisgau'].map(x=>'1300-'+x);
+ for(const id of ids){assert.ok(CITY_1300[id],id);assert.equal(CITY_1300[id].image,undefined,id+' must remain image-free');}
+ assert.equal(CITY_1300['1300-vienna'].country,'Duchy of Austria');
+ assert.equal(CITY_1300['1300-st-veit'].country,'Duchy of Carinthia');
+ assert.equal(CITY_1300['1300-prague'].country,'Kingdom of Bohemia');
+ assert.equal(CITY_1300['1300-brno'].country,'Margraviate of Moravia');
+ assert.equal(CITY_1300['1300-schwyz'].country,'Waldstätte');
+ assert.equal(CITY_1300['1300-freiburg-breisgau'].country,'County of Freiburg');
 });
