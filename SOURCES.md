@@ -79,3 +79,12 @@ This 36-card expansion uses city histories together with polity-level references
 Notable exact-period anchors include Antwerp archaeological evidence for a major city-wall/harbour expansion around 1300; Dordrecht's 1220 city rights and late-13th-century growth as a trading centre; Mainz's documented 13th–15th-century free-city phase and the archbishop's position as imperial archchancellor/elector; and Cologne's effective municipal independence after the 1288 Battle of Worringen.
 
 As with the rest of the 1300 research collection, population estimates are ranges where possible. Army, Navy, Food, Technology and Satisfaction are comparative Cardwars indices, not claimed historical measurements.
+
+
+## Central Europe batch A — c. 1300
+
+This batch adds 31 researched city cards from Hesse, Thuringia, Meissen, Brandenburg, the Ascanian Saxon duchies, Brunswick-Lüneburg, Anhalt, Holstein, Mecklenburg/Werle, Pomerania, Bavaria and Salzburg.
+
+Special chronology checks include Berlin-Cölln's still-separate municipal status in 1300 (their joint union dates to 1307); the 1269 partition of Brunswick-Lüneburg; the 1252 Anhalt branch divisions; the 1295 Pomeranian split into Stettin and Wolgast; and the fact that Mecklenburg was still a lordship rather than a duchy. Güstrow is assigned to the reunited Lordship of Werle around 1300.
+
+As throughout the project, People is a historical estimate with explicit confidence, while Army, Navy, Food, Technology and Satisfaction are modeled Cardwars gameplay indices rather than claimed medieval measurements.
