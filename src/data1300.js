@@ -8,6 +8,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 // Army audit v1 (entries 000-075): Army counts only a permanent/professional military core or fixed garrison; temporary civic militias, feudal levies and emergency peasant musters are excluded.
 // Army audit v2 (entries 076-150): same conservative rule; household retainers and fixed castle/city garrisons count, temporary civic militias and wartime levies do not.
 // Army audit v3 (entries 151-224): same conservative rule; Italian communal militias are excluded, while paid permanent cores, signorial household troops and fixed wartime garrisons count.
+// Population/Navy/Size audit v1 (entries 000-074): population and urban footprint use source-backed c.1300 estimates where available; Navy counts dedicated or regularly maintained military vessels, excluding ordinary merchant/river craft temporarily requisitioned for war.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -205,7 +206,7 @@ export const CITIES_1300=[
  {
   id:'1300-porto',name:'Porto',modern:'Porto',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · episcopal city and Atlantic-Douro port',
   lon:-8.6291,lat:41.1579,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationConfidence:'medium',
-  sizeText:'0.45 km²',sizeConfidence:'low',army:0,armyText:'0',navy:6,navyText:'6',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:74,technology:70,economyScore:72,stability:76,
   historicalRole:'Northern Portuguese port and commercial centre on the Douro',
   economy:'River and maritime trade, crafts, wine and regional exchange',
@@ -266,13 +267,13 @@ export const CITIES_1300=[
  {
   id:'1300-lisbon',name:'Lisbon',modern:'Lisbon',country:'Kingdom of Portugal',subrealm:'Kingdom of Portugal · principal royal and port city',
   lon:-9.1393,lat:38.7223,mapLon:-9.0000,mapLat:38.7350,rarity:3,year:1300,people:35000,populationText:'35.0 K',populationConfidence:'medium',
-  sizeText:'1.50 km²',sizeConfidence:'low',army:150,armyText:'150',navy:20,navyText:'20',
+  sizeText:'1.50 km²',sizeConfidence:'low',army:150,armyText:'150',navy:3,navyText:'3',
   food:80,technology:84,economyScore:87,stability:80,
   historicalRole:'Largest Portuguese city, major Atlantic-Tagus port and frequent centre of royal government',
   economy:'International maritime trade, shipbuilding, fisheries, crafts and Tagus-region commerce',
   militaryRole:'Large fortified port with the strongest naval potential in Portugal',
   researchSummary:'Around 1300 Lisbon was Portugal’s largest city and dominant port. The kingdom’s Studium Generale was founded there in 1290, reinforcing its administrative and intellectual importance.',
-  evidenceNote:'Population uses a published c.1300 estimate around 35,000. Army, navy and size remain comparative gameplay estimates rather than recorded medieval totals.',
+  evidenceNote:'Population uses a published c.1300 estimate around 35,000. Navy is kept conservative because Portugal’s formal office of Fleet Admiral dates from 1307; the value represents only a small regularly available military core, not merchant shipping.',
   sources:[
    ['Brill — An Agrarian History of Portugal, 1000–2000','https://brill.com/display/book/edcoll/9789004311527/B9789004311527-s003.xml'],
    ['Universidade de Coimbra — Studium Generale founded in Lisbon in 1290','https://www.uc.pt/sobrenos/historia/xiii-a-xvi/'],
@@ -313,7 +314,7 @@ export const CITIES_1300=[
  {
   id:'1300-silves',name:'Silves',modern:'Silves',country:'Kingdom of Portugal',subrealm:'Kingdom of the Algarve · episcopal capital',
   lon:-8.4382,lat:37.1890,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationRange:'4–8 K',populationConfidence:'low',
-  sizeText:'0.50 km²',sizeConfidence:'low',army:100,armyText:'100',navy:6,navyText:'6',
+  sizeText:'0.50 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:82,technology:67,economyScore:61,stability:68,
   historicalRole:'Capital of the Algarve, episcopal seat and important fortified river-port city',
   economy:'Agriculture, river-port commerce, crafts and regional administration',
@@ -343,13 +344,13 @@ export const CITIES_1300=[
  {
   id:'1300-barcelona',name:'Barcelona',modern:'Barcelona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · County of Barcelona',
   lon:2.1734,lat:41.3851,mapLon:2.1000,mapLat:41.4050,rarity:4,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'medium',
-  sizeText:'1.20 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:26,navyText:'26',
+  sizeText:'1.20 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:12,navyText:'12',
   food:76,technology:90,economyScore:95,stability:73,
   historicalRole:'Leading Catalan city, royal-comital centre and major Mediterranean commercial power',
   economy:'Maritime trade, finance, textiles, crafts and Mediterranean shipping',
   militaryRole:'Large walled city and the Crown’s strongest urban maritime base in Catalonia',
   researchSummary:'By 1300 Barcelona had expanded far beyond its Roman core, enclosed its suburbs in new 13th-century walls and become a major Mediterranean economic and political centre.',
-  evidenceNote:'Population is set at about 35,000 within the commonly cited 30–40K range. The 13th-century walled expansion is approximately 120 hectares, giving unusually solid support for the size figure.',
+  evidenceNote:'Population is set at about 35,000 within the commonly cited 30–40K range. The 13th-century walled expansion is approximately 120 hectares. Navy reflects a conservative share of the Crown’s dedicated galley capacity associated with Barcelona’s royal shipyards, not a full campaign fleet.',
   sources:[
    ['Museu d’Història de Barcelona — Romanesque/medieval city guide','https://www.barcelona.cat/museuhistoria/sites/default/files/guia_romanesque_eng.pdf'],
    ['Enciclopèdia Catalana — demographic apogee around 1200–1300','https://www.enciclopedia.cat/catalunya-romanica/del-1200-al-1300.-cap-a-lapogeu-medieval'],
@@ -389,7 +390,7 @@ export const CITIES_1300=[
  {
   id:'1300-valencia',name:'Valencia',modern:'Valencia',country:'Crown of Aragon',subrealm:'Kingdom of Valencia · royal capital',
   lon:-0.3763,lat:39.4699,mapLon:-0.4400,mapLat:39.4850,rarity:3,year:1300,people:25000,populationText:'25.0 K',populationConfidence:'medium',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:150,armyText:'150',navy:12,navyText:'12',
+  sizeText:'0.60 km²',sizeConfidence:'medium',army:150,armyText:'150',navy:2,navyText:'2',
   food:92,technology:81,economyScore:86,stability:70,
   historicalRole:'Capital of the Kingdom of Valencia and rapidly growing Mediterranean commercial city',
   economy:'Intensive irrigated agriculture, ceramics, crafts, regional trade and Mediterranean shipping',
@@ -404,7 +405,7 @@ export const CITIES_1300=[
  {
   id:'1300-alicante',name:'Alicante',modern:'Alicante',country:'Crown of Aragon',subrealm:'Kingdom of Murcia under Aragonese occupation · captured 1296',
   lon:-0.4810,lat:38.3452,mapLon:-0.5500,mapLat:38.3600,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:200,armyText:'200',navy:7,navyText:'7',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:76,technology:66,economyScore:62,stability:60,
   historicalRole:'Recently conquered Aragonese fortified port on the contested Murcia-Valencia frontier',
   economy:'Port trade, fishing, agriculture and regional exchange',
@@ -480,13 +481,13 @@ export const CITIES_1300=[
  {
   id:'1300-malaga',name:'Málaga',modern:'Málaga',country:'Emirate of Granada',subrealm:'Nasrid Emirate of Granada · principal Mediterranean port',
   lon:-4.4214,lat:36.7213,mapLon:-4.4214,mapLat:36.7850,rarity:2,year:1300,people:25000,populationText:'25.0 K',populationRange:'20–35 K',populationConfidence:'low',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:400,armyText:'400',navy:18,navyText:'18',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:400,armyText:'400',navy:4,navyText:'4',
   food:82,technology:82,economyScore:82,stability:72,
   historicalRole:'Major Nasrid Mediterranean port, fortified city and commercial gateway',
   economy:'Maritime trade, ceramics, agriculture, crafts and Mediterranean commerce',
   militaryRole:'Strong walled port protected by the Alcazaba and a complex urban defensive system',
   researchSummary:'Málaga entered the Nasrid Kingdom in 1238 and remained one of its key ports. Its fortified medina, suburbs and commercial activity made it one of the emirate’s most important cities.',
-  evidenceNote:'The exact c.1300 population is uncertain and later 14th-century estimates are much higher, so the card uses a conservative low-confidence range. Navy is modeled from port significance rather than a recorded permanent fleet.',
+  evidenceNote:'The exact c.1300 population is uncertain, so the card keeps a conservative 20–35K range. Navy represents a small dedicated military core at this major Nasrid port rather than its wider merchant shipping.',
   sources:[
    ['Ayuntamiento de Málaga — Historia ampliada','https://www.malaga.eu/la-ciudad/historia-de-la-ciudad/historia-ampliada/'],
    ['Málaga archaeological routes — Muslim Málaga','https://rutasarqueologicas.malaga.eu/malaga-musulmana/'],
@@ -496,7 +497,7 @@ export const CITIES_1300=[
  {
   id:'1300-nantes',name:'Nantes',modern:'Nantes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · ducal city on the Loire',
   lon:-1.5536,lat:47.2184,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.70 km²',sizeConfidence:'low',army:50,armyText:'50',navy:10,navyText:'10',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:78,technology:72,economyScore:72,stability:74,
   historicalRole:'One of the principal economic and ducal centres of independent Brittany',
   economy:'Loire trade, maritime commerce, crafts and regional agriculture',
@@ -526,7 +527,7 @@ export const CITIES_1300=[
  {
   id:'1300-vannes',name:'Vannes',modern:'Vannes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · episcopal and port city',
   lon:-2.7608,lat:47.6582,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
-  sizeText:'0.30 km²',sizeConfidence:'low',army:0,armyText:'0',navy:4,navyText:'4',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:75,technology:67,economyScore:60,stability:75,
   historicalRole:'Episcopal port city and established Breton urban centre',
   economy:'Port trade, agriculture, church activity and local crafts',
@@ -541,7 +542,7 @@ export const CITIES_1300=[
  {
   id:'1300-rouen',name:'Rouen',modern:'Rouen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · capital and Seine port',
   lon:1.0993,lat:49.4432,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–45 K',populationConfidence:'medium',
-  sizeText:'1.50 km²',sizeConfidence:'low',army:100,armyText:'100',navy:14,navyText:'14',
+  sizeText:'1.70 km²',sizeConfidence:'medium',army:100,armyText:'100',navy:4,navyText:'4',
   food:79,technology:83,economyScore:88,stability:74,
   historicalRole:'Capital of Normandy and one of the largest commercial cities in the French kingdom',
   economy:'Textiles, Seine shipping, wine, salt, fish and international trade',
@@ -555,14 +556,14 @@ export const CITIES_1300=[
  },
  {
   id:'1300-caen',name:'Caen',modern:'Caen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · major Norman city',
-  lon:-0.3707,lat:49.1829,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–22 K',populationConfidence:'low',
-  sizeText:'1.00 km²',sizeConfidence:'low',army:100,armyText:'100',navy:3,navyText:'3',
+  lon:-0.3707,lat:49.1829,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–18 K',populationConfidence:'low',
+  sizeText:'1.00 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:77,technology:76,economyScore:75,stability:73,
   historicalRole:'Major Norman administrative, religious and commercial city',
   economy:'Markets, textiles, crafts, agriculture and regional trade',
   militaryRole:'Large fortified city dominated by the ducal castle',
   researchSummary:'Caen was conquered by Philip Augustus in 1204 and remained an important Norman city under the French crown, retaining major religious foundations and a powerful castle.',
-  evidenceNote:'Population is low-confidence; the 1204 political transition and major urban role are well documented.',
+  evidenceNote:'Published medieval demographic work treats 20,000 as probably inflated and supports a figure around 15,000 near the end of the 13th century. Navy is zero because no standing military fleet is evidenced for the city.',
   sources:[
    ['Ville de Caen — dates clés','https://caen.fr/node/83730'],
    ['Préfecture de Normandie — Histoire de la Normandie','https://www.prefectures-regions.gouv.fr/normandie/Region-et-institutions/Portrait-de-la-region/Histoire/Histoire-de-la-Normandie']
@@ -600,14 +601,14 @@ export const CITIES_1300=[
  },
  {
   id:'1300-reims',name:'Reims',modern:'Reims',country:'Kingdom of France',subrealm:'Archbishopric of Reims · coronation city within the French kingdom',
-  lon:4.0317,lat:49.2583,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
-  sizeText:'0.90 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
+  lon:4.0317,lat:49.2583,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'16–20 K',populationConfidence:'medium',
+  sizeText:'1.70 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:0,navyText:'0',
   food:73,technology:87,economyScore:79,stability:73,
   historicalRole:'Archiepiscopal metropolis and traditional coronation city of the French kings',
   economy:'Church wealth, cloth, wine, markets and regional commerce',
   militaryRole:'Walled ecclesiastical city with high symbolic and strategic value',
   researchSummary:'Reims combined the temporal lordship of its archbishop with its unique role in French kingship. The cathedral and archiepiscopal complex made it one of the kingdom’s most prestigious cities.',
-  evidenceNote:'Population is low-confidence; institutional and ecclesiastical significance are high confidence.',
+  evidenceNote:'Population and built-up area are anchored to Pierre Desportes’ reconstruction of Reims around the turn of the 14th century; exact figures remain estimates.',
   sources:[
    ['Visit Reims — Cathedral district','https://visit.reims.fr/accueil/cathedral-district'],
    ['Visit Reims — Château Porte-Mars','https://visit.reims.fr/parcours-dans-la-ville/cite-des-sacres/chateau-porte-mars']
@@ -615,14 +616,14 @@ export const CITIES_1300=[
  },
  {
   id:'1300-troyes',name:'Troyes',modern:'Troyes',country:'County of Champagne',subrealm:'County of Champagne · personal union with the French crown through Joan I and Philip IV',
-  lon:4.0744,lat:48.2973,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
+  lon:4.0744,lat:48.2973,rarity:2,year:1300,people:11000,populationText:'11.0 K',populationRange:'10–12 K',populationConfidence:'low',
   sizeText:'1.00 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:76,technology:82,economyScore:86,stability:74,
   historicalRole:'Principal city of Champagne and international fair centre',
   economy:'Champagne fairs, cloth, finance, crafts and long-distance commerce',
   militaryRole:'Walled county capital with strong economic rather than frontier-military power',
   researchSummary:'Troyes remained the leading city of Champagne’s famous fair system. In 1300 the county was ruled by Joan I of Navarre/Champagne and her husband Philip IV of France in personal union, not yet simply erased as a separate county.',
-  evidenceNote:'Population is low-confidence. The fair system and the county’s personal-union status are well documented.',
+  evidenceNote:'Population is based on published estimates around the turn of the 13th and 14th centuries. The fair system and the county’s personal-union status are well documented.',
   sources:[
    ['Ville de Troyes — medieval history','https://www.ville-troyes.fr/decouvrir-troyes/troyes-une-histoire-passionnante/'],
    ['Larousse — French royal domain and Champagne','https://www.larousse.fr/encyclopedie/divers/domaine_royal/44341']
@@ -706,7 +707,7 @@ export const CITIES_1300=[
  {
   id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
   lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
-  sizeText:'0.70 km²',sizeConfidence:'low',army:100,armyText:'100',navy:15,navyText:'15',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:75,technology:78,economyScore:80,stability:75,
   historicalRole:'Important Atlantic trading port of the French crown',
   economy:'Wine, salt, Atlantic shipping, fisheries and merchant trade',
@@ -766,7 +767,7 @@ export const CITIES_1300=[
  {
   id:'1300-bordeaux',name:'Bordeaux',modern:'Bordeaux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Duchy of Aquitaine/Gascony · held by Edward I as duke',
   lon:-0.5792,lat:44.8378,rarity:3,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
-  sizeText:'1.20 km²',sizeConfidence:'low',army:200,armyText:'200',navy:18,navyText:'18',
+  sizeText:'1.20 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:80,technology:82,economyScore:88,stability:70,
   historicalRole:'Principal city of English-ruled Gascony and major wine-export port',
   economy:'Wine exports, Atlantic shipping, finance, crafts and regional trade',
@@ -781,13 +782,13 @@ export const CITIES_1300=[
  {
   id:'1300-bayonne',name:'Bayonne',modern:'Bayonne',country:'Duchy of Aquitaine (English Crown)',subrealm:'English-held Gascony · directly administered royal port',
   lon:-1.4748,lat:43.4929,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.60 km²',sizeConfidence:'low',army:100,armyText:'100',navy:16,navyText:'16',
+  sizeText:'0.60 km²',sizeConfidence:'low',army:100,armyText:'100',navy:2,navyText:'2',
   food:76,technology:73,economyScore:73,stability:78,
   historicalRole:'Important English-Gascon fortified port and shipbuilding centre',
   economy:'Shipping, shipbuilding, wine transport, fisheries and Atlantic trade',
   militaryRole:'Fortified port with a notably active fleet and direct English royal administration',
   researchSummary:'Bayonne had been incorporated into the Aquitanian lands of the English crown after 1152 and by 1300 was administered through English royal officers. Its maritime community was one of the strongest in Gascony.',
-  evidenceNote:'Population is low-confidence; English political authority and maritime role are directly documented.',
+  evidenceNote:'Population is low-confidence. Bayonne had an unusually strong maritime community, but Navy counts only a conservative regular military core and excludes the broader merchant fleet that could be requisitioned.',
   sources:[
    ['Ville de Bayonne — formation of the city','https://www.bayonne.fr/cest-a-bayonne/culture/histoire-et-patrimoines/une-ville-dart-et-dhistoire/comprendre-la-formation-de-la-ville'],
    ['Ville de Bayonne — heritage brochure','https://www.bayonne.fr/fileadmin/medias/Publications/Patrimoine_-_VAH/Parcours_Bayonne.pdf']
@@ -826,7 +827,7 @@ export const CITIES_1300=[
  {
   id:'1300-montpellier',name:'Montpellier',modern:'Montpellier',country:'Kingdom of Majorca',subrealm:'Lordship of Montpellier · possession of the kings of Majorca',
   lon:3.8767,lat:43.6108,rarity:2,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'medium',
-  sizeText:'1.10 km²',sizeConfidence:'low',army:0,armyText:'0',navy:4,navyText:'4',
+  sizeText:'1.10 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:81,technology:93,economyScore:90,stability:76,
   historicalRole:'Major Mediterranean commercial and medical-learning centre under the kings of Majorca',
   economy:'Mediterranean trade, medicine, textiles, finance, spices and Lattes port traffic',
@@ -871,13 +872,13 @@ export const CITIES_1300=[
  {
   id:'1300-marseille',name:'Marseille',modern:'Marseille',country:'County of Provence',subrealm:'Angevin County of Provence · under Charles II of Naples',
   lon:5.3698,lat:43.2965,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–20 K',populationConfidence:'low',
-  sizeText:'0.85 km²',sizeConfidence:'low',army:100,armyText:'100',navy:20,navyText:'20',
+  sizeText:'0.85 km²',sizeConfidence:'low',army:100,armyText:'100',navy:6,navyText:'6',
   food:72,technology:80,economyScore:84,stability:63,
   historicalRole:'Leading Provençal Mediterranean port under Angevin comital rule',
   economy:'Mediterranean shipping, trade, fisheries, crafts and provisioning',
   militaryRole:'Strong maritime city whose independent traditions had been subdued by the Angevin counts',
   researchSummary:'Marseille was not French in 1300. It lay in the County of Provence, then ruled by Charles II of Anjou-Naples, after Charles I had forcibly reduced the city’s autonomy in the 13th century.',
-  evidenceNote:'Population is low-confidence; Provence’s Angevin government under Charles II (1285–1309) is securely documented.',
+  evidenceNote:'Population is low-confidence. Navy reflects a conservative dedicated military component associated with the Angevin Mediterranean war effort, excluding the city’s much larger merchant shipping.',
   sources:[
    ['Ville de Marseille — 2,600 ans d’histoire','https://www.marseille.fr/decouvrir-marseille/histoire-de-marseille/pr%C3%A9sentation'],
    ['École française de Rome — Provence under Charles II, 1285–1309','https://www.persee.fr/doc/efr_0223-5099_2008_act_399_1_9274']
@@ -901,25 +902,25 @@ export const CITIES_1300=[
  {
   id:'1300-bruges',name:'Bruges',modern:'Bruges',country:'County of Flanders',subrealm:'County of Flanders · under French occupation during 1300',
   lon:3.2247,lat:51.2093,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–45 K',populationConfidence:'medium',
-  sizeText:'2.0 km²',sizeConfidence:'low',army:300,armyText:'300',navy:18,navyText:'18',
+  sizeText:'3.70 km²',sizeConfidence:'high',army:300,armyText:'300',navy:0,navyText:'0',
   food:74,technology:90,economyScore:96,stability:55,
   historicalRole:'One of north-west Europe’s foremost cloth, finance and international trading cities',
   economy:'Cloth, wool, merchant finance, fairs, maritime trade through the Zwin and luxury crafts',
   militaryRole:'Large fortified commercial city with substantial civic militia and maritime connections',
   researchSummary:'Bruges was among Europe’s great commercial cities around 1300. The county remained Flanders, although Philip IV’s forces occupied it in 1300 before the Flemish revolt of 1302.',
-  evidenceNote:'Population is an approximate historical range. Army, navy and scores are comparative gameplay estimates; the 1300 French occupation is noted without relabelling the underlying county.',
+  evidenceNote:'Population around 1300 is commonly placed near 40–45K. The second enclosure begun in 1297 surrounded about 370 hectares. Navy excludes merchant vessels temporarily requisitioned and converted for war.',
   sources:[['Bruges','https://en.wikipedia.org/wiki/Bruges'],['County of Flanders','https://en.wikipedia.org/wiki/County_of_Flanders']]
  },
  {
   id:'1300-ghent',name:'Ghent',modern:'Ghent',country:'County of Flanders',subrealm:'County of Flanders · under French occupation during 1300',
-  lon:3.7174,lat:51.0543,rarity:3,year:1300,people:50000,populationText:'50.0 K',populationRange:'45–60 K',populationConfidence:'medium',
-  sizeText:'2.2 km²',sizeConfidence:'low',army:150,armyText:'150',navy:4,navyText:'4',
+  lon:3.7174,lat:51.0543,rarity:3,year:1300,people:64000,populationText:'64.0 K',populationRange:'60–65 K',populationConfidence:'high',
+  sizeText:'6.44 km²',sizeConfidence:'high',army:150,armyText:'150',navy:0,navyText:'0',
   food:79,technology:88,economyScore:95,stability:58,
   historicalRole:'Huge cloth-producing commune and one of the largest cities north of the Alps',
   economy:'Wool textiles, grain trade, crafts, river transport and merchant capital',
   militaryRole:'Exceptionally large urban militia backed by wealthy guilds and strong fortifications',
   researchSummary:'Ghent’s cloth industry, guild organisation and demographic scale made it a heavyweight within Flanders around 1300.',
-  evidenceNote:'Population is a medium-confidence range rather than a census. High Army reflects urban militia potential, not a standing army.',
+  evidenceNote:'Ghent’s official city history gives about 64,000 inhabitants and a 644-hectare enclosure around 1300. Navy excludes merchant and river craft temporarily adapted for war.',
   sources:[['Ghent','https://en.wikipedia.org/wiki/Ghent'],['County of Flanders','https://en.wikipedia.org/wiki/County_of_Flanders']]
  },
  {
@@ -948,7 +949,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-brussels',name:'Brussels',modern:'Brussels',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · growing ducal residence',
-  lon:4.3517,lat:50.8503,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
+  lon:4.3517,lat:50.8503,rarity:1,year:1300,people:20000,populationText:'20.0 K',populationRange:'18–22 K',populationConfidence:'medium',
   sizeText:'0.9 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:75,technology:76,economyScore:79,stability:71,
   historicalRole:'Fast-growing Brabantine commercial city and increasingly important ducal residence',
@@ -961,7 +962,7 @@ export const CITIES_1300=[
  {
   id:'1300-antwerp',name:'Antwerp',modern:'Antwerp',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · Scheldt port',
   lon:4.4025,lat:51.2194,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.7 km²',sizeConfidence:'low',army:0,armyText:'0',navy:10,navyText:'10',
+  sizeText:'0.7 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:73,technology:75,economyScore:82,stability:68,
   historicalRole:'Growing Scheldt port and fortified commercial city of Brabant',
   economy:'River shipping, markets, crafts, grain storage and regional trade',
@@ -996,7 +997,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-valenciennes',name:'Valenciennes',modern:'Valenciennes',country:'County of Hainaut',subrealm:'County of Hainaut · major Scheldt commercial town',
-  lon:3.5183,lat:50.3571,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
+  lon:3.5183,lat:50.3571,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'8–10 K',populationConfidence:'low',
   sizeText:'0.7 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:74,economyScore:76,stability:68,
   historicalRole:'Prosperous commercial and textile centre of Hainaut',
@@ -1008,20 +1009,20 @@ export const CITIES_1300=[
  },
  {
   id:'1300-dordrecht',name:'Dordrecht',modern:'Dordrecht',country:'County of Holland',subrealm:'County of Holland · principal river-trading city',
-  lon:4.6901,lat:51.8133,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:12,navyText:'12',
+  lon:4.6901,lat:51.8133,rarity:2,year:1300,people:6000,populationText:'6.0 K',populationRange:'5.5–6.5 K',populationConfidence:'medium',
+  sizeText:'0.16 km²',sizeConfidence:'high',army:0,armyText:'0',navy:0,navyText:'0',
   food:78,technology:76,economyScore:82,stability:74,
   historicalRole:'Leading commercial city of Holland at a major Rhine-Meuse waterway junction',
   economy:'Wine, grain, timber, shipping and river tolls',
   militaryRole:'Strategically placed river city with meaningful shipping capacity',
   researchSummary:'Dordrecht’s location on major shipping routes made it the commercial leader of Holland around 1300.',
-  evidenceNote:'Population is low-confidence. City rights date to 1220 and late-13th-century evidence shows an established administrative and trading centre.',
+  evidenceNote:'A reconstruction for c.1300 gives roughly 5,940 inhabitants on about 16 hectares. Navy excludes commercial river shipping that was not maintained as a standing war fleet.',
   sources:[['Dordrecht — growth of a trading city','https://cms.dordrecht.nl/Inwoners/Overzicht_Inwoners/Bouwen_en_verbouwen_voor_inwoners/Welstand/Beeldkwaliteitplan_voor_de_binnenstad.org'],['County of Holland','https://en.wikipedia.org/wiki/County_of_Holland']]
  },
  {
   id:'1300-haarlem',name:'Haarlem',modern:'Haarlem',country:'County of Holland',subrealm:'County of Holland · chartered town',
   lon:4.6462,lat:52.3874,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'4–8 K',populationConfidence:'low',
-  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:2,navyText:'2',
+  sizeText:'0.4 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:67,economyScore:67,stability:73,
   historicalRole:'Growing chartered town controlling routes through central Holland',
   economy:'Brewing, crafts, markets and surrounding agriculture',
@@ -1032,26 +1033,26 @@ export const CITIES_1300=[
  },
  {
   id:'1300-leiden',name:'Leiden',modern:'Leiden',country:'County of Holland',subrealm:'County of Holland · growing Rhine town',
-  lon:4.4970,lat:52.1601,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:2,navyText:'2',
+  lon:4.4970,lat:52.1601,rarity:0,year:1300,people:1900,populationText:'1.9 K',populationRange:'1.5–2.5 K',populationConfidence:'medium',
+  sizeText:'0.21 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:68,economyScore:70,stability:72,
   historicalRole:'Growing market town on the Old Rhine',
   economy:'Crafts, cloth, regional markets and river trade',
   militaryRole:'Compact fortified settlement with local strategic value',
   researchSummary:'Leiden was still much smaller than its later Golden Age form but was already a recognised urban centre in Holland.',
-  evidenceNote:'Population and size are low-confidence estimates.',
+  evidenceNote:'A comparative reconstruction for c.1300 gives about 1,900 inhabitants over roughly 21 hectares; both figures remain historical estimates.',
   sources:[['Leiden','https://en.wikipedia.org/wiki/Leiden'],['County of Holland','https://en.wikipedia.org/wiki/County_of_Holland']]
  },
  {
   id:'1300-delft',name:'Delft',modern:'Delft',country:'County of Holland',subrealm:'County of Holland · chartered canal town',
-  lon:4.3571,lat:52.0116,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:2,navyText:'2',
+  lon:4.3571,lat:52.0116,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–2.5 K',populationConfidence:'medium',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:71,technology:68,economyScore:69,stability:73,
   historicalRole:'Young but expanding chartered town in the core of Holland',
   economy:'Markets, crafts, canal transport and agriculture',
   militaryRole:'Small fortified urban centre on inland waterways',
   researchSummary:'Delft received city rights in 1246 and by 1300 was a growing town in Holland’s increasingly urban network.',
-  evidenceNote:'Population is a low-confidence estimate; date of urban charter is well documented.',
+  evidenceNote:'Archaeological and demographic work places Delft at roughly 2,000 inhabitants around 1300. It was still a small, largely agrarian canal town.',
   sources:[['Delft','https://en.wikipedia.org/wiki/Delft'],['County of Holland','https://en.wikipedia.org/wiki/County_of_Holland']]
  },
  {
@@ -1069,7 +1070,7 @@ export const CITIES_1300=[
  {
   id:'1300-zutphen',name:'Zutphen',modern:'Zutphen',country:'County of Guelders',subrealm:'County of Guelders · major IJssel town',
   lon:6.2017,lat:52.1400,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:1,navyText:'1',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:72,technology:69,economyScore:69,stability:71,
   historicalRole:'Old comital centre and important IJssel trading town',
   economy:'River trade, markets, crafts and surrounding agriculture',
@@ -1093,13 +1094,13 @@ export const CITIES_1300=[
  {
   id:'1300-stavoren',name:'Stavoren',modern:'Stavoren',country:'Frisian Freedom',subrealm:'Frisian Freedom · autonomous maritime community',
   lon:5.3595,lat:52.8836,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
-  sizeText:'0.2 km²',sizeConfidence:'low',army:0,armyText:'0',navy:9,navyText:'9',
+  sizeText:'0.2 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:67,technology:68,economyScore:77,stability:76,
   historicalRole:'Important Frisian maritime trading town within the lordless Frisian political order',
   economy:'Baltic and North Sea shipping, fisheries and trade',
   militaryRole:'Small population but disproportionate maritime capacity',
   researchSummary:'Stavoren was one of the best-known medieval Frisian ports and fits the politically decentralised Frisian Freedom around 1300.',
-  evidenceNote:'Population is low-confidence; high Navy reflects maritime function rather than resident scale.',
+  evidenceNote:'Population is low-confidence. Stavoren was a major maritime trading community, but no standing dedicated war fleet is securely evidenced for 1300, so merchant shipping is not counted as Navy.',
   sources:[['Stavoren','https://en.wikipedia.org/wiki/Stavoren'],['Frisian freedom','https://en.wikipedia.org/wiki/Frisian_freedom']]
  },
  {
