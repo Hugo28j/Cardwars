@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-iberia-expansion';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-iberia-zoom-labels';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -57,7 +57,7 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-iberia-expansion':'assets/atlas.json?v=20260920-iberia-expansion').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-iberia-zoom-labels':'assets/atlas.json?v=20260920-iberia-zoom-labels').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
    this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i)=>`<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realmOf(f))?'iberia-realm':''}" data-realm="${esc(realmOf(f))}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${mode==='historical'?colorForRealm(realmOf(f)):palettes[i%palettes.length]}" fill-rule="evenodd" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`).join('');
    this.buildIberianTerritories(atlas);
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
@@ -123,7 +123,9 @@ export class WorldMap{
   this.svg.setAttribute('viewBox',`${v.x} ${v.y} ${v.w} ${v.h}`);this.refresh();}
  refresh(){const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
-  // States get first choice of label space. Primary names never disappear on zoom.
+  const showCityAreas=unit<.082;
+  const iberiaRealmLabels=new Set(['PORTUGAL','CASTILE','ARAGON','NAVARRE','GRANADA','ANDORRA','ROUSSILLON','MAJORCA']);
+  // Iberian polity names hand over to city-territory names at the exact same zoom level.
   for(const t of this.realmLabels||[]){
    const level=+(t.dataset.level||1),umbrella=t.dataset.kind==='umbrella';
    const eligible=level===1||(level===2&&unit<.48)||(level>=3&&unit<.20);
@@ -133,11 +135,10 @@ export class WorldMap{
    t.style.fontSize=(unit*px)+'px';t.style.letterSpacing=(unit*(umbrella?1.5:.65))+'px';t.style.strokeWidth=(unit*2.5)+'px';t.style.opacity=umbrella?'.6':'1';
    const w=t.getComputedTextLength()/unit,box={x:p.x-w/2-4,y:p.y-px-3,w:w+8,h:px+7};
    const inView=box.x+box.w>0&&box.x<width&&box.y+box.h>0&&box.y<height;
-   const iberiaCountry=['PORTUGAL','CASTILE','ARAGON','NAVARRE','GRANADA'].includes(t.textContent.trim());
-   const show=eligible&&inView&&(level===1||!occupied.some(b=>overlaps(box,b)))&&!(iberiaCountry&&unit<.082);
+   const iberiaCountry=iberiaRealmLabels.has(t.textContent.trim());
+   const show=eligible&&inView&&(level===1||!occupied.some(b=>overlaps(box,b)))&&!(iberiaCountry&&showCityAreas);
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
-  const showCityAreas=unit<.082;
   for(const t of this.cityTerritoryLabels||[]){
    const cellW=+(t.dataset.cellW||0)/unit,cellH=+(t.dataset.cellH||0)/unit,name=t.textContent||'';
    const ideal=name.length>15?12.5:14.5,maxW=cellW*.90/Math.max(1,name.length*.54),maxH=cellH*.46;
