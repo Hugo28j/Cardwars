@@ -982,6 +982,66 @@ export const CITIES_1300=[
   ]
  },
  {
+  id:'1300-avignon',name:'Avignon',modern:'Avignon',country:'County of Provence',subrealm:'County of Provence · major Rhône religious and commercial centre',
+  lon:4.8055,lat:43.9493,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'15–22 K',populationConfidence:'low',
+  sizeText:'0.90 km²',sizeConfidence:'low',army:90,armyText:'90',navy:0,navyText:'0',
+  food:71,technology:76,economyScore:79,stability:68,
+  historicalRole:'Important Rhône city, bishopric and regional commercial centre in Provence',
+  economy:'Rhône trade, markets, crafts, church revenues and regional agriculture',
+  militaryRole:'Walled river city with strong local strategic value',
+  researchSummary:'Avignon was already an important southern city around 1300 and fits naturally into the County of Provence on the current Cardwars map.',
+  evidenceNote:'Population, footprint, army and comparative scores are Cardwars gameplay estimates; political ownership follows the current map.',
+  sources:[
+   ['Avignon — overview','https://en.wikipedia.org/wiki/Avignon'],
+   ['County of Provence — overview','https://en.wikipedia.org/wiki/County_of_Provence']
+  ]
+ },
+ {
+  id:'1300-narbonne',name:'Narbonne',modern:'Narbonne',country:'Kingdom of France',subrealm:'Languedoc · major Mediterranean and ecclesiastical centre',
+  lon:3.0031,lat:43.1843,rarity:2,year:1300,people:16000,populationText:'16.0 K',populationRange:'12–20 K',populationConfidence:'low',
+  sizeText:'0.80 km²',sizeConfidence:'low',army:100,armyText:'100',navy:2,navyText:'2',
+  food:69,technology:72,economyScore:78,stability:70,
+  historicalRole:'Important southern commercial and archiepiscopal city near the Mediterranean',
+  economy:'Regional trade, wine, salt, crafts, church activity and Mediterranean connections',
+  militaryRole:'Fortified southern city with access to coastal trade routes',
+  researchSummary:'Narbonne remained one of the notable urban centres of Languedoc around 1300 and adds an important city between Carcassonne and the Mediterranean coast.',
+  evidenceNote:'Population, footprint, army, navy and comparative scores are Cardwars gameplay estimates; political ownership follows the current map.',
+  sources:[
+   ['Narbonne — overview','https://en.wikipedia.org/wiki/Narbonne'],
+   ['Languedoc — overview','https://en.wikipedia.org/wiki/Languedoc']
+  ]
+ },
+ {
+  id:'1300-nimes',name:'Nîmes',modern:'Nîmes',country:'Kingdom of France',subrealm:'Languedoc · fortified regional market city',
+  lon:4.3601,lat:43.8367,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'9–15 K',populationConfidence:'low',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:80,armyText:'80',navy:0,navyText:'0',
+  food:72,technology:64,economyScore:66,stability:73,
+  historicalRole:'Regional market and fortified city of southern France',
+  economy:'Agriculture, local markets, crafts, wine and regional exchange',
+  militaryRole:'Walled inland city controlling routes between Languedoc and the Rhône corridor',
+  researchSummary:'Nîmes was an established southern urban centre around 1300 and helps fill the large gap between Montpellier, Avignon and the lower Rhône.',
+  evidenceNote:'Population, footprint, army and comparative scores are Cardwars gameplay estimates; political ownership follows the current map.',
+  sources:[
+   ['Nîmes — overview','https://en.wikipedia.org/wiki/N%C3%AEmes'],
+   ['Languedoc — overview','https://en.wikipedia.org/wiki/Languedoc']
+  ]
+ },
+ {
+  id:'1300-palma',name:'Palma',modern:'Palma de Mallorca',country:'Kingdom of Majorca',subrealm:'Majorca · principal city of Mallorca',
+  lon:2.6502,lat:39.5696,rarity:3,year:1300,people:25000,populationText:'25.0 K',populationRange:'20–30 K',populationConfidence:'low',
+  sizeText:'1.10 km²',sizeConfidence:'low',army:120,armyText:'120',navy:8,navyText:'8',
+  food:64,technology:75,economyScore:86,stability:74,
+  historicalRole:'Principal city and major maritime centre of Mallorca in the Kingdom of Majorca',
+  economy:'Mediterranean shipping, trade, crafts, markets and island agriculture',
+  militaryRole:'Fortified island capital with an important harbour and maritime role',
+  researchSummary:'Palma was the dominant urban centre of Mallorca and is the natural city marker for the main island of the Kingdom of Majorca.',
+  evidenceNote:'Population, footprint, army, navy and comparative scores are Cardwars gameplay estimates; political ownership follows the current map.',
+  sources:[
+   ['Palma de Mallorca — overview','https://en.wikipedia.org/wiki/Palma_de_Mallorca'],
+   ['Kingdom of Majorca — overview','https://en.wikipedia.org/wiki/Kingdom_of_Majorca']
+  ]
+ },
+ {
   id:'1300-marseille',name:'Marseille',modern:'Marseille',country:'County of Provence',subrealm:'Angevin County of Provence · under Charles II of Naples',
   lon:5.3698,lat:43.2965,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–20 K',populationConfidence:'low',
   sizeText:'0.85 km²',sizeConfidence:'low',army:100,armyText:'100',navy:6,navyText:'6',
