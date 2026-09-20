@@ -166,6 +166,21 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     ]))
     note('County of Luxembourg','Gameplay: the residual French wedge north-east of Champagne is assigned to Luxembourg.')
 
+
+    # User-marked fix: the complete circled pocket west/south-west of Luxembourg
+    # belongs to Luxembourg. This deliberately absorbs every small sliver inside
+    # the hand-drawn loop so future rebuilds do not recreate France/Champagne fragments.
+    give('County of Luxembourg',geo([
+        (4.4471,49.7931),(4.4783,49.8118),(4.6187,49.8180),(4.7903,49.7931),
+        (4.9308,49.8616),(5.1414,49.8554),(5.3053,49.8243),(5.4301,49.7869),
+        (5.6174,49.7246),(5.8046,49.6374),(5.9919,49.5502),(6.1557,49.4444),
+        (6.2181,49.3447),(6.2025,49.2762),(6.1557,49.2575),(6.0309,49.2451),
+        (5.8670,49.2451),(5.7110,49.2887),(5.5393,49.3261),(5.3989,49.4008),
+        (5.2741,49.4506),(5.0946,49.4880),(4.9308,49.5378),(4.7903,49.6001),
+        (4.6343,49.6748),(4.5173,49.7371),(4.4471,49.7744)
+    ]))
+    note('County of Luxembourg','Gameplay: the full user-circled pocket west/south-west of Luxembourg is assigned to Luxembourg.')
+
     # Give the tiny Nassau tip at the Cologne border to Cologne.
     give('Archbishopric of Cologne',geo([
         (7.7577,51.1300),(7.9400,51.0200),(7.8200,51.0400),(7.7577,51.1300)
