@@ -2,7 +2,7 @@ import {CITIES,CITY,RARITIES,RARITY_COLORS,DUPLICATE_COINS,PACK} from './data.js
 import {CITIES_1300,CITY_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260920-france-single-shape';
 import {freshProfile,formatNumber,openPack,validateProfile} from './engine.js';
 import {icon} from './icons.js';
-import {WorldMap} from './map.js?v=20260920-france-single-shape';
+import {WorldMap} from './map.js?v=20260920-island-clean-outline-v3';
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),KEY='cardwars.collection.v2';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let profile=freshProfile(),storageFailed=false;
