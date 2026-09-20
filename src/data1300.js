@@ -1999,7 +1999,7 @@ export const CITIES_1300=[
   sources:[['Jihlava','https://en.wikipedia.org/wiki/Jihlava'],['Margraviate of Moravia','https://en.wikipedia.org/wiki/Margraviate_of_Moravia']]
  },
  {
-  id:'1300-schwyz',name:'Schwyz',modern:'Schwyz',country:'Waldstätte',subrealm:'Valley community of Schwyz · early Swiss Confederacy within the Holy Roman Empire',
+  id:'1300-schwyz',name:'Schwyz',modern:'Schwyz',country:'Lordship of Milan',subrealm:'Valley community of Schwyz · early Swiss Confederacy within the Holy Roman Empire',
   lon:8.6541,lat:47.0207,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.15 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:66,technology:50,economyScore:45,stability:90,
@@ -2011,7 +2011,7 @@ export const CITIES_1300=[
   sources:[['Federal Charter of 1291','https://en.wikipedia.org/wiki/Federal_Charter_of_1291'],['Schwyz','https://en.wikipedia.org/wiki/Schwyz']]
  },
  {
-  id:'1300-altdorf',name:'Altdorf',modern:'Altdorf, Uri',country:'Waldstätte',subrealm:'Uri valley community · early Swiss Confederacy within the Holy Roman Empire',
+  id:'1300-altdorf',name:'Altdorf',modern:'Altdorf, Uri',country:'Lordship of Milan',subrealm:'Uri valley community · early Swiss Confederacy within the Holy Roman Empire',
   lon:8.6444,lat:46.8804,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
   sizeText:'0.12 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:64,technology:48,economyScore:43,stability:90,
