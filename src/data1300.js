@@ -3094,7 +3094,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-gradec',name:'Gradec / Zagreb',modern:'Zagreb',country:'Kingdom of Hungary',subrealm:'Kingdom of Croatia-Slavonia · free royal town of Gradec',
-  lon:15.97300,lat:45.81440,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
+  lon:15.97300,lat:45.81440,mapLon:16.45,mapLat:45.95,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
   sizeText:'0.12 km²',sizeConfidence:'medium',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:60,economyScore:62,stability:70,
   historicalRole:'Autonomous free royal hill town beside the episcopal settlement of Kaptol',
