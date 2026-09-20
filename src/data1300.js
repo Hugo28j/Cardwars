@@ -2309,7 +2309,7 @@ export const CITIES_1300=[
   sources:[['Bremen State Archive — path to independence','https://www.staatsarchiv.bremen.de/entdecken/geschichten-aus-der-landesgeschichte/epochenuebergreifend/selbstaendigkeit-1750'],['Bremen State Archive — medieval period','https://www.staatsarchiv.bremen.de/entdecken/geschichten-aus-der-landesgeschichte/mittelalter-16013']]
  },
  {
-  id:'1300-frankfurt-main',name:'Frankfurt am Main',modern:'Frankfurt am Main',country:'Free Imperial City of Frankfurt',subrealm:'Royal/imperial city directly dependent on king and empire; full Free Imperial status later',
+  id:'1300-frankfurt-main',name:'Frankfurt am Main',modern:'Frankfurt am Main',country:'Archbishopric of Mainz',subrealm:'Frankfurt district · assigned to the Archbishopric of Mainz on the Cardwars c.1300 map',
   lon:8.6821,lat:50.1109,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.7 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:65,technology:78,economyScore:88,stability:78,
