@@ -65,6 +65,29 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     merge('Commune of Como','Lordship of Milan')
     note('Lordship of Milan','Gameplay: Waldstatte and the Commune of Como are incorporated into the Lordship of Milan.')
 
+
+    # Island cleanup: remove generic Corsica/Sardinia placeholder layers that
+    # otherwise leave mismatched-colour coastal slivers between the real states.
+    if 'Corsica' in states:
+        corsica=states.pop('Corsica')
+        meta.pop('Corsica',None)
+        give('Republic of Genoa',corsica)
+        note('Republic of Genoa','Gameplay: Corsica is rendered as one Genoese territory without residual placeholder fragments.')
+
+    if 'Sardinia' in states:
+        sardinia=states.pop('Sardinia')
+        meta.pop('Sardinia',None)
+        sardinian_realms=['Gallura','Judicate of Arborea','Caralis']
+        occupied=unary_union([states[n] for n in sardinian_realms])
+        remainder=clean(sardinia.difference(occupied))
+        for part in polygons(remainder):
+            target=max(sardinian_realms,key=lambda n:part.boundary.intersection(states[n].boundary).length)
+            if part.boundary.intersection(states[target].boundary).length<.001:
+                target=min(sardinian_realms,key=lambda n:part.distance(states[n]))
+            give(target,part)
+        for name in sardinian_realms:
+            note(name,'Gameplay: residual Sardinia coastline fragments are absorbed into the three intended Sardinian states, removing overlap-colour artifacts.')
+
     replace('Archbishopric of Cologne',geo([(6.50,50.36),(6.68,50.73),(6.65,51.23),(6.91,51.12),(7.10,51.04),(7.40,51.06),(7.73,51.17),(7.7577,51.1300),(7.9400,51.0200),(7.8200,51.0400),(7.61,50.84),(7.37,50.72),(7.17,50.39),(7.17,50.36)]))
     note('Archbishopric of Cologne','Gameplay: Cologne is one continuous territory; the north-east tip is part of the main polygon so no internal border is drawn.')
     replace('Free Imperial City of Bremen',geo([(8.62,53.12),(8.69,53.24),(8.83,53.26),(9.00,53.19),(9.11,53.08),(9.02,52.96),(8.85,52.92),(8.69,52.99)]))
