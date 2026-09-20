@@ -346,7 +346,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-barcelona',name:'Barcelona',modern:'Barcelona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · County of Barcelona',
-  lon:2.1734,lat:41.3851,mapLon:2.1000,mapLat:41.4050,rarity:4,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'medium',
+  lon:2.1734,lat:41.3851,mapLon:2.0500,mapLat:41.3600,rarity:4,year:1300,people:35000,populationText:'35.0 K',populationRange:'30–40 K',populationConfidence:'medium',
   sizeText:'1.20 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:12,navyText:'12',
   food:62,technology:92,economyScore:95,stability:70,
   historicalRole:'Leading Catalan city, royal-comital centre and major Mediterranean commercial power',
@@ -377,7 +377,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-girona',name:'Girona',modern:'Girona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · episcopal and royal city',
-  lon:2.8214,lat:41.9794,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationConfidence:'medium',
+  lon:2.8214,lat:41.9794,mapLon:2.5500,mapLat:41.7800,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationConfidence:'medium',
   sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:61,technology:70,economyScore:61,stability:68,
   historicalRole:'Important Catalan episcopal city and strategic fortress on the route from France',
@@ -3215,6 +3215,54 @@ export const CITIES_1300=[
   researchSummary:'Almería remained one of the most important coastal cities of the Nasrid realm around 1300 and served as a strategic maritime outlet of Granada.',
   evidenceNote:'Population and footprint are cautious estimates. Economy is strong regionally, but below Málaga and Granada itself.',
   sources:[['Britannica — Almería','https://www.britannica.com/place/Almeria-Spain']]
+ },
+ {
+  id:'1300-andorra-la-vella',name:'Andorra la Vella',modern:'Andorra la Vella',country:'Andorra',subrealm:'Paréage of Andorra · co-lordship of Urgell and Foix',
+  lon:1.5211,lat:42.5063,rarity:0,year:1300,people:1200,populationText:'1.2 K',populationRange:'1–2 K',populationConfidence:'low',
+  sizeText:'0.08 km²',sizeConfidence:'low',army:20,armyText:'20',navy:0,navyText:'0',
+  food:38,technology:38,economyScore:34,stability:72,
+  historicalRole:'Small Pyrenean settlement representing the Andorran valleys under the paréage system',
+  economy:'Pastoralism, mountain agriculture, local exchange and movement across Pyrenean routes',
+  militaryRole:'Very small mountain community with negligible permanent military capacity',
+  researchSummary:'The Andorran valleys were governed through the paréage agreements between the bishop of Urgell and the count of Foix. Andorra la Vella is used as the representative settlement for gameplay.',
+  evidenceNote:'No reliable c.1300 census survives. Population, footprint and military values are deliberately cautious gameplay estimates.',
+  sources:[['Government of Andorra — History of Andorra','https://www.govern.ad/ca/tematiques/cultura-i-esports/patrimoni-cultural/coneixer-el-patrimoni-cultural/historia-d-andorra']]
+ },
+ {
+  id:'1300-perpignan',name:'Perpignan',modern:'Perpignan',country:'Roussillon',subrealm:'County of Roussillon · under the kings of Majorca',
+  lon:2.8948,lat:42.6887,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:68,technology:72,economyScore:80,stability:64,
+  historicalRole:'Principal city of Roussillon and a major continental centre of the kings of Majorca',
+  economy:'Regional trade, crafts, viticulture, administration and exchange across the eastern Pyrenees',
+  militaryRole:'Fortified regional capital with a modest permanent defensive core',
+  researchSummary:'Perpignan was one of the key continental centres of the Kingdom of Majorca and is the natural representative city for Roussillon around 1300.',
+  evidenceNote:'Population and footprint are cautious gameplay estimates. Political and commercial importance is weighted more heavily than permanent military strength.',
+  sources:[['Ville de Perpignan — medieval history','https://www.mairie-perpignan.fr/culture-patrimoine/culture/festivals/grands-rendez-vous-annuels/trobades-medievales']]
+ },
+ {
+  id:'1300-avila',name:'Ávila',modern:'Ávila',country:'Crown of Castile',subrealm:'Kingdom of Castile',
+  lon:-4.6977,lat:40.6561,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'6–9 K',populationConfidence:'low',
+  sizeText:'0.33 km²',sizeConfidence:'low',army:80,armyText:'80',navy:0,navyText:'0',
+  food:56,technology:55,economyScore:53,stability:64,
+  historicalRole:'Strongly fortified Castilian city of the central Meseta',
+  economy:'Wool, livestock, crafts, local trade and surrounding agriculture',
+  militaryRole:'Walled inland city with unusually strong defensive infrastructure',
+  researchSummary:'Ávila was an important repopulated and fortified city of Castile and fits naturally into the central Castilian urban network around 1300.',
+  evidenceNote:'Population and size are low-confidence comparative estimates; its fortifications justify a stronger defensive role than its population alone suggests.',
+  sources:[['UNESCO — Old Town of Ávila with its Extra-Muros Churches','https://whc.unesco.org/en/list/348']]
+ },
+ {
+  id:'1300-zamora',name:'Zamora',modern:'Zamora',country:'Crown of Castile',subrealm:'Kingdom of León',
+  lon:-5.7446,lat:41.5035,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'6–9 K',populationConfidence:'low',
+  sizeText:'0.34 km²',sizeConfidence:'low',army:80,armyText:'80',navy:0,navyText:'0',
+  food:58,technology:53,economyScore:52,stability:65,
+  historicalRole:'Important Duero city in the Leonese part of the Crown of Castile',
+  economy:'Agriculture, livestock, crafts and regional exchange along the Duero corridor',
+  militaryRole:'Well-fortified city with strategic value in western Castile and León',
+  researchSummary:'Zamora remained a significant fortified urban centre on the Duero and fills the western-northern Castilian map between Salamanca and León.',
+  evidenceNote:'Population and footprint are low-confidence gameplay estimates based on regional importance and the scale of the medieval defenses.',
+  sources:[['Spain.info — Walls of Zamora','https://www.spain.info/en/places-of-interest/walls-zamora/']]
  }
 ];
 
