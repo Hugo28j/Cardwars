@@ -70,6 +70,43 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     for name in ['County of Champagne','Duchy of Lorraine','Duchy of Burgundy']:
         note(name,'Gameplay: the narrow French corridor between Champagne and Lorraine is distributed among its neighbours.')
 
+
+    # Burgundy / Lorraine / Lyon-Vienne gameplay cleanup.
+    # These are deliberate map simplifications requested for the game layer.
+    if 'County of Burgundy' in states:
+        merge('County of Burgundy','Duchy of Burgundy')
+        note('Duchy of Burgundy','Gameplay: Franche-Comte is incorporated into Burgundy.')
+
+    if 'Duchy of Lorraine' in states:
+        lorraine=states.pop('Duchy of Lorraine')
+        meta.pop('Duchy of Lorraine',None)
+        south=lorraine.intersection(geo([(4.6,45.4),(6.5,45.4),(6.5,46.7),(4.6,46.7)]))
+        north=lorraine.difference(south)
+        west=north.intersection(geo([(5.4,47.5),(6.4,47.5),(6.4,50.2),(5.4,50.2)]))
+        east=north.difference(west)
+        give('Duchy of Burgundy',south)
+        give('County of Champagne',west)
+        give('Prince-Bishopric of Strasbourg',east)
+        note('Duchy of Burgundy','Gameplay: Franche-Comte and the detached southern Lorraine fragment are incorporated into Burgundy.')
+        note('County of Champagne','Gameplay: western Lorraine is folded into Champagne.')
+        note('Prince-Bishopric of Strasbourg','Gameplay: eastern Lorraine is folded into Strasbourg.')
+
+    replace('Archbishopric of Lyon',geo([
+        (4.3333,45.6800),(4.2833,45.8267),(4.3667,45.9733),(4.5833,46.0600),
+        (4.8750,46.0667),(5.1000,45.9933),(5.2333,45.8533),(5.2083,45.6933),
+        (5.0417,45.6200),(4.7917,45.5867),(4.5500,45.6000)
+    ]))
+    meta['Archbishopric of Lyon'].update(lx=4.78,ly=45.84)
+    note('Archbishopric of Lyon','Gameplay border enlarged and rounded for readability.')
+
+    replace('Archbishopric of Vienne',geo([
+        (4.5500,45.6000),(4.7917,45.5867),(5.0417,45.6200),(5.2083,45.6933),
+        (5.2500,45.5333),(5.1667,45.3733),(5.0000,45.2667),(4.7667,45.2667),
+        (4.5833,45.3533),(4.5167,45.4867)
+    ]))
+    meta['Archbishopric of Vienne'].update(lx=4.82,ly=45.43)
+    note('Archbishopric of Vienne','Gameplay border enlarged and rounded for readability.')
+
     name='Kingdom of Majorca'
     old=states[name].intersection(geo([(3.5,43.3),(4.3,43.3),(4.3,44),(3.5,44)]))
     new=geo([(3.61,43.63),(3.67,43.76),(3.82,43.82),(3.99,43.76),(4.10,43.61),(4.01,43.48),(3.81,43.44),(3.68,43.50)])
