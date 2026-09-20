@@ -3519,6 +3519,55 @@ export const CITIES_1300=[
   evidenceNote:'The three settlements were not formally united as the city of Leeuwarden until the 15th century. Population, footprint and military values are cautious gameplay estimates for the c.1300 settlement cluster.',
   sources:[['Visit Friesland — history of Leeuwarden and the Frisian eleven cities','https://www.friesland.nl/nl/blog/historie/de-geschiedenis-van-de-friese-elf-steden'],['Visit Friesland — medieval Frisian freedom','https://www.friesland.nl/nl/blog/historie/de-vrijheidsgeest-van-de-friezen']]
  }
+,
+ {
+  id:'1300-rijeka',name:'Rijeka',modern:'Rijeka',country:'Patriarchate of Aquileia',subrealm:'Flumen Sancti Viti · fortified port in the Duino lordship and Aquileian sphere',
+  lon:14.4422,lat:45.3271,mapLon:14.40,mapLat:45.50,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
+  sizeText:'0.20 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:62,technology:58,economyScore:64,stability:64,
+  historicalRole:'Small fortified Adriatic port and trading settlement at the mouth of the Rječina',
+  economy:'Port trade, fishing, crafts, timber and exchange between the coast and inland routes',
+  militaryRole:'Walled port-town with a small castle and defensive garrison rather than a standing field army',
+  researchSummary:'Medieval Rijeka, known as Flumen Sancti Viti, is documented from the first half of the 13th century as a small fortified town with a castle, church of St Vitus and a lower commercial settlement. Around this period the Counts of Duino were important lords in the area.',
+  evidenceNote:'Population, footprint and Army are cautious gameplay estimates. The real coordinates are preserved while the map marker is shifted slightly north so it sits cleanly inside the simplified northern Adriatic map region.',
+  sources:[['City of Rijeka — History of Rijeka','https://www.rijeka.hr/en/city-government/history-of-rijeka/']]
+ },
+ {
+  id:'1300-pag',name:'Pag',modern:'Pag',country:'Republic of Venice',subrealm:'Commune of Pag · island community under a Venetian count',
+  lon:15.0576,lat:44.4450,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
+  sizeText:'0.16 km²',sizeConfidence:'low',army:30,armyText:'30',navy:0,navyText:'0',
+  food:66,technology:52,economyScore:66,stability:62,
+  historicalRole:'Small but organised island commune whose salt and maritime position gave it outsized regional value',
+  economy:'Salt production, sheep, fishing, coastal trade and local markets',
+  militaryRole:'Small communal settlement with local defensive manpower but no dedicated standing war fleet',
+  researchSummary:'Pag had emerged as a distinct commune by the end of the 13th century. Its political position was closely tied to the rivalry between Zadar and Venice, and from 1192 it had a separate count under Venetian influence.',
+  evidenceNote:'Population and footprint are low-confidence gameplay estimates. Rarity is Common because Pag was much smaller than Zadar or Split despite its valuable salt economy and communal institutions.',
+  sources:[['University of Zadar — formation of the medieval Commune of Pag','https://morepress.unizd.hr/journals/index.php/pov/en/article/view/2078']]
+ },
+ {
+  id:'1300-zadar',name:'Zadar',modern:'Zadar',country:'Republic of Venice',subrealm:'Dalmatian commune under Venetian rector Michael Morosini',
+  lon:15.2314,lat:44.1194,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–20 K',populationConfidence:'low',
+  sizeText:'0.80 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
+  food:72,technology:80,economyScore:84,stability:58,
+  historicalRole:'Major fortified Dalmatian city, episcopal centre and one of the eastern Adriatic’s leading commercial communes',
+  economy:'Adriatic trade, crafts, shipping, church wealth, markets and links with the Croatian hinterland',
+  militaryRole:'Strongly fortified maritime city with a permanent defensive core; ordinary merchant shipping is not counted as a standing Navy',
+  researchSummary:'Zadar recovered strongly during the 13th century after the Fourth Crusade sack, rebuilt institutions and churches and expanded trade. In 1300 the city had a Venetian rector, Michael Morosini, while remaining a powerful and frequently contested Dalmatian commune.',
+  evidenceNote:'Population is a comparative low-confidence estimate. Rarity is Rare, comparable to Ancona but with greater regional political weight and stronger fortifications; it remains below Venice’s exceptional scale and naval power.',
+  sources:[['University of Zadar — Zadar and the Angevin connections in the 13th century','https://morepress.unizd.hr/journals/index.php/radovidz/hr/article/view/2059'],['University of Zadar — Michael Morosini as rector of Zadar, 1299–1301','https://morepress.unizd.hr/journals/index.php/mhm/en/article/view/3173']]
+ },
+ {
+  id:'1300-split',name:'Split',modern:'Split',country:'Kingdom of Hungary',subrealm:'Kingdom of Croatia-Slavonia · autonomous commune in the Croatian-Hungarian sphere',
+  lon:16.4402,lat:43.5081,mapLon:16.45,mapLat:43.68,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–13 K',populationConfidence:'low',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:72,technology:79,economyScore:78,stability:62,
+  historicalRole:'Leading Dalmatian commune and archiepiscopal city centred on the fortified former palace of Diocletian',
+  economy:'Adriatic trade, crafts, church revenues, markets, wine, agriculture and coastal shipping',
+  militaryRole:'Fortified commune with civic defenses and a modest permanent armed core rather than a large standing army',
+  researchSummary:'Medieval Split functioned as a self-governing commune under changing regional overlords. Its own council and communal institutions were well established, and the city codified its statute in 1312, only a few years after the Cardwars snapshot.',
+  evidenceNote:'Population and footprint are cautious gameplay estimates. Rarity is Rare because Split combined a substantial population, archiepiscopal importance, trade and mature communal government, while remaining below Venice in scale and reach.',
+  sources:[['City of Split — History of the city','https://split.hr/kategorije/o-splitu/povijest-grada']]
+ }
 ];
 
 export const CITY_1300=Object.fromEntries(CITIES_1300.map((c,index)=>[c.id,{...c,index}]));
