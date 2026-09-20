@@ -52,6 +52,20 @@ const pointInPolygon=(p,poly)=>{let inside=false;for(let i=0,j=poly.length-1;i<p
 const visibleCellMetrics=(poly,land,fallback)=>{const box=polygonBox(poly),pts=[],steps=20;for(let iy=0;iy<=steps;iy++){for(let ix=0;ix<=steps;ix++){const p=[box.x+box.w*ix/steps,box.y+box.h*iy/steps];if(!pointInPolygon(p,poly))continue;let onLand=false;try{onLand=land.isPointInFill(new DOMPoint(p[0],p[1]));}catch{onLand=true;}if(onLand)pts.push(p);}}if(!pts.length)return {center:fallback,box:{x:fallback[0]-4,y:fallback[1]-4,w:8,h:8}};const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);return {center:[pts.reduce((v,p)=>v+p[0],0)/pts.length,pts.reduce((v,p)=>v+p[1],0)/pts.length],box:{x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)}};};
 const clipHalfPlane=(poly,a,b,c)=>{const out=[];if(!poly.length)return out;const inside=p=>a*p[0]+b*p[1]<=c+1e-7;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],pin=inside(p),qin=inside(q);if(pin)out.push(p);if(pin!==qin){const dx=q[0]-p[0],dy=q[1]-p[1],den=a*dx+b*dy;if(Math.abs(den)>1e-9){const t=(c-a*p[0]-b*p[1])/den;out.push([p[0]+dx*t,p[1]+dy*t]);}}}return out;};
 const voronoiCell=(point,others,box)=>{let poly=[[box.x,box.y],[box.x+box.w,box.y],[box.x+box.w,box.y+box.h],[box.x,box.y+box.h]];for(const other of others){if(other===point)continue;const a=other[0]-point[0],b=other[1]-point[1],c=(other[0]*other[0]+other[1]*other[1]-point[0]*point[0]-point[1]*point[1])/2;poly=clipHalfPlane(poly,a,b,c);if(!poly.length)break;}return poly;};
+const cityBorderKey=(realm,a,b)=>realm+'|'+[a,b].sort().join('|');
+const CITY_BORDER_SKIP=new Set([
+ cityBorderKey('Kingdom of France','1300-amiens','1300-rouen'),
+ cityBorderKey('Kingdom of France','1300-amiens','1300-paris')
+]);
+const CITY_BORDER_MANUAL=new Map([
+ [cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes'),'M299.918,413.596L307.320,425.550']
+]);
+const sharedCellEdges=cells=>{const edges=new Map();for(const {c,poly} of cells){for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ak=a[0].toFixed(5)+','+a[1].toFixed(5),bk=b[0].toFixed(5)+','+b[1].toFixed(5),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let e=edges.get(key);if(!e){e={a,b,cities:[]};edges.set(key,e);}e.cities.push(c.id);}}return [...edges.values()].filter(e=>e.cities.length===2);};
+const segmentIntersectionT=(a,b,c,d)=>{const rx=b[0]-a[0],ry=b[1]-a[1],sx=d[0]-c[0],sy=d[1]-c[1],den=rx*sy-ry*sx;if(Math.abs(den)<1e-9)return null;const qx=c[0]-a[0],qy=c[1]-a[1],t=(qx*sy-qy*sx)/den,u=(qx*ry-qy*rx)/den;return t>-1e-7&&t<1+1e-7&&u>-1e-7&&u<1+1e-7?Math.max(0,Math.min(1,t)):null;};
+const pointInCompound=(p,polys)=>{let inside=false;for(const poly of polys)if(pointInPolygon(p,poly))inside=!inside;return inside;};
+const segmentRealmFragments=(a,b,polys)=>{const ts=[0,1];for(const poly of polys)for(let i=0;i<poly.length;i++){const t=segmentIntersectionT(a,b,poly[i],poly[(i+1)%poly.length]);if(t!==null)ts.push(t);}ts.sort((x,y)=>x-y);const uniq=[];for(const t of ts)if(!uniq.length||Math.abs(t-uniq[uniq.length-1])>1e-5)uniq.push(t);const at=t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],out=[];for(let i=0;i+1<uniq.length;i++){const t0=uniq[i],t1=uniq[i+1];if(t1-t0<1e-6)continue;const mid=at((t0+t1)/2);if(pointInCompound(mid,polys))out.push({a:at(t0),b:at(t1),startBoundary:t0>1e-5,endBoundary:t1<1-1e-5});}return out;};
+const trimRealmFragment=frag=>{let a=[...frag.a],b=[...frag.b],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);if(len<.7)return null;const ux=dx/len,uy=dy/len,trim=Math.min(.45,len*.08);if(frag.startBoundary){a[0]+=ux*trim;a[1]+=uy*trim;}if(frag.endBoundary){b[0]-=ux*trim;b[1]-=uy*trim;}return Math.hypot(b[0]-a[0],b[1]-a[1])<.65?null:{a,b};};
+
 const IBERIA_LABEL_ANGLES={
  '1300-santiago':-7,'1300-leon':-5,'1300-burgos':4,'1300-valladolid':0,'1300-salamanca':-3,'1300-zamora':-7,'1300-segovia':5,'1300-avila':-8,
  '1300-plasencia':-9,'1300-badajoz':-11,'1300-toledo':3,'1300-cuenca':10,'1300-guadalajara':5,'1300-cordoba':-5,
@@ -132,14 +146,23 @@ export class WorldMap{
    const bbox=land.getBBox(),pad=4;
    let box={x:bbox.x-pad,y:bbox.y-pad,w:bbox.width+pad*2,h:bbox.height+pad*2};
    if(realm==='Kingdom of England'){
-    const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),scopePad=24;
+    const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),scopePad=14;
     box={x:Math.min(...xs)-scopePad,y:Math.min(...ys)-scopePad,w:Math.max(...xs)-Math.min(...xs)+scopePad*2,h:Math.max(...ys)-Math.min(...ys)+scopePad*2};
    }
    const realmClip='city-realm-'+realm.toLowerCase().replace(/[^a-z0-9]+/g,'-');
    defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${realmClip}"><path d="${feature.d}" fill-rule="evenodd"/></clipPath>`);
    const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),metrics=visibleCellMetrics(poly,land,points[i]);return {c,poly,cellBox:metrics.box,labelPoint:metrics.center};});
    const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(c.name)} · ${esc(displayRealmName(realm))}</title></path>`).join('');
-   territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})">${paths}</g>`);
+   const realmPolys=svgSubpaths(feature.d).map(svgSubpathPoints).filter(p=>p.length>=3);
+   let borderPaths='';
+   for(const edge of sharedCellEdges(cells)){
+    const key=cityBorderKey(realm,edge.cities[0],edge.cities[1]);if(CITY_BORDER_SKIP.has(key)||CITY_BORDER_MANUAL.has(key))continue;
+    let frags=segmentRealmFragments(edge.a,edge.b,realmPolys).map(trimRealmFragment).filter(Boolean);
+    if(frags.length>1)frags=[frags.sort((u,v)=>Math.hypot(v.b[0]-v.a[0],v.b[1]-v.a[1])-Math.hypot(u.b[0]-u.a[0],u.b[1]-u.a[1]))[0]];
+    borderPaths+=frags.map(f=>`<path class="city-territory-border" d="M${f.a[0].toFixed(3)},${f.a[1].toFixed(3)}L${f.b[0].toFixed(3)},${f.b[1].toFixed(3)}"/>`).join('');
+   }
+   for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
+   territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})">${paths}${borderPaths}</g>`);
    for(const {c,poly,cellBox,labelPoint} of cells){
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
