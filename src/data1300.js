@@ -11,7 +11,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 // Population/Navy/Size audit v1 (entries 000-074): population and urban footprint use source-backed c.1300 estimates where available; Navy counts dedicated or regularly maintained military vessels, excluding ordinary merchant/river craft temporarily requisitioned for war.
 // Population/Navy/Size audit v2 (entries 075-149): same source-backed c.1300 rule; Navy excludes ordinary merchant and Hanseatic shipping unless vessels were maintained as a dedicated military fleet.
 // Population/Navy/Size audit v3 (entries 150-224): same source-backed c.1300 rule; Navy counts dedicated or regularly available military vessels and excludes ordinary merchant shipping unless explicitly integrated into a state war fleet.
-// Qualitative-score audit full set (entries 000-243): scores use a deliberately wide 0-100 comparative scale across all 225 cards. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
+// Qualitative-score audit full set (entries 000-246): scores use a deliberately wide 0-100 comparative scale across all 225 cards. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -3140,6 +3140,44 @@ export const CITIES_1300=[
   researchSummary:'Mende grew around the episcopal seat and the shrine of Saint Privat. By the 12th century its bishop held temporal powers under the French king; continuing jurisdictional disputes with the crown were formalised in the 1307 paréage.',
   evidenceNote:'The exact population is unknown. Stability is held near average because royal and episcopal jurisdictions were still contested around 1300, even though the city itself was prosperous and fortified.',
   sources:[['Ville de Mende — history','https://mende.fr/ma-ville/histoire-et-patrimoine/histoire/'],['Ville de Mende — medieval development report','https://mende.fr/app/uploads/sites/2/2022/12/SPR-Rapport.pdf']]
+ }
+,
+ {
+  id:'1300-belgrade',name:'Belgrade',modern:'Belgrade',country:'Kingdom of Serbia',subrealm:'Northern Serbian realm of King Stefan Dragutin · Belgrade and Mačva',
+  lon:20.4573,lat:44.8125,mapLon:20.4373,mapLat:44.8125,rarity:2,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
+  food:66,technology:72,economyScore:74,stability:58,
+  historicalRole:'Strategic Danube-Sava fortress and residence of the former Serbian king Stefan Dragutin',
+  economy:'River trade, frontier commerce, crafts, markets and princely administration',
+  militaryRole:'Major frontier fortress with a small permanent princely and garrison core',
+  researchSummary:'Belgrade entered Serbian rule in 1284 when the Hungarian crown granted the city and Mačva to Stefan Dragutin. Dragutin maintained a palace there and strengthened its Serbian ecclesiastical presence.',
+  evidenceNote:'The exact population is unknown and the card uses a conservative low-confidence estimate. For gameplay the city is grouped under Serbia, although Dragutin ruled a distinct northern Serbian realm tied to Hungary rather than Milutin’s core kingdom.',
+  gameplayNote:'Gameplay grouping: Belgrade is shown with Serbia. Historically in 1300 it belonged to Stefan Dragutin’s separate northern Serbian realm, held through his relationship with the Hungarian crown.',
+  sources:[['City of Belgrade — history','https://www.beograd.rs/en/discover-belgrade/a2014/History.html']]
+ },
+ {
+  id:'1300-prizren',name:'Prizren',modern:'Prizren',country:'Kingdom of Serbia',subrealm:'Kingdom of Serbia under Stefan Uroš II Milutin',
+  lon:20.7397,lat:42.2139,mapLon:20.40,mapLat:42.53,rarity:2,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
+  food:76,technology:82,economyScore:80,stability:70,
+  historicalRole:'Major Serbian urban, episcopal and commercial centre in the heart of the Nemanjić state',
+  economy:'Regional and long-distance trade, crafts, church wealth, markets and royal demand',
+  militaryRole:'Important fortified royal city with a modest permanent military core',
+  researchSummary:'Prizren had been an urban episcopal centre before its incorporation into the Nemanjić state and remained one of medieval Serbia’s principal cities. Its churches and bishopric helped drive both urban and economic development.',
+  evidenceNote:'No reliable c.1300 census survives, so population and area are low-confidence estimates. The map marker is shifted slightly northwest to fit the simplified c.1300 Serbia polygon while preserving the real coordinates in the card data.',
+  sources:[['Institute for the Protection of Cultural Monuments of Serbia — Prizren urban development','https://www.heritage.gov.rs/cirilica/Download/Saopstenja/Saopstenja_LIII_2021/Saopstenja_LIII_2021_Sakralne_strukture_Prizrena_kao_element_privrednog_i_urbanog_razvoja.pdf']]
+ },
+ {
+  id:'1300-pec',name:'Peć',modern:'Peć / Peja',country:'Kingdom of Serbia',subrealm:'Seat of the Serbian Archbishopric under King Milutin',
+  lon:20.2883,lat:42.6591,rarity:1,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
+  sizeText:'0.18 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:72,technology:88,economyScore:62,stability:74,
+  historicalRole:'Spiritual centre of medieval Serbia and seat of the Serbian archbishops from the end of the 13th century',
+  economy:'Church revenues, pilgrimage, local markets, crafts and agricultural support',
+  militaryRole:'Ecclesiastical centre protected by a small permanent household and local defensive force',
+  researchSummary:'The archiepiscopal seat moved from Žiča to Peć in 1292. By the 1300 snapshot Peć was therefore one of the most important religious and cultural centres of the Serbian kingdom.',
+  evidenceNote:'Peć was much smaller than major commercial cities, so Population and Economy remain modest. Technology is high because the archbishopric concentrated literacy, manuscript culture, administration and elite building expertise.',
+  sources:[['UNESCO nomination — Patriarchate of Peć','https://whc.unesco.org/uploads/nominations/724bis.pdf'],['Serbia Tourism — medieval monasteries','https://www.serbia.travel/en/monasteries-of-kosovo-and-metohija/']]
  }
 ];
 
