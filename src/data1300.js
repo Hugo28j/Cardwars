@@ -3275,6 +3275,79 @@ export const CITIES_1300=[
  }
 ,
  {
+  id:'1300-debrecen',name:'Debrecen',modern:'Debrecen',country:'Kingdom of Hungary',subrealm:'Eastern Hungarian market settlement · Bihar and Hajdú frontier zone',
+  lon:21.6273,lat:47.5316,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
+  sizeText:'0.18 km²',sizeConfidence:'low',army:30,armyText:'30',navy:0,navyText:'0',
+  food:78,technology:52,economyScore:60,stability:58,
+  historicalRole:'Fast-growing eastern settlement developing into a regional market centre after the Mongol invasion',
+  economy:'Agriculture, livestock, local markets, craft production and regional exchange',
+  militaryRole:'Unwalled or lightly defended settlement with only a very small permanent armed household core',
+  researchSummary:'Debrecen grew rapidly after the mid-13th century as surrounding villages declined or merged into the expanding settlement. Around 1300 it was not yet the privileged market town it would become in the 14th century, but it was already an emerging regional centre.',
+  evidenceNote:'Population and footprint are low-confidence gameplay estimates. Rarity is Common because Debrecen was still developing around 1300 and had not yet received the later 14th-century civic privileges that made it a major market town.',
+  sources:[['Visit Debrecen — history of the town square and medieval St Andrew church','https://visitdebrecen.com/hot-now/the-history-of-the-town-square-and-the-reformed-great-church/'],['Visit Debrecen — 660 years of city privileges','https://visitdebrecen.com/hot-now/debrecen-for-660-years/']]
+ },
+ {
+  id:'1300-oradea',name:'Oradea / Nagyvárad',modern:'Oradea',country:'Kingdom of Hungary',subrealm:'Bishopric of Várad · episcopal fortress and regional centre',
+  lon:21.9189,lat:47.0465,rarity:1,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:70,technology:78,economyScore:72,stability:60,
+  historicalRole:'Important episcopal fortress-city and religious centre on the eastern approaches of the Hungarian kingdom',
+  economy:'Church revenues, markets, crafts, agriculture, pilgrimage and regional trade',
+  militaryRole:'Fortified episcopal centre with a modest permanent castle and household garrison',
+  researchSummary:'Oradea developed around the royal and episcopal foundation created in the late 11th century. By around 1300 its bishopric, cathedral complex and fortress made it one of the most important ecclesiastical centres in eastern Hungary.',
+  evidenceNote:'Population is approximate. Rarity is Uncommon, comparable to Pécs and Kassa: stronger institutionally than a small market settlement, but below Buda in royal and kingdom-wide importance.',
+  sources:[['Oradea Heritage — Oradea Fortress','https://www.oradeaheritage.ro/oradeas-fortress/']]
+ },
+ {
+  id:'1300-cluj',name:'Cluj / Kolozsvár',modern:'Cluj-Napoca',country:'Kingdom of Hungary',subrealm:'Transylvania · royal and episcopal settlement of Kolozs',
+  lon:23.5899,lat:46.7712,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:70,technology:64,economyScore:64,stability:56,
+  historicalRole:'Rebuilt Transylvanian settlement growing beside a royal castle and episcopal holdings',
+  economy:'Markets, crafts, agriculture, local administration and regional trade',
+  militaryRole:'Small royal-settlement defensive core associated with the castle and local authorities',
+  researchSummary:'Cluj was devastated in 1241 and rebuilt during the later 13th century with new privileges for settlers. In 1275 it appears as Villa Kulusvar; full city status followed only in 1316, shortly after the Cardwars snapshot.',
+  evidenceNote:'Rarity is Common because c.1300 Cluj was still in the transition from rebuilt settlement to full city, despite its strong later importance. Population and size are cautious estimates.',
+  sources:[['Transylvania Trust — medieval fortifications and 13th-century Cluj','https://www.transylvaniatrust.ro/en/the-mediaeval-fortifications-of-the-town-of-cluj/']]
+ },
+ {
+  id:'1300-alba-iulia',name:'Alba Iulia / Gyulafehérvár',modern:'Alba Iulia',country:'Kingdom of Hungary',subrealm:'Transylvania · seat of the Transylvanian bishopric',
+  lon:23.5730,lat:46.0670,rarity:1,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–6 K',populationConfidence:'low',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:69,technology:82,economyScore:68,stability:58,
+  historicalRole:'Principal episcopal and cathedral centre of medieval Transylvania',
+  economy:'Church revenues, markets, crafts, agriculture, cathedral administration and regional exchange',
+  militaryRole:'Episcopal stronghold with a modest permanent household and defensive core',
+  researchSummary:'Alba Iulia was the seat of the Transylvanian bishopric and cathedral chapter. The great cathedral and chapter made the settlement a major religious, administrative and literate centre by the late 13th century.',
+  evidenceNote:'Rarity is Uncommon, similar to other important episcopal centres such as Pécs and Esztergom. Technology is comparatively high because of the cathedral chapter, literacy and ecclesiastical administration.',
+  sources:[['Roman Catholic Archdiocese of Alba Iulia — history of the diocese','https://ersekseg.ro/en/node/80']]
+ },
+ {
+  id:'1300-sibiu',name:'Sibiu / Hermannstadt',modern:'Sibiu',country:'Kingdom of Hungary',subrealm:'Transylvania · principal Saxon centre of the Sibiu district',
+  lon:24.1517,lat:45.7983,rarity:2,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
+  sizeText:'0.40 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:68,technology:80,economyScore:80,stability:66,
+  historicalRole:'Leading Saxon political, fortified and commercial centre in southern Transylvania',
+  economy:'Crafts, transit trade, markets, agriculture, church institutions and Carpathian-route commerce',
+  militaryRole:'Strongly fortified settlement with a permanent defensive core, while most wartime manpower came from the community',
+  researchSummary:'Sibiu was documented by 1191 and became the political centre of the early Saxon settlement area. After its destruction in 1241 it was rebuilt, and its first major fortification precincts date from the 13th century.',
+  evidenceNote:'Rarity is Rare: around 1300 Sibiu was more regionally important and better fortified than Kassa, Pécs or Sopron, but still below the largest kingdom-wide centres. Population remains approximate.',
+  sources:[['City of Sibiu — history','https://www.sibiu.ro/sibiu/istoria'],['Sibiu tourism — medieval fortifications','https://turism.sibiu.ro/en/fortificatie/173']]
+ },
+ {
+  id:'1300-brasov',name:'Brașov / Kronstadt',modern:'Brașov',country:'Kingdom of Hungary',subrealm:'Transylvania · Saxon settlement of Corona in the Burzenland',
+  lon:25.6012,lat:45.6579,rarity:1,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:66,technology:66,economyScore:69,stability:60,
+  historicalRole:'Growing Saxon trade settlement at a strategic Carpathian crossroads',
+  economy:'Regional trade, crafts, livestock, agriculture and traffic through the Carpathian passes',
+  militaryRole:'Frontier settlement with a small permanent defensive core and broader communal defence obligations',
+  researchSummary:'Brașov developed from several early settlements in the Burzenland and is documented as Corona in the first half of the 13th century. By around 1300 it was a growing Saxon urban centre at an important commercial and frontier crossroads.',
+  evidenceNote:'Rarity is Uncommon: its trade position and strategic role place it above a minor local settlement, but much of Brașov’s greatest urban and commercial expansion belongs to the 14th and 15th centuries.',
+  sources:[['Municipality of Brașov — historical overview','https://www.brasovcity.ro/file-zone/regulamente/primarie/Statutul-mun-Brasov.pdf']]
+ }
+,
+ {
   id:'1300-gueret',name:'Guéret',modern:'Guéret',country:'Kingdom of France',subrealm:'County of La Marche · Haute-Marche châtellenie',
   lon:1.87144,lat:46.17050,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3 K',populationConfidence:'low',
   sizeText:'0.12 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
