@@ -498,7 +498,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-nantes',name:'Nantes',modern:'Nantes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · ducal city on the Loire',
+  id:'1300-nantes',name:'Nantes',modern:'Nantes',country:'Kingdom of France',subrealm:'Duchy of Brittany · ducal city on the Loire',
   lon:-1.5536,lat:47.2184,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.70 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:62,economyScore:70,stability:74,
@@ -507,13 +507,14 @@ export const CITIES_1300=[
   militaryRole:'Fortified river-port with ducal residence and useful naval capacity',
   researchSummary:'Nantes was firmly within the Duchy of Brittany in 1300 and had become one of its leading economic poles, strengthened by 13th-century ducal fortifications and its position at the Loire estuary.',
   evidenceNote:'No direct c.1300 census survives; population and size are low-confidence estimates. Political ownership and the city’s ducal-commercial role are well documented.',
+  gameplayNote:'Gameplay grouping: Nantes is assigned to France to match the simplified map border.',historicalCountry:'Duchy of Brittany',historicalSubrealm:'Duchy of Brittany · ducal city on the Loire',
   sources:[
    ['Nantes Patrimonia — Duché de Bretagne','https://patrimonia.nantes.fr/fiches-encyclopediques/duche-de-bretagne/'],
    ['Nantes Patrimonia — Moyen Âge','https://patrimonia.nantes.fr/periodes/moyen-age/']
   ]
  },
  {
-  id:'1300-rennes',name:'Rennes',modern:'Rennes',country:'Duchy of Brittany',subrealm:'Duchy of Brittany · major eastern ducal centre',
+  id:'1300-rennes',name:'Rennes',modern:'Rennes',country:'Kingdom of France',subrealm:'Duchy of Brittany · major eastern ducal centre',
   lon:-1.6778,lat:48.1173,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:67,technology:57,economyScore:60,stability:74,
@@ -522,6 +523,7 @@ export const CITIES_1300=[
   militaryRole:'Important fortified eastern city near the frontier with the French kingdom',
   researchSummary:'Rennes was one of the major urban centres of the Duchy of Brittany and a regular place of ducal power, especially important because of its eastern position.',
   evidenceNote:'Population is a broad low-confidence reconstruction; political placement inside the Duchy of Brittany is secure.',
+  gameplayNote:'Gameplay grouping: Rennes is assigned to France to match the simplified map border.',historicalCountry:'Duchy of Brittany',historicalSubrealm:'Duchy of Brittany · major eastern ducal centre',
   sources:[
    ['Nantes Patrimonia — Duché de Bretagne','https://patrimonia.nantes.fr/fiches-encyclopediques/duche-de-bretagne/'],
    ['Encyclopaedia Britannica — Rennes','https://www.britannica.com/place/Rennes']
@@ -618,7 +620,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-reims',name:'Reims',modern:'Reims',country:'Kingdom of France',subrealm:'Archbishopric of Reims · coronation city within the French kingdom',
+  id:'1300-reims',name:'Reims',modern:'Reims',country:'County of Champagne',subrealm:'Archbishopric of Reims · coronation city within the French kingdom',
   lon:4.0317,lat:49.2583,rarity:2,year:1300,people:18000,populationText:'18.0 K',populationRange:'16–20 K',populationConfidence:'medium',
   sizeText:'1.70 km²',sizeConfidence:'medium',army:0,armyText:'0',navy:0,navyText:'0',
   food:61,technology:80,economyScore:72,stability:72,
@@ -627,6 +629,7 @@ export const CITIES_1300=[
   militaryRole:'Walled ecclesiastical city with high symbolic and strategic value',
   researchSummary:'Reims combined the temporal lordship of its archbishop with its unique role in French kingship. The cathedral and archiepiscopal complex made it one of the kingdom’s most prestigious cities.',
   evidenceNote:'Population and built-up area are anchored to Pierre Desportes’ reconstruction of Reims around the turn of the 14th century; exact figures remain estimates.',
+  gameplayNote:'Gameplay grouping: Reims is assigned to Champagne to match the simplified Champagne region.',historicalCountry:'Kingdom of France',historicalSubrealm:'Archbishopric of Reims · coronation city within the French kingdom',
   sources:[
    ['Visit Reims — Cathedral district','https://visit.reims.fr/accueil/cathedral-district'],
    ['Visit Reims — Château Porte-Mars','https://visit.reims.fr/parcours-dans-la-ville/cite-des-sacres/chateau-porte-mars']
@@ -753,7 +756,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
+  id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Duchy of Aquitaine (English Crown)',subrealm:'Aunis/Saintonge frontier · French royal port',
   lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
   sizeText:'0.70 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:67,technology:67,economyScore:79,stability:70,
@@ -762,6 +765,7 @@ export const CITIES_1300=[
   militaryRole:'Walled port with substantial merchant-maritime capacity',
   researchSummary:'La Rochelle was a strategically important Atlantic port in the French royal sphere by 1300, with extensive maritime trade and strong urban privileges.',
   evidenceNote:'Population and navy are gameplay estimates; port significance and French political control are well established.',
+  gameplayNote:'Gameplay grouping: La Rochelle is assigned to English Aquitaine to match the simplified western border.',historicalCountry:'Kingdom of France',historicalSubrealm:'Aunis/Saintonge frontier · French royal port',
   sources:[
    ['Encyclopaedia Britannica — La Rochelle','https://www.britannica.com/place/La-Rochelle'],
    ['Ville de La Rochelle — official site','https://www.larochelle.fr/']
