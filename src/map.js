@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-force-single-city-labels-v2';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-force-single-city-labels-v3';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES=new Map([
