@@ -1468,16 +1468,16 @@ export const CITIES_1300=[
   sources:[['Pforzheim','https://en.wikipedia.org/wiki/Pforzheim'],['Margraviate of Baden','https://en.wikipedia.org/wiki/Margraviate_of_Baden']]
  },
  {
-  id:'1300-baden-baden',name:'Baden',modern:'Baden-Baden',country:'County of Wurttemberg',subrealm:'Margraviate of Baden · dynastic seat around Hohenbaden',
-  lon:8.2398,lat:48.7606,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
+  id:'1300-baden-baden',name:'Baden',modern:'Baden-Baden',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · dynastic seat around Hohenbaden',
+  lon:8.2398,lat:48.7606,mapLon:8.2398,mapLat:48.45,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:64,technology:55,economyScore:53,stability:71,
   historicalRole:'Dynastic centre that gave the Margraviate of Baden its name',
   economy:'Court services, baths, markets, agriculture and crafts',
   militaryRole:'Castle-town centred on the margraves’ stronghold',
   researchSummary:'Baden was modest in population but politically central as the namesake seat of the margravial dynasty.',
-  evidenceNote:'Population is low-confidence.',
-  sources:[['Baden-Baden','https://en.wikipedia.org/wiki/Baden-Baden'],['Margraviate of Baden','https://en.wikipedia.org/wiki/Margraviate_of_Baden']]
+  evidenceNote:'Population is low-confidence. The real city lies slightly north of the simplified Baden polygon, so only its map marker is shifted south while the real coordinates are preserved.',
+  sources:[['Baden-Baden official tourism — medieval city history','https://www.baden-baden.com/en/the-city'],['Margraviate of Baden','https://en.wikipedia.org/wiki/Margraviate_of_Baden']]
  },
  {
   id:'1300-stuttgart',name:'Stuttgart',modern:'Stuttgart',country:'County of Wurttemberg',subrealm:'County of Württemberg · comital residence',
@@ -3033,7 +3033,7 @@ export const CITIES_1300=[
   sources:[['Treccani — Arborea','https://www.treccani.it/enciclopedia/arborea_%28Enciclopedia-Italiana%29/'],['Judicate of Arborea','https://en.wikipedia.org/wiki/Judicate_of_Arborea']]
  },
  {
-  id:'1300-olbia',name:'Olbia / Terranova',modern:'Olbia',country:'Republic of Pisa',subrealm:'Former Judicate of Gallura · de facto Pisan control after Nino Visconti’s death in 1296',
+  id:'1300-olbia',name:'Olbia / Terranova',modern:'Olbia',country:'Gallura',subrealm:'Gallura · Terranova under de facto Pisan control after Nino Visconti’s death in 1296',
   lon:9.4964,lat:40.9236,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
   sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:55,stability:42,economyScore:52,
@@ -3042,10 +3042,10 @@ export const CITIES_1300=[
   militaryRole:'Small strategic harbour in northeastern Sardinia',
   researchSummary:'Nino Visconti, judge of Gallura, died in 1296. His daughter Giovanna inherited claims, but Pisa moved to strip the family of its holdings; the 1300 card therefore uses Pisan de facto control while explicitly noting the dispute.',
   evidenceNote:'Political status is more uncertain than most cards; the subrealm text preserves that ambiguity. Local harbour activity is not counted as a permanent Pisan war fleet.',
-  sources:[['Treccani — Nino Visconti','https://www.treccani.it/enciclopedia/nino-visconti_%28Enciclopedia-Dantesca%29/'],['Treccani — Giovanna Visconti','https://www.treccani.it/enciclopedia/giovanna-visconti_%28Enciclopedia-Dantesca%29/']]
+  sources:[['Treccani — Nino Visconti','https://www.treccani.it/enciclopedia/nino-visconti_%28Enciclopedia-Dantesca%29/'],['Comune di Olbia — historical study of Terranova and Gallura','https://servizionline.comune.olbia.ot.it/002-PubCED/2025.05.08-Punto_11_PUC/FASE%20I_ASSETTO%20STORICO%20CULTURALE/RS_Storia.pdf']]
  },
  {
-  id:'1300-cagliari',name:'Cagliari / Castel di Castro',modern:'Cagliari',country:'Republic of Pisa',subrealm:'Pisan Castel di Castro · direct Pisan stronghold after the 1258 fall of the Judicate of Cagliari',
+  id:'1300-cagliari',name:'Cagliari / Castel di Castro',modern:'Cagliari',country:'Caralis',subrealm:'Caralis · Pisan Castel di Castro after the 1258 fall of the Judicate of Cagliari',
   lon:9.1217,lat:39.2238,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.6 km²',sizeConfidence:'low',army:200,armyText:'200',navy:4,navyText:'4',
   food:78,technology:64,stability:48,economyScore:72,
@@ -3054,7 +3054,7 @@ export const CITIES_1300=[
   militaryRole:'Major fortified Pisan citadel dominating southern Sardinian commerce',
   researchSummary:'The Judicate of Cagliari had been destroyed in 1258. Castel di Castro was the principal Pisan urban and military centre in the area and remained Pisan until the Aragonese conquest of 1326.',
   evidenceNote:'Population is low-confidence; Pisan political control is high confidence. Castel di Castro was an important Pisan stronghold, but Navy is kept to a conservative local military component rather than Pisa’s broader maritime resources.',
-  sources:[['Treccani — Cagliari','https://www.treccani.it/enciclopedia/cagliari/'],['Treccani — medieval Cagliari','https://www.treccani.it/enciclopedia/cagliari_%28Enciclopedia-dell%27-Arte-Medievale%29/']]
+  sources:[['Treccani — Cagliari','https://www.treccani.it/enciclopedia/cagliari/'],['Comune di Cagliari — Torre di San Pancrazio and Pisan Castello','https://www.comune.cagliari.it/portale/page/it/torre_di_san_pancrazio?contentId=LGO12100']]
  },
  {
   id:'1300-bonifacio',name:'Bonifacio',modern:'Bonifacio',country:'Republic of Genoa',subrealm:'Genoese colony and fortified commune since 1195',
@@ -3432,6 +3432,19 @@ export const CITIES_1300=[
   researchSummary:'Zamora remained a significant fortified urban centre on the Duero and fills the western-northern Castilian map between Salamanca and León.',
   evidenceNote:'Population and footprint are low-confidence gameplay estimates based on regional importance and the scale of the medieval defenses.',
   sources:[['Spain.info — Walls of Zamora','https://www.spain.info/en/places-of-interest/walls-zamora/']]
+ }
+,
+ {
+  id:'1300-leeuwarden',name:'Leeuwarden',modern:'Leeuwarden',country:'Frisian Freedom',subrealm:'Frisian Freedom · Nijehove and Oldehove settlement cluster',
+  lon:5.7999,lat:53.2012,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
+  sizeText:'0.15 km²',sizeConfidence:'low',army:30,armyText:'30',navy:0,navyText:'0',
+  food:64,technology:52,economyScore:58,stability:61,
+  historicalRole:'Emerging Frisian market and waterway settlement within the self-governing Frisian lands',
+  economy:'Local trade, agriculture, fishing, river traffic and craft production',
+  militaryRole:'Small settlement whose defence depended on local Frisian communities rather than a standing garrison',
+  researchSummary:'The later city of Leeuwarden grew from Oldehove, Nijehove and Hoek. By the late 13th century Nijehove had developed into a moated small town, making Leeuwarden the strongest representative settlement for Frisian Freedom around 1300.',
+  evidenceNote:'The three settlements were not formally united as the city of Leeuwarden until the 15th century. Population, footprint and military values are cautious gameplay estimates for the c.1300 settlement cluster.',
+  sources:[['Visit Friesland — history of Leeuwarden and the Frisian eleven cities','https://www.friesland.nl/nl/blog/historie/de-geschiedenis-van-de-friese-elf-steden'],['Visit Friesland — medieval Frisian freedom','https://www.friesland.nl/nl/blog/historie/de-vrijheidsgeest-van-de-friezen']]
  }
 ];
 
