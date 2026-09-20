@@ -11,7 +11,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 // Population/Navy/Size audit v1 (entries 000-074): population and urban footprint use source-backed c.1300 estimates where available; Navy counts dedicated or regularly maintained military vessels, excluding ordinary merchant/river craft temporarily requisitioned for war.
 // Population/Navy/Size audit v2 (entries 075-149): same source-backed c.1300 rule; Navy excludes ordinary merchant and Hanseatic shipping unless vessels were maintained as a dedicated military fleet.
 // Population/Navy/Size audit v3 (entries 150-224): same source-backed c.1300 rule; Navy counts dedicated or regularly available military vessels and excludes ordinary merchant shipping unless explicitly integrated into a state war fleet.
-// Qualitative-score audit full set (entries 000-240): scores use a deliberately wide 0-100 comparative scale across all 225 cards. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
+// Qualitative-score audit full set (entries 000-243): scores use a deliberately wide 0-100 comparative scale across all 225 cards. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -3103,6 +3103,43 @@ export const CITIES_1300=[
   researchSummary:'Gradec received free royal city status in 1242 and was enclosed by walls and towers by 1266, giving the Zagreb hill town a distinct autonomous urban identity by 1300.',
   evidenceNote:'The card represents Gradec rather than the later unified city of Zagreb. Population is low confidence; the small medieval walled footprint is comparatively well defined.',
   sources:[['City of Zagreb — Gradec history','https://aktivnosti.zagreb.hr/iz-povijesti-13432/13432'],['University of Zagreb — medieval Gradec elite','https://repozitorij.hrstud.unizg.hr/islandora/object/hrstud%3A973/datastream/PDF/view']]
+ }
+,
+ {
+  id:'1300-gueret',name:'Guéret',modern:'Guéret',country:'Kingdom of France',subrealm:'County of La Marche · Haute-Marche châtellenie',
+  lon:1.87144,lat:46.17050,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3 K',populationConfidence:'low',
+  sizeText:'0.12 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:69,technology:50,economyScore:52,stability:66,
+  historicalRole:'Small fortified châtellenie centre of the Haute-Marche within the French kingdom',
+  economy:'Local markets, agriculture, livestock, woodland resources and comital administration',
+  militaryRole:'Small fortified local centre with only a minimal permanent armed core',
+  researchSummary:'Guéret was one of seven châtellenies administering justice in the Haute-Marche for the count during the 13th century. It was still a small settlement around 1300 and did not receive its later communal franchise until 1406.',
+  evidenceNote:'Population and footprint are conservative gameplay estimates because no c.1300 census survives. The city is grouped under the Kingdom of France, with La Marche retained only as its historical subregion.',
+  sources:[['Archives départementales de la Creuse — medieval châtellenies','https://archives.creuse.fr/rechercher/repertoires-et-aides-a-la-recherche/aides-a-la-recherche/organisation-du-territoire/retracer-lhistoire-dune-commune/etat-des-sources']]
+ },
+ {
+  id:'1300-clermont',name:'Clermont',modern:'Clermont-Ferrand',country:'Kingdom of France',subrealm:'Auvergne · episcopal city of Clermont',
+  lon:3.08703,lat:45.77722,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
+  sizeText:'0.40 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:74,technology:82,economyScore:78,stability:64,
+  historicalRole:'Principal episcopal city of Auvergne and a major religious, market and administrative centre',
+  economy:'Markets, church wealth, crafts, wine, agriculture and regional trade',
+  militaryRole:'Walled episcopal city with a modest permanent defensive and household core',
+  researchSummary:'Clermont was the leading episcopal city of Auvergne. The wider Auvergne lands had largely returned to the French crown in 1271, while Clermont itself retained strong episcopal lordship and urban institutions.',
+  evidenceNote:'Population and area are cautious estimates. Technology is elevated by Clermont’s large diocese, clerical institutions and sophisticated ecclesiastical administration rather than by any later university.',
+  sources:[['Persée — the diocese of Clermont','https://www.persee.fr/doc/efr_0223-5099_1997_act_236_1_6048'],['Persée — Auvergne and the French crown','https://www.persee.fr/doc/rharm_0035-3299_1968_num_24_3_8426']]
+ },
+ {
+  id:'1300-mende',name:'Mende',modern:'Mende',country:'Kingdom of France',subrealm:'Gévaudan · episcopal city under French royal suzerainty',
+  lon:3.50112,lat:44.51802,rarity:1,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:70,technology:76,economyScore:68,stability:62,
+  historicalRole:'Prosperous fortified episcopal city and principal urban centre of Gévaudan',
+  economy:'Crafts, regional trade, church revenues, livestock and traffic between Languedoc and Auvergne',
+  militaryRole:'Walled episcopal city with a small permanent defensive establishment',
+  researchSummary:'Mende grew around the episcopal seat and the shrine of Saint Privat. By the 12th century its bishop held temporal powers under the French king; continuing jurisdictional disputes with the crown were formalised in the 1307 paréage.',
+  evidenceNote:'The exact population is unknown. Stability is held near average because royal and episcopal jurisdictions were still contested around 1300, even though the city itself was prosperous and fortified.',
+  sources:[['Ville de Mende — history','https://mende.fr/ma-ville/histoire-et-patrimoine/histoire/'],['Ville de Mende — medieval development report','https://mende.fr/app/uploads/sites/2/2022/12/SPR-Rapport.pdf']]
  }
 ];
 
