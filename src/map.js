@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-france-luxembourg-cologne-fix';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-france-gap-fill';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -57,8 +57,8 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-france-luxembourg-cologne-fix':'assets/atlas.json?v=20260920-france-luxembourg-cologne-fix').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
-   this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i)=>`<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realmOf(f))?'iberia-realm':''}" data-realm="${esc(realmOf(f))}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${mode==='historical'?colorForRealm(realmOf(f)):palettes[i%palettes.length]}" fill-rule="evenodd" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`).join('');
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-france-gap-fill':'assets/atlas.json?v=20260920-france-gap-fill').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+   this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i)=>`<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realmOf(f))?'iberia-realm':''}" data-realm="${esc(realmOf(f))}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${(mode==='historical'||f.underlay)?colorForRealm(realmOf(f)):palettes[i%palettes.length]}" fill-rule="evenodd" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`).join('');
    this.buildIberianTerritories(atlas);
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.realmLabels=[...this.svg.querySelectorAll('.realm-label')].sort((a,b)=>+(a.dataset.level)-+(b.dataset.level));
