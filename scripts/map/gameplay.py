@@ -117,6 +117,37 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     meta['Archbishopric of Vienne'].update(lx=4.72,ly=45.42)
     note('Archbishopric of Vienne','Gameplay: Vienne is enlarged westward with a smoother shared border with Lyon.')
 
+
+    # User-marked cleanup around Champagne, Lyon and Saluzzo.
+    # 1) Return the western Champagne sliver (left of the drawn line) to France.
+    give('Kingdom of France',geo([
+        (2.5000,49.7867),(3.5000,49.9067),(3.2500,49.6800),
+        (2.9167,49.4000),(2.6667,49.0000),(2.5000,49.7867)
+    ]))
+    # 2) Give the circled French strip below Hainaut to Champagne.
+    give('County of Champagne',geo([
+        (3.5000,49.9067),(3.7049,50.0254),(4.4200,49.8100),
+        (4.8500,49.8027),(5.4167,49.5333),(5.8333,49.3867),
+        (3.5000,49.9067)
+    ]))
+    note('County of Champagne','Gameplay border follows the user-marked split: the western sliver returns to France, while the circled strip below Hainaut is assigned to Champagne.')
+
+    # 3) Give the circled French wedge just north of Lyon to Lyon.
+    give('Archbishopric of Lyon',geo([
+        (3.8750,46.0667),(4.2083,46.1467),(4.5417,46.2133),
+        (4.8000,46.1500),(5.3846,45.8997),(5.2083,45.6933),
+        (4.5000,46.0000),(3.8750,46.0667)
+    ]))
+    note('Archbishopric of Lyon','Gameplay: the circled French wedge immediately north of Lyon is incorporated into Lyon.')
+
+    # 4) Give the circled French pocket beside Saluzzo to Saluzzo.
+    give('Marquisate of Saluzzo',geo([
+        (6.9000,44.8000),(6.7000,44.8500),(6.6000,44.6500),
+        (6.8116,44.4873),(6.8886,44.5349),(6.9691,44.5418),
+        (6.9000,44.8000)
+    ]))
+    note('Marquisate of Saluzzo','Gameplay: the small circled French pocket on the Alpine border is assigned to Saluzzo.')
+
     name='Kingdom of Majorca'
     old=states[name].intersection(geo([(3.5,43.3),(4.3,43.3),(4.3,44),(3.5,44)]))
     new=geo([(3.61,43.63),(3.67,43.76),(3.82,43.82),(3.99,43.76),(4.10,43.61),(4.01,43.48),(3.81,43.44),(3.68,43.50)])
