@@ -692,7 +692,6 @@ export const CITIES_1300=[
    ['Archives départementales Maine-et-Loire — L’Anjou au cours des siècles','https://archives.maine-et-loire.fr/decouvrir-et-apprendre/parcourir-lhistoire-de-lanjou/lanjou-au-cours-des-siecles']
   ]
  },
-,
  {
   id:'1300-le-mans',name:'Le Mans',modern:'Le Mans',country:'County of Anjou',subrealm:'County of Maine · Angevin apanage associated with Charles of Valois',
   lon:0.1996,lat:48.0061,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
@@ -707,7 +706,7 @@ export const CITIES_1300=[
    ['Le Mans Tourisme — Cité Plantagenêt','https://www.lemans-tourisme.com/en/discover/cite-plantagenet.html'],
    ['Encyclopaedia Britannica 1911 — Maine','https://en.wikisource.org/wiki/1911_Encyclop%C3%A6dia_Britannica/Maine_(province)']
   ]
- }
+ },
  {
   id:'1300-poitiers',name:'Poitiers',modern:'Poitiers',country:'Kingdom of France',subrealm:'Poitou · reverted to the French royal domain in 1271',
   lon:0.3404,lat:46.5802,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–13 K',populationConfidence:'low',
@@ -723,7 +722,6 @@ export const CITIES_1300=[
    ['Larousse — domaine royal','https://www.larousse.fr/encyclopedie/divers/domaine_royal/44341']
   ]
  },
-,
  {
   id:'1300-perigueux',name:'Périgueux',modern:'Périgueux',country:'Kingdom of France',subrealm:'Périgord · united Cité and Puy-Saint-Front under French royal protection',
   lon:0.7211,lat:45.1840,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
@@ -738,7 +736,7 @@ export const CITIES_1300=[
    ['Ville de Périgueux — history of the city','https://perigueux.fr/bienvenue-a-perigueux/histoire-de-la-ville.html'],
    ['Ville de Périgueux — Saint-Front historical focus','https://perigueux.fr/fileadmin/user_upload/fichiers/03-PERIGUEUX-AU-QUOTIDIEN/03-05-vie-culturelle/PDF/FOCUS-St_FRONT-perigueux-mai-2026.pdf']
   ]
- }
+ },
  {
   id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
   lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
@@ -844,7 +842,6 @@ export const CITIES_1300=[
    ['Toulouse Archives — 1271 incorporation into royal domain','https://www.archives.toulouse.fr/en/histoire-de-toulouse/chronologie?_2_WAR_archiveportlet_INSTANCE_5awtB7cA9vC4_uid=225']
   ]
  },
-,
  {
   id:'1300-cahors',name:'Cahors',modern:'Cahors',country:'Kingdom of France',subrealm:'Quercy · episcopal and consular city under French royal suzerainty',
   lon:1.4400,lat:44.4475,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
@@ -859,7 +856,7 @@ export const CITIES_1300=[
    ['Grand Cahors — historic centre and cathedral','https://cahorsagglo.fr/visites-guidees-cahors-le-centre-historique-et-sa-cathedrale'],
    ['TELMA — consuls of Cahors, 1235','https://telma-chartes.irht.cnrs.fr/113846']
   ]
- }
+ },
  {
   id:'1300-carcassonne',name:'Carcassonne',modern:'Carcassonne',country:'Kingdom of France',subrealm:'Royal sénéchaussée and frontier fortress of Languedoc',
   lon:2.3537,lat:43.2130,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
