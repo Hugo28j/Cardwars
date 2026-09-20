@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-iberia3';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-iberia-territories';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -13,6 +13,18 @@ const bounds={x:120,y:180,w:684,h:390};
 const overlaps=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const palettes=['#879372','#8b7890','#a38d65','#728fa1','#9c8172','#738f82','#9c966f','#8b9a8b','#947b68','#6f8793','#947b8a','#7d946f'];
 const realmOf=f=>f.realm||f.name||'Local communities';
+const IBERIA_REALMS=new Set(['Kingdom of Portugal','Crown of Castile','Crown of Aragon','Kingdom of Navarre','Granada']);
+const cityRealm=c=>c.country==='Emirate of Granada'?'Granada':c.country;
+const isIberianCity=c=>IBERIA_REALMS.has(cityRealm(c));
+const displayRealmName=name=>name==='Granada'?'Emirate of Granada':name;
+const IBERIA_LABEL_ANGLES={
+ '1300-santiago':-7,'1300-leon':-5,'1300-burgos':4,'1300-valladolid':0,'1300-salamanca':-3,'1300-segovia':5,
+ '1300-plasencia':-9,'1300-badajoz':-11,'1300-toledo':3,'1300-cuenca':10,'1300-guadalajara':5,'1300-cordoba':-5,
+ '1300-seville':0,'1300-jaen':5,'1300-braga':-8,'1300-guimaraes':-10,'1300-porto':0,'1300-coimbra':0,'1300-santarem':-7,
+ '1300-lisbon':0,'1300-evora':5,'1300-silves':0,'1300-pamplona':0,'1300-huesca':0,'1300-zaragoza':0,'1300-girona':-12,
+ '1300-barcelona':-8,'1300-tarragona':-7,'1300-valencia':0,'1300-alicante':-7,'1300-murcia':5,'1300-granada':0,
+ '1300-malaga':-4,'1300-almeria':-8
+};
 const colorForRealm=name=>{
  let h=7;
  for(const c of String(name))h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;
@@ -22,7 +34,7 @@ const cache={};
 export class WorldMap{
  constructor(host,state,onSelect,onRegion){
   this.host=host;this.state=state;this.onSelect=onSelect;this.onRegion=onRegion;this.mode='historical';this.view={x:100,y:220,w:750,h:600};this.pointers=new Map();this.destroyed=false;this.drawn=false;
-  host.innerHTML=`<svg id="world-map" role="img" aria-label="Political map of Europe around 1300 CE. Drag to pan, scroll or pinch to zoom, click a country or city to inspect it." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="realm-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">EUROPE & ANATOLIA</span><span>${CITIES.length} researched city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · Zoom in for smaller states · Click to inspect</span><span id="map-attribution" class="map-attribution">Approximate 1300 borders · Historical Basemaps · Natural Earth coastline</span><span class="map-key"><i></i> Researched 1300 city card</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show map overview" aria-label="Show map overview">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
+  host.innerHTML=`<svg id="world-map" role="img" aria-label="Political map of Europe around 1300 CE. Drag to pan, scroll or pinch to zoom. In Iberia, left click a city territory and right click a country." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="realm-labels"></g><g id="city-territory-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">EUROPE & ANATOLIA</span><span>${CITIES.length} researched city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · Iberia: left click city territory · right click country</span><span id="map-attribution" class="map-attribution">Approximate 1300 borders · Historical Basemaps · Natural Earth coastline</span><span class="map-key"><i></i> Researched 1300 city card</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show map overview" aria-label="Show map overview">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
   this.svg=host.querySelector('svg');this.abort=new AbortController();const opts={signal:this.abort.signal};
   this.svg.addEventListener('wheel',e=>{e.preventDefault();const r=this.svg.getBoundingClientRect();this.zoom(Math.exp(e.deltaY*.0013),(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);},{...opts,passive:false});
   this.svg.addEventListener('pointerdown',e=>{if(e.button===2)return;this.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});this.dragStart={x:e.clientX,y:e.clientY};this.dragged=false;this.svg.setPointerCapture(e.pointerId);},opts);
@@ -30,8 +42,8 @@ export class WorldMap{
    if(this.pointers.size===2){const other=[...this.pointers.entries()].find(([id])=>id!==e.pointerId)[1],before=Math.hypot(old.x-other.x,old.y-other.y),after=Math.hypot(next.x-other.x,next.y-other.y),r=this.svg.getBoundingClientRect();if(after)this.zoom(before/after,((next.x+other.x)/2-r.left)/r.width,((next.y+other.y)/2-r.top)/r.height);this.dragged=true;}
    else{const r=this.svg.getBoundingClientRect();this.view.x-=(next.x-old.x)*this.view.w/r.width;this.view.y-=(next.y-old.y)*this.view.h/r.height;if(Math.hypot(next.x-this.dragStart.x,next.y-this.dragStart.y)>5)this.dragged=true;this.update();}this.pointers.set(e.pointerId,next);
   },opts);
-  const release=e=>{const tracked=this.pointers.has(e.pointerId);this.pointers.delete(e.pointerId);if(this.svg.hasPointerCapture(e.pointerId))this.svg.releasePointerCapture(e.pointerId);if(e.type==='pointerup'&&tracked&&!this.dragged){const target=document.elementFromPoint(e.clientX,e.clientY);if(target)this.pick(target);}};
-  this.svg.addEventListener('pointerup',release,opts);this.svg.addEventListener('pointercancel',release,opts);this.svg.addEventListener('contextmenu',e=>{e.preventDefault();this.pick(e.target);},opts);
+  const release=e=>{const tracked=this.pointers.has(e.pointerId);this.pointers.delete(e.pointerId);if(this.svg.hasPointerCapture(e.pointerId))this.svg.releasePointerCapture(e.pointerId);if(e.type==='pointerup'&&tracked&&!this.dragged){const target=document.elementFromPoint(e.clientX,e.clientY);if(target)this.pick(target,'primary',e);}};
+  this.svg.addEventListener('pointerup',release,opts);this.svg.addEventListener('pointercancel',release,opts);this.svg.addEventListener('contextmenu',e=>{e.preventDefault();this.pick(e.target,'country',e);},opts);
   this.svg.addEventListener('keydown',e=>{if(['+','=','-'].includes(e.key)){e.preventDefault();this.zoom(e.key==='-'?1.25:.8);}else if(e.key.startsWith('Arrow')){e.preventDefault();const d=this.view.w*.08;if(e.key==='ArrowLeft')this.view.x-=d;if(e.key==='ArrowRight')this.view.x+=d;if(e.key==='ArrowUp')this.view.y-=d;if(e.key==='ArrowDown')this.view.y+=d;this.update();}},opts);
   host.addEventListener('click',e=>{const b=e.target.closest('[data-map]');if(!b)return;const a=b.dataset.map;if(a==='in')this.zoom(.75);if(a==='out')this.zoom(1.3);if(a==='selected')this.focus(state.selected);if(a==='all')this.fit();if(['modern','historical'].includes(a)&&this.mode!==a){this.mode=a;host.querySelectorAll('.map-modes button').forEach(b=>b.classList.toggle('active',b.dataset.map===a));this.load(false);}},opts);
   this.resize=new ResizeObserver(()=>{const r=host.getBoundingClientRect();if(!r.width||!r.height)return;const cy=this.view.y+this.view.h/2,overview=this.overviewWidth&&Math.abs(this.view.w-this.overviewWidth)<1;if(overview){this.fit();return;}this.overviewWidth=Math.max(bounds.w+30,(bounds.h+70)*r.width/r.height);this.view.h=this.view.w*r.height/r.width;this.view.y=cy-this.view.h/2;this.update();});this.resize.observe(host);this.load(true);
@@ -46,7 +58,31 @@ export class WorldMap{
    this.host.querySelector('#map-attribution').textContent='Approximate 1300 borders · Historical Basemaps · Natural Earth coastline';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
   }catch{delete cache[mode];const el=this.host.querySelector('.map-loading');if(el)el.textContent='Map could not load. Reload to try again.';}
  }
- pick(target){const c=target.closest('[data-city]');if(c){this.onSelect(c.dataset.city);return;}const r=target.closest('[data-realm]');if(r&&this.onRegion)this.onRegion({name:r.dataset.realm,detail:r.dataset.detail==='1',mode:'historical',gameplayNote:this.realmInfo?.get(r.dataset.realm)?.gameplayNote});}
+ pick(target,intent='primary',event=null){
+  const c=target.closest?.('[data-city]');
+  const r=target.closest?.('[data-realm]');
+  if(intent==='country'){
+   const realm=r?.dataset.realm||c?.dataset.realm;
+   if(realm&&this.onRegion)this.onRegion({name:displayRealmName(realm),realm,detail:r?.dataset.detail==='1',mode:'historical',gameplayNote:this.realmInfo?.get(realm)?.gameplayNote});
+   return;
+  }
+  if(c){this.onSelect(c.dataset.city);return;}
+  if(r){
+   const realm=r.dataset.realm;
+   if(IBERIA_REALMS.has(realm)&&event){
+    const city=this.nearestCityInRealm(realm,event.clientX,event.clientY);
+    if(city){this.onSelect(city.id);return;}
+   }
+   if(this.onRegion)this.onRegion({name:displayRealmName(realm),realm,detail:r.dataset.detail==='1',mode:'historical',gameplayNote:this.realmInfo?.get(realm)?.gameplayNote});
+  }
+ }
+ mapPoint(clientX,clientY){const r=this.svg.getBoundingClientRect();return {x:this.view.x+(clientX-r.left)/Math.max(1,r.width)*this.view.w,y:this.view.y+(clientY-r.top)/Math.max(1,r.height)*this.view.h};}
+ nearestCityInRealm(realm,clientX,clientY){
+  const p=this.mapPoint(clientX,clientY),cities=CITIES.filter(c=>cityRealm(c)===realm);
+  let best=null,bestD=Infinity;
+  for(const c of cities){const q=pos(c.mapLon??c.lon,c.mapLat??c.lat),dx=q[0]-p.x,dy=q[1]-p.y,d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=c;}}
+  return best;
+ }
  zoom(f,fx=.5,fy=.5){const w=Math.max(28,Math.min(this.overviewWidth||900,this.view.w*f)),r=w/this.view.w;this.view.x+=this.view.w*fx*(1-r);this.view.y+=this.view.h*fy*(1-r);this.view.w=w;this.view.h*=r;this.update();}
  focus(id){this.focusRequest=id;const c=CITY[id];if(!c)return;const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),r=this.host.getBoundingClientRect();this.view.w=310;this.view.h=310*r.height/Math.max(1,r.width);this.view.x=p[0]-this.view.w/2;this.view.y=p[1]-this.view.h/2;this.update();}
  fit(){this.focusRequest=null;const r=this.host.getBoundingClientRect(),aspect=r.width/Math.max(1,r.height);this.overviewWidth=Math.max(bounds.w+30,(bounds.h+70)*aspect);this.view.w=this.overviewWidth;this.view.h=this.view.w/aspect;this.view.x=bounds.x+(bounds.w-this.view.w)/2;this.view.y=bounds.y+(bounds.h-this.view.h)/2;this.update();}
@@ -69,16 +105,28 @@ export class WorldMap{
    const show=eligible&&inView&&(level===1||!occupied.some(b=>overlaps(box,b)));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
+  const cityAreaLabels=this.svg.querySelector('#city-territory-labels');
+  if(cityAreaLabels){
+   const showCityAreas=unit<.082;
+   cityAreaLabels.innerHTML=showCityAreas?CITIES.filter(isIberianCity).map(c=>{
+    const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p);
+    if(q.x<-80||q.y<-30||q.x>width+80||q.y>height+30)return '';
+    const angle=IBERIA_LABEL_ANGLES[c.id]||0;
+    const long=c.name.length>14;
+    return \`<text x="\${p[0]}" y="\${p[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(\${angle} \${p[0]} \${p[1]})" class="city-area-label" style="font-size:\${unit*(long?10.5:12)}px;stroke-width:\${unit*1.8}px;letter-spacing:\${unit*.35}px">\${esc(c.name)}</text>\`;
+   }).join(''):'';
+  }
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
   const cities=[...CITIES].sort((a,b)=>(s.selected===b.id?100:0)+b.rarity-((s.selected===a.id?100:0)+a.rarity));
   this.svg.querySelector('#cities').innerHTML=cities.map(c=>{
-   const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id;
+   const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,iberia=isIberianCity(c);
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
    const box={x:q.x+10,y:q.y-10,w:c.name.length*7+6,h:21};
    const show=selected||(unit<.30&&!occupied.some(b=>overlaps(box,b)));
    if(show)occupied.push(box);
    const size=selected||unit<.3?4:2;
-   return `<g class="city-marker owned" data-city="${c.id}" transform="translate(${p}) scale(${unit})"><title>${esc(c.name)} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${show?`<text x="10" y="4" class="city-label owned">${esc(c.name)}</text>`:''}</g>`;
+   if(iberia&&!selected)return '';
+   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(c.name)} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${(!iberia&&show)?`<text x="10" y="4" class="city-label owned">${esc(c.name)}</text>`:''}</g>`;
   }).reverse().join('');
  }
  destroy(){this.destroyed=true;this.abort.abort();this.resize.disconnect();}
