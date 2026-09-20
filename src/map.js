@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-add-alps-wall-v1';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-aquileia-venice-coast-fix-v1';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES=new Map([
@@ -10,26 +10,6 @@ const CITY_DISPLAY_NAMES=new Map([
 ]);
 const displayCityName=c=>CITY_DISPLAY_NAMES.get(c.id)||String(c.name||'').split('/')[0].trim();
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
-const ALPS_PASSES=[
- {name:'Mont Cenis',lon:6.90,lat:45.26},
- {name:'Great St Bernard',lon:7.17,lat:45.87},
- {name:'Gotthard',lon:8.57,lat:46.56},
- {name:'Reschen',lon:10.50,lat:46.85},
- {name:'Brenner',lon:11.51,lat:47.00},
- {name:'Semmering',lon:15.83,lat:47.63}
-];
-// Deliberately split into separate wall segments: the gaps are the playable Alpine crossings.
-const ALPS_BARRIER_SEGMENTS=[
- [[6.95,44.15],[7.15,44.35],[7.38,44.55],[7.60,44.78]],
- [[6.72,44.65],[6.75,44.90],[6.80,45.12]],
- [[7.02,45.42],[7.12,45.62],[7.24,45.80]],
- [[7.36,45.98],[7.62,46.14],[7.90,46.30],[8.18,46.45],[8.38,46.52]],
- [[8.72,46.58],[9.02,46.67],[9.36,46.74],[9.72,46.80],[10.08,46.84],[10.28,46.86]],
- [[10.72,46.88],[10.98,46.94],[11.24,47.00],[11.38,47.01]],
- [[11.72,47.04],[12.05,47.10],[12.42,47.16],[12.80,47.17],[13.20,47.12],[13.60,47.04],[13.98,46.96],[14.35,46.92],[14.72,46.90],[15.05,46.96],[15.30,47.10],[15.50,47.28]],
- [[15.98,47.58],[16.15,47.72]]
-];
-const geoPolyline=points=>points.map(([lon,lat],i)=>{const [x,y]=pos(lon,lat);return (i?'L':'M')+x.toFixed(2)+','+y.toFixed(2);}).join('');
 const historicalLabels=[
  ['FRANCE',1.9,46.65,1],['ENGLAND',-1.5,52.5,1],['SCOTLAND',-4,56.8,1],
  ['PORTUGAL',-8,39.4,1],['CASTILE',-4.5,40.1,1],['ARAGON',.3,41.2,1],
@@ -114,7 +94,7 @@ let physicalLandCache;
 export class WorldMap{
  constructor(host,state,onSelect,onRegion){
   this.host=host;this.state=state;this.onSelect=onSelect;this.onRegion=onRegion;this.mode='historical';this.view={x:100,y:220,w:750,h:600};this.pointers=new Map();this.destroyed=false;this.drawn=false;
-  host.innerHTML=`<svg id="world-map" role="img" aria-label="Political map of Europe around 1300 CE. Drag to pan, scroll or pinch to zoom. In detailed regions, left click a city territory and right click a country." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="city-territories"></g><g id="terrain-barriers"></g><g id="realm-labels"></g><g id="city-territory-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">EUROPE & ANATOLIA</span><span>${CITIES.length} researched city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · detailed regions: left click city territory · right click country</span><span id="map-attribution" class="map-attribution">Approximate 1300 borders · Historical Basemaps · Natural Earth coastline</span><span class="map-key"><i></i> Researched 1300 city card</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show map overview" aria-label="Show map overview">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
+  host.innerHTML=`<svg id="world-map" role="img" aria-label="Political map of Europe around 1300 CE. Drag to pan, scroll or pinch to zoom. In detailed regions, left click a city territory and right click a country." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="city-territories"></g><g id="realm-labels"></g><g id="city-territory-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">EUROPE & ANATOLIA</span><span>${CITIES.length} researched city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · detailed regions: left click city territory · right click country</span><span id="map-attribution" class="map-attribution">Approximate 1300 borders · Historical Basemaps · Natural Earth coastline</span><span class="map-key"><i></i> Researched 1300 city card</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show map overview" aria-label="Show map overview">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
   this.svg=host.querySelector('svg');this.abort=new AbortController();const opts={signal:this.abort.signal};
   this.svg.addEventListener('wheel',e=>{e.preventDefault();const r=this.svg.getBoundingClientRect();this.zoom(Math.exp(e.deltaY*.0013),(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);},{...opts,passive:false});
   this.svg.addEventListener('pointerdown',e=>{if(e.button===2)return;this.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});this.dragStart={x:e.clientX,y:e.clientY};this.dragged=false;this.svg.setPointerCapture(e.pointerId);},opts);
@@ -130,12 +110,11 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-island-clean-outline-v3':'assets/atlas.json?v=20260920-island-clean-outline-v3').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});physicalLandCache??=fetch('assets/map-land.json?v=20260920-island-clean-outline-v3').then(r=>r.ok?r.json():{d:''}).catch(()=>({d:''}));const [atlas,physicalLand]=await Promise.all([cache[mode],physicalLandCache]);this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-aquileia-venice-coast-fix-v1':'assets/atlas.json?v=20260920-aquileia-venice-coast-fix-v1').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});physicalLandCache??=fetch('assets/map-land.json?v=20260920-aquileia-venice-coast-fix-v1').then(r=>r.ok?r.json():{d:''}).catch(()=>({d:''}));const [atlas,physicalLand]=await Promise.all([cache[mode],physicalLandCache]);this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
    const territoryMarkup=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),outline=f.underlay?'':withoutIslandStroke(f.d),cleaned=!f.underlay&&outline!==f.d,stroke=f.underlay||cleaned?'none':'#28372e',sw=f.underlay||cleaned?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${CITY_TERRITORY_REALMS.has(realm)?'city-region-realm':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleaned)return base;return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
    const cleanIslandCoast=islandLandOutline(physicalLand.d),cleanIslandBorders=sharedIslandBorders(atlas);
    this.svg.querySelector('#land').innerHTML=territoryMarkup+(cleanIslandCoast?`<path d="${cleanIslandCoast}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'')+(cleanIslandBorders?`<path d="${cleanIslandBorders}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');
    this.buildCityTerritories(atlas);
-   this.drawTerrainBarriers();
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.realmLabels=[...this.svg.querySelectorAll('.realm-label')].sort((a,b)=>+(a.dataset.level)-+(b.dataset.level));
    this.svg.querySelector('#sea-labels').innerHTML=[['MEDITERRANEAN SEA',14,35],['BLACK SEA',34,43],['ATLANTIC OCEAN',-14,44],['NORTH SEA',3,56]].map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="sea-label">${name}</text>`;}).join('');
@@ -166,12 +145,6 @@ export class WorldMap{
   let best=null,bestD=Infinity;
   for(const c of cities){const q=pos(c.mapLon??c.lon,c.mapLat??c.lat),dx=q[0]-p.x,dy=q[1]-p.y,d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=c;}}
   return best;
- }
- drawTerrainBarriers(){
-  const layer=this.svg.querySelector('#terrain-barriers');if(!layer)return;
-  const paths=ALPS_BARRIER_SEGMENTS.map((points,i)=>`<g class="alps-wall-segment" data-alps-segment="${i+1}"><path class="terrain-barrier-shadow" d="${geoPolyline(points)}"/><path class="terrain-barrier-core" d="${geoPolyline(points)}"/><path class="terrain-barrier-ridge" d="${geoPolyline(points)}"/></g>`).join('');
-  layer.innerHTML=`<g class="terrain-barrier alps-wall" data-barrier="alps" pointer-events="none"><title>Alps · impassable mountain barrier except at the deliberate pass gaps: ${ALPS_PASSES.map(p=>p.name).join(', ')}</title>${paths}</g>`;
-  this.alpinePasses=ALPS_PASSES;
  }
  buildCityTerritories(atlas){
   const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels');
