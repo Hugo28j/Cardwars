@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-saluzzo-provence-speck-fix';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-milan-absorbs-waldstatte-como';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -57,7 +57,7 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-saluzzo-provence-speck-fix':'assets/atlas.json?v=20260920-saluzzo-provence-speck-fix').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-milan-absorbs-waldstatte-como':'assets/atlas.json?v=20260920-milan-absorbs-waldstatte-como').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
    this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realmOf(f)),fill=(mode==='historical'?colorForRealm(realmOf(f)):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),stroke=f.underlay?'none':'#28372e',sw=f.underlay?'0':'.85';return `<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realmOf(f))?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realmOf(f))}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;}).join('');
    this.buildIberianTerritories(atlas);
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
