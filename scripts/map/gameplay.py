@@ -148,6 +148,30 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     ]))
     note('Marquisate of Saluzzo','Gameplay: the small circled French pocket on the Alpine border is assigned to Saluzzo.')
 
+
+    # Small user-marked cleanup around Amiens, Luxembourg and Cologne.
+    # Restore the tiny unassigned pocket beside Amiens/Champagne to France.
+    give('Kingdom of France',geo([
+        (2.2500,49.7867),(2.6500,49.7600),(2.9333,49.6000),
+        (2.9167,49.4000),(2.7167,49.2400),(2.4333,49.2667),
+        (2.2250,49.4133),(2.2500,49.7867)
+    ]))
+    note('Kingdom of France','Gameplay: the small unassigned pocket near Amiens/Champagne is restored to France.')
+
+    # Give the residual French wedge north-east of Champagne to Luxembourg.
+    give('County of Luxembourg',geo([
+        (4.4200,49.9433),(4.8500,49.9361),(5.4167,49.6667),
+        (5.8333,49.5200),(6.1800,49.3933),(5.7400,49.3933),
+        (5.3500,49.5667),(4.8333,49.7333),(4.4200,49.9433)
+    ]))
+    note('County of Luxembourg','Gameplay: the residual French wedge north-east of Champagne is assigned to Luxembourg.')
+
+    # Give the tiny Nassau tip at the Cologne border to Cologne.
+    give('Archbishopric of Cologne',geo([
+        (7.7577,51.1300),(7.9400,51.0200),(7.8200,51.0400),(7.7577,51.1300)
+    ]))
+    note('Archbishopric of Cologne','Gameplay border cleaned; the small Nassau protrusion is assigned to Cologne.')
+
     name='Kingdom of Majorca'
     old=states[name].intersection(geo([(3.5,43.3),(4.3,43.3),(4.3,44),(3.5,44)]))
     new=geo([(3.61,43.63),(3.67,43.76),(3.82,43.82),(3.99,43.76),(4.10,43.61),(4.01,43.48),(3.81,43.44),(3.68,43.50)])
