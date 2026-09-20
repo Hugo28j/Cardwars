@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-island-black-line-cleanup';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-island-black-line-cleanup-v2';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -13,10 +13,10 @@ const bounds={x:120,y:180,w:684,h:390};
 const overlaps=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const palettes=['#879372','#8b7890','#a38d65','#728fa1','#9c8172','#738f82','#9c966f','#8b9a8b','#947b68','#6f8793','#947b8a','#7d946f'];
 const realmOf=f=>f.realm||f.name||'Local communities';
-const CLEAN_ISLAND_STROKES=new Set(['Republic of Genoa','Gallura','Judicate of Arborea','Caralis']);
 const svgSubpaths=d=>String(d||'').match(/M[^M]+?Z/g)||[];
-const svgSubpathArea=seg=>{const nums=(seg.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),pts=[];for(let i=0;i+1<nums.length;i+=2)pts.push([nums[i],nums[i+1]]);let a=0;for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length];a+=p[0]*q[1]-q[0]*p[1];}return Math.abs(a/2);};
-const islandStrokePath=(realm,d)=>CLEAN_ISLAND_STROKES.has(realm)?svgSubpaths(d).filter(seg=>svgSubpathArea(seg)>=5).join(''):d;
+const svgSubpathStats=seg=>{const nums=(seg.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),pts=[];for(let i=0;i+1<nums.length;i+=2)pts.push([nums[i],nums[i+1]]);if(!pts.length)return {area:0,minx:Infinity,maxx:-Infinity,miny:Infinity,maxy:-Infinity};let a=0,minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length];a+=p[0]*q[1]-q[0]*p[1];minx=Math.min(minx,p[0]);maxx=Math.max(maxx,p[0]);miny=Math.min(miny,p[1]);maxy=Math.max(maxy,p[1]);}return {area:Math.abs(a/2),minx,maxx,miny,maxy};};
+const ISLAND_STROKE_BOX={minx:355,maxx:386,miny:432,maxy:500};
+const islandStrokePath=d=>svgSubpaths(d).filter(seg=>{const s=svgSubpathStats(seg),touches=!(s.maxx<ISLAND_STROKE_BOX.minx||s.minx>ISLAND_STROKE_BOX.maxx||s.maxy<ISLAND_STROKE_BOX.miny||s.miny>ISLAND_STROKE_BOX.maxy);return !touches||s.area>=20;}).join('');
 const IBERIA_REALMS=new Set(['Kingdom of Portugal','Crown of Castile','Crown of Aragon','Kingdom of Navarre','Granada','Andorra','Roussillon']);
 const cityRealm=c=>c.country==='Emirate of Granada'?'Granada':c.country;
 const isIberianCity=c=>IBERIA_REALMS.has(cityRealm(c));
@@ -61,8 +61,8 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-island-black-line-cleanup':'assets/atlas.json?v=20260920-island-black-line-cleanup').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
-   this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),cleanIslands=!f.underlay&&CLEAN_ISLAND_STROKES.has(realm),stroke=f.underlay||cleanIslands?'none':'#28372e',sw=f.underlay||cleanIslands?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleanIslands)return base;const outline=islandStrokePath(realm,f.d);return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-island-black-line-cleanup-v2':'assets/atlas.json?v=20260920-island-black-line-cleanup-v2').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});const atlas=await cache[mode];this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+   this.svg.querySelector('#land').innerHTML=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),outline=f.underlay?'':islandStrokePath(f.d),cleaned=!f.underlay&&outline!==f.d,stroke=f.underlay||cleaned?'none':'#28372e',sw=f.underlay||cleaned?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleaned)return base;return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
    this.buildIberianTerritories(atlas);
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.realmLabels=[...this.svg.querySelectorAll('.realm-label')].sort((a,b)=>+(a.dataset.level)-+(b.dataset.level));
