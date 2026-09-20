@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-avignon-narbonne-nimes-palma-v1';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-fill-central-italy-empty-realms-v1';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -23,7 +23,9 @@ const CITY_REALM_ALIASES=new Map([
  ['Prince-Bishopric of Münster','Prince-Bishopric of Munster'],
  ['Prince-Bishopric of Osnabrück','Prince-Bishopric of Osnabruck'],
  ['Prince-Bishopric of Würzburg','Prince-Bishopric of Wurzburg'],
- ['Imperial City of Frankfurt','Free Imperial City of Frankfurt']
+ ['Imperial City of Frankfurt','Free Imperial City of Frankfurt'],
+ ['Duchy of Brunswick-Lüneburg','Duchy of Brunswick-Luneburg'],
+ ['Free Imperial City of Lübeck','Free Imperial City of Lubeck']
 ]);
 
 const svgSubpaths=d=>String(d||'').match(/M[^M]+?Z/g)||[];
