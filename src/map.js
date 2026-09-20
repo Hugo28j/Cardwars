@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-island-clean-outline-v3';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-west-europe-city-links-v1';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
@@ -13,6 +13,18 @@ const bounds={x:120,y:180,w:684,h:390};
 const overlaps=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const palettes=['#879372','#8b7890','#a38d65','#728fa1','#9c8172','#738f82','#9c966f','#8b9a8b','#947b68','#6f8793','#947b8a','#7d946f'];
 const realmOf=f=>f.realm||f.name||'Local communities';
+const CITY_REALM_ALIASES=new Map([
+ ['Duchy of Aquitaine (English Crown)','Kingdom of England'],
+ ['Archbishopric of Lyon (Holy Roman Empire)','Archbishopric of Lyon'],
+ ['Archbishopric of Vienne (Holy Roman Empire)','Archbishopric of Vienne'],
+ ['County of Jülich','County of Julich'],
+ ['County of Württemberg','County of Wurttemberg'],
+ ['Prince-Bishopric of Münster','Prince-Bishopric of Munster'],
+ ['Prince-Bishopric of Osnabrück','Prince-Bishopric of Osnabruck'],
+ ['Prince-Bishopric of Würzburg','Prince-Bishopric of Wurzburg'],
+ ['Imperial City of Frankfurt','Free Imperial City of Frankfurt']
+]);
+
 const svgSubpaths=d=>String(d||'').match(/M[^M]+?Z/g)||[];
 const svgSubpathPoints=seg=>{const nums=(seg.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),pts=[];for(let i=0;i+1<nums.length;i+=2)pts.push([nums[i],nums[i+1]]);return pts;};
 const svgSubpathStats=seg=>{const pts=svgSubpathPoints(seg);if(!pts.length)return {area:0,minx:Infinity,maxx:-Infinity,miny:Infinity,maxy:-Infinity};let a=0,minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;for(let i=0;i<pts.length;i++){const p=pts[i],q=pts[(i+1)%pts.length];a+=p[0]*q[1]-q[0]*p[1];minx=Math.min(minx,p[0]);maxx=Math.max(maxx,p[0]);miny=Math.min(miny,p[1]);maxy=Math.max(maxy,p[1]);}return {area:Math.abs(a/2),minx,maxx,miny,maxy};};
@@ -22,7 +34,7 @@ const withoutIslandStroke=d=>svgSubpaths(d).filter(seg=>!inIslandStrokeZone(svgS
 const islandLandOutline=d=>svgSubpaths(d).filter(seg=>{const s=svgSubpathStats(seg);return inIslandStrokeZone(s)&&s.area>=.02;}).join('');
 const sharedIslandBorders=atlas=>{const edges=new Map();for(const f of atlas){if(f.outline||f.underlay)continue;const realm=realmOf(f);for(const seg of svgSubpaths(f.d)){if(!inIslandStrokeZone(svgSubpathStats(seg)))continue;const pts=svgSubpathPoints(seg);for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],ak=a[0].toFixed(3)+','+a[1].toFixed(3),bk=b[0].toFixed(3)+','+b[1].toFixed(3),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let edge=edges.get(key);if(!edge){edge={a,b,realms:new Set()};edges.set(key,edge);}edge.realms.add(realm);}}}return [...edges.values()].filter(e=>e.realms.size>1).map(e=>'M'+e.a[0].toFixed(3)+','+e.a[1].toFixed(3)+'L'+e.b[0].toFixed(3)+','+e.b[1].toFixed(3)).join('');};
 const IBERIA_REALMS=new Set(['Kingdom of Portugal','Crown of Castile','Crown of Aragon','Kingdom of Navarre','Granada','Andorra','Roussillon']);
-const cityRealm=c=>c.country==='Emirate of Granada'?'Granada':c.country;
+const cityRealm=c=>c.country==='Emirate of Granada'?'Granada':(CITY_REALM_ALIASES.get(c.country)||c.country);
 const isIberianCity=c=>IBERIA_REALMS.has(cityRealm(c));
 const displayRealmName=name=>name==='Granada'?'Emirate of Granada':name;
 const polygonPath=poly=>poly.length?'M'+poly.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join('L')+'Z':'';
