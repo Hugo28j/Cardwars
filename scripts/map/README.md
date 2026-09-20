@@ -14,8 +14,7 @@ This is a generalized game map, not a complete historical GIS. Existing small
 German, Italian and Anatolian states are retained, not independently verified
 in their entirety. Improved line rendering does not increase source accuracy.
 New generalized French-region subdivisions include Burgundy, Champagne, Anjou,
-Provence, Dauphine, the County of Burgundy, Limoges, Lyon and Vienne; Montpellier
-and Roussillon are assigned to Majorca. Local boundaries and enclaves still need
+Provence, Dauphine, the County of Burgundy, Limoges, Lyon and Vienne; Montpellier remains assigned to Majorca. Roussillon is shown as a separate gameplay region for map interaction, while its historical link to the Kingdom of Majorca is retained in the city data. Local boundaries and enclaves still need
 more detailed research. Mecklenburg's label uses lordship rather than the later
 ducal title. The Holy Roman Empire keeps an umbrella label, not a second border overlay.
 The original broad Poland and Aquitaine shapes are retained; temporary wartime
