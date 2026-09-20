@@ -51,6 +51,14 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     note('Duchy of Upper Bavaria','Gameplay: Augsburg and its bishopric are incorporated into Upper Bavaria.')
 
 
+    # User-marked cleanup: tiny Lower Bavaria wedge on the south-west edge of
+    # Bohemia belongs to Bohemia.
+    give('Kingdom of Bohemia',geo([
+        (12.23,49.70),(12.34,49.70),(12.23,49.81),(12.23,49.70)
+    ]))
+    note('Kingdom of Bohemia','Gameplay: the tiny user-marked wedge on the south-west Bohemian border is incorporated into Bohemia.')
+
+
     # Gameplay consolidation requested for northern Lombardy / Swiss edge.
     # Waldstatte and Como cease to be separate map states and are absorbed by Milan.
     merge('Waldstatte','Lordship of Milan')
