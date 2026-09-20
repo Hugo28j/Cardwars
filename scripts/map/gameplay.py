@@ -148,6 +148,15 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     ]))
     note('Marquisate of Saluzzo','Gameplay: the small circled French pocket on the Alpine border is assigned to Saluzzo.')
 
+    # Remove the tiny residual Provence fragment inside the Saluzzo area.
+    # It is already geometrically inside Saluzzo; assigning it explicitly here
+    # prevents the later Provence path from painting a small enclave on top.
+    give('Marquisate of Saluzzo',geo([
+        (6.8051,44.6520),(6.7944,44.6558),(6.7988,44.6460),(6.8051,44.6520)
+    ]))
+    note('Marquisate of Saluzzo','Gameplay: the tiny residual Provence fragment on the border is assigned to Saluzzo.')
+
+
 
     # Small user-marked cleanup around Amiens, Luxembourg and Cologne.
     # Restore the tiny unassigned pocket beside Amiens/Champagne to France.
