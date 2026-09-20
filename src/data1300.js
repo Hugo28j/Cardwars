@@ -543,6 +543,21 @@ export const CITIES_1300=[
   ]
  },
  {
+  id:'1300-quimper',name:'Quimper',modern:'Quimper',country:'Duchy of Brittany',subrealm:'Cornouaille · episcopal city divided between episcopal and ducal authority',
+  lon:-4.1022,lat:47.9956,rarity:0,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
+  sizeText:'0.15 km²',sizeConfidence:'medium',army:50,armyText:'50',navy:0,navyText:'0',
+  food:61,technology:60,economyScore:59,stability:64,
+  historicalRole:'Religious, political and administrative centre of Cornouaille with a fortified episcopal core',
+  economy:'Regional markets, church institutions, crafts, agriculture and modest maritime commerce on the Odet',
+  militaryRole:'Walled episcopal city whose defenses were shared and contested between bishop and duke',
+  researchSummary:'Around 1300 Quimper was both an episcopal centre and part of the Breton ducal political system. The medieval city was enclosed by about 1.5 km of walls, with power divided between the bishop inside the walls and the duke in the western ducal quarter.',
+  evidenceNote:'The enclosed medieval city covered about 15 hectares. No reliable c.1300 census survives; the population is therefore a cautious estimate below the roughly 4,500 residents recorded for the mid-15th century.',
+  sources:[
+   ['Ville de Quimper — Le bas Moyen Âge','https://www.quimper.bzh/382-le-bas-moyen-age-entre-pouvoir-episcopal-et-pouvoir-ducal.htm'],
+   ['Ville de Quimper — The town’s history','https://en.quimper.bzh/664-the-town-s-history.htm']
+  ]
+ },
+ {
   id:'1300-rouen',name:'Rouen',modern:'Rouen',country:'Kingdom of France',subrealm:'Royal Duchy of Normandy · capital and Seine port',
   lon:1.0993,lat:49.4432,rarity:3,year:1300,people:40000,populationText:'40.0 K',populationRange:'35–45 K',populationConfidence:'medium',
   sizeText:'1.70 km²',sizeConfidence:'medium',army:100,armyText:'100',navy:4,navyText:'4',
@@ -723,15 +738,15 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-perigueux',name:'Périgueux',modern:'Périgueux',country:'Kingdom of France',subrealm:'Périgord · united Cité and Puy-Saint-Front under French royal protection',
+  id:'1300-perigueux',name:'Périgueux',modern:'Périgueux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Périgord · Aquitanian fief; under French wartime confiscation in 1300',
   lon:0.7211,lat:45.1840,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
   sizeText:'0.45 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:67,economyScore:66,stability:67,
   historicalRole:'Fortified pilgrimage and market city formed by the union of the Cité and Puy-Saint-Front',
   economy:'Pilgrimage, markets, crafts, agriculture and regional commerce in the Isle valley',
   militaryRole:'Two formerly separate fortified urban nuclei with a modest permanent defensive core',
-  researchSummary:'The Cité and Puy-Saint-Front were formally united in 1240. The merchant community of Puy-Saint-Front had placed itself under French royal protection earlier in the 13th century.',
-  evidenceNote:'Population and footprint are low-confidence gameplay estimates. The 1240 urban union and royal protection are directly documented by the city’s historical service.',
+  researchSummary:'The Cité and Puy-Saint-Front were formally united in 1240. Périgord was included in the Aquitanian lands recognised to the English king by the 1259 settlement, although Philip IV confiscated the duchy during the 1294–1303 Gascon War; the map keeps the longer-term Aquitaine grouping for gameplay.',
+  evidenceNote:'Population and footprint are low-confidence gameplay estimates. Political control around the exact year 1300 was contested: Périgord belonged to the Aquitanian settlement but was under French wartime confiscation from 1294 until the 1303 peace. The card is grouped with Aquitaine to match the map’s non-temporary political layer.',
   sources:[
    ['Ville de Périgueux — history of the city','https://perigueux.fr/bienvenue-a-perigueux/histoire-de-la-ville.html'],
    ['Ville de Périgueux — Saint-Front historical focus','https://perigueux.fr/fileadmin/user_upload/fichiers/03-PERIGUEUX-AU-QUOTIDIEN/03-05-vie-culturelle/PDF/FOCUS-St_FRONT-perigueux-mai-2026.pdf']
