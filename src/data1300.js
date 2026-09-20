@@ -679,7 +679,7 @@ export const CITIES_1300=[
  },
  {
   id:'1300-angers',name:'Angers',modern:'Angers',country:'County of Anjou',subrealm:'County of Anjou · held by Charles of Valois from 1290',
-  lon:-0.5632,lat:47.4784,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
+  lon:-0.5632,lat:47.4784,mapLon:-0.8200,mapLat:47.4200,rarity:1,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
   sizeText:'0.80 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:74,technology:64,economyScore:63,stability:75,
   historicalRole:'Capital of the County of Anjou and major fortress-city on the Maine',
@@ -692,6 +692,22 @@ export const CITIES_1300=[
    ['Archives départementales Maine-et-Loire — L’Anjou au cours des siècles','https://archives.maine-et-loire.fr/decouvrir-et-apprendre/parcourir-lhistoire-de-lanjou/lanjou-au-cours-des-siecles']
   ]
  },
+,
+ {
+  id:'1300-le-mans',name:'Le Mans',modern:'Le Mans',country:'County of Anjou',subrealm:'County of Maine · Angevin apanage associated with Charles of Valois',
+  lon:0.1996,lat:48.0061,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:70,technology:65,economyScore:64,stability:72,
+  historicalRole:'Capital of Maine, episcopal centre and important fortified city between Anjou and Normandy',
+  economy:'Regional markets, crafts, agriculture, church institutions and traffic across western France',
+  militaryRole:'Fortified comital and episcopal city protected by the old Roman wall and later medieval defenses',
+  researchSummary:'Le Mans was the traditional capital of Maine. The county had long been tied to Anjou and around 1300 belonged to the Angevin apanage associated with the Valois-Anjou line.',
+  evidenceNote:'Population and urban footprint are low-confidence gameplay estimates. Le Mans’s role as capital of Maine and major episcopal centre is well established.',
+  sources:[
+   ['Le Mans Tourisme — Cité Plantagenêt','https://www.lemans-tourisme.com/en/discover/cite-plantagenet.html'],
+   ['Encyclopaedia Britannica 1911 — Maine','https://en.wikisource.org/wiki/1911_Encyclop%C3%A6dia_Britannica/Maine_(province)']
+  ]
+ }
  {
   id:'1300-poitiers',name:'Poitiers',modern:'Poitiers',country:'Kingdom of France',subrealm:'Poitou · reverted to the French royal domain in 1271',
   lon:0.3404,lat:46.5802,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–13 K',populationConfidence:'low',
@@ -707,6 +723,22 @@ export const CITIES_1300=[
    ['Larousse — domaine royal','https://www.larousse.fr/encyclopedie/divers/domaine_royal/44341']
   ]
  },
+,
+ {
+  id:'1300-perigueux',name:'Périgueux',modern:'Périgueux',country:'Kingdom of France',subrealm:'Périgord · united Cité and Puy-Saint-Front under French royal protection',
+  lon:0.7211,lat:45.1840,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
+  sizeText:'0.45 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:70,technology:67,economyScore:66,stability:67,
+  historicalRole:'Fortified pilgrimage and market city formed by the union of the Cité and Puy-Saint-Front',
+  economy:'Pilgrimage, markets, crafts, agriculture and regional commerce in the Isle valley',
+  militaryRole:'Two formerly separate fortified urban nuclei with a modest permanent defensive core',
+  researchSummary:'The Cité and Puy-Saint-Front were formally united in 1240. The merchant community of Puy-Saint-Front had placed itself under French royal protection earlier in the 13th century.',
+  evidenceNote:'Population and footprint are low-confidence gameplay estimates. The 1240 urban union and royal protection are directly documented by the city’s historical service.',
+  sources:[
+   ['Ville de Périgueux — history of the city','https://perigueux.fr/bienvenue-a-perigueux/histoire-de-la-ville.html'],
+   ['Ville de Périgueux — Saint-Front historical focus','https://perigueux.fr/fileadmin/user_upload/fichiers/03-PERIGUEUX-AU-QUOTIDIEN/03-05-vie-culturelle/PDF/FOCUS-St_FRONT-perigueux-mai-2026.pdf']
+  ]
+ }
  {
   id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of France',subrealm:'Aunis/Saintonge frontier · French royal port',
   lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
@@ -812,6 +844,22 @@ export const CITIES_1300=[
    ['Toulouse Archives — 1271 incorporation into royal domain','https://www.archives.toulouse.fr/en/histoire-de-toulouse/chronologie?_2_WAR_archiveportlet_INSTANCE_5awtB7cA9vC4_uid=225']
   ]
  },
+,
+ {
+  id:'1300-cahors',name:'Cahors',modern:'Cahors',country:'Kingdom of France',subrealm:'Quercy · episcopal and consular city under French royal suzerainty',
+  lon:1.4400,lat:44.4475,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
+  sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:72,technology:72,economyScore:82,stability:62,
+  historicalRole:'Prosperous Quercy city, bishopric and major merchant centre in the Lot valley',
+  economy:'Long-distance finance, wine, markets, crafts, river-valley trade and church revenues',
+  militaryRole:'Fortified episcopal city with a modest permanent defensive establishment',
+  researchSummary:'Cahors experienced a major medieval flourishing between the 12th and 14th centuries. Its consular institutions are documented in the 13th century, alongside strong episcopal lordship.',
+  evidenceNote:'Population and footprint are low-confidence estimates. Economy is deliberately strong because medieval Cahors was an unusually important merchant and financial centre.',
+  sources:[
+   ['Grand Cahors — historic centre and cathedral','https://cahorsagglo.fr/visites-guidees-cahors-le-centre-historique-et-sa-cathedrale'],
+   ['TELMA — consuls of Cahors, 1235','https://telma-chartes.irht.cnrs.fr/113846']
+  ]
+ }
  {
   id:'1300-carcassonne',name:'Carcassonne',modern:'Carcassonne',country:'Kingdom of France',subrealm:'Royal sénéchaussée and frontier fortress of Languedoc',
   lon:2.3537,lat:43.2130,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
