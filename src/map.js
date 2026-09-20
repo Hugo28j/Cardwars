@@ -53,10 +53,7 @@ const visibleCellMetrics=(poly,land,fallback)=>{const box=polygonBox(poly),pts=[
 const clipHalfPlane=(poly,a,b,c)=>{const out=[];if(!poly.length)return out;const inside=p=>a*p[0]+b*p[1]<=c+1e-7;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],pin=inside(p),qin=inside(q);if(pin)out.push(p);if(pin!==qin){const dx=q[0]-p[0],dy=q[1]-p[1],den=a*dx+b*dy;if(Math.abs(den)>1e-9){const t=(c-a*p[0]-b*p[1])/den;out.push([p[0]+dx*t,p[1]+dy*t]);}}}return out;};
 const voronoiCell=(point,others,box)=>{let poly=[[box.x,box.y],[box.x+box.w,box.y],[box.x+box.w,box.y+box.h],[box.x,box.y+box.h]];for(const other of others){if(other===point)continue;const a=other[0]-point[0],b=other[1]-point[1],c=(other[0]*other[0]+other[1]*other[1]-point[0]*point[0]-point[1]*point[1])/2;poly=clipHalfPlane(poly,a,b,c);if(!poly.length)break;}return poly;};
 const cityBorderKey=(realm,a,b)=>realm+'|'+[a,b].sort().join('|');
-const CITY_BORDER_SKIP=new Set([
- cityBorderKey('Kingdom of France','1300-cahors','1300-mende'),
- cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes')
-]);
+const CITY_BORDER_SKIP=new Set();
 const CITY_BORDER_MANUAL=new Map();
 const sharedCellEdges=cells=>{const edges=new Map();for(const {c,poly} of cells){for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ak=a[0].toFixed(5)+','+a[1].toFixed(5),bk=b[0].toFixed(5)+','+b[1].toFixed(5),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let e=edges.get(key);if(!e){e={a,b,cities:[]};edges.set(key,e);}e.cities.push(c.id);}}return [...edges.values()].filter(e=>e.cities.length===2);};
 const segmentIntersectionT=(a,b,c,d)=>{const rx=b[0]-a[0],ry=b[1]-a[1],sx=d[0]-c[0],sy=d[1]-c[1],den=rx*sy-ry*sx;if(Math.abs(den)<1e-9)return null;const qx=c[0]-a[0],qy=c[1]-a[1],t=(qx*sy-qy*sx)/den,u=(qx*ry-qy*rx)/den;return t>-1e-7&&t<1+1e-7&&u>-1e-7&&u<1+1e-7?Math.max(0,Math.min(1,t)):null;};
