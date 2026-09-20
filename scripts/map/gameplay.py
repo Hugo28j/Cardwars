@@ -50,8 +50,8 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     give('Duchy of Upper Bavaria',geo([(10.72,48.26),(10.72,48.48),(10.95,48.52),(11.12,48.38),(11.05,48.24)]))
     note('Duchy of Upper Bavaria','Gameplay: Augsburg and its bishopric are incorporated into Upper Bavaria.')
 
-    replace('Archbishopric of Cologne',geo([(6.50,50.36),(6.68,50.73),(6.65,51.23),(6.91,51.12),(7.10,51.04),(7.40,51.06),(7.73,51.17),(7.82,51.04),(7.61,50.84),(7.37,50.72),(7.17,50.39),(7.17,50.36)]))
-    note('Archbishopric of Cologne','Gameplay border cleaned; the full user-marked triangle south of Bonn / west of Nassau belongs to Cologne.')
+    replace('Archbishopric of Cologne',geo([(6.50,50.36),(6.68,50.73),(6.65,51.23),(6.91,51.12),(7.10,51.04),(7.40,51.06),(7.73,51.17),(7.7577,51.1300),(7.9400,51.0200),(7.8200,51.0400),(7.61,50.84),(7.37,50.72),(7.17,50.39),(7.17,50.36)]))
+    note('Archbishopric of Cologne','Gameplay: Cologne is one continuous territory; the north-east tip is part of the main polygon so no internal border is drawn.')
     replace('Free Imperial City of Bremen',geo([(8.62,53.12),(8.69,53.24),(8.83,53.26),(9.00,53.19),(9.11,53.08),(9.02,52.96),(8.85,52.92),(8.69,52.99)]))
     note('Free Imperial City of Bremen','Gameplay footprint generalized around Bremen; the square city enclave is removed.')
     name='Duchy of Saxe-Lauenburg'
@@ -181,11 +181,8 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     ]))
     note('County of Luxembourg','Gameplay: the full user-circled pocket west/south-west of Luxembourg is assigned to Luxembourg.')
 
-    # Give the tiny Nassau tip at the Cologne border to Cologne.
-    give('Archbishopric of Cologne',geo([
-        (7.7577,51.1300),(7.9400,51.0200),(7.8200,51.0400),(7.7577,51.1300)
-    ]))
-    note('Archbishopric of Cologne','Gameplay border cleaned; the small Nassau protrusion is assigned to Cologne.')
+    # The former Nassau tip is built directly into Cologne's main polygon above,
+    # preventing an internal border line between two pieces of the same realm.
 
     name='Kingdom of Majorca'
     old=states[name].intersection(geo([(3.5,43.3),(4.3,43.3),(4.3,44),(3.5,44)]))
