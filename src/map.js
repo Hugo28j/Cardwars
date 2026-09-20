@@ -72,10 +72,43 @@ const clipHalfPlane=(poly,a,b,c)=>{const out=[];if(!poly.length)return out;const
 const voronoiCell=(point,others,box)=>{let poly=[[box.x,box.y],[box.x+box.w,box.y],[box.x+box.w,box.y+box.h],[box.x,box.y+box.h]];for(const other of others){if(other===point)continue;const a=other[0]-point[0],b=other[1]-point[1],c=(other[0]*other[0]+other[1]*other[1]-point[0]*point[0]-point[1]*point[1])/2;poly=clipHalfPlane(poly,a,b,c);if(!poly.length)break;}return poly;};
 const cityBorderKey=(realm,a,b)=>realm+'|'+[a,b].sort().join('|');
 const CITY_BORDER_SKIP=new Set([
- cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes')
+ cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes'),
+
+ // Serbia: move the Peć–Prizren split to the user's drawn line.
+ cityBorderKey('Kingdom of Serbia','1300-pec','1300-prizren'),
+
+ // Carinthia / Aquileia: shorten or replace the highlighted splits.
+ cityBorderKey('Duchy of Carinthia','1300-st-veit','1300-klagenfurt'),
+ cityBorderKey('Patriarchate of Aquileia','1300-udine','1300-cividale'),
+ cityBorderKey('Patriarchate of Aquileia','1300-aquileia','1300-cividale'),
+
+ // Milan: keep only the unhighlighted parts and use the vertical split drawn by the user.
+ cityBorderKey('Lordship of Milan','1300-altdorf','1300-como'),
+ cityBorderKey('Lordship of Milan','1300-monza','1300-como'),
+
+ // Moravia: remove the highlighted Jihlava spokes and trim Brno–Znojmo to the new diagonal.
+ cityBorderKey('Margraviate of Moravia','1300-brno','1300-jihlava'),
+ cityBorderKey('Margraviate of Moravia','1300-znojmo','1300-jihlava'),
+ cityBorderKey('Margraviate of Moravia','1300-brno','1300-znojmo')
 ]);
 const CITY_BORDER_MANUAL=new Map([
- [cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes'),'M305.564,422.991L308.109,424.794']
+ [cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes'),'M305.564,422.991L308.109,424.794'],
+
+ // Screenshot 1 — Serbia
+ [cityBorderKey('Kingdom of Serbia','1300-pec','1300-prizren'),'M493.815,449.641L504.944,423.440'],
+
+ // Screenshot 2 — Carinthia / Aquileia
+ [cityBorderKey('Duchy of Carinthia','1300-st-veit','1300-klagenfurt'),'M430.886,377.941L437.636,380.073'],
+ [cityBorderKey('Patriarchate of Aquileia','1300-udine','1300-cividale'),'M418.447,380.917L423.499,381.904'],
+
+ // Screenshot 3 — Milan
+ [cityBorderKey('Lordship of Milan','1300-altdorf','1300-como'),'M361.200,387.854L376.494,382.663'],
+ [cityBorderKey('Lordship of Milan','1300-monza','1300-como'),'M372.360,395.773L376.784,392.445'],
+ ['Lordship of Milan|manual-west-vertical','M376.141,376.349L376.784,392.445'],
+
+ // Screenshot 4 — Moravia
+ [cityBorderKey('Margraviate of Moravia','1300-brno','1300-znojmo'),'M458.615,342.900L470.742,358.829'],
+ ['Margraviate of Moravia|manual-jihlava-diagonal','M454.190,347.170L465.084,336.759']
 ]);
 const sharedCellEdges=cells=>{const edges=new Map();for(const {c,poly} of cells){for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ak=a[0].toFixed(5)+','+a[1].toFixed(5),bk=b[0].toFixed(5)+','+b[1].toFixed(5),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let e=edges.get(key);if(!e){e={a,b,cities:[]};edges.set(key,e);}e.cities.push(c.id);}}return [...edges.values()].filter(e=>e.cities.length===2);};
 const segmentIntersectionT=(a,b,c,d)=>{const rx=b[0]-a[0],ry=b[1]-a[1],sx=d[0]-c[0],sy=d[1]-c[1],den=rx*sy-ry*sx;if(Math.abs(den)<1e-9)return null;const qx=c[0]-a[0],qy=c[1]-a[1],t=(qx*sy-qy*sx)/den,u=(qx*ry-qy*rx)/den;return t>-1e-7&&t<1+1e-7&&u>-1e-7&&u<1+1e-7?Math.max(0,Math.min(1,t)):null;};
