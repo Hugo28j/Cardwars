@@ -6,6 +6,7 @@ const historicalLabels=[
  ['FRANCE',1.9,46.65,1],['ENGLAND',-1.5,52.5,1],['SCOTLAND',-4,56.8,1],
  ['PORTUGAL',-8,39.4,1],['CASTILE',-4.5,40.1,1],['ARAGON',.3,41.2,1],
  ['NAVARRE',-1.7,42.7,2],['GRANADA',-4.6,36.8,2],
+ ['AQUITAINE',-0.55,45.15,2],
  ['POLAND',19,52,1],['LITHUANIA',25,54.5,1],['TEUTONIC ORDER',20.5,54,2],
  ['HUNGARY',20,47,1],['SERBIA',20.4,43.5,2],['BULGARIA',25.3,43.2,2]
 ];
@@ -34,8 +35,15 @@ const withoutIslandStroke=d=>svgSubpaths(d).filter(seg=>!inIslandStrokeZone(svgS
 const islandLandOutline=d=>svgSubpaths(d).filter(seg=>{const s=svgSubpathStats(seg);return inIslandStrokeZone(s)&&s.area>=.02;}).join('');
 const sharedIslandBorders=atlas=>{const edges=new Map();for(const f of atlas){if(f.outline||f.underlay)continue;const realm=realmOf(f);for(const seg of svgSubpaths(f.d)){if(!inIslandStrokeZone(svgSubpathStats(seg)))continue;const pts=svgSubpathPoints(seg);for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],ak=a[0].toFixed(3)+','+a[1].toFixed(3),bk=b[0].toFixed(3)+','+b[1].toFixed(3),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let edge=edges.get(key);if(!edge){edge={a,b,realms:new Set()};edges.set(key,edge);}edge.realms.add(realm);}}}return [...edges.values()].filter(e=>e.realms.size>1).map(e=>'M'+e.a[0].toFixed(3)+','+e.a[1].toFixed(3)+'L'+e.b[0].toFixed(3)+','+e.b[1].toFixed(3)).join('');};
 const IBERIA_REALMS=new Set(['Kingdom of Portugal','Crown of Castile','Crown of Aragon','Kingdom of Navarre','Granada','Andorra','Roussillon']);
+const FRANCE_REGION_REALMS=new Set([
+ 'Kingdom of France','Duchy of Brittany','County of Anjou','County of Champagne','Duchy of Burgundy',
+ 'Viscounty of Limoges','Kingdom of England','Archbishopric of Lyon','Archbishopric of Vienne',
+ 'Dauphine of Viennois','County of Provence','Kingdom of Majorca'
+]);
+const CITY_TERRITORY_REALMS=new Set([...IBERIA_REALMS,...FRANCE_REGION_REALMS]);
 const cityRealm=c=>c.country==='Emirate of Granada'?'Granada':(CITY_REALM_ALIASES.get(c.country)||c.country);
 const isIberianCity=c=>IBERIA_REALMS.has(cityRealm(c));
+const isTerritoryCity=c=>CITY_TERRITORY_REALMS.has(cityRealm(c));
 const displayRealmName=name=>name==='Granada'?'Emirate of Granada':name;
 const polygonPath=poly=>poly.length?'M'+poly.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join('L')+'Z':'';
 const polygonBox=poly=>{const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};};
@@ -62,7 +70,7 @@ let physicalLandCache;
 export class WorldMap{
  constructor(host,state,onSelect,onRegion){
   this.host=host;this.state=state;this.onSelect=onSelect;this.onRegion=onRegion;this.mode='historical';this.view={x:100,y:220,w:750,h:600};this.pointers=new Map();this.destroyed=false;this.drawn=false;
-  host.innerHTML=`<svg id="world-map" role="img" aria-label="Political map of Europe around 1300 CE. Drag to pan, scroll or pinch to zoom. In Iberia, left click a city territory and right click a country." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="city-territories"></g><g id="realm-labels"></g><g id="city-territory-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">EUROPE & ANATOLIA</span><span>${CITIES.length} researched city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · Iberia: left click city territory · right click country</span><span id="map-attribution" class="map-attribution">Approximate 1300 borders · Historical Basemaps · Natural Earth coastline</span><span class="map-key"><i></i> Researched 1300 city card</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show map overview" aria-label="Show map overview">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
+  host.innerHTML=`<svg id="world-map" role="img" aria-label="Political map of Europe around 1300 CE. Drag to pan, scroll or pinch to zoom. In detailed regions, left click a city territory and right click a country." tabindex="0"><defs><pattern id="ocean-grid" width="120" height="150" patternUnits="userSpaceOnUse"><path d="M120 0H0V150" fill="none" stroke="#d6e0c7" stroke-opacity=".06" stroke-width=".7"/></pattern></defs><rect x="-5000" y="-5000" width="15000" height="15000" fill="#192c32"/><rect x="-5000" y="-5000" width="15000" height="15000" fill="url(#ocean-grid)"/><g id="land"></g><g id="city-territories"></g><g id="realm-labels"></g><g id="city-territory-labels"></g><g id="sea-labels"></g><g id="cities"></g></svg><div class="map-top"><div class="map-heading"><span class="eyebrow">EUROPE & ANATOLIA</span><span>${CITIES.length} researched city cards · political map c. 1300 CE</span></div><div class="map-era-badge">REALMS · c. 1300 CE</div></div><div class="map-bottom"><span class="map-hint">Drag to explore · detailed regions: left click city territory · right click country</span><span id="map-attribution" class="map-attribution">Approximate 1300 borders · Historical Basemaps · Natural Earth coastline</span><span class="map-key"><i></i> Researched 1300 city card</span></div><div class="map-controls"><button data-map="in" title="Zoom in" aria-label="Zoom in">${icon('plus')}</button><button data-map="out" title="Zoom out" aria-label="Zoom out">${icon('minus')}</button><button data-map="selected" title="Focus selected city" aria-label="Focus selected city">${icon('target')}</button><button data-map="all" title="Show map overview" aria-label="Show map overview">${icon('globe')}</button></div><div class="map-compass" aria-hidden="true"><span>N</span><i></i></div><div class="map-loading">Unfolding the atlas…</div>`;
   this.svg=host.querySelector('svg');this.abort=new AbortController();const opts={signal:this.abort.signal};
   this.svg.addEventListener('wheel',e=>{e.preventDefault();const r=this.svg.getBoundingClientRect();this.zoom(Math.exp(e.deltaY*.0013),(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);},{...opts,passive:false});
   this.svg.addEventListener('pointerdown',e=>{if(e.button===2)return;this.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});this.dragStart={x:e.clientX,y:e.clientY};this.dragged=false;this.svg.setPointerCapture(e.pointerId);},opts);
@@ -79,10 +87,10 @@ export class WorldMap{
  async load(fit){
   const mode=this.mode;
   try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-island-clean-outline-v3':'assets/atlas.json?v=20260920-island-clean-outline-v3').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});physicalLandCache??=fetch('assets/map-land.json?v=20260920-island-clean-outline-v3').then(r=>r.ok?r.json():{d:''}).catch(()=>({d:''}));const [atlas,physicalLand]=await Promise.all([cache[mode],physicalLandCache]);this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
-   const territoryMarkup=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),outline=f.underlay?'':withoutIslandStroke(f.d),cleaned=!f.underlay&&outline!==f.d,stroke=f.underlay||cleaned?'none':'#28372e',sw=f.underlay||cleaned?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleaned)return base;return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
+   const territoryMarkup=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),outline=f.underlay?'':withoutIslandStroke(f.d),cleaned=!f.underlay&&outline!==f.d,stroke=f.underlay||cleaned?'none':'#28372e',sw=f.underlay||cleaned?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${CITY_TERRITORY_REALMS.has(realm)?'city-region-realm':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleaned)return base;return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
    const cleanIslandCoast=islandLandOutline(physicalLand.d),cleanIslandBorders=sharedIslandBorders(atlas);
    this.svg.querySelector('#land').innerHTML=territoryMarkup+(cleanIslandCoast?`<path d="${cleanIslandCoast}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'')+(cleanIslandBorders?`<path d="${cleanIslandBorders}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');
-   this.buildIberianTerritories(atlas);
+   this.buildCityTerritories(atlas);
    const labels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity'})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity'}))];this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind})=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" data-level="${level}" data-kind="${kind}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.realmLabels=[...this.svg.querySelectorAll('.realm-label')].sort((a,b)=>+(a.dataset.level)-+(b.dataset.level));
    this.svg.querySelector('#sea-labels').innerHTML=[['MEDITERRANEAN SEA',14,35],['BLACK SEA',34,43],['ATLANTIC OCEAN',-14,44],['NORTH SEA',3,56]].map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="sea-label">${name}</text>`;}).join('');
@@ -100,7 +108,7 @@ export class WorldMap{
   if(c){this.onSelect(c.dataset.city);return;}
   if(r){
    const realm=r.dataset.realm;
-   if(IBERIA_REALMS.has(realm)&&event){
+   if(CITY_TERRITORY_REALMS.has(realm)&&event){
     const city=this.nearestCityInRealm(realm,event.clientX,event.clientY);
     if(city){this.onSelect(city.id);return;}
    }
@@ -114,23 +122,27 @@ export class WorldMap{
   for(const c of cities){const q=pos(c.mapLon??c.lon,c.mapLat??c.lat),dx=q[0]-p.x,dy=q[1]-p.y,d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=c;}}
   return best;
  }
- buildIberianTerritories(atlas){
+ buildCityTerritories(atlas){
   const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels');
-  defs.querySelectorAll('.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];
-  for(const realm of IBERIA_REALMS){
-   const feature=atlas.find(f=>!f.outline&&realmOf(f)===realm);if(!feature)continue;
-   const land=this.svg.querySelector('.territory.iberia-realm[data-realm="'+CSS.escape(realm)+'"]');if(!land)continue;
-   const bbox=land.getBBox(),pad=4,box={x:bbox.x-pad,y:bbox.y-pad,w:bbox.width+pad*2,h:bbox.height+pad*2};
-   const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>pos(c.mapLon??c.lon,c.mapLat??c.lat));
-   if(!cities.length)continue;
-   const realmClip='iberia-realm-'+realm.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-   defs.insertAdjacentHTML('beforeend',`<clipPath class="iberia-dynamic" id="${realmClip}"><path d="${feature.d}" fill-rule="evenodd"/></clipPath>`);
+  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];
+  for(const realm of CITY_TERRITORY_REALMS){
+   const feature=atlas.find(f=>!f.outline&&!f.underlay&&realmOf(f)===realm)||atlas.find(f=>!f.outline&&realmOf(f)===realm);if(!feature)continue;
+   const land=this.svg.querySelector('.territory.city-region-realm[data-realm="'+CSS.escape(realm)+'"]');if(!land)continue;
+   const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>pos(c.mapLon??c.lon,c.mapLat??c.lat));if(!cities.length)continue;
+   const bbox=land.getBBox(),pad=4;
+   let box={x:bbox.x-pad,y:bbox.y-pad,w:bbox.width+pad*2,h:bbox.height+pad*2};
+   if(realm==='Kingdom of England'){
+    const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),scopePad=24;
+    box={x:Math.min(...xs)-scopePad,y:Math.min(...ys)-scopePad,w:Math.max(...xs)-Math.min(...xs)+scopePad*2,h:Math.max(...ys)-Math.min(...ys)+scopePad*2};
+   }
+   const realmClip='city-realm-'+realm.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+   defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${realmClip}"><path d="${feature.d}" fill-rule="evenodd"/></clipPath>`);
    const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),metrics=visibleCellMetrics(poly,land,points[i]);return {c,poly,cellBox:metrics.box,labelPoint:metrics.center};});
    const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(c.name)} · ${esc(displayRealmName(realm))}</title></path>`).join('');
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})">${paths}</g>`);
    for(const {c,poly,cellBox,labelPoint} of cells){
-    const cellClip='iberia-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
-    defs.insertAdjacentHTML('beforeend',`<clipPath class="iberia-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
+    const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
+    defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
     labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}">${esc(c.name)}</text></g></g>`);
    }
@@ -147,8 +159,8 @@ export class WorldMap{
  refresh(){const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
   const showCityAreas=unit<.082;
-  const iberiaRealmLabels=new Set(['PORTUGAL','CASTILE','ARAGON','NAVARRE','GRANADA','ANDORRA','ROUSSILLON','MAJORCA']);
-  // Iberian polity names hand over to city-territory names at the exact same zoom level.
+  const cityTerritoryRealmLabels=new Set(['PORTUGAL','CASTILE','ARAGON','NAVARRE','GRANADA','ANDORRA','ROUSSILLON','FRANCE','AQUITAINE','BRITTANY','ANJOU','CHAMPAGNE','BURGUNDY','LIMOGES','LYON','VIENNE','DAUPHINÉ','PROVENCE','MAJORCA']);
+  // Country / polity names hand over to city-territory names at the exact same zoom level.
   for(const t of this.realmLabels||[]){
    const level=+(t.dataset.level||1),umbrella=t.dataset.kind==='umbrella';
    const eligible=level===1||(level===2&&unit<.48)||(level>=3&&unit<.20);
@@ -158,8 +170,8 @@ export class WorldMap{
    t.style.fontSize=(unit*px)+'px';t.style.letterSpacing=(unit*(umbrella?1.5:.65))+'px';t.style.strokeWidth=(unit*2.5)+'px';t.style.opacity=umbrella?'.6':'1';
    const w=t.getComputedTextLength()/unit,box={x:p.x-w/2-4,y:p.y-px-3,w:w+8,h:px+7};
    const inView=box.x+box.w>0&&box.x<width&&box.y+box.h>0&&box.y<height;
-   const iberiaCountry=iberiaRealmLabels.has(t.textContent.trim());
-   const show=eligible&&inView&&(level===1||!occupied.some(b=>overlaps(box,b)))&&!(iberiaCountry&&showCityAreas);
+   const territoryCountry=cityTerritoryRealmLabels.has(t.textContent.trim());
+   const show=eligible&&inView&&(level===1||!occupied.some(b=>overlaps(box,b)))&&!(territoryCountry&&showCityAreas);
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
   for(const t of this.cityTerritoryLabels||[]){
@@ -172,14 +184,14 @@ export class WorldMap{
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
   const cities=[...CITIES].sort((a,b)=>(s.selected===b.id?100:0)+b.rarity-((s.selected===a.id?100:0)+a.rarity));
   this.svg.querySelector('#cities').innerHTML=cities.map(c=>{
-   const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,iberia=isIberianCity(c);
+   const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=isTerritoryCity(c);
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
    const box={x:q.x+10,y:q.y-10,w:c.name.length*7+6,h:21};
    const forceLabel=c.id==='1300-quimper'&&unit<.34;const show=selected||forceLabel||(unit<.30&&!occupied.some(b=>overlaps(box,b)));
    if(show)occupied.push(box);
    const size=selected||unit<.3?4:2;
-   if(iberia)return '';
-   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(c.name)} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${(!iberia&&show)?`<text x="10" y="4" class="city-label owned">${esc(c.name)}</text>`:''}</g>`;
+   if(territoryCity)return '';
+   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(c.name)} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${(!territoryCity&&show)?`<text x="10" y="4" class="city-label owned">${esc(c.name)}</text>`:''}</g>`;
   }).reverse().join('');
  }
  destroy(){this.destroyed=true;this.abort.abort();this.resize.disconnect();}
