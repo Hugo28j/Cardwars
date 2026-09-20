@@ -76,6 +76,18 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     replace(name,new,old)
     note(name,'Gameplay: Montpellier retains its Majorcan allegiance with a non-rectangular footprint.')
 
+
+    # Iberia gameplay cleanup: give Andorra a rounder readable footprint.
+    # Roussillon is a separate gameplay region in build-map.py, historically
+    # belonging to the Kingdom of Majorca around 1300.
+    if 'Andorra' in states:
+        replace('Andorra',geo([
+            (1.85,42.6967),(1.8375,42.5433),(1.725,42.4633),
+            (1.5417,42.4367),(1.3792,42.48),(1.3208,42.57),
+            (1.3708,42.6533),(1.5125,42.71),(1.6958,42.7267)
+        ]))
+        note('Andorra','Gameplay border rounded for readability while preserving the small Pyrenean polity.')
+
     # Remove tiny coastal remnants of the two inherited source resolutions.
     # Keep islands, entire small polities, and any fragment containing a city.
     # Reassign only a minor mainland component with a substantial shared edge.
