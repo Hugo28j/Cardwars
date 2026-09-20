@@ -11,7 +11,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 // Population/Navy/Size audit v1 (entries 000-074): population and urban footprint use source-backed c.1300 estimates where available; Navy counts dedicated or regularly maintained military vessels, excluding ordinary merchant/river craft temporarily requisitioned for war.
 // Population/Navy/Size audit v2 (entries 075-149): same source-backed c.1300 rule; Navy excludes ordinary merchant and Hanseatic shipping unless vessels were maintained as a dedicated military fleet.
 // Population/Navy/Size audit v3 (entries 150-224): same source-backed c.1300 rule; Navy counts dedicated or regularly available military vessels and excludes ordinary merchant shipping unless explicitly integrated into a state war fleet.
-// Qualitative-score audit full set (entries 000-224): scores use a deliberately wide 0-100 comparative scale across all 225 cards. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
+// Qualitative-score audit full set (entries 000-240): scores use a deliberately wide 0-100 comparative scale across all 225 cards. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -2911,7 +2911,200 @@ export const CITIES_1300=[
   evidenceNote:'Population is low-confidence; the 1278 Genoese alignment is directly attested. Navy represents only a minimal permanent local naval presence.',
   sources:[['Treccani — Calvi','https://www.treccani.it/enciclopedia/calvi_%28Enciclopedia-Italiana%29/'],['France.fr — Citadel of Calvi','https://www.france.fr/en/article/citadel-calvi/']]
  }
+,
+ {
+  id:'1300-krakow',name:'Kraków',modern:'Kraków',country:'Kingdom of Poland',subrealm:'Lesser Poland · royal centre under Wenceslaus II', 
+  lon:19.94498,lat:50.06465,rarity:4,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
+  sizeText:'0.50 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
+  food:72,technology:84,economyScore:86,stability:62,
+  historicalRole:'Principal city of Lesser Poland and one of the main royal and commercial centres of the Polish lands',
+  economy:'Long-distance trade, crafts, salt-linked commerce, markets and royal administration',
+  militaryRole:'Fortified royal centre with a small permanent castle and household military core',
+  researchSummary:'Kraków had been reorganised under Magdeburg law in 1257 and by 1300 was one of the principal political and commercial centres of the Polish lands under King Wenceslaus II.',
+  evidenceNote:'No secure c.1300 census survives; population and urban footprint are conservative estimates. Army counts only a small permanent royal/castle core, not feudal levies or urban militia.',
+  sources:[['Kraków municipal history','https://www.krakow.pl/'],['Wenceslaus II and Poland','https://www.britannica.com/biography/Wenceslas-II']]
+ },
+ {
+  id:'1300-poznan',name:'Poznań',modern:'Poznań',country:'Kingdom of Poland',subrealm:'Greater Poland · major Piast urban centre',
+  lon:16.92517,lat:52.40637,rarity:2,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:74,technology:70,economyScore:76,stability:64,
+  historicalRole:'Historic capital of Greater Poland and an important fortified commercial city on the Warta',
+  economy:'Markets, crafts, regional trade, ecclesiastical activity and river commerce',
+  militaryRole:'Fortified regional capital with a modest permanent ducal or royal military core',
+  researchSummary:'Poznań was refounded on Magdeburg law in 1253 and remained one of the principal political and economic centres of Greater Poland around 1300.',
+  evidenceNote:'Population and enclosed area are low-confidence gameplay estimates. The city’s 1253 charter and political significance are well documented.',
+  sources:[['City of Poznań — history','https://www.poznan.pl/mim/main/en/-%2Cp%2C25064%2C25065.html'],['Poznań — 1253 charter','https://www.poznan.pl/mim/smartcity/infoteka%2C1202/770-lat-praw-miejskich-poznania%2C199095.html']]
+ },
+ {
+  id:'1300-gniezno',name:'Gniezno',modern:'Gniezno',country:'Kingdom of Poland',subrealm:'Greater Poland · archiepiscopal and coronation city',
+  lon:17.58266,lat:52.53481,rarity:1,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
+  sizeText:'0.18 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:70,technology:82,economyScore:60,stability:66,
+  historicalRole:'Metropolitan church centre and traditional Polish coronation city where Wenceslaus II was crowned in 1300',
+  economy:'Pilgrimage, church revenues, crafts, markets and regional exchange',
+  militaryRole:'Walled ecclesiastical city with a small permanent defensive core',
+  researchSummary:'Gniezno remained Poland’s leading metropolitan church centre and hosted the coronation of Wenceslaus II as king of Poland in 1300.',
+  evidenceNote:'The exact population is unknown. Technology is high for the city’s exceptional clerical, archival and metropolitan role rather than for industrial capacity.',
+  sources:[['Gniezno official history','https://www.gniezno.eu/cms/20274/historia'],['Gniezno — Wenceslaus II coronation','https://www.gniezno.eu/wiadomosci/1/wiadomosc/242148/wernisaz_wystawy_i_wyklad_historyczny_o_waclawie_ii']]
+ },
+ {
+  id:'1300-kalisz',name:'Kalisz',modern:'Kalisz',country:'Kingdom of Poland',subrealm:'Greater Poland · Kalisz district',
+  lon:18.09102,lat:51.76109,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–6 K',populationConfidence:'low',
+  sizeText:'0.20 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:76,technology:64,economyScore:70,stability:65,
+  historicalRole:'Important Greater Polish market city at a crossroads of long-distance routes',
+  economy:'Trade-route commerce, crafts, markets, agriculture and mint-linked exchange',
+  militaryRole:'Fortified regional town with limited permanent military staffing',
+  researchSummary:'Kalisz was relocated and chartered around 1257 and developed rapidly as one of Greater Poland’s important political and commercial centres.',
+  evidenceNote:'Population and size are cautious estimates. The city’s charter, commercial role and long-distance route position are much better documented than its exact demographic scale.',
+  sources:[['Kalisz official history','https://www.kalisz.pl/en/city/about-kalisz/the-history-of-kalisz'],['Kalisz multicultural medieval history','https://www.kalisz.pl/miasto/o-miescie/kalisz-wielokulturowy']]
+ },
+ {
+  id:'1300-sandomierz',name:'Sandomierz',modern:'Sandomierz',country:'Kingdom of Poland',subrealm:'Land of Sandomierz · Lesser Poland',
+  lon:21.74898,lat:50.68265,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2.5–3.5 K',populationConfidence:'medium',
+  sizeText:'0.16 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:74,technology:62,economyScore:68,stability:62,
+  historicalRole:'Historic princely centre and Vistula trading city rebuilt under Magdeburg law after the Mongol invasions',
+  economy:'Vistula trade, tolls, markets, crafts, agriculture and warehousing',
+  militaryRole:'Defensible hill town controlling an important Vistula crossing and trade route',
+  researchSummary:'Sandomierz received a renewed Magdeburg-law charter in 1286, including storage, toll, navigation and minting privileges, and was rebuilding as a major Lesser Polish centre around 1300.',
+  evidenceNote:'The municipality gives about 3,000 inhabitants for the medieval city in the period after reunification, used here as the nearest practical benchmark.',
+  sources:[['Sandomierz — 1286 charter','https://sandomierz.eu/323/dokument-lokacyjny.html'],['Sandomierz — medieval history','https://sandomierz.eu/874/sredniowiecze.html']]
+ },
+ {
+  id:'1300-plock',name:'Płock',modern:'Płock',country:'Duchy of Masovia',subrealm:'Masovian Piast duchy under Bolesław II',
+  lon:19.70654,lat:52.54634,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:72,technology:68,economyScore:64,stability:68,
+  historicalRole:'Principal Masovian ducal and episcopal centre on the Vistula',
+  economy:'River trade, markets, crafts, church revenues and ducal administration',
+  militaryRole:'Ducal castle city with a small permanent household and garrison core',
+  researchSummary:'Płock had city rights from 1237 and was rebuilt around the turn of the 13th and 14th centuries under Masovian duke Bolesław II.',
+  evidenceNote:'No reliable c.1300 census survives. Its independent Masovian political identity is kept separate from the Kingdom of Poland card group.',
+  sources:[['Płock — medieval Old Market history','https://old.plock.eu/de/der_altmarkt.html']]
+ },
+ {
+  id:'1300-wroclaw',name:'Wrocław / Breslau',modern:'Wrocław',country:'Duchy of Wrocław',subrealm:'Silesian Piast duchy · regency-era capital',
+  lon:17.03854,lat:51.10788,rarity:3,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
+  food:75,technology:86,economyScore:89,stability:60,
+  historicalRole:'One of the largest and most commercially advanced cities of the Silesian Piast lands',
+  economy:'Long-distance trade, cloth, crafts, markets, church wealth and Oder commerce',
+  militaryRole:'Strongly fortified ducal capital with a modest permanent castle and household force',
+  researchSummary:'Wrocław was the dominant urban centre of Lower Silesia around 1300 and belonged to the fragmented Silesian Piast political landscape rather than a unified Polish kingdom administration.',
+  evidenceNote:'Population and size are broad estimates. The city’s economic and ecclesiastical importance is much more secure than any exact c.1300 headcount.',
+  sources:[['Wrocław history','https://www.britannica.com/place/Wroclaw'],['Duchy of Wrocław background','https://en.wikipedia.org/wiki/Duchy_of_Wroc%C5%82aw']]
+ },
+ {
+  id:'1300-gdansk',name:'Gdańsk',modern:'Gdańsk',country:'Duchy of Pomerelia',subrealm:'Pomerelian Baltic port under contested Polish-Bohemian influence',
+  lon:18.64664,lat:54.35205,rarity:2,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:68,technology:75,economyScore:84,stability:54,
+  historicalRole:'Major Baltic port of Pomerelia on the eve of the early-14th-century struggle for control of the city',
+  economy:'Baltic shipping, grain, timber, fish, crafts and merchant trade',
+  militaryRole:'Fortified port whose maritime strength depended mainly on merchant shipping rather than a standing war fleet',
+  researchSummary:'Gdańsk possessed Lübeck-law traditions by the 13th century and was already a major Baltic commercial centre before the Teutonic takeover of 1308.',
+  evidenceNote:'Political control around 1300 was contested and transitional, so the card uses Duchy of Pomerelia rather than projecting the 1308 Teutonic takeover backward. Navy remains zero under the standing-fleet rule.',
+  sources:[['Gdańsk — Lübeck law code of 1263','https://www.gdansk.pl/urzad-miejski/wiadomosci/kodeks-lubecki-drukowana-historia-miasta%2Ca%2C8149'],['Gdańsk history','https://www.britannica.com/place/Gdansk']]
+ },
+ {
+  id:'1300-buda',name:'Buda',modern:'Budapest',country:'Kingdom of Hungary',subrealm:'Royal town and castle centre under Andrew III',
+  lon:19.03991,lat:47.49790,rarity:3,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
+  sizeText:'0.40 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
+  food:70,technology:82,economyScore:84,stability:52,
+  historicalRole:'Fast-rising royal castle town and one of the principal political centres of late Árpád Hungary',
+  economy:'Royal services, Danube trade, markets, crafts, wine and regional commerce',
+  militaryRole:'Royal castle and fortified hill town with a meaningful permanent household and garrison core',
+  researchSummary:'Buda grew rapidly after the Mongol invasion and by the late 13th century had become a central royal and commercial site in the Hungarian kingdom.',
+  evidenceNote:'No exact c.1300 census exists. Stability is reduced because royal power was increasingly challenged by powerful oligarchs at the end of Andrew III’s reign.',
+  sources:[['Budapest history','https://www.britannica.com/place/Budapest/History'],['Kingdom of Hungary — Andrew III','https://www.britannica.com/biography/Andrew-III']]
+ },
+ {
+  id:'1300-esztergom',name:'Esztergom',modern:'Esztergom',country:'Kingdom of Hungary',subrealm:'Archbishopric of Esztergom · primatial castle city',
+  lon:18.74345,lat:47.78550,rarity:2,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:68,technology:86,economyScore:72,stability:62,
+  historicalRole:'Seat of Hungary’s senior archbishop and a major ecclesiastical and fortified Danube centre',
+  economy:'Church revenues, Danube trade, markets, crafts and pilgrimage',
+  militaryRole:'Archiepiscopal castle complex with a small permanent armed household and garrison',
+  researchSummary:'After the royal court moved away following the Mongol invasion, Esztergom remained the seat of the kingdom’s primate and one of Hungary’s most important ecclesiastical centres.',
+  evidenceNote:'Technology reflects clerical literacy, administration and monumental building traditions. Population and size are low-confidence estimates.',
+  sources:[['City of Esztergom — history','https://www.esztergom.hu/en/en_history/161-history']]
+ },
+ {
+  id:'1300-szekesfehervar',name:'Székesfehérvár',modern:'Székesfehérvár',country:'Kingdom of Hungary',subrealm:'Royal coronation and burial city',
+  lon:18.41081,lat:47.18603,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
+  sizeText:'0.30 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:72,technology:75,economyScore:72,stability:58,
+  historicalRole:'Traditional coronation and royal burial city of the Hungarian monarchy',
+  economy:'Royal ceremonies, markets, pilgrimage, crafts and regional commerce',
+  militaryRole:'Fortified royal city with a small permanent defensive and ceremonial military core',
+  researchSummary:'Székesfehérvár retained its exceptional constitutional role as Hungary’s coronation and royal burial city through the end of the Árpád dynasty.',
+  evidenceNote:'Its political-symbolic role is much better documented than its exact c.1300 population. The city remained central to royal legitimacy even as other centres grew.',
+  sources:[['Székesfehérvár — historical past','https://www.szekesfehervar.hu/a-tortenelmi-mult']]
+ },
+ {
+  id:'1300-pozsony',name:'Pozsony / Pressburg',modern:'Bratislava',country:'Kingdom of Hungary',subrealm:'Western royal town on the Austrian frontier',
+  lon:17.10775,lat:48.14860,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:70,technology:68,economyScore:76,stability:62,
+  historicalRole:'Privileged frontier city and Danube trading centre near the western edge of the Hungarian kingdom',
+  economy:'Danube trade, wine, markets, crafts and frontier commerce',
+  militaryRole:'Fortified royal border town with a modest permanent defensive core',
+  researchSummary:'Andrew III granted major urban privileges to Pozsony in 1291, confirming a mature self-governing royal town immediately before the 1300 snapshot.',
+  evidenceNote:'Population and size are low-confidence estimates. The 1291 privilege is directly preserved in the Bratislava City Archive.',
+  sources:[['Bratislava City Archive — 1291 privilege','https://primacialnypalac.bratislava.sk/en/city-of-bratislava/bratislava-city-archive/archival-funds'],['Bratislava — city privileges','https://bratislava.sk/spravy/pozyvame-vas-na-16-rocnik-bratislavskych-mestskych-dni']]
+ },
+ {
+  id:'1300-kassa',name:'Kassa / Košice',modern:'Košice',country:'Kingdom of Hungary',subrealm:'Upper Hungarian royal market town',
+  lon:21.26110,lat:48.71640,rarity:1,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:70,technology:72,economyScore:76,stability:66,
+  historicalRole:'Rapidly developing eastern market and fortified town linking Hungary with Poland and the Baltic trade routes',
+  economy:'Markets, crafts, imported goods, regional trade and north-south commerce',
+  militaryRole:'Newly fortified royal town with a small permanent defensive establishment',
+  researchSummary:'By around 1290 Košice possessed urban privileges, markets and partially completed walls and was emerging as an important trading centre of Upper Hungary.',
+  evidenceNote:'The population is a cautious estimate. Official city history confirms substantial urban development and fortification by the end of the 13th century.',
+  sources:[['Košice official history','https://geoportal.kosice.sk/city/history-of-the-city'],['Košice — 13th-century history','https://www.kosice.sk/city/history-of-kosice-13th-century']]
+ },
+ {
+  id:'1300-sopron',name:'Sopron',modern:'Sopron',country:'Kingdom of Hungary',subrealm:'Western royal frontier town',
+  lon:16.59049,lat:47.68166,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:72,technology:65,economyScore:72,stability:68,
+  historicalRole:'Fortified western frontier and wine-trading royal town',
+  economy:'Wine, markets, crafts, agriculture and Austrian-Hungarian frontier trade',
+  militaryRole:'Strong walled frontier town whose wartime manpower relied mainly on citizens rather than a large standing force',
+  researchSummary:'Sopron was an established royal frontier town by 1300, benefiting from trade and viticulture near the Austrian border.',
+  evidenceNote:'Population and permanent Army are conservative estimates; civic militia is excluded under the standing-force definition.',
+  sources:[['Sopron history','https://www.britannica.com/place/Sopron']]
+ },
+ {
+  id:'1300-pecs',name:'Pécs',modern:'Pécs',country:'Kingdom of Hungary',subrealm:'Bishopric of Pécs · Baranya',
+  lon:18.23227,lat:46.07273,rarity:1,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:77,technology:80,economyScore:70,stability:66,
+  historicalRole:'Important southern episcopal city with strong ecclesiastical and monastic institutions',
+  economy:'Church revenues, markets, wine, agriculture, crafts and regional trade',
+  militaryRole:'Episcopal urban centre with limited permanent military staffing',
+  researchSummary:'Pécs was the seat of a bishopric founded in 1009 and remained one of southern Hungary’s principal ecclesiastical cities around 1300.',
+  evidenceNote:'The famous university belongs to 1367 and is not credited here. Technology instead reflects the long-established bishopric, monasteries and clerical institutions.',
+  sources:[['City of Pécs — history','https://pecs.hu/en/the-history-of-pecs/']]
+ },
+ {
+  id:'1300-gradec',name:'Gradec / Zagreb',modern:'Zagreb',country:'Kingdom of Hungary',subrealm:'Kingdom of Croatia-Slavonia · free royal town of Gradec',
+  lon:15.97300,lat:45.81440,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
+  sizeText:'0.12 km²',sizeConfidence:'medium',army:50,armyText:'50',navy:0,navyText:'0',
+  food:72,technology:60,economyScore:62,stability:70,
+  historicalRole:'Autonomous free royal hill town beside the episcopal settlement of Kaptol',
+  economy:'Markets, crafts, agriculture, royal privileges and regional exchange',
+  militaryRole:'Walled free royal town whose defence rested primarily on its citizens',
+  researchSummary:'Gradec received free royal city status in 1242 and was enclosed by walls and towers by 1266, giving the Zagreb hill town a distinct autonomous urban identity by 1300.',
+  evidenceNote:'The card represents Gradec rather than the later unified city of Zagreb. Population is low confidence; the small medieval walled footprint is comparatively well defined.',
+  sources:[['City of Zagreb — Gradec history','https://aktivnosti.zagreb.hr/iz-povijesti-13432/13432'],['University of Zagreb — medieval Gradec elite','https://repozitorij.hrstud.unizg.hr/islandora/object/hrstud%3A973/datastream/PDF/view']]
+ }
 ];
 
 export const CITY_1300=Object.fromEntries(CITIES_1300.map((c,index)=>[c.id,{...c,index}]));
-export const RESEARCH_1300_NOTE='Population figures are historical estimates, not census counts. Army, navy and all 0–100 scores are comparative Cardwars gameplay estimates. Food, Economy, Technology and Stability are calibrated across the full 225-card c.1300 set, with roughly 50 as middling, 70–80 as strong, 90+ as exceptional and 100 reserved for the strongest card or tied strongest cards in a category. Political ownership follows the exact c.1300 snapshot, including temporary occupations such as Aragonese Murcia.';
+export const RESEARCH_1300_NOTE='Population figures are historical estimates, not census counts. Army, navy and all 0–100 scores are comparative Cardwars gameplay estimates. Food, Economy, Technology and Stability are calibrated across the full current c.1300 set, with roughly 50 as middling, 70–80 as strong, 90+ as exceptional and 100 reserved for the strongest card or tied strongest cards in a category. Political ownership follows the exact c.1300 snapshot, including temporary occupations such as Aragonese Murcia.';
