@@ -1,6 +1,14 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-single-city-names-v1';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-force-single-city-labels-v2';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CITY_DISPLAY_NAMES=new Map([
+ ['1300-pozsony','Bratislava'],['1300-kassa','Košice'],['1300-gradec','Gradec'],
+ ['1300-oradea','Oradea'],['1300-cluj','Cluj'],['1300-alba-iulia','Alba Iulia'],
+ ['1300-sibiu','Sibiu'],['1300-brasov','Brașov'],['1300-stettin','Szczecin'],
+ ['1300-saverne','Saverne'],['1300-olbia','Olbia'],['1300-cagliari','Cagliari'],
+ ['1300-wroclaw','Wrocław']
+]);
+const displayCityName=c=>CITY_DISPLAY_NAMES.get(c.id)||String(c.name||'').split('/')[0].trim();
 const pos=(lon,lat)=>[(lon+22)*12,(72-lat)*15];
 const historicalLabels=[
  ['FRANCE',1.9,46.65,1],['ENGLAND',-1.5,52.5,1],['SCOTLAND',-4,56.8,1],
@@ -154,7 +162,7 @@ export class WorldMap{
    const realmClip='city-realm-'+realm.toLowerCase().replace(/[^a-z0-9]+/g,'-');
    defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${realmClip}"><path d="${feature.d}" fill-rule="evenodd"/></clipPath>`);
    const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),metrics=visibleCellMetrics(poly,land,points[i]);return {c,poly,cellBox:metrics.box,labelPoint:metrics.center};});
-   const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(c.name)} · ${esc(displayRealmName(realm))}</title></path>`).join('');
+   const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(displayCityName(c))} · ${esc(displayRealmName(realm))}</title></path>`).join('');
    const realmPolys=svgSubpaths(feature.d).map(svgSubpathPoints).filter(p=>p.length>=3);
    const blockerGroups=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)!==realm).map(f=>svgSubpaths(f.d).map(svgSubpathPoints).filter(p=>p.length>=3)).filter(polys=>polys.length);
    let borderPaths='';
@@ -169,7 +177,7 @@ export class WorldMap{
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
-    labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}">${esc(c.name)}</text></g></g>`);
+    labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}">${esc(displayCityName(c))}</text></g></g>`);
    }
   }
   this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
@@ -211,12 +219,12 @@ export class WorldMap{
   this.svg.querySelector('#cities').innerHTML=cities.map(c=>{
    const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=isTerritoryCity(c);
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
-   const box={x:q.x+10,y:q.y-10,w:c.name.length*7+6,h:21};
+   const box={x:q.x+10,y:q.y-10,w:displayCityName(c).length*7+6,h:21};
    const forceLabel=c.id==='1300-quimper'&&unit<.34;const show=selected||forceLabel||(unit<.30&&!occupied.some(b=>overlaps(box,b)));
    if(show)occupied.push(box);
    const size=selected||unit<.3?4:2;
    if(territoryCity)return '';
-   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(c.name)} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${(!territoryCity&&show)?`<text x="10" y="4" class="city-label owned">${esc(c.name)}</text>`:''}</g>`;
+   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${(!territoryCity&&show)?`<text x="10" y="4" class="city-label owned">${esc(displayCityName(c))}</text>`:''}</g>`;
   }).reverse().join('');
  }
  destroy(){this.destroyed=true;this.abort.abort();this.resize.disconnect();}
