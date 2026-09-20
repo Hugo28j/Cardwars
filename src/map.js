@@ -284,7 +284,7 @@ export class WorldMap{
    const inView=box.x+box.w>0&&box.x<width&&box.y+box.h>0&&box.y<height;
    const territoryCountry=!!t.dataset.realmLabel&&this.cityTerritoryRealms?.has(t.dataset.realmLabel),fits=umbrella||safe<=0||px>=5.2;
    const collision=occupied.some(b=>overlaps(box,b));
-   const show=eligible&&inView&&fits&&!collision&&!(territoryCountry&&showCityAreas);
+   const show=eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
   for(const t of this.cityTerritoryLabels||[]){
