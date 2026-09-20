@@ -47,7 +47,7 @@ additions=[
  ('Archbishopric of Lyon','LYON',4.78,45.85,3,[(4.5,46),(4.95,46),(5.05,45.65),(4.65,45.6)]),
  ('Archbishopric of Vienne','VIENNE',4.87,45.52,3,[(4.7,45.6),(5.0,45.65),(5.0,45.4),(4.75,45.4)]),
  ('Kingdom of Majorca','MONTPELLIER',3.87,43.62,3,[(3.65,43.48),(4.05,43.48),(4.08,43.8),(3.65,43.82)]),
- ('Kingdom of Majorca','ROUSSILLON',2.7,42.65,3,[(1.9,42.45),(2.8,42.4),(3.2,42.45),(3.1,42.9),(2.6,42.95),(2.05,42.8)])
+ ('Roussillon','ROUSSILLON',2.7,42.65,3,[(1.8375,42.5433),(2.8,42.4),(3.2,42.45),(3.1,42.9),(2.6,42.95),(2.1,42.8467),(1.85,42.6967)])
 ]
 world=json.loads((ROOT/'scripts/map/physical-land.geojson').read_text())
 land=set_precision(unary_union([make_valid(affine_transform(shape(f['geometry']),[12,0,0,-15,264,1080])).intersection(clip) for f in world['features']]).intersection(clip),.001)
