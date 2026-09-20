@@ -113,7 +113,7 @@ export class WorldMap{
     if(q.x<-80||q.y<-30||q.x>width+80||q.y>height+30)return '';
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
     const long=c.name.length>14;
-    return \`<text x="\${p[0]}" y="\${p[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(\${angle} \${p[0]} \${p[1]})" class="city-area-label" style="font-size:\${unit*(long?10.5:12)}px;stroke-width:\${unit*1.8}px;letter-spacing:\${unit*.35}px">\${esc(c.name)}</text>\`;
+    return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${p[0]} ${p[1]})" class="city-area-label" style="font-size:${unit*(long?10.5:12)}px;stroke-width:${unit*1.8}px;letter-spacing:${unit*.35}px">${esc(c.name)}</text>`;
    }).join(''):'';
   }
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
