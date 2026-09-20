@@ -71,6 +71,15 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
         note(name,'Gameplay: the narrow French corridor between Champagne and Lorraine is distributed among its neighbours.')
 
 
+    # Remove the thin residual France tongue between Amiens and Reims.
+    give('County of Champagne',geo([
+        (2.3333,49.7467),(2.5000,49.4667),(2.8333,49.0000),(3.0667,48.1500),
+        (3.7333,48.0200),(4.5833,48.0200),(5.4500,47.7500),(5.4500,48.2000),
+        (5.4000,48.6667),(5.3333,49.2000),(5.0667,49.7333),(4.2500,49.8000),
+        (3.4167,49.9000),(2.5833,49.9333)
+    ]))
+    note('County of Champagne','Gameplay: the remaining French tongue north-west of Reims is absorbed into Champagne for a clean regional border.')
+
     # Burgundy / Lorraine / Lyon-Vienne gameplay cleanup.
     # These are deliberate map simplifications requested for the game layer.
     if 'County of Burgundy' in states:
@@ -91,21 +100,22 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
         note('County of Champagne','Gameplay: western Lorraine is folded into Champagne.')
         note('Prince-Bishopric of Strasbourg','Gameplay: eastern Lorraine is folded into Strasbourg.')
 
+    # Remove the last small France wedge around Lyon/Vienne.
     replace('Archbishopric of Lyon',geo([
-        (4.3333,45.6800),(4.2833,45.8267),(4.3667,45.9733),(4.5833,46.0600),
-        (4.8750,46.0667),(5.1000,45.9933),(5.2333,45.8533),(5.2083,45.6933),
-        (5.0417,45.6200),(4.7917,45.5867),(4.5500,45.6000)
+        (3.7917,45.6800),(3.7250,45.8800),(3.8500,46.0800),(4.1833,46.1800),
+        (4.5833,46.1467),(4.9167,46.0667),(5.2333,45.8533),(5.2083,45.6933),
+        (5.0417,45.6200),(4.7917,45.5867),(4.4167,45.5333),(4.0417,45.5667)
     ]))
-    meta['Archbishopric of Lyon'].update(lx=4.78,ly=45.84)
-    note('Archbishopric of Lyon','Gameplay border enlarged and rounded for readability.')
+    meta['Archbishopric of Lyon'].update(lx=4.70,ly=45.88)
+    note('Archbishopric of Lyon','Gameplay: Lyon is enlarged westward and northward to remove the residual French wedge and create a smoother border.')
 
     replace('Archbishopric of Vienne',geo([
-        (4.5500,45.6000),(4.7917,45.5867),(5.0417,45.6200),(5.2083,45.6933),
-        (5.2500,45.5333),(5.1667,45.3733),(5.0000,45.2667),(4.7667,45.2667),
-        (4.5833,45.3533),(4.5167,45.4867)
+        (4.0417,45.5667),(4.4167,45.5333),(4.7917,45.5867),(5.0417,45.6200),
+        (5.2083,45.6933),(5.3333,45.5333),(5.2500,45.3000),(5.0833,45.1667),
+        (4.7917,45.1200),(4.4167,45.1667),(4.1500,45.3000)
     ]))
-    meta['Archbishopric of Vienne'].update(lx=4.82,ly=45.43)
-    note('Archbishopric of Vienne','Gameplay border enlarged and rounded for readability.')
+    meta['Archbishopric of Vienne'].update(lx=4.72,ly=45.42)
+    note('Archbishopric of Vienne','Gameplay: Vienne is enlarged westward with a smoother shared border with Lyon.')
 
     name='Kingdom of Majorca'
     old=states[name].intersection(geo([(3.5,43.3),(4.3,43.3),(4.3,44),(3.5,44)]))
