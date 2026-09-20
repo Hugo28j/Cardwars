@@ -11,7 +11,7 @@ export const RARITY_COLORS_1300=['#a5b7b1','#80bca7','#81b4e5','#bd99df','#e5b86
 // Population/Navy/Size audit v1 (entries 000-074): population and urban footprint use source-backed c.1300 estimates where available; Navy counts dedicated or regularly maintained military vessels, excluding ordinary merchant/river craft temporarily requisitioned for war.
 // Population/Navy/Size audit v2 (entries 075-149): same source-backed c.1300 rule; Navy excludes ordinary merchant and Hanseatic shipping unless vessels were maintained as a dedicated military fleet.
 // Population/Navy/Size audit v3 (entries 150-224): same source-backed c.1300 rule; Navy counts dedicated or regularly available military vessels and excludes ordinary merchant shipping unless explicitly integrated into a state war fleet.
-// Qualitative-score audit full set (entries 000-246): scores use a deliberately wide 0-100 comparative scale across the full current card set. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
+// Qualitative-score audit full set (entries 000-249): scores use a deliberately wide 0-100 comparative scale across the full current card set. ~50 is middling; 30-40 is clearly weak; 70-80 is strong; 90+ is exceptional; 100 is reserved for the strongest card(s) in that category. Food combines supply, resilience, broad access and diet quality rather than agricultural output alone. Full-set target averages are approximately 65-70.
 export const CITIES_1300=[
  {
   id:'1300-seville',name:'Seville',modern:'Seville',country:'Crown of Castile',subrealm:'Kingdom of Seville',
@@ -3178,6 +3178,43 @@ export const CITIES_1300=[
   researchSummary:'The archiepiscopal seat moved from Žiča to Peć in 1292. By the 1300 snapshot Peć was therefore one of the most important religious and cultural centres of the Serbian kingdom.',
   evidenceNote:'Peć was much smaller than major commercial cities, so Population and Economy remain modest. Technology is high because the archbishopric concentrated literacy, manuscript culture, administration and elite building expertise.',
   sources:[['UNESCO nomination — Patriarchate of Peć','https://whc.unesco.org/uploads/nominations/724bis.pdf'],['Serbia Tourism — medieval monasteries','https://www.serbia.travel/en/monasteries-of-kosovo-and-metohija/']]
+ }
+,
+ {
+  id:'1300-huesca',name:'Huesca',modern:'Huesca',country:'Crown of Aragon',subrealm:'Kingdom of Aragon · Upper Aragon',
+  lon:-0.4089,lat:42.1362,rarity:1,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–7 K',populationConfidence:'low',
+  sizeText:'0.22 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:72,technology:68,economyScore:66,stability:72,
+  historicalRole:'Important inland city of the Kingdom of Aragon and one of the principal centres of Upper Aragon',
+  economy:'Regional trade, agriculture, crafts, church activity and administrative functions',
+  militaryRole:'Fortified inland city with a small permanent defensive core',
+  researchSummary:'Huesca remained one of the key urban centres of the Kingdom of Aragon around 1300, with regional political, ecclesiastical and commercial importance.',
+  evidenceNote:'Population and urban size are conservative estimates. The city is important at regional level, but not in the same class as Barcelona, Valencia or Zaragoza.',
+  sources:[['Britannica — Huesca','https://www.britannica.com/place/Huesca']]
+ },
+ {
+  id:'1300-tarragona',name:'Tarragona',modern:'Tarragona',country:'Crown of Aragon',subrealm:'Principality of Catalonia · Mediterranean port and archbishopric',
+  lon:1.2445,lat:41.1189,rarity:1,year:1300,people:7000,populationText:'7.0 K',populationRange:'6–8 K',populationConfidence:'low',
+  sizeText:'0.24 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  food:70,technology:72,economyScore:74,stability:74,
+  historicalRole:'Important Catalan port and archiepiscopal city on the Mediterranean',
+  economy:'Port trade, wine, agriculture, crafts, church revenues and coastal commerce',
+  militaryRole:'Walled coastal city with limited permanent military staffing',
+  researchSummary:'Tarragona was an important ecclesiastical and maritime centre in Catalonia, though smaller than Barcelona and Valencia in overall economic scale.',
+  evidenceNote:'Navy remains zero because the stat represents a permanent war fleet, not merchant shipping. Population is a low-confidence estimate.',
+  sources:[['Britannica — Tarragona','https://www.britannica.com/place/Tarragona-Spain']]
+ },
+ {
+  id:'1300-almeria',name:'Almería',modern:'Almería',country:'Emirate of Granada',subrealm:'Nasrid frontier port of Almería',
+  lon:-2.4637,lat:36.8340,rarity:1,year:1300,people:7000,populationText:'7.0 K',populationRange:'6–9 K',populationConfidence:'low',
+  sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  food:74,technology:74,economyScore:76,stability:64,
+  historicalRole:'Principal southeastern port of the Nasrid kingdom and an important fortified coastal city',
+  economy:'Mediterranean trade, crafts, irrigated agriculture, fishing and port commerce',
+  militaryRole:'Fortified port city with a modest permanent defensive core',
+  researchSummary:'Almería remained one of the most important coastal cities of the Nasrid realm around 1300 and served as a strategic maritime outlet of Granada.',
+  evidenceNote:'Population and footprint are cautious estimates. Economy is strong regionally, but below Málaga and Granada itself.',
+  sources:[['Britannica — Almería','https://www.britannica.com/place/Almeria-Spain']]
  }
 ];
 
