@@ -1744,7 +1744,7 @@ export const CITIES_1300=[
   sources:[['Werle','https://en.wikipedia.org/wiki/Werle'],['Güstrow','https://en.wikipedia.org/wiki/G%C3%BCstrow']]
  },
  {
-  id:'1300-stettin',name:'Stettin / Szczecin',modern:'Szczecin',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · ducal and Oder port city',
+  id:'1300-stettin',name:'Szczecin',modern:'Szczecin',country:'Duchy of Pomerania-Stettin',subrealm:'Duchy of Pomerania-Stettin · ducal and Oder port city',
   lon:14.5528,lat:53.4285,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
   sizeText:'0.55 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:60,technology:68,economyScore:69,stability:65,
@@ -2261,7 +2261,7 @@ export const CITIES_1300=[
   sources:[['Bruchsal','https://en.wikipedia.org/wiki/Bruchsal'],['Prince-Bishopric of Speyer','https://en.wikipedia.org/wiki/Prince-Bishopric_of_Speyer']]
  },
  {
-  id:'1300-saverne',name:'Saverne / Zabern',modern:'Saverne',country:'Prince-Bishopric of Strasbourg',subrealm:'Prince-Bishopric of Strasbourg · episcopal territorial centre',
+  id:'1300-saverne',name:'Saverne',modern:'Saverne',country:'Prince-Bishopric of Strasbourg',subrealm:'Prince-Bishopric of Strasbourg · episcopal territorial centre',
   lon:7.3622,lat:48.7414,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:65,technology:52,economyScore:50,stability:68,
@@ -3033,7 +3033,7 @@ export const CITIES_1300=[
   sources:[['Treccani — Arborea','https://www.treccani.it/enciclopedia/arborea_%28Enciclopedia-Italiana%29/'],['Judicate of Arborea','https://en.wikipedia.org/wiki/Judicate_of_Arborea']]
  },
  {
-  id:'1300-olbia',name:'Olbia / Terranova',modern:'Olbia',country:'Gallura',subrealm:'Gallura · Terranova under de facto Pisan control after Nino Visconti’s death in 1296',
+  id:'1300-olbia',name:'Olbia',modern:'Olbia',country:'Gallura',subrealm:'Gallura · Terranova under de facto Pisan control after Nino Visconti’s death in 1296',
   lon:9.4964,lat:40.9236,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
   sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:55,stability:42,economyScore:52,
@@ -3045,7 +3045,7 @@ export const CITIES_1300=[
   sources:[['Treccani — Nino Visconti','https://www.treccani.it/enciclopedia/nino-visconti_%28Enciclopedia-Dantesca%29/'],['Comune di Olbia — historical study of Terranova and Gallura','https://servizionline.comune.olbia.ot.it/002-PubCED/2025.05.08-Punto_11_PUC/FASE%20I_ASSETTO%20STORICO%20CULTURALE/RS_Storia.pdf']]
  },
  {
-  id:'1300-cagliari',name:'Cagliari / Castel di Castro',modern:'Cagliari',country:'Caralis',subrealm:'Caralis · Pisan Castel di Castro after the 1258 fall of the Judicate of Cagliari',
+  id:'1300-cagliari',name:'Cagliari',modern:'Cagliari',country:'Caralis',subrealm:'Caralis · Pisan Castel di Castro after the 1258 fall of the Judicate of Cagliari',
   lon:9.1217,lat:39.2238,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.6 km²',sizeConfidence:'low',army:200,armyText:'200',navy:4,navyText:'4',
   food:78,technology:64,stability:48,economyScore:72,
@@ -3154,7 +3154,7 @@ export const CITIES_1300=[
   sources:[['Płock — medieval Old Market history','https://old.plock.eu/de/der_altmarkt.html']]
  },
  {
-  id:'1300-wroclaw',name:'Wrocław / Breslau',modern:'Wrocław',country:'Duchy of Wrocław',subrealm:'Silesian Piast duchy · regency-era capital',
+  id:'1300-wroclaw',name:'Wrocław',modern:'Wrocław',country:'Duchy of Wrocław',subrealm:'Silesian Piast duchy · regency-era capital',
   lon:17.03854,lat:51.10788,rarity:2,year:1300,people:20000,populationText:'20.0 K',populationRange:'15–25 K',populationConfidence:'low',
   sizeText:'0.70 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:74,technology:80,economyScore:86,stability:60,
@@ -3214,7 +3214,7 @@ export const CITIES_1300=[
   sources:[['Székesfehérvár — historical past','https://www.szekesfehervar.hu/a-tortenelmi-mult']]
  },
  {
-  id:'1300-pozsony',name:'Pozsony / Pressburg',modern:'Bratislava',country:'Kingdom of Hungary',subrealm:'Western royal town on the Austrian frontier',
+  id:'1300-pozsony',name:'Bratislava',modern:'Bratislava',country:'Kingdom of Hungary',subrealm:'Western royal town on the Austrian frontier',
   lon:17.10775,lat:48.14860,rarity:1,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
   sizeText:'0.25 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:72,economyScore:78,stability:60,
@@ -3226,7 +3226,7 @@ export const CITIES_1300=[
   sources:[['Bratislava City Archive — 1291 privilege','https://primacialnypalac.bratislava.sk/en/city-of-bratislava/bratislava-city-archive/archival-funds'],['Bratislava — city privileges','https://bratislava.sk/spravy/pozyvame-vas-na-16-rocnik-bratislavskych-mestskych-dni']]
  },
  {
-  id:'1300-kassa',name:'Kassa / Košice',modern:'Košice',country:'Kingdom of Hungary',subrealm:'Upper Hungarian royal market town',
+  id:'1300-kassa',name:'Košice',modern:'Košice',country:'Kingdom of Hungary',subrealm:'Upper Hungarian royal market town',
   lon:21.26110,lat:48.71640,rarity:1,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.22 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:70,economyScore:72,stability:64,
@@ -3262,7 +3262,7 @@ export const CITIES_1300=[
   sources:[['City of Pécs — history','https://pecs.hu/en/the-history-of-pecs/']]
  },
  {
-  id:'1300-gradec',name:'Gradec / Zagreb',modern:'Zagreb',country:'Kingdom of Hungary',subrealm:'Kingdom of Croatia-Slavonia · free royal town of Gradec',
+  id:'1300-gradec',name:'Gradec',modern:'Zagreb',country:'Kingdom of Hungary',subrealm:'Kingdom of Croatia-Slavonia · free royal town of Gradec',
   lon:15.97300,lat:45.81440,mapLon:16.45,mapLat:45.95,rarity:0,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.5–3 K',populationConfidence:'low',
   sizeText:'0.12 km²',sizeConfidence:'medium',army:50,armyText:'50',navy:0,navyText:'0',
   food:72,technology:62,economyScore:64,stability:68,
@@ -3287,7 +3287,7 @@ export const CITIES_1300=[
   sources:[['Visit Debrecen — history of the town square and medieval St Andrew church','https://visitdebrecen.com/hot-now/the-history-of-the-town-square-and-the-reformed-great-church/'],['Visit Debrecen — 660 years of city privileges','https://visitdebrecen.com/hot-now/debrecen-for-660-years/']]
  },
  {
-  id:'1300-oradea',name:'Oradea / Nagyvárad',modern:'Oradea',country:'Kingdom of Hungary',subrealm:'Bishopric of Várad · episcopal fortress and regional centre',
+  id:'1300-oradea',name:'Oradea',modern:'Oradea',country:'Kingdom of Hungary',subrealm:'Bishopric of Várad · episcopal fortress and regional centre',
   lon:21.9189,lat:47.0465,rarity:1,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
   sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:78,economyScore:72,stability:60,
@@ -3299,7 +3299,7 @@ export const CITIES_1300=[
   sources:[['Oradea Heritage — Oradea Fortress','https://www.oradeaheritage.ro/oradeas-fortress/']]
  },
  {
-  id:'1300-cluj',name:'Cluj / Kolozsvár',modern:'Cluj-Napoca',country:'Kingdom of Hungary',subrealm:'Transylvania · royal and episcopal settlement of Kolozs',
+  id:'1300-cluj',name:'Cluj',modern:'Cluj-Napoca',country:'Kingdom of Hungary',subrealm:'Transylvania · royal and episcopal settlement of Kolozs',
   lon:23.5899,lat:46.7712,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:64,economyScore:64,stability:56,
@@ -3311,7 +3311,7 @@ export const CITIES_1300=[
   sources:[['Transylvania Trust — medieval fortifications and 13th-century Cluj','https://www.transylvaniatrust.ro/en/the-mediaeval-fortifications-of-the-town-of-cluj/']]
  },
  {
-  id:'1300-alba-iulia',name:'Alba Iulia / Gyulafehérvár',modern:'Alba Iulia',country:'Kingdom of Hungary',subrealm:'Transylvania · seat of the Transylvanian bishopric',
+  id:'1300-alba-iulia',name:'Alba Iulia',modern:'Alba Iulia',country:'Kingdom of Hungary',subrealm:'Transylvania · seat of the Transylvanian bishopric',
   lon:23.5730,lat:46.0670,rarity:1,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–6 K',populationConfidence:'low',
   sizeText:'0.30 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:69,technology:82,economyScore:68,stability:58,
@@ -3323,7 +3323,7 @@ export const CITIES_1300=[
   sources:[['Roman Catholic Archdiocese of Alba Iulia — history of the diocese','https://ersekseg.ro/en/node/80']]
  },
  {
-  id:'1300-sibiu',name:'Sibiu / Hermannstadt',modern:'Sibiu',country:'Kingdom of Hungary',subrealm:'Transylvania · principal Saxon centre of the Sibiu district',
+  id:'1300-sibiu',name:'Sibiu',modern:'Sibiu',country:'Kingdom of Hungary',subrealm:'Transylvania · principal Saxon centre of the Sibiu district',
   lon:24.1517,lat:45.7983,rarity:2,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
   sizeText:'0.40 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:80,economyScore:80,stability:66,
@@ -3335,7 +3335,7 @@ export const CITIES_1300=[
   sources:[['City of Sibiu — history','https://www.sibiu.ro/sibiu/istoria'],['Sibiu tourism — medieval fortifications','https://turism.sibiu.ro/en/fortificatie/173']]
  },
  {
-  id:'1300-brasov',name:'Brașov / Kronstadt',modern:'Brașov',country:'Kingdom of Hungary',subrealm:'Transylvania · Saxon settlement of Corona in the Burzenland',
+  id:'1300-brasov',name:'Brașov',modern:'Brașov',country:'Kingdom of Hungary',subrealm:'Transylvania · Saxon settlement of Corona in the Burzenland',
   lon:25.6012,lat:45.6579,rarity:1,year:1300,people:3500,populationText:'3.5 K',populationRange:'3–5 K',populationConfidence:'low',
   sizeText:'0.25 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:66,technology:66,economyScore:69,stability:60,
