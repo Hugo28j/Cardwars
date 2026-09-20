@@ -54,7 +54,8 @@ const clipHalfPlane=(poly,a,b,c)=>{const out=[];if(!poly.length)return out;const
 const voronoiCell=(point,others,box)=>{let poly=[[box.x,box.y],[box.x+box.w,box.y],[box.x+box.w,box.y+box.h],[box.x,box.y+box.h]];for(const other of others){if(other===point)continue;const a=other[0]-point[0],b=other[1]-point[1],c=(other[0]*other[0]+other[1]*other[1]-point[0]*point[0]-point[1]*point[1])/2;poly=clipHalfPlane(poly,a,b,c);if(!poly.length)break;}return poly;};
 const cityBorderKey=(realm,a,b)=>realm+'|'+[a,b].sort().join('|');
 const CITY_BORDER_SKIP=new Set([
- cityBorderKey('Kingdom of France','1300-cahors','1300-mende')
+ cityBorderKey('Kingdom of France','1300-cahors','1300-mende'),
+ cityBorderKey('Kingdom of France','1300-narbonne','1300-nimes')
 ]);
 const CITY_BORDER_MANUAL=new Map();
 const sharedCellEdges=cells=>{const edges=new Map();for(const {c,poly} of cells){for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length],ak=a[0].toFixed(5)+','+a[1].toFixed(5),bk=b[0].toFixed(5)+','+b[1].toFixed(5),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let e=edges.get(key);if(!e){e={a,b,cities:[]};edges.set(key,e);}e.cities.push(c.id);}}return [...edges.values()].filter(e=>e.cities.length===2);};
