@@ -3568,6 +3568,31 @@ export const CITIES_1300=[
   evidenceNote:'Population and footprint are cautious gameplay estimates. Rarity is Rare because Split combined a substantial population, archiepiscopal importance, trade and mature communal government, while remaining below Venice in scale and reach.',
   sources:[['City of Split — History of the city','https://split.hr/kategorije/o-splitu/povijest-grada']]
  }
+,
+ {
+  id:'1300-reggio-calabria',name:'Reggio Calabria',modern:'Reggio Calabria',country:'Kingdom of Naples',subrealm:'Calabria Ultra · strategic Strait fortress during the War of the Sicilian Vespers',
+  lon:15.6500,lat:38.1113,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'9–15 K',populationConfidence:'low',
+  sizeText:'0.60 km²',sizeConfidence:'low',army:200,armyText:'200',navy:2,navyText:'2',
+  food:72,technology:70,economyScore:74,stability:38,
+  historicalRole:'Fortified mainland city controlling the eastern side of the Strait of Messina',
+  economy:'Strait commerce, coastal shipping, fishing, agriculture, crafts and regional trade',
+  militaryRole:'Strategic fortified city with a strong local garrison and limited dedicated naval capability',
+  researchSummary:'Reggio remained one of the key fortified cities of southern Calabria during the conflict between the Angevin mainland kingdom and the Aragonese-Sicilian forces. Its position directly opposite Messina made control of the city militarily important around 1300.',
+  evidenceNote:'Population and size are low-confidence gameplay estimates. Rarity is Rare: Reggio is strategically much more important than a minor Calabrian town, but remains below Messina, Palermo and Naples in scale and wider economic weight.',
+  sources:[['Comune di Reggio Calabria — Castello Aragonese and medieval control','https://comune.reggio-calabria.it/Notizie/Details/2068'],['Turismo Reggio Calabria — archaeology and history','https://turismo.reggiocal.it/en/culture/archeology-and-history']]
+ },
+ {
+  id:'1300-catanzaro',name:'Catanzaro',modern:'Catanzaro',country:'Kingdom of Naples',subrealm:'County of Catanzaro · Ruffo stronghold in Calabria Ultra',
+  lon:16.5877,lat:38.9098,rarity:1,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
+  sizeText:'0.40 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
+  food:69,technology:65,economyScore:63,stability:34,
+  historicalRole:'Fortified county seat and episcopal centre in central Calabria',
+  economy:'Agriculture, local markets, crafts, church revenues and inland regional exchange',
+  militaryRole:'Defensible hill city and feudal stronghold with a modest permanent armed core',
+  researchSummary:'Catanzaro was a long-established fortified and episcopal centre. During the War of the Sicilian Vespers it became a contested Ruffo stronghold: it was captured by Sicilian-Aragonese forces in 1297 and was back in Pietro Ruffo’s hands by 1300.',
+  evidenceNote:'Population and footprint are cautious gameplay estimates. Rarity is Uncommon: Catanzaro had real political and military relevance as a county seat, but was smaller and less commercially important than the major southern ports.',
+  sources:[['Treccani — Catanzaro','https://www.treccani.it/enciclopedia/catanzaro/'],['Treccani — Pietro Ruffo, count of Catanzaro','https://www.treccani.it/enciclopedia/ruffo-pietro-ii-conte-di-catanzaro/']]
+ }
 ];
 
 export const CITY_1300=Object.fromEntries(CITIES_1300.map((c,index)=>[c.id,{...c,index}]));
