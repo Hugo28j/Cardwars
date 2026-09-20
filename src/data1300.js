@@ -681,6 +681,51 @@ export const CITIES_1300=[
   ]
  },
  {
+  id:'1300-beaune',name:'Beaune',modern:'Beaune',country:'Duchy of Burgundy',subrealm:'Duchy of Burgundy · important ducal and market town',
+  lon:4.8392,lat:47.0260,rarity:2,year:1300,people:11000,populationText:'11.0 K',populationRange:'8–14 K',populationConfidence:'low',
+  sizeText:'0.55 km²',sizeConfidence:'low',army:70,armyText:'70',navy:0,navyText:'0',
+  food:72,technology:63,economyScore:74,stability:72,
+  historicalRole:'Important Burgundian market town and ducal centre south of Dijon',
+  economy:'Wine, local markets, agriculture, crafts and regional trade',
+  militaryRole:'Walled inland town with moderate local defensive value',
+  researchSummary:'Beaune was one of the important towns of the Duchy of Burgundy and adds a strong secondary Burgundian city between Dijon and the Saône valley.',
+  evidenceNote:'Population, footprint, army and comparative scores are low-confidence Cardwars gameplay estimates; the city is placed in the Duchy of Burgundy to match the current map.',
+  sources:[
+   ['Beaune — overview','https://fr.wikipedia.org/wiki/Beaune'],
+   ['Duchy of Burgundy — overview','https://en.wikipedia.org/wiki/Duchy_of_Burgundy']
+  ]
+ },
+ {
+  id:'1300-autun',name:'Autun',modern:'Autun',country:'Duchy of Burgundy',subrealm:'Duchy of Burgundy · episcopal and regional centre',
+  lon:4.2987,lat:46.9510,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–12 K',populationConfidence:'low',
+  sizeText:'0.70 km²',sizeConfidence:'low',army:60,armyText:'60',navy:0,navyText:'0',
+  food:67,technology:66,economyScore:62,stability:73,
+  historicalRole:'Historic episcopal city and regional centre in western Burgundy',
+  economy:'Regional trade, church activity, crafts and surrounding agriculture',
+  militaryRole:'Defended inland city with local strategic importance',
+  researchSummary:'Autun remained a significant ecclesiastical and regional centre in Burgundy and helps fill the western part of the duchy on the Cardwars map.',
+  evidenceNote:'Population, footprint, army and comparative scores are low-confidence Cardwars gameplay estimates; political ownership follows the current map.',
+  sources:[
+   ['Autun — overview','https://fr.wikipedia.org/wiki/Autun'],
+   ['Duchy of Burgundy — overview','https://en.wikipedia.org/wiki/Duchy_of_Burgundy']
+  ]
+ },
+ {
+  id:'1300-chalon-sur-saone',name:'Chalon-sur-Saône',modern:'Chalon-sur-Saône',country:'Duchy of Burgundy',subrealm:'Duchy of Burgundy · Saône commercial centre',
+  lon:4.8527,lat:46.7802,rarity:2,year:1300,people:13000,populationText:'13.0 K',populationRange:'10–16 K',populationConfidence:'low',
+  sizeText:'0.85 km²',sizeConfidence:'low',army:90,armyText:'90',navy:0,navyText:'0',
+  food:73,technology:64,economyScore:77,stability:69,
+  historicalRole:'Important Saône river town and commercial centre of southern Burgundy',
+  economy:'River commerce, markets, agriculture, crafts and transit trade',
+  militaryRole:'Strategically placed river town with stronger regional military value',
+  researchSummary:'Chalon-sur-Saône was a notable Burgundian urban and trading centre on the Saône and is one of the stronger secondary cities added to the duchy.',
+  evidenceNote:'Population, footprint, army and comparative scores are low-confidence Cardwars gameplay estimates; political ownership follows the current map.',
+  sources:[
+   ['Chalon-sur-Saône — overview','https://fr.wikipedia.org/wiki/Chalon-sur-Sa%C3%B4ne'],
+   ['Duchy of Burgundy — overview','https://en.wikipedia.org/wiki/Duchy_of_Burgundy']
+  ]
+ },
+ {
   id:'1300-tours',name:'Tours',modern:'Tours',country:'Kingdom of France',subrealm:'Touraine · French royal domain',
   lon:0.6848,lat:47.3941,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
