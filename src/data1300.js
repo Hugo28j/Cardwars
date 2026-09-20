@@ -711,7 +711,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-le-mans',name:'Le Mans',modern:'Le Mans',country:'County of Anjou',subrealm:'County of Maine · Angevin apanage associated with Charles of Valois',
+  id:'1300-le-mans',name:'Le Mans',modern:'Le Mans',country:'Kingdom of France',subrealm:'County of Maine · Angevin apanage associated with Charles of Valois',
   lon:0.1996,lat:48.0061,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:65,economyScore:64,stability:72,
@@ -741,7 +741,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-perigueux',name:'Périgueux',modern:'Périgueux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Périgord · Aquitanian fief; under French wartime confiscation in 1300',
+  id:'1300-perigueux',name:'Périgueux',modern:'Périgueux',country:'Kingdom of England',subrealm:'Périgord · Aquitanian fief; under French wartime confiscation in 1300',
   lon:0.7211,lat:45.1840,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
   sizeText:'0.45 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:70,technology:67,economyScore:66,stability:67,
@@ -756,7 +756,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Duchy of Aquitaine (English Crown)',subrealm:'Aunis/Saintonge frontier · French royal port',
+  id:'1300-la-rochelle',name:'La Rochelle',modern:'La Rochelle',country:'Kingdom of England',subrealm:'Aunis/Saintonge frontier · French royal port',
   lon:-1.1511,lat:46.1603,rarity:2,year:1300,people:12000,populationText:'12.0 K',populationRange:'10–15 K',populationConfidence:'low',
   sizeText:'0.70 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:67,technology:67,economyScore:79,stability:70,
@@ -817,7 +817,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-bordeaux',name:'Bordeaux',modern:'Bordeaux',country:'Duchy of Aquitaine (English Crown)',subrealm:'Duchy of Aquitaine/Gascony · held by Edward I as duke',
+  id:'1300-bordeaux',name:'Bordeaux',modern:'Bordeaux',country:'Kingdom of England',subrealm:'Duchy of Aquitaine/Gascony · held by Edward I as duke',
   lon:-0.5792,lat:44.8378,rarity:3,year:1300,people:30000,populationText:'30.0 K',populationRange:'25–35 K',populationConfidence:'low',
   sizeText:'1.20 km²',sizeConfidence:'low',army:200,armyText:'200',navy:0,navyText:'0',
   food:66,technology:75,economyScore:87,stability:35,
@@ -832,7 +832,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-bayonne',name:'Bayonne',modern:'Bayonne',country:'Duchy of Aquitaine (English Crown)',subrealm:'English-held Gascony · directly administered royal port',
+  id:'1300-bayonne',name:'Bayonne',modern:'Bayonne',country:'Kingdom of England',subrealm:'English-held Gascony · directly administered royal port',
   lon:-1.4748,lat:43.4929,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.60 km²',sizeConfidence:'low',army:100,armyText:'100',navy:2,navyText:'2',
   food:64,technology:66,economyScore:71,stability:48,
@@ -907,7 +907,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-lyon',name:'Lyon',modern:'Lyon',country:'Archbishopric of Lyon (Holy Roman Empire)',subrealm:'Imperial archiepiscopal city · not annexed to France until 1312',
+  id:'1300-lyon',name:'Lyon',modern:'Lyon',country:'Archbishopric of Lyon',subrealm:'Imperial archiepiscopal city · not annexed to France until 1312',
   lon:4.8357,lat:45.7640,rarity:2,year:1300,people:15000,populationText:'15.0 K',populationRange:'12–20 K',populationConfidence:'low',
   sizeText:'0.90 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:59,technology:77,economyScore:76,stability:42,
@@ -922,7 +922,7 @@ export const CITIES_1300=[
   ]
  },
  {
-  id:'1300-vienne',name:'Vienne',modern:'Vienne',country:'Archbishopric of Vienne (Holy Roman Empire)',subrealm:'Imperial prince-archbishopric · city ruled by the Archbishop of Vienne',
+  id:'1300-vienne',name:'Vienne',modern:'Vienne',country:'Archbishopric of Vienne',subrealm:'Imperial prince-archbishopric · city ruled by the Archbishop of Vienne',
   lon:4.8747,lat:45.5256,rarity:1,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
   sizeText:'0.50 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:64,technology:70,economyScore:56,stability:62,
@@ -1039,7 +1039,7 @@ export const CITIES_1300=[
   sources:[['Antwerp — medieval harbour archaeology','https://pers.antwerpen.be/archeologen-ontdekken-middeleeuws-stukje-haven-in-antwerpen'],['Duchy of Brabant','https://en.wikipedia.org/wiki/Duchy_of_Brabant']]
  },
  {
-  id:'1300-s-hertogenbosch',name:'’s-Hertogenbosch',modern:'’s-Hertogenbosch',country:'Duchy of Brabant',subrealm:'Duchy of Brabant · northern fortified ducal town',
+  id:'1300-s-hertogenbosch',name:'’s-Hertogenbosch',modern:'’s-Hertogenbosch',country:'County of Guelders',subrealm:'Duchy of Brabant · northern fortified ducal town',
   lon:5.3037,lat:51.6978,rarity:0,year:1300,people:8000,populationText:'8.0 K',populationRange:'6–10 K',populationConfidence:'low',
   sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:67,technology:56,economyScore:61,stability:70,
@@ -1159,7 +1159,7 @@ export const CITIES_1300=[
   sources:[['Arnhem','https://en.wikipedia.org/wiki/Arnhem'],['County of Guelders','https://en.wikipedia.org/wiki/Duchy_of_Guelders']]
  },
  {
-  id:'1300-stavoren',name:'Stavoren',modern:'Stavoren',country:'Frisian Freedom',subrealm:'Frisian Freedom · autonomous maritime community',
+  id:'1300-stavoren',name:'Stavoren',modern:'Stavoren',country:'County of Holland',subrealm:'Frisian Freedom · autonomous maritime community',
   lon:5.3595,lat:52.8836,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.2 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:58,technology:59,economyScore:72,stability:78,
@@ -1195,7 +1195,7 @@ export const CITIES_1300=[
   sources:[['Kleve','https://en.wikipedia.org/wiki/Kleve'],['Duchy of Cleves','https://en.wikipedia.org/wiki/Duchy_of_Cleves']]
  },
  {
-  id:'1300-julich',name:'Jülich',modern:'Jülich',country:'County of Jülich',subrealm:'County of Jülich · comital centre',
+  id:'1300-julich',name:'Jülich',modern:'Jülich',country:'County of Julich',subrealm:'County of Jülich · comital centre',
   lon:6.3648,lat:50.9221,rarity:0,year:1300,people:2500,populationText:'2.5 K',populationRange:'2–3.5 K',populationConfidence:'low',
   sizeText:'0.2 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:67,technology:50,economyScore:49,stability:68,
@@ -1243,7 +1243,7 @@ export const CITIES_1300=[
   sources:[['Luxembourg City','https://en.wikipedia.org/wiki/Luxembourg_City'],['County of Luxembourg','https://en.wikipedia.org/wiki/County_of_Luxembourg']]
  },
  {
-  id:'1300-idstein',name:'Idstein',modern:'Idstein',country:'County of Nassau',subrealm:'Walramian Nassau · Idstein lordship',
+  id:'1300-idstein',name:'Idstein',modern:'Idstein',country:'Archbishopric of Mainz',subrealm:'Walramian Nassau · Idstein lordship',
   lon:8.2689,lat:50.2216,rarity:0,year:1300,people:1500,populationText:'1.5 K',populationRange:'1–2.5 K',populationConfidence:'low',
   sizeText:'0.12 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:64,technology:45,economyScore:45,stability:70,
@@ -1267,7 +1267,7 @@ export const CITIES_1300=[
   sources:[['Siegen','https://en.wikipedia.org/wiki/Siegen'],['County of Nassau','https://en.wikipedia.org/wiki/County_of_Nassau']]
  },
  {
-  id:'1300-nancy',name:'Nancy',modern:'Nancy',country:'Duchy of Lorraine',subrealm:'Duchy of Lorraine · ducal capital',
+  id:'1300-nancy',name:'Nancy',modern:'Nancy',country:'County of Champagne',subrealm:'Duchy of Lorraine · ducal capital',
   lon:6.1844,lat:48.6921,rarity:0,year:1300,people:6000,populationText:'6.0 K',populationRange:'5–8 K',populationConfidence:'low',
   sizeText:'0.45 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:60,economyScore:60,stability:67,
@@ -1279,7 +1279,7 @@ export const CITIES_1300=[
   sources:[['Nancy, France','https://en.wikipedia.org/wiki/Nancy,_France'],['Duchy of Lorraine','https://en.wikipedia.org/wiki/Duchy_of_Lorraine']]
  },
  {
-  id:'1300-epinal',name:'Épinal',modern:'Épinal',country:'Duchy of Lorraine',subrealm:'Duchy of Lorraine · fortified Moselle town',
+  id:'1300-epinal',name:'Épinal',modern:'Épinal',country:'Prince-Bishopric of Strasbourg',subrealm:'Duchy of Lorraine · fortified Moselle town',
   lon:6.4494,lat:48.1740,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
   sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:66,technology:52,economyScore:50,stability:70,
@@ -1327,7 +1327,7 @@ export const CITIES_1300=[
   sources:[['Bonn','https://en.wikipedia.org/wiki/Bonn'],['Electorate of Cologne','https://en.wikipedia.org/wiki/Electorate_of_Cologne']]
  },
  {
-  id:'1300-cologne',name:'Cologne',modern:'Cologne',country:'Independent City of Cologne',subrealm:'De facto autonomous city after the Battle of Worringen (1288)',
+  id:'1300-cologne',name:'Cologne',modern:'Cologne',country:'Archbishopric of Cologne',subrealm:'De facto autonomous city after the Battle of Worringen (1288)',
   lon:6.9603,lat:50.9375,rarity:3,year:1300,people:45000,populationText:'45.0 K',populationRange:'40–50 K',populationConfidence:'medium',
   sizeText:'4.0 km²',sizeConfidence:'medium',army:100,armyText:'100',navy:0,navyText:'0',
   food:55,technology:90,economyScore:94,stability:78,
@@ -1351,7 +1351,7 @@ export const CITIES_1300=[
   sources:[['Heidelberg','https://en.wikipedia.org/wiki/Heidelberg'],['Electoral Palatinate','https://en.wikipedia.org/wiki/Electoral_Palatinate']]
  },
  {
-  id:'1300-pforzheim',name:'Pforzheim',modern:'Pforzheim',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · important northern market town',
+  id:'1300-pforzheim',name:'Pforzheim',modern:'Pforzheim',country:'County of Wurttemberg',subrealm:'Margraviate of Baden · important northern market town',
   lon:8.4037,lat:48.8922,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
   sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:65,technology:58,economyScore:57,stability:71,
@@ -1363,7 +1363,7 @@ export const CITIES_1300=[
   sources:[['Pforzheim','https://en.wikipedia.org/wiki/Pforzheim'],['Margraviate of Baden','https://en.wikipedia.org/wiki/Margraviate_of_Baden']]
  },
  {
-  id:'1300-baden-baden',name:'Baden',modern:'Baden-Baden',country:'Margraviate of Baden',subrealm:'Margraviate of Baden · dynastic seat around Hohenbaden',
+  id:'1300-baden-baden',name:'Baden',modern:'Baden-Baden',country:'County of Wurttemberg',subrealm:'Margraviate of Baden · dynastic seat around Hohenbaden',
   lon:8.2398,lat:48.7606,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:64,technology:55,economyScore:53,stability:71,
@@ -1375,7 +1375,7 @@ export const CITIES_1300=[
   sources:[['Baden-Baden','https://en.wikipedia.org/wiki/Baden-Baden'],['Margraviate of Baden','https://en.wikipedia.org/wiki/Margraviate_of_Baden']]
  },
  {
-  id:'1300-stuttgart',name:'Stuttgart',modern:'Stuttgart',country:'County of Württemberg',subrealm:'County of Württemberg · comital residence',
+  id:'1300-stuttgart',name:'Stuttgart',modern:'Stuttgart',country:'County of Wurttemberg',subrealm:'County of Württemberg · comital residence',
   lon:9.1829,lat:48.7758,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
   sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:68,technology:60,economyScore:61,stability:71,
@@ -1387,7 +1387,7 @@ export const CITIES_1300=[
   sources:[['Stuttgart','https://en.wikipedia.org/wiki/Stuttgart'],['County of Württemberg','https://en.wikipedia.org/wiki/County_of_W%C3%BCrttemberg']]
  },
  {
-  id:'1300-tubingen',name:'Tübingen',modern:'Tübingen',country:'County of Württemberg',subrealm:'County of Württemberg · recently acquired former palatine town',
+  id:'1300-tubingen',name:'Tübingen',modern:'Tübingen',country:'County of Wurttemberg',subrealm:'County of Württemberg · recently acquired former palatine town',
   lon:9.0576,lat:48.5216,rarity:0,year:1300,people:4000,populationText:'4.0 K',populationRange:'3–5 K',populationConfidence:'low',
   sizeText:'0.3 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:66,technology:58,economyScore:57,stability:65,
@@ -1555,7 +1555,7 @@ export const CITIES_1300=[
   sources:[['Duchy of Brunswick-Lüneburg','https://en.wikipedia.org/wiki/Duchy_of_Brunswick-L%C3%BCneburg'],['Brunswick, Germany','https://en.wikipedia.org/wiki/Braunschweig']]
  },
  {
-  id:'1300-luneburg',name:'Lüneburg',modern:'Lüneburg',country:'Duchy of Brunswick-Lüneburg',subrealm:'Principality of Lüneburg · salt-rich capital',
+  id:'1300-luneburg',name:'Lüneburg',modern:'Lüneburg',country:'Duchy of Saxe-Lauenburg',subrealm:'Principality of Lüneburg · salt-rich capital',
   lon:10.4079,lat:53.2464,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:58,technology:83,economyScore:88,stability:72,
@@ -2023,7 +2023,7 @@ export const CITIES_1300=[
   sources:[['Altdorf, Switzerland','https://en.wikipedia.org/wiki/Altdorf,_Switzerland'],['Federal Charter of 1291','https://en.wikipedia.org/wiki/Federal_Charter_of_1291']]
  },
  {
-  id:'1300-freiburg-breisgau',name:'Freiburg im Breisgau',modern:'Freiburg im Breisgau',country:'County of Freiburg',subrealm:'City of Freiburg · under the Counts of Freiburg',
+  id:'1300-freiburg-breisgau',name:'Freiburg im Breisgau',modern:'Freiburg im Breisgau',country:'City of Freiburg',subrealm:'City of Freiburg · under the Counts of Freiburg',
   lon:7.8421,lat:47.9990,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
   sizeText:'0.6 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:64,technology:76,economyScore:74,stability:64,
@@ -2047,7 +2047,7 @@ export const CITIES_1300=[
   sources:[['Basel','https://en.wikipedia.org/wiki/Basel'],['Prince-Bishopric of Basel','https://en.wikipedia.org/wiki/Prince-Bishopric_of_Basel']]
  },
  {
-  id:'1300-munster',name:'Münster',modern:'Münster',country:'Prince-Bishopric of Münster',subrealm:'Prince-Bishopric of Münster · episcopal capital',
+  id:'1300-munster',name:'Münster',modern:'Münster',country:'Prince-Bishopric of Munster',subrealm:'Prince-Bishopric of Münster · episcopal capital',
   lon:7.6261,lat:51.9607,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:70,technology:70,economyScore:70,stability:67,
@@ -2059,7 +2059,7 @@ export const CITIES_1300=[
   sources:[['Münster','https://en.wikipedia.org/wiki/M%C3%BCnster'],['Prince-Bishopric of Münster','https://en.wikipedia.org/wiki/Prince-Bishopric_of_M%C3%BCnster']]
  },
  {
-  id:'1300-osnabruck',name:'Osnabrück',modern:'Osnabrück',country:'Prince-Bishopric of Osnabrück',subrealm:'Prince-Bishopric of Osnabrück · episcopal and merchant city',
+  id:'1300-osnabruck',name:'Osnabrück',modern:'Osnabrück',country:'Prince-Bishopric of Osnabruck',subrealm:'Prince-Bishopric of Osnabrück · episcopal and merchant city',
   lon:8.0472,lat:52.2799,rarity:0,year:1300,people:7000,populationText:'7.0 K',populationRange:'5–9 K',populationConfidence:'low',
   sizeText:'0.5 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:68,technology:64,economyScore:61,stability:68,
@@ -2083,7 +2083,7 @@ export const CITIES_1300=[
   sources:[['Paderborn','https://en.wikipedia.org/wiki/Paderborn'],['Prince-Bishopric of Paderborn','https://en.wikipedia.org/wiki/Prince-Bishopric_of_Paderborn']]
  },
  {
-  id:'1300-wurzburg',name:'Würzburg',modern:'Würzburg',country:'Prince-Bishopric of Würzburg',subrealm:'Prince-Bishopric of Würzburg · episcopal capital in Franconia',
+  id:'1300-wurzburg',name:'Würzburg',modern:'Würzburg',country:'Prince-Bishopric of Wurzburg',subrealm:'Prince-Bishopric of Würzburg · episcopal capital in Franconia',
   lon:9.9534,lat:49.7913,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:75,economyScore:76,stability:63,
@@ -2119,7 +2119,7 @@ export const CITIES_1300=[
   sources:[['Passau','https://en.wikipedia.org/wiki/Passau'],['Prince-Bishopric of Passau','https://en.wikipedia.org/wiki/Prince-Bishopric_of_Passau']]
  },
  {
-  id:'1300-dillingen',name:'Dillingen an der Donau',modern:'Dillingen an der Donau',country:'Prince-Bishopric of Augsburg',subrealm:'Prince-Bishopric of Augsburg · episcopal territorial residence acquired in 1258',
+  id:'1300-dillingen',name:'Dillingen an der Donau',modern:'Dillingen an der Donau',country:'Duchy of Upper Bavaria',subrealm:'Prince-Bishopric of Augsburg · episcopal territorial residence acquired in 1258',
   lon:10.4933,lat:48.5817,rarity:0,year:1300,people:3000,populationText:'3.0 K',populationRange:'2–4 K',populationConfidence:'low',
   sizeText:'0.22 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:69,technology:54,economyScore:51,stability:72,
@@ -2180,7 +2180,7 @@ export const CITIES_1300=[
   sources:[['Lübeck city history — Reichsfreiheit 1226','https://www.kulturdenkmale.luebeck.de/de/stadtleben/tourismus/luebeck/geschichte/zeittafel.html'],['Hanseatic City of Lübeck World Heritage Management Plan','https://bekanntmachungen.luebeck.de/dokumente/d/954/inline']]
  },
  {
-  id:'1300-hamburg',name:'Hamburg',modern:'Hamburg',country:'County of Holstein',subrealm:'Highly autonomous city under Schauenburg-Holstein overlordship',
+  id:'1300-hamburg',name:'Hamburg',modern:'Hamburg',country:'Free Imperial City of Hamburg',subrealm:'Highly autonomous city under Schauenburg-Holstein overlordship',
   lon:9.9937,lat:53.5511,rarity:1,year:1300,people:4500,populationText:'4.5 K',populationRange:'4–5 K',populationConfidence:'high',
   sizeText:'0.35 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:61,technology:70,economyScore:77,stability:82,
@@ -2192,7 +2192,7 @@ export const CITIES_1300=[
   sources:[['Geschichtsbuch Hamburg — city overview','https://geschichtsbuch.hamburg.de/epochen/ueberblick/'],['Geschichtsbuch Hamburg — High Middle Ages','https://geschichtsbuch.hamburg.de/epochen/hohes-mittelalter/']]
  },
  {
-  id:'1300-bremen',name:'Bremen',modern:'Bremen',country:'Archbishopric of Bremen',subrealm:'Self-governing city under the archbishop’s formal lordship',
+  id:'1300-bremen',name:'Bremen',modern:'Bremen',country:'Free Imperial City of Bremen',subrealm:'Self-governing city under the archbishop’s formal lordship',
   lon:8.8017,lat:53.0793,rarity:2,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.65 km²',sizeConfidence:'low',army:0,armyText:'0',navy:0,navyText:'0',
   food:62,technology:73,economyScore:79,stability:80,
@@ -2204,7 +2204,7 @@ export const CITIES_1300=[
   sources:[['Bremen State Archive — path to independence','https://www.staatsarchiv.bremen.de/entdecken/geschichten-aus-der-landesgeschichte/epochenuebergreifend/selbstaendigkeit-1750'],['Bremen State Archive — medieval period','https://www.staatsarchiv.bremen.de/entdecken/geschichten-aus-der-landesgeschichte/mittelalter-16013']]
  },
  {
-  id:'1300-frankfurt-main',name:'Frankfurt am Main',modern:'Frankfurt am Main',country:'Imperial City of Frankfurt',subrealm:'Royal/imperial city directly dependent on king and empire; full Free Imperial status later',
+  id:'1300-frankfurt-main',name:'Frankfurt am Main',modern:'Frankfurt am Main',country:'Free Imperial City of Frankfurt',subrealm:'Royal/imperial city directly dependent on king and empire; full Free Imperial status later',
   lon:8.6821,lat:50.1109,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.7 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:65,technology:78,economyScore:88,stability:78,
@@ -2304,7 +2304,7 @@ export const CITIES_1300=[
   sources:[['City of Ulm — history','https://www.ulm.de/tourismus/stadtgeschichte/geschichte-der-stadt'],['Ulm historical brochure','https://www.ulm.de/-/media/ulm/zoea/downloads/2016/geschichte-der-stadt_11_2011_engl.pdf']]
  },
  {
-  id:'1300-chambery',name:'Chambéry',modern:'Chambéry',country:'County of Savoy',subrealm:'County of Savoy · principal residence of Amadeus V',
+  id:'1300-chambery',name:'Chambéry',modern:'Chambéry',country:'Dauphine of Viennois',subrealm:'County of Savoy · principal residence of Amadeus V',
   lon:5.9118,lat:45.5646,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
   sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:66,technology:61,stability:72,economyScore:63,
