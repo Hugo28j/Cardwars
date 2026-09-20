@@ -20,15 +20,17 @@ const displayRealmName=name=>name==='Granada'?'Emirate of Granada':name;
 const polygonPath=poly=>poly.length?'M'+poly.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join('L')+'Z':'';
 const polygonBox=poly=>{const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};};
 const polygonCentroid=poly=>{let a=0,cx=0,cy=0;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],k=p[0]*q[1]-q[0]*p[1];a+=k;cx+=(p[0]+q[0])*k;cy+=(p[1]+q[1])*k;}if(Math.abs(a)<1e-8){const n=poly.length||1;return [poly.reduce((v,p)=>v+p[0],0)/n,poly.reduce((v,p)=>v+p[1],0)/n];}return [cx/(3*a),cy/(3*a)];};
+const pointInPolygon=(p,poly)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j],cross=((a[1]>p[1])!==(b[1]>p[1]))&&(p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1]||1e-9)+a[0]);if(cross)inside=!inside;}return inside;};
+const visibleCellMetrics=(poly,land,fallback)=>{const box=polygonBox(poly),pts=[],steps=20;for(let iy=0;iy<=steps;iy++){for(let ix=0;ix<=steps;ix++){const p=[box.x+box.w*ix/steps,box.y+box.h*iy/steps];if(!pointInPolygon(p,poly))continue;let onLand=false;try{onLand=land.isPointInFill(new DOMPoint(p[0],p[1]));}catch{onLand=true;}if(onLand)pts.push(p);}}if(!pts.length)return {center:fallback,box:{x:fallback[0]-4,y:fallback[1]-4,w:8,h:8}};const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);return {center:[pts.reduce((v,p)=>v+p[0],0)/pts.length,pts.reduce((v,p)=>v+p[1],0)/pts.length],box:{x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)}};};
 const clipHalfPlane=(poly,a,b,c)=>{const out=[];if(!poly.length)return out;const inside=p=>a*p[0]+b*p[1]<=c+1e-7;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],pin=inside(p),qin=inside(q);if(pin)out.push(p);if(pin!==qin){const dx=q[0]-p[0],dy=q[1]-p[1],den=a*dx+b*dy;if(Math.abs(den)>1e-9){const t=(c-a*p[0]-b*p[1])/den;out.push([p[0]+dx*t,p[1]+dy*t]);}}}return out;};
 const voronoiCell=(point,others,box)=>{let poly=[[box.x,box.y],[box.x+box.w,box.y],[box.x+box.w,box.y+box.h],[box.x,box.y+box.h]];for(const other of others){if(other===point)continue;const a=other[0]-point[0],b=other[1]-point[1],c=(other[0]*other[0]+other[1]*other[1]-point[0]*point[0]-point[1]*point[1])/2;poly=clipHalfPlane(poly,a,b,c);if(!poly.length)break;}return poly;};
 const IBERIA_LABEL_ANGLES={
  '1300-santiago':-7,'1300-leon':-5,'1300-burgos':4,'1300-valladolid':0,'1300-salamanca':-3,'1300-segovia':5,
  '1300-plasencia':-9,'1300-badajoz':-11,'1300-toledo':3,'1300-cuenca':10,'1300-guadalajara':5,'1300-cordoba':-5,
  '1300-seville':0,'1300-jaen':5,'1300-braga':-8,'1300-guimaraes':-10,'1300-porto':0,'1300-coimbra':0,'1300-santarem':-7,
- '1300-lisbon':0,'1300-evora':5,'1300-silves':0,'1300-pamplona':0,'1300-huesca':0,'1300-zaragoza':0,'1300-girona':-12,
- '1300-barcelona':-8,'1300-tarragona':-7,'1300-valencia':0,'1300-alicante':-7,'1300-murcia':5,'1300-granada':0,
- '1300-malaga':-4,'1300-almeria':-8
+ '1300-lisbon':0,'1300-evora':5,'1300-silves':0,'1300-pamplona':0,'1300-huesca':0,'1300-zaragoza':0,'1300-girona':-18,
+ '1300-barcelona':-18,'1300-tarragona':-16,'1300-valencia':0,'1300-alicante':-18,'1300-murcia':7,'1300-granada':0,
+ '1300-malaga':-6,'1300-almeria':-14,'1300-porto':-10
 };
 const colorForRealm=name=>{
  let h=7;
@@ -100,7 +102,7 @@ export class WorldMap{
    if(!cities.length)continue;
    const realmClip='iberia-realm-'+realm.toLowerCase().replace(/[^a-z0-9]+/g,'-');
    defs.insertAdjacentHTML('beforeend',`<clipPath class="iberia-dynamic" id="${realmClip}"><path d="${feature.d}" fill-rule="evenodd"/></clipPath>`);
-   const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),cellBox=polygonBox(poly),centroid=polygonCentroid(poly),cityPoint=points[i],labelPoint=[cityPoint[0]*.72+centroid[0]*.28,cityPoint[1]*.72+centroid[1]*.28];return {c,poly,cellBox,labelPoint};});
+   const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),metrics=visibleCellMetrics(poly,land,points[i]);return {c,poly,cellBox:metrics.box,labelPoint:metrics.center};});
    const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(c.name)} · ${esc(displayRealmName(realm))}</title></path>`).join('');
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})">${paths}</g>`);
    for(const {c,poly,cellBox,labelPoint} of cells){
@@ -138,10 +140,10 @@ export class WorldMap{
   const showCityAreas=unit<.082;
   for(const t of this.cityTerritoryLabels||[]){
    const cellW=+(t.dataset.cellW||0)/unit,cellH=+(t.dataset.cellH||0)/unit,name=t.textContent||'';
-   const ideal=name.length>14?10.5:12,maxW=cellW*.82/Math.max(1,name.length*.58),maxH=cellH*.34;
-   const px=Math.min(ideal,maxW,maxH);
-   t.style.display=showCityAreas&&px>=6.5?'':'none';
-   if(showCityAreas&&px>=6.5){t.style.fontSize=(unit*Math.max(6.5,px))+'px';t.style.strokeWidth=(unit*1.25)+'px';t.style.letterSpacing=(unit*.25)+'px';}
+   const ideal=name.length>15?12.5:14.5,maxW=cellW*.90/Math.max(1,name.length*.54),maxH=cellH*.46;
+   const px=Math.max(6.2,Math.min(ideal,maxW,maxH));
+   t.style.display=showCityAreas?'':'none';
+   if(showCityAreas){t.style.fontSize=(unit*px)+'px';t.style.strokeWidth=(unit*1.45)+'px';t.style.letterSpacing=(unit*.18)+'px';}
   }
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
   const cities=[...CITIES].sort((a,b)=>(s.selected===b.id?100:0)+b.rarity-((s.selected===a.id?100:0)+a.rarity));
