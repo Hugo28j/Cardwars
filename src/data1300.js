@@ -2388,7 +2388,7 @@ export const CITIES_1300=[
   sources:[['Monza','https://en.wikipedia.org/wiki/Monza'],['Lordship of Milan','https://en.wikipedia.org/wiki/Duchy_of_Milan']]
  },
  {
-  id:'1300-como',name:'Como',modern:'Como',country:'Commune of Como',subrealm:'Commune of Como · autonomous Lombard city-state',
+  id:'1300-como',name:'Como',modern:'Como',country:'Lordship of Milan',subrealm:'Lordship of Milan · Como (gameplay grouping)',
   lon:9.0852,lat:45.8081,rarity:1,year:1300,people:10000,populationText:'10.0 K',populationRange:'8–12 K',populationConfidence:'low',
   sizeText:'0.6 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:66,technology:70,stability:64,economyScore:75,
