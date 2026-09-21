@@ -1,6 +1,7 @@
 import {CITIES,CITY,RARITIES,RARITY_COLORS,DUPLICATE_COINS,PACK} from './data.js';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-england-home-support-v3';
 import {freshProfile,formatNumber,openPack,validateProfile} from './engine.js';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-buildings-v1';
 import {icon} from './icons.js';
 import {WorldMap} from './map.js?v=20260921-city-borders-dark-030-060-v9';
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),KEY='cardwars.collection.v2';
@@ -28,10 +29,46 @@ const CARD_ART_1300={
 };
 let profile=freshProfile(),storageFailed=false;
 try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(validateProfile(p))profile=p;else storageFailed=true;}}catch{storageFailed=true;}
-let view='collection',collectionEra='600',filter='all',rarity='all',country='all',country1300='all',search='',search1300='',world=null,selected1300='1300-seville',atlasRegion=null,atlasSearch='',rankingCategory='overall',packResult=[],revealed=new Set(),toastTimer;
+let view='collection',collectionEra='600',filter='all',rarity='all',country='all',country1300='all',search='',search1300='',world=null,selected1300='1300-seville',buildingCity='1300-seville',atlasRegion=null,atlasSearch='',rankingCategory='overall',packResult=[],revealed=new Set(),toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const REALMS=[...new Set(CITIES.map(c=>c.realm))].sort((a,b)=>a.localeCompare(b));
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
+function ensureEconomyProfile(p){
+ if(!Number.isSafeInteger(p.florins)||p.florins<0)p.florins=ECONOMY_1300.startFlorins;
+ if(!p.buildings||typeof p.buildings!=='object'||Array.isArray(p.buildings))p.buildings={};
+ const validBuildings=new Set(BUILDINGS_1300.map(b=>b.id));
+ for(const [cityId,levels] of Object.entries({...p.buildings})){
+  if(!Object.hasOwn(CITY_1300,cityId)||!levels||typeof levels!=='object'||Array.isArray(levels)){delete p.buildings[cityId];continue;}
+  const clean={};
+  for(const [buildingId,n] of Object.entries(levels))if(validBuildings.has(buildingId)&&Number.isSafeInteger(n)&&n>0)clean[buildingId]=Math.min(ECONOMY_1300.maxBuildingLevel,n);
+  if(Object.keys(clean).length)p.buildings[cityId]=clean;else delete p.buildings[cityId];
+ }
+}
+ensureEconomyProfile(profile);
+const purchasedBuildingLevel=(cityId,buildingId)=>Math.max(0,Number(profile.buildings?.[cityId]?.[buildingId])||0);
+function cityBuildingState(c){
+ const bonuses={food:0,economy:0,technology:0,stability:0,army:0,navy:0,income:0};
+ const buildings=BUILDINGS_1300.map(b=>{
+  const historical=startingBuildingLevel1300(c,b.id),purchased=purchasedBuildingLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased);
+  for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
+  return {...b,historical,purchased,level,cost:level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null};
+ });
+ return {buildings,bonuses,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0),historicalLevels:buildings.reduce((sum,b)=>sum+b.historical,0)};
+}
+function buildingEffectText(b){
+ const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',army:'Professional army',navy:'Navy',income:'Annual income'};
+ return Object.entries(b.effects).map(([key,value])=>`${labels[key]} ${value>0?'+':''}${value}${key==='income'?' ƒ':''}`).join(' · ');
+}
+function buildBuilding1300(cityId,buildingId){
+ const c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!c||!building)return;
+ const state=cityBuildingState(c),row=state.buildings.find(b=>b.id===buildingId);if(!row||row.level>=ECONOMY_1300.maxBuildingLevel)return;
+ if(building.requiresCoast&&!isCoastalCity1300(c)){toast('A Royal Dockyard requires a coastal or major port city.');return;}
+ if(profile.florins<row.cost){toast(`You need ${(row.cost-profile.florins).toLocaleString('en-GB')} more florins.`);return;}
+ profile.florins-=row.cost;
+ profile.buildings[c.id]??={};profile.buildings[c.id][buildingId]=(profile.buildings[c.id][buildingId]||0)+1;
+ save();render();toast(`${building.name} expanded in ${displayCityName1300(c)} for ${row.cost.toLocaleString('en-GB')} florins.`);
+}
+
 const countryRankings1300=()=>{
  const grouped=new Map();
  for(const c of [...CITIES_1300,...SUPPORT_TERRITORIES_1300]){
@@ -84,7 +121,7 @@ function button(text,action,cls='secondary',extra=''){return `<button class="btn
 function toast(text){clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').classList.add('visible');toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4200);}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(profile));}catch{storageFailed=true;toast('Browser storage is unavailable. Export your collection from the guide.');}}
 function flag(){return `<span class="realm-sigil" aria-hidden="true">${icon('crown')}</span>`;}
-function header(){return `<header class="lobby-header"><button class="brand" data-action="collection" aria-label="Cardwars home"><span class="brand-mark">${icon('crown')}</span><span>CARDWARS<small>THE AGE OF REALMS</small></span></button><nav aria-label="Main navigation">${[['collection','cards','Collection'],['packs','pack','Packs'],['game','army','Game'],['rankings','star','Rankings'],['atlas','globe','Map']].map(([id,i,label])=>`<button class="${view===id?'active':''}" data-action="${id}">${icon(i)}<span>${label}</span>${id==='packs'?'<b class="nav-badge free-badge">FREE</b>':''}</button>`).join('')}</nav><div class="header-tools"><span class="seal-count" title="Coins earned from duplicate city cards">${icon('coins')} <strong id="coin-total">${profile.coins.toLocaleString('en-GB')}</strong> <small>coins</small></span><button class="reset-button" data-action="reset" title="Reset collection and coins">Reset</button><button class="icon-btn" data-action="help" aria-label="Game guide and saves">${icon('help')}</button></div></header>`;}
+function header(){return `<header class="lobby-header"><button class="brand" data-action="collection" aria-label="Cardwars home"><span class="brand-mark">${icon('crown')}</span><span>CARDWARS<small>THE AGE OF REALMS</small></span></button><nav aria-label="Main navigation">${[['collection','cards','Collection'],['packs','pack','Packs'],['game','army','Game'],['rankings','star','Rankings'],['atlas','globe','Map']].map(([id,i,label])=>`<button class="${view===id?'active':''}" data-action="${id}">${icon(i)}<span>${label}</span>${id==='packs'?'<b class="nav-badge free-badge">FREE</b>':''}</button>`).join('')}</nav><div class="header-tools"><span class="seal-count campaign-florins" title="Campaign treasury for 1300 buildings"><b>ƒ</b> <strong id="florin-total">${profile.florins.toLocaleString('en-GB')}</strong> <small>florins</small></span><span class="seal-count" title="Coins earned from duplicate city cards">${icon('coins')} <strong id="coin-total">${profile.coins.toLocaleString('en-GB')}</strong> <small>coins</small></span><button class="reset-button" data-action="reset" title="Reset collection and coins">Reset</button><button class="icon-btn" data-action="help" aria-label="Game guide and saves">${icon('help')}</button></div></header>`;}
 function footer(){const era=view==='rankings'?'COUNTRY STRENGTH · c. 1300 CE':view==='collection'&&collectionEra==='1300'?'EUROPE · c. 1300 CE':'CONTINENTAL EUROPE · c. 600 CE';return `<footer class="lobby-footer"><span>${era}</span><span class="save-note">${icon('save')} ${storageFailed?'Export a save to keep your progress':'Saved on this device'}</span><button data-action="sources">Historical notes & image credits ${icon('arrow')}</button></footer>`;}
 function stat(key,label,value){const icons={food:'wheat',army:'army',navy:'navy',people:'people',size:'size',technology:'tech',satisfaction:'happy'};return `<div class="stat"><span>${icon(icons[key])}${label}</span><strong>${value}</strong></div>`;}
 function card(c,compact=false){const owned=!!profile.collection[c.id];return `<button class="city-card rarity-${c.rarity} ${owned?'':'locked'} ${compact?'compact':''}" style="--rarity:${RARITY_COLORS[c.rarity]}" data-action="card" data-id="${c.id}" aria-label="Inspect ${esc(c.name)}, ${c.country}, ${RARITIES[c.rarity]}, ${owned?'collected':'undiscovered'}"><div class="card-photo"><img src="${c.image}" alt="Present-day view of ${esc(c.modern)} or its historic site" loading="${compact?'eager':'lazy'}"><span class="rarity-chip">${icon(c.rarity>2?'star':'globe')}${RARITIES[c.rarity]}</span><span class="card-number">${String(c.index+1).padStart(3,'0')}</span><div class="card-city"><span class="card-country">${flag(c)} ${c.country}</span><h3 class="${c.name.length>16?'long-name':''}">${c.name}</h3><small>${c.name===c.modern?'Late-antique city':c.modern}</small></div></div><div class="card-stats">${stat('army','Army',formatNumber(c.army,'army'))}${stat('navy','Navy',formatNumber(c.navy,'navy'))}${stat('people','People',formatNumber(c.people))}${stat('size','Size',formatNumber(c.size,'size'))}<div class="card-scores">${[['Food',c.food],['Technology',c.technology],['Satisfaction',c.satisfaction]].map(([label,n])=>`<div><span>${label}</span><strong>${n}<small>/100</small></strong><i style="--value:${n}%"></i></div>`).join('')}</div></div><div class="card-foot"><span>${owned?(profile.collection[c.id]>1?`${profile.collection[c.id]} copies`:`${icon('check')} Collected`):`${icon('lock')} Undiscovered`}</span><span>${icon('coins')} ${DUPLICATE_COINS[c.rarity]} per duplicate</span></div></button>`;}
@@ -98,7 +135,46 @@ function renderGrid(){if(collectionEra==='1300')render1300Grid();else render600G
 function render600Grid(){const list=CITIES.filter(c=>(filter==='all'||profile.collection[c.id])&&(rarity==='all'||c.rarity===+rarity)&&(country==='all'||c.realm===country)&&`${c.name} ${c.modern} ${c.modernCountry} ${c.realm}`.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>b.rarity-a.rarity||a.name.localeCompare(b.name));$('#result-count').textContent=`${list.length} ${list.length===1?'city':'cities'}`;$('#card-grid').innerHTML=list.length?list.map(c=>card(c)).join(''):`<div class="no-results">${icon('search')}<h3>${filter==='owned'&&!count()?'No discoveries yet':'No cities found'}</h3><p>${filter==='owned'&&!count()?'Your first five cards are one free pack away.':'Try another city, realm or rarity.'}</p>${button(filter==='owned'&&!count()?'Open a free pack':'Clear filters',filter==='owned'&&!count()?'packs':'clear-filters')}</div>`;}
 function render1300Grid(){const q=search1300.toLowerCase().trim(),list=CITIES_1300.filter(c=>(country1300==='all'||c.country===country1300)&&(!q||`${c.name} ${c.country} ${c.subrealm} ${c.historicalRole} ${c.economy}`.toLowerCase().includes(q))).sort((a,b)=>b.rarity-a.rarity||b.people-a.people);$('#result-count').textContent=`${list.length} ${list.length===1?'card':'cards'}`;$('#card-grid').innerHTML=list.length?list.map(c=>card1300(c)).join(''):`<div class="no-results">${icon('search')}<h3>No 1300 cards found</h3><p>Try another city or historical role.</p></div>`;}
 function packsPage(){return `<main class="packs-page"><div class="page-title"><div><span class="eyebrow">DISCOVER THE OLD WORLD</span><h1>Five cards. A new beginning<span class="title-dot">.</span></h1><p>Every pack is free. Every city has a story.</p></div><span class="pack-free-pill">UNLIMITED FREE PACKS</span></div><div class="single-pack-layout"><section class="pack-stage"><div class="pack-orbit"></div><div class="pack-art pack-1" aria-hidden="true"><div class="pack-frame"><span class="pack-edition">THE AGE OF REALMS</span><div class="pack-crest">${icon('crown')}</div><strong>CARDWARS</strong><span class="pack-type">EUROPE</span><i></i><small>5 CITY CARDS · VOL. I</small></div></div><span class="pack-stage-label">THE CONTINENTAL COLLECTION</span></section><section class="pack-description"><span class="eyebrow">VOLUME I · c. 600 CE</span><h2>Europe pack</h2><p>Uncover five cities from the old continent, from small frontier settlements to the great imperial capitals.</p><div class="pack-highlights"><span>${icon('cards')} 5 cards per pack</span><span>${icon('coins')} No coins required</span><span>${icon('globe')} ${CITIES.length} cities to discover</span></div>${button('Open free pack '+icon('arrow'),'open-pack','primary large-button')}<p class="pack-guarantee">No purchases. No waiting. Open as many as you like.</p><div class="pack-counters"><div><strong>${profile.packsOpened}</strong><span>PACKS OPENED</span></div><div><strong>${count()}</strong><span>UNIQUE CITIES</span></div><div><strong>${profile.drawn}</strong><span>CARDS DRAWN</span></div></div>${profile.lastPack.length?'<button class="text-btn" data-action="last-pack">View your last pack</button>':''}</section><aside class="drop-rates"><span class="eyebrow">KNOW YOUR ODDS</span><h3>A chance at greatness.</h3><p>Each of the five cards is drawn independently.</p>${RARITIES.map((r,i)=>`<div class="drop-rate"><span style="color:${RARITY_COLORS[i]}"><i></i>${r}</span><strong>${PACK.odds[i]}%</strong><small>+${DUPLICATE_COINS[i]} coins for a duplicate</small></div>`).join('')}<p class="duplicate-note">Already own a city? Keep the extra copy and receive coins based on its rarity.</p></aside></div></main>`;}
-function gamePage(){return `<main class="game-empty"><span class="eyebrow">THE NEXT CHAPTER</span><h1>Game</h1><div class="empty-seal">${icon('army')}</div><p>The campaign is not available yet.</p></main>`;}
+function gamePage(){
+ const c=CITY_1300[buildingCity]||CITIES_1300[0];buildingCity=c.id;
+ const state=cityBuildingState(c),b=state.bonuses;
+ const developed={food:Math.min(100,c.food+b.food),economy:Math.min(100,c.economyScore+b.economy),technology:Math.min(100,c.technology+b.technology),stability:Math.min(100,c.stability+b.stability),army:c.army+b.army,navy:c.navy+b.navy};
+ const countryOptions=COUNTRIES_1300.map(countryName=>`<optgroup label="${esc(countryName)}">${CITIES_1300.filter(x=>x.country===countryName).sort((a,z)=>displayCityName1300(a).localeCompare(displayCityName1300(z))).map(x=>`<option value="${x.id}" ${x.id===c.id?'selected':''}>${esc(displayCityName1300(x))}</option>`).join('')}</optgroup>`).join('');
+ const statBox=(label,base,value)=>`<div><span>${label}</span><strong>${strengthNumber(value)}</strong><small>Base ${strengthNumber(base)}${value!==base?` · +${strengthNumber(value-base)} buildings`:''}</small></div>`;
+ return `<main class="buildings-page">
+  <div class="page-title buildings-title"><div><span class="eyebrow">CAMPAIGN ECONOMY · c. 1300 CE</span><h1>Build the realm<span class="title-dot">.</span></h1><p>Develop provinces with farms, workshops, military infrastructure and institutions. Historical starting buildings are free; new construction is paid from the campaign treasury.</p></div><div class="treasury-card"><span>TREASURY</span><strong>ƒ ${profile.florins.toLocaleString('en-GB')}</strong><small>Florins · construction currency</small></div></div>
+  <div class="building-system-note">${icon('help')}<div><strong>Campaign prototype</strong><p>Buildings currently modify the local campaign version of a city. Historical country rankings remain based on the researched 1300 baseline, so construction does not rewrite the historical scoreboard yet.</p></div></div>
+  <section class="city-development-head">
+   <div><span class="eyebrow">DEVELOP A PROVINCE</span><h2>${esc(displayCityName1300(c))}</h2><p>${esc(c.country)} · ${esc(c.subrealm)}</p></div>
+   <label>Selected province<select id="building-city-select">${countryOptions}</select></label>
+  </section>
+  <div class="development-overview">
+   <span><strong>${state.totalLevels}</strong><small>BUILDING LEVELS</small></span>
+   <span><strong>${state.historicalLevels}</strong><small>HISTORICAL START LEVELS</small></span>
+   <span><strong>${b.income>=0?'+':''}${strengthNumber(b.income)} ƒ</strong><small>BUILDING INCOME / YEAR</small></span>
+   <span><strong>${isCoastalCity1300(c)?'YES':'NO'}</strong><small>NAVAL CONSTRUCTION</small></span>
+  </div>
+  <section class="developed-stats">
+   ${statBox('Food',c.food,developed.food)}
+   ${statBox('Economy',c.economyScore,developed.economy)}
+   ${statBox('Technology',c.technology,developed.technology)}
+   ${statBox('Stability',c.stability,developed.stability)}
+   ${statBox('Professional army',c.army,developed.army)}
+   ${statBox('Navy',c.navy,developed.navy)}
+  </section>
+  <div class="building-catalog-head"><div><span class="eyebrow">BUILDING CATALOGUE</span><h2>10 province buildings</h2></div><p>Maximum level ${ECONOMY_1300.maxBuildingLevel}. Costs rise as a building becomes more developed.</p></div>
+  <section class="building-grid">
+   ${state.buildings.map(row=>{const blocked=row.requiresCoast&&!isCoastalCity1300(c),maxed=row.level>=ECONOMY_1300.maxBuildingLevel,canAfford=!maxed&&!blocked&&profile.florins>=row.cost;return `<article class="building-card ${blocked?'blocked':''} ${maxed?'maxed':''}">
+    <div class="building-card-top"><span class="building-category">${esc(row.category)}</span><span class="building-level">LEVEL ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div>
+    <h3>${esc(row.name)}</h3><p>${esc(row.description)}</p>
+    <div class="building-effects">${esc(buildingEffectText(row))}</div>
+    <div class="building-origin"><span>Historical start <strong>${row.historical}</strong></span><span>Player built <strong>${row.purchased}</strong></span></div>
+    <div class="building-level-pips">${Array.from({length:ECONOMY_1300.maxBuildingLevel},(_,i)=>`<i class="${i<row.level?'filled':''}"></i>`).join('')}</div>
+    ${maxed?'<button disabled>MAX LEVEL</button>':blocked?'<button disabled>REQUIRES PORT / COAST</button>':`<button class="${canAfford?'can-build':''}" data-action="build-building" data-id="${row.id}" data-city="${c.id}"><span>Build level ${row.level+1}</span><strong>ƒ ${row.cost.toLocaleString('en-GB')}</strong></button>`}
+   </article>`;}).join('')}
+  </section>
+ </main>`;
+}
 function rankingsPage(){
  const overall=countryRankings1300(),leader=overall[0],board=rankingRows1300(),meta=rankingCategoryMeta();
  const categoryValue=(r,key)=>key==='strength'?strengthNumber(r.strength):['foodAvg','economyAvg','technologyAvg','stabilityAvg'].includes(key)?strengthNumber(r[key])+'/100':strengthNumber(r[key]);
@@ -152,18 +228,19 @@ function navigate(next){modal.close();view=next;render();window.scrollTo(0,0);}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
  if(['collection','packs','game','rankings','atlas'].includes(a)){navigate(a);return;}
  if(a==='ranking-category'){rankingCategory=id;render();return;}
+ if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();if(a==='collection-era'){collectionEra=id;search1300='';country1300='all';render();}if(a==='country1300'){country1300=id;render1300Grid();}if(a==='filter'){filter=id;render();}if(a==='clear-filters'){search='';country='all';rarity='all';filter='all';render();}
  if(a==='card'&&!(modal.open&&modal.classList.contains('card-dialog')))inspectCard(id);if(a==='card1300'&&!(modal.open&&modal.classList.contains('card-dialog-1300')))inspectCard1300(id);
  if(a==='open-pack')doOpenPack();if(a==='reveal'){revealed.add(+id);revealDialog();}if(a==='reveal-all'){packResult.forEach((_,i)=>revealed.add(i));revealDialog();}
  if(a==='last-pack'){packResult=profile.lastPack;revealed=new Set([0,1,2,3,4]);revealDialog();}
- if(a==='reset')showReset();if(a==='confirm-reset'){profile=freshProfile();mapState.collection={};search='';search1300='';country='all';country1300='all';rarity='all';filter='all';atlasSearch='';atlasRegion=null;selected1300='1300-seville';packResult=[];revealed=new Set();try{localStorage.removeItem('cardwars.v1');}catch{}save();navigate('collection');toast('Collection reset. Every 600 CE city is waiting to be discovered again.');}
+ if(a==='reset')showReset();if(a==='confirm-reset'){profile=freshProfile();ensureEconomyProfile(profile);mapState.collection={};search='';search1300='';country='all';country1300='all';rarity='all';filter='all';atlasSearch='';atlasRegion=null;selected1300='1300-seville';buildingCity='1300-seville';packResult=[];revealed=new Set();try{localStorage.removeItem('cardwars.v1');}catch{}save();navigate('collection');toast('Collection reset. Every 600 CE city is waiting to be discovered again.');}
  if(a==='locate1300'){selected1300=id;mapState.selected=id;atlasRegion=null;atlasSearch='';navigate('atlas');world.focus(id);app.classList.add('show-panel');}
  if(a==='map-city'){selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.focus(id);app.classList.add('show-panel');}
  if(a==='inspect-selected')inspectCard1300(selected1300);if(a==='all-map-cities'){atlasRegion=null;atlasSearch='';renderAtlasPanel();}
  if(a==='toggle-panel')app.classList.toggle('show-panel');if(a==='help')showHelp();if(a==='sources')showSources();if(a==='export')exportSave();if(a==='import')$('#import-file').click();
 });
 document.addEventListener('input',e=>{if(e.target.id==='city-search'){search=e.target.value;renderGrid();}if(e.target.id==='city-search-1300'){search1300=e.target.value;renderGrid();}if(e.target.id==='atlas-search'){atlasSearch=e.target.value;const list=CITIES_1300.filter(c=>`${c.name} ${c.subrealm} ${c.historicalRole}`.toLowerCase().includes(atlasSearch.toLowerCase()));$('#atlas-city-list').innerHTML=mapList(list);}});
-document.addEventListener('change',e=>{if(e.target.id==='country-filter'){country=e.target.value;renderGrid();}if(e.target.id==='rarity-filter'){rarity=e.target.value;renderGrid();}});
-$('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>1000000)throw new Error();const p=JSON.parse(await file.text());if(!validateProfile(p))throw new Error();showDialog(`<div class="simple-dialog"><span class="eyebrow">RESTORE YOUR DISCOVERIES</span><h2>Import this collection?</h2><p>This replaces the current progress with ${Object.keys(p.collection).length} unique cities and ${p.coins.toLocaleString('en-GB')} coins.</p><div class="dialog-actions">${button('Cancel','close')}${button('Import and replace','confirm-import','primary')}</div></div>`);modal.querySelector('[data-action="confirm-import"]').addEventListener('click',()=>{profile=p;save();navigate('collection');toast('Collection imported.');},{once:true});}catch{toast('Invalid collection file. Your existing progress was kept.');}});
+document.addEventListener('change',e=>{if(e.target.id==='country-filter'){country=e.target.value;renderGrid();}if(e.target.id==='rarity-filter'){rarity=e.target.value;renderGrid();}if(e.target.id==='building-city-select'){buildingCity=e.target.value;render();}});
+$('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>1000000)throw new Error();const p=JSON.parse(await file.text());if(!validateProfile(p))throw new Error();showDialog(`<div class="simple-dialog"><span class="eyebrow">RESTORE YOUR DISCOVERIES</span><h2>Import this collection?</h2><p>This replaces the current progress with ${Object.keys(p.collection).length} unique cities and ${p.coins.toLocaleString('en-GB')} coins.</p><div class="dialog-actions">${button('Cancel','close')}${button('Import and replace','confirm-import','primary')}</div></div>`);modal.querySelector('[data-action="confirm-import"]').addEventListener('click',()=>{profile=p;ensureEconomyProfile(profile);save();navigate('collection');toast('Collection imported.');},{once:true});}catch{toast('Invalid collection file. Your existing progress was kept.');}});
 modal.addEventListener('click',e=>{if(e.target===modal){const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)modal.close();}});
 render();if(storageFailed)toast('A saved collection could not be loaded. You can import a backup from the guide.');
