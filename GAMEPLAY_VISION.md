@@ -87,6 +87,18 @@ The Top 5 requirement is the campaign victory condition, not merely a visual ach
 
 The same progression should work with multiple real players. Each human-controlled set of opening cities begins as a rebellion against the relevant historical parent countries. Future multiplayer work must keep ownership, independence and diplomatic obligations player-specific.
 
+## Military visibility and upkeep
+
+Military information follows campaign fog of war.
+
+- A player can see soldier and ship markers for owned cities and directly neighbouring visible cities only.
+- Army markers sit on the city/province and display the current soldier count.
+- Navy markers are placed just offshore at the nearest real coastline and display the current ship count.
+- Owned-city markers include building bonuses such as Barracks and Dockyard effects.
+- Professional army upkeep is **ƒ0.005 per soldier per month**.
+- Navy upkeep is **ƒ0.02 per ship per month**.
+- These values are monthly state expenses.
+
 ## Current implementation status
 
 Implemented foundations:

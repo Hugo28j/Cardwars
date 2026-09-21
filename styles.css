@@ -440,3 +440,28 @@
 .great-power-goal{margin:0 13px 16px;padding:14px;border:1px solid #776744;background:linear-gradient(135deg,#1b251d,#171c17)}
 .great-power-goal strong{font-family:var(--serif);font-size:18px;color:#dbc481}.great-power-goal p{font-size:8px;line-height:1.5;color:#8f9c92;margin-top:5px}
 @media(max-width:760px){.campaign-path{grid-template-columns:repeat(2,1fr)}}
+
+/* Campaign military map pieces */
+#military-markers{pointer-events:none}
+.military-piece{filter:url(#military-shadow)}
+.unit-ground-shadow{fill:#07110e;opacity:.44}
+.soldier-back{fill:#40352b;stroke:#221e1a;stroke-width:1}
+.soldier-body{fill:url(#soldier-body-gradient);stroke:#2a2721;stroke-width:1}
+.soldier-highlight{fill:#ead59a;opacity:.45}
+.soldier-head{fill:#c7a77c;stroke:#40362c;stroke-width:1}
+.soldier-helmet{fill:url(#soldier-metal-gradient);stroke:#2d3734;stroke-width:1}
+.soldier-leg,.soldier-spear{fill:none;stroke:#3d3327;stroke-width:2;stroke-linecap:round}
+.soldier-spear-tip{fill:#bcc4ba;stroke:#35413d;stroke-width:.8}
+.soldier-shield{fill:#6f3d35;stroke:#d0ad70;stroke-width:1}
+.ship-shadow{opacity:.35}
+.ship-hull-side{fill:#3b281d;stroke:#201a15;stroke-width:1}
+.ship-hull{fill:url(#ship-wood-gradient);stroke:#2e2119;stroke-width:1}
+.ship-deck{fill:#d09c5a;stroke:#604127;stroke-width:.8}
+.ship-mast{fill:none;stroke:#3e2a1b;stroke-width:2}
+.ship-sail-back{fill:#786a4d;stroke:#473e30;stroke-width:.8}
+.ship-sail{fill:url(#ship-sail-gradient);stroke:#685c45;stroke-width:.8}
+.ship-flag{fill:#9c4b43;stroke:#4b2a27;stroke-width:.7}
+.military-count rect{fill:#17221ef2;stroke:#b7a269;stroke-width:1}
+.military-count text{font-family:var(--serif);font-size:9px;font-weight:700;fill:#f3e5bc;paint-order:stroke;stroke:#0a110f;stroke-width:1.4px}
+.military-count.player-count rect{fill:var(--player-realm-color,#c6534d);stroke:#f1d59c}
+.army-map-marker,.navy-map-marker{pointer-events:none}
