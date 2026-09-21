@@ -163,8 +163,8 @@ const mixHex=(from,to,amount)=>{
 // Keep Castile exactly as the visual reference the user approved.
 // Other realms get the same subtle city-border contrast relative to their own fill,
 // so the lines cannot disappear into blue/green/purple country colors.
-const cityBorderColor=realm=>realm==='Crown of Castile'?'#69756f':mixHex(colorForRealm(realm),'#202b27',.68);
-const cityBorderOpacity=realm=>realm==='Crown of Castile'?'.60':'.72';
+const cityBorderColor=realm=>realm==='Crown of Castile'?'#59645f':mixHex(colorForRealm(realm),'#17211e',.78);
+const cityBorderOpacity=realm=>realm==='Crown of Castile'?'.70':'.80';
 const cache={};
 let physicalLandCache;
 export class WorldMap{
