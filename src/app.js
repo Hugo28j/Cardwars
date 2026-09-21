@@ -3,7 +3,7 @@ import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=2026092
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-buildings-v1';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20260921-player-realm-fog-v10';
+import {WorldMap} from './map.js?v=20260921-border-neighbours-v11';
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),
  LEGACY_KEY='cardwars.collection.v2',ACCOUNTS_KEY='cardwars.accounts.v1',SESSION_KEY='cardwars.session.v1',PROFILE_PREFIX='cardwars.profile.';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -452,11 +452,9 @@ function gamePage(){
   return `<main class="game-start-page"><div class="game-start-card"><span class="eyebrow">NEW CAMPAIGN · 1300 CE</span><h1>Ready for war<span class="title-dot">.</span></h1><p>Your campaign begins on <strong>1 January 1300</strong>. Four random cities are drawn from your 16-card deck as your opening hand.</p><div class="game-deck-status"><span><strong>${profile.deck.length}</strong><small>/16 cards</small></span><div><b style="width:${Math.min(100,profile.deck.length/16*100)}%"></b></div></div><div class="game-start-preview">${selected.slice(0,8).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join('')}${selected.length>8?`<span>+${selected.length-8} more</span>`:''}</div><div class="game-color-picker"><div><span>YOUR REALM COLOR</span><small>Your four opening provinces become this color when the campaign starts.</small></div><div class="game-color-swatches">${PLAYER_REALM_COLORS.map(([hex,name])=>`<button class="${profile.playerColor===hex?'active':''}" data-action="game-color" data-color="${hex}" title="${name}" aria-label="Choose ${name} realm color" style="--swatch:${hex}"></button>`).join('')}</div></div><div class="game-start-actions"><button class="btn primary large-button" data-action="start-game" ${profile.deck.length===16?'':'disabled'}><span>Start Game</span>${icon('arrow')}</button>${profile.deck.length===16?'':`<button class="text-btn" data-action="deck">Choose your 16-card deck</button>`}</div></div></main>`;
  }
  if(gameScreen==='development')return developmentPage();
- const hand=profile.activeGame.hand.map(id=>CITY_1300[id]).filter(Boolean);
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong>1 January</strong><small>1300</small></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong>ƒ${Number(profile.activeGame.florins).toFixed(2)}</strong><small>Opening 4 cities: ƒ${Number(profile.activeGame.startingFlorins).toFixed(2)}</small></div>
   <div class="game-map-actions"><span class="player-realm-chip" style="--player-realm:${profile.activeGame.playerColor}"><i></i>Your Realm · ${profile.activeGame.ownedCities.length} provinces</span><button data-action="game-development">Development</button></div><button class="game-quit-button" data-action="quit-game">Quit</button>
-  <section class="game-hand"><div class="game-hand-label"><span>YOUR HAND</span><strong>4 / 16</strong></div><div class="game-hand-cards">${hand.map(c=>`<button data-action="game-hand-card" data-id="${c.id}"><span class="hand-rarity">${RARITIES_1300[c.rarity]}</span><strong>${esc(displayCityName1300(c))}</strong><small>${esc(c.country)}</small><i>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</i></button>`).join('')}</div></section>
  </div>`;
 }
 function rankingsPage(){
@@ -521,7 +519,6 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='start-game'){startGame1300();return;}
  if(a==='game-map'){gameScreen='map';render();return;}
  if(a==='game-development'){gameScreen='development';const first=profile.activeGame?.hand?.[0];if(first)buildingCity=first;render();return;}
- if(a==='game-hand-card'){selected1300=id;mapState.selected=id;inspectCard1300(id);return;}
  if(a==='quit-game'){profile.activeGame=null;gameScreen='map';save();render();toast('You left the campaign. Your deck and buildings were kept.');return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();

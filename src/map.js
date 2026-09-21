@@ -267,13 +267,22 @@ export class WorldMap{
     labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
    }
   }
-  // Same-realm Voronoi edges above give exact city neighbours. Across political borders,
-  // add only the nearest few cities within a short geographic radius so fog-of-war can reveal
-  // plausible bordering provinces without exposing an entire neighbouring country.
-  const territoryCities=CITIES.filter(c=>this.cityCenters.has(c.id));
-  for(const c of territoryCities){
-   const p=this.cityCenters.get(c.id),near=territoryCities.filter(o=>o.id!==c.id&&cityRealm(o)!==cityRealm(c)).map(o=>{const q=this.cityCenters.get(o.id),dx=p[0]-q[0],dy=p[1]-q[1];return {o,d:Math.hypot(dx,dy)};}).filter(x=>x.d<=60).sort((a,b)=>a.d-b.d).slice(0,4);
-   for(const {o} of near){this.cityAdjacency.get(c.id)?.add(o.id);this.cityAdjacency.get(o.id)?.add(c.id);}
+  // Same-realm Voronoi edges above give exact neighbours inside one realm.
+  // For political borders, build one global Voronoi graph from all playable city centres.
+  // Shared global Voronoi edges are the Delaunay neighbours of a city, which is much more
+  // reliable for fog-of-war than the old "four closest foreign cities" approximation.
+  const territoryCities=CITIES.filter(c=>this.cityCenters.has(c.id)),
+        globalPoints=territoryCities.map(c=>this.cityCenters.get(c.id)),
+        globalBox={x:bounds.x-35,y:bounds.y-35,w:bounds.w+70,h:bounds.h+70},
+        globalCells=territoryCities.map((c,i)=>({c,poly:voronoiCell(globalPoints[i],globalPoints,globalBox)}));
+  for(const edge of sharedCellEdges(globalCells)){
+   const [a,b]=edge.cities,ca=CITY[a],cb=CITY[b];
+   if(!ca||!cb||cityRealm(ca)===cityRealm(cb))continue;
+   const pa=this.cityCenters.get(a),pb=this.cityCenters.get(b),distance=Math.hypot(pa[0]-pb[0],pa[1]-pb[1]);
+   // Extremely long Delaunay links are usually caused by sparse coastlines/islands,
+   // not a meaningful land-border neighbour for province visibility.
+   if(distance>92)continue;
+   this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);
   }
   this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
  }
