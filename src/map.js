@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260920-merge-frankfurt-into-mainz-v1';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260921-starting-florins-v4';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES=new Map([
@@ -208,7 +208,7 @@ export class WorldMap{
    if(realm&&this.onRegion)this.onRegion({name:displayRealmName(realm),realm,detail:r?.dataset.detail==='1',mode:'historical',gameplayNote:this.realmInfo?.get(realm)?.gameplayNote});
    return;
   }
-  if(c){this.onSelect(c.dataset.city);return;}
+  if(c){if(this.state?.game?.fogOfWar&&c.classList.contains('game-hidden'))return;this.onSelect(c.dataset.city);return;}
   if(r){
    const realm=r.dataset.realm;
    if(this.cityTerritoryRealms?.has(realm)&&event){
@@ -227,11 +227,12 @@ export class WorldMap{
  }
  buildCityTerritories(atlas){
   const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels');
-  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];
+  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();
   for(const realm of this.cityTerritoryRealms||[]){
    const features=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)===realm);if(!features.length)continue;
    const realmD=features.map(f=>f.d).join(''),realmPolys=svgSubpaths(realmD).map(svgSubpathPoints).filter(p=>p.length>=3);if(!realmPolys.length)continue;
    const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>pos(c.mapLon??c.lon,c.mapLat??c.lat));if(!cities.length)continue;
+   cities.forEach((c,i)=>{this.cityCenters.set(c.id,points[i]);if(!this.cityAdjacency.has(c.id))this.cityAdjacency.set(c.id,new Set());});
    const allPts=realmPolys.flat(),xs=allPts.map(p=>p[0]),ys=allPts.map(p=>p[1]),pad=4;
    let box={x:Math.min(...xs)-pad,y:Math.min(...ys)-pad,w:Math.max(...xs)-Math.min(...xs)+pad*2,h:Math.max(...ys)-Math.min(...ys)+pad*2};
    if(realm==='Kingdom of England'){
@@ -245,9 +246,10 @@ export class WorldMap{
    const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),component=components[i],metricPolys=component>=0?[realmPolys[component]]:realmPolys,metrics=visibleCellMetrics(poly,metricPolys,points[i]);return {c,poly,component,cellBox:metrics.box,labelPoint:metrics.center,metrics};});
    const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(displayCityName(c))} · ${esc(displayRealmName(realm))}</title></path>`).join('');
    const blockerGroups=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)!==realm).map(f=>svgSubpaths(f.d).map(svgSubpathPoints).filter(p=>p.length>=3)).filter(polys=>polys.length);
-   const componentByCity=new Map(cells.map(x=>[x.c.id,x.component]));
+   const componentByCity=new Map(cells.map(x=>[x.c.id,x.component])),cellEdges=sharedCellEdges(cells);
+   for(const edge of cellEdges){const [a,b]=edge.cities;this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);}
    let borderPaths='';
-   for(const edge of sharedCellEdges(cells)){
+   for(const edge of cellEdges){
     const key=cityBorderKey(realm,edge.cities[0],edge.cities[1]);if(CITY_BORDER_SKIP.has(key)||CITY_BORDER_MANUAL.has(key))continue;
     const ca=componentByCity.get(edge.cities[0]),cb=componentByCity.get(edge.cities[1]);
     // If both cities live on different disconnected land pieces (islands / opposite shores),
@@ -264,6 +266,14 @@ export class WorldMap{
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
     labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
    }
+  }
+  // Same-realm Voronoi edges above give exact city neighbours. Across political borders,
+  // add only the nearest few cities within a short geographic radius so fog-of-war can reveal
+  // plausible bordering provinces without exposing an entire neighbouring country.
+  const territoryCities=CITIES.filter(c=>this.cityCenters.has(c.id));
+  for(const c of territoryCities){
+   const p=this.cityCenters.get(c.id),near=territoryCities.filter(o=>o.id!==c.id&&cityRealm(o)!==cityRealm(c)).map(o=>{const q=this.cityCenters.get(o.id),dx=p[0]-q[0],dy=p[1]-q[1];return {o,d:Math.hypot(dx,dy)};}).filter(x=>x.d<=60).sort((a,b)=>a.d-b.d).slice(0,4);
+   for(const {o} of near){this.cityAdjacency.get(c.id)?.add(o.id);this.cityAdjacency.get(o.id)?.add(c.id);}
   }
   this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
  }
@@ -282,7 +292,15 @@ export class WorldMap{
   this.svg.style.setProperty('--city-border-zoom-opacity',(.30+cityBorderZoom*.30).toFixed(3));
   this.svg.style.setProperty('--city-border-zoom-width',(.90+cityBorderZoom*.28).toFixed(3));
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
-  const showCityAreas=unit<.082;
+  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),visibleCities=new Set(ownedCities);
+  if(game?.fogOfWar)for(const id of ownedCities)for(const neighbour of this.cityAdjacency?.get(id)||[])visibleCities.add(neighbour);
+  this.svg.style.setProperty('--player-realm-color',game?.playerColor||'#c6534d');
+  for(const cell of this.svg.querySelectorAll('.city-territory-cell')){
+   const id=cell.dataset.city,isOwned=ownedCities.has(id),isVisible=visibleCities.has(id);
+   cell.classList.toggle('game-owned',!!game&&isOwned);
+   cell.classList.toggle('game-visible',!!game&&!isOwned&&isVisible);
+   cell.classList.toggle('game-hidden',!!game&&!!game.fogOfWar&&showCityAreas&&!isOwned&&!isVisible);
+  }
   // Country / polity names are centered in the largest safe interior area of their realm.
   // They shrink before they can cross a border, and lower-priority labels wait if another label occupies the same screen space.
   for(const t of this.realmLabels||[]){
@@ -303,9 +321,10 @@ export class WorldMap{
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
   for(const t of this.cityTerritoryLabels||[]){
-   const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5;
-   t.style.display=showCityAreas?'':'none';
-   if(showCityAreas){
+   const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
+   t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
+   t.style.display=showCityAreas&&fogVisible?'':'none';
+   if(showCityAreas&&fogVisible){
     t.style.fontSize=(unit*ideal)+'px';t.style.strokeWidth=(unit*1.55)+'px';t.style.letterSpacing=(unit*.12)+'px';
     const measured=Math.max(1,t.getComputedTextLength()/unit),maxWidth=safePx*1.82,maxHeight=safePx*1.55,scale=Math.min(1,maxWidth/measured,maxHeight/(ideal*1.05)),px=ideal*scale;
     t.style.fontSize=(unit*px)+'px';
@@ -319,6 +338,7 @@ export class WorldMap{
   this.svg.querySelector('#cities').innerHTML=cities.map(c=>{
    const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=this.cityTerritoryRealms?.has(cityRealm(c));
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
+   if(game?.fogOfWar&&showCityAreas&&!visibleCities.has(c.id))return '';
    const box={x:q.x+10,y:q.y-10,w:displayCityName(c).length*7+6,h:21};
    const forceLabel=c.id==='1300-quimper'&&unit<.34;const show=selected||forceLabel||(unit<.30&&!occupied.some(b=>overlaps(box,b)));
    if(show)occupied.push(box);

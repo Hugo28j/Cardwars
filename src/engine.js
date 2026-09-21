@@ -1,5 +1,5 @@
 export const freshProfile=()=>({
- version:6,florins:0,buildings:{},deck:[],activeGame:null,collection1300:{},
+ version:7,florins:0,buildings:{},deck:[],activeGame:null,collection1300:{},playerColor:'#c6534d',
  packsOpened1300:0,drawn1300:0,lastPack1300:[],
  starterRegion:null,starterRegionClaimed:false,welcomePackClaimed:false,onboardingComplete:false,
  starterCardIds:[],welcomeCardIds:[]
@@ -7,10 +7,13 @@ export const freshProfile=()=>({
 
 export function migrateProfile(p){
  if(!p||typeof p!=='object'||Array.isArray(p))return null;
- if(p.version===6)return p;
+ if(p.version===7)return p;
+ if(p.version===6){
+  return {...p,version:7,playerColor:typeof p.playerColor==='string'?p.playerColor:'#c6534d'};
+ }
  if(p.version===5){
   return {
-   version:6,florins:0,
+   version:7,florins:0,playerColor:'#c6534d',
    buildings:p.buildings&&typeof p.buildings==='object'&&!Array.isArray(p.buildings)?p.buildings:{},
    deck:[],activeGame:null,
    collection1300:p.collection1300&&typeof p.collection1300==='object'&&!Array.isArray(p.collection1300)?p.collection1300:{},
@@ -28,11 +31,12 @@ export function migrateProfile(p){
 }
 
 export function validateProfile(p){
- if(!p||p.version!==6||!Number.isSafeInteger(p.florins)||p.florins<0||p.florins>1e12)return false;
+ if(!p||p.version!==7||!Number.isSafeInteger(p.florins)||p.florins<0||p.florins>1e12)return false;
  if(!p.buildings||typeof p.buildings!=='object'||Array.isArray(p.buildings))return false;
  if(!Array.isArray(p.deck)||p.deck.length>16||p.deck.some(id=>typeof id!=='string'))return false;
  if(p.activeGame!==null&&typeof p.activeGame!=='object')return false;
  if(!p.collection1300||typeof p.collection1300!=='object'||Array.isArray(p.collection1300))return false;
+ if(typeof p.playerColor!=='string')return false;
  if(!Number.isSafeInteger(p.packsOpened1300)||p.packsOpened1300<0)return false;
  if(!Number.isSafeInteger(p.drawn1300)||p.drawn1300<0)return false;
  if(!Array.isArray(p.lastPack1300)||!Array.isArray(p.starterCardIds)||!Array.isArray(p.welcomeCardIds))return false;

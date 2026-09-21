@@ -179,3 +179,15 @@
 .game-treasury-panel strong{display:block;font-family:var(--serif);font-size:22px;color:#d9e4c8;line-height:1.05;margin:3px 0}
 .game-treasury-panel small{display:block;font-size:8px;color:#91a491}
 @media(max-width:700px){.game-treasury-panel{right:12px;top:88px}}
+
+/* Player realm ownership + campaign fog of war */
+.city-territory-cell{transition:fill-opacity .22s,fill .22s,filter .22s}
+.city-territory-cell.game-owned{fill:var(--player-realm-color,#c6534d);fill-opacity:.88;cursor:pointer}
+.city-territory-cell.game-owned:hover{fill:var(--player-realm-color,#c6534d);fill-opacity:.98}
+.city-territory-cell.game-visible{fill:#fff;fill-opacity:.001}
+.city-territory-cell.game-hidden{fill:#07100d;fill-opacity:.73;cursor:default}
+.city-territory-cell.game-hidden:hover{fill:#07100d;fill-opacity:.73}
+.city-area-label.game-owned-label{fill:#fff4dc;stroke:#172019;stroke-opacity:.88}
+.game-color-picker{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #465248;border-bottom:1px solid #465248;padding:16px 0;margin:8px 0 22px}.game-color-picker>div:first-child>span{display:block;font-size:8px;letter-spacing:1.1px;color:var(--gold)}.game-color-picker>div:first-child>small{display:block;color:var(--muted);font-size:9px;margin-top:4px}.game-color-swatches{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.game-color-swatches button{width:29px;height:29px;border-radius:50%;background:var(--swatch);border:2px solid #17201c;box-shadow:0 0 0 1px #5b685d;transition:transform .15s,box-shadow .15s}.game-color-swatches button:hover{transform:scale(1.1)}.game-color-swatches button.active{box-shadow:0 0 0 2px #e0cf9b,0 0 14px color-mix(in srgb,var(--swatch) 45%,transparent);transform:scale(1.08)}
+.player-realm-chip{--player-realm:#c6534d;display:flex;align-items:center;gap:7px;background:#12231de8;border:1px solid #6d7c6d;color:#c7d0c0;padding:8px 11px;border-radius:4px;font-size:9px}.player-realm-chip i{width:10px;height:10px;border-radius:2px;background:var(--player-realm);box-shadow:0 0 0 1px #ffffff44}
+@media(max-width:700px){.game-color-picker{align-items:flex-start;flex-direction:column}.game-color-swatches{justify-content:flex-start}.player-realm-chip{max-width:180px}}
