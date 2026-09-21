@@ -163,8 +163,8 @@ const mixHex=(from,to,amount)=>{
 // Keep Castile exactly as the visual reference the user approved.
 // Other realms get the same subtle city-border contrast relative to their own fill,
 // so the lines cannot disappear into blue/green/purple country colors.
-const cityBorderColor=realm=>'#596660';
-const cityBorderOpacity=realm=>'.62';
+const cityBorderColor=realm=>'#68756f';
+const cityBorderOpacity=realm=>'.54';
 const cache={};
 let physicalLandCache;
 export class WorldMap{
@@ -277,9 +277,9 @@ export class WorldMap{
  refresh(){const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   // City borders stay readable in the overview, then become progressively stronger as the player zooms in.
   const cityBorderZoom=Math.max(0,Math.min(1,(.42-unit)/.34));
-  const cityBorderZoomColor=mixHex('#596660','#3d4944',cityBorderZoom);
+  const cityBorderZoomColor=mixHex('#68756f','#46524d',cityBorderZoom);
   this.svg.style.setProperty('--city-border-zoom-color',cityBorderZoomColor);
-  this.svg.style.setProperty('--city-border-zoom-opacity',(.62+cityBorderZoom*.30).toFixed(3));
+  this.svg.style.setProperty('--city-border-zoom-opacity',(.54+cityBorderZoom*.34).toFixed(3));
   this.svg.style.setProperty('--city-border-zoom-width',(.90+cityBorderZoom*.28).toFixed(3));
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
   const showCityAreas=unit<.082;
