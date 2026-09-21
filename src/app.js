@@ -28,28 +28,55 @@ const CARD_ART_1300={
 };
 let profile=freshProfile(),storageFailed=false;
 try{const raw=localStorage.getItem(KEY);if(raw){const p=JSON.parse(raw);if(validateProfile(p))profile=p;else storageFailed=true;}}catch{storageFailed=true;}
-let view='collection',collectionEra='600',filter='all',rarity='all',country='all',country1300='all',search='',search1300='',world=null,selected1300='1300-seville',atlasRegion=null,atlasSearch='',packResult=[],revealed=new Set(),toastTimer;
+let view='collection',collectionEra='600',filter='all',rarity='all',country='all',country1300='all',search='',search1300='',world=null,selected1300='1300-seville',atlasRegion=null,atlasSearch='',rankingCategory='overall',packResult=[],revealed=new Set(),toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const REALMS=[...new Set(CITIES.map(c=>c.realm))].sort((a,b)=>a.localeCompare(b));
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
-const provinceStrength1300=c=>{
- const scoreTotal=[c.food,c.economyScore,c.technology,c.stability].reduce((sum,n)=>sum+(Number.isFinite(n)?n:0),0);
- return Math.round(scoreTotal*10-1000+(Number(c.army)||0)*2+(Number(c.people)||0)/40+(Number(c.navy)||0)*10);
-};
 const countryRankings1300=()=>{
  const grouped=new Map();
  for(const c of CITIES_1300){
-  const entry=grouped.get(c.country)||{country:c.country,provinces:[],strength:0,army:0,population:0};
-  const strength=provinceStrength1300(c);
-  entry.provinces.push({...c,strength});
-  entry.strength+=strength;entry.army+=(Number(c.army)||0);entry.population+=(Number(c.people)||0);
+  const entry=grouped.get(c.country)||{country:c.country,cities:[],population:0,army:0,navy:0,foodTotal:0,economyTotal:0,technologyTotal:0,stabilityTotal:0};
+  entry.cities.push(c);
+  entry.population+=Number(c.people)||0;
+  entry.army+=Number(c.army)||0;
+  entry.navy+=Number(c.navy)||0;
+  entry.foodTotal+=Number(c.food)||0;
+  entry.economyTotal+=Number(c.economyScore)||0;
+  entry.technologyTotal+=Number(c.technology)||0;
+  entry.stabilityTotal+=Number(c.stability)||0;
   grouped.set(c.country,entry);
  }
- return [...grouped.values()].map(entry=>({...entry,provinces:entry.provinces.sort((a,b)=>b.strength-a.strength||a.name.localeCompare(b.name))}))
-  .sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country))
-  .map((entry,i)=>({...entry,rank:i+1}));
+ return [...grouped.values()].map(entry=>{
+  const cityCount=entry.cities.length||1;
+  const foodAvg=Math.round(entry.foodTotal/cityCount);
+  const economyAvg=Math.round(entry.economyTotal/cityCount);
+  const technologyAvg=Math.round(entry.technologyTotal/cityCount);
+  const stabilityAvg=Math.round(entry.stabilityTotal/cityCount);
+  const foodScore=foodAvg*10,economyScore=economyAvg*10,technologyScore=technologyAvg*10,stabilityScore=stabilityAvg*10;
+  const populationScore=Math.round(entry.population/50),armyScore=Math.round(entry.army*2),navyScore=Math.round(entry.navy*10);
+  const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore;
+  const cityMultiplier=1+cityCount/100;
+  const strength=Math.round(baseScore*cityMultiplier);
+  return {...entry,cityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,strength};
+ }).sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country)).map((entry,i)=>({...entry,rank:i+1}));
 };
+const RANKING_CATEGORIES_1300=[
+ ['overall','Overall','strength','Total strength'],
+ ['food','Food','foodAvg','Average /100'],
+ ['economy','Economy','economyAvg','Average /100'],
+ ['technology','Technology','technologyAvg','Average /100'],
+ ['stability','Stability','stabilityAvg','Average /100'],
+ ['population','Population','population','Total population'],
+ ['army','Army','army','Total army'],
+ ['navy','Navy','navy','Total navy']
+];
 const strengthNumber=n=>Math.round(n).toLocaleString('en-GB');
+const rankingCategoryMeta=()=>RANKING_CATEGORIES_1300.find(([id])=>id===rankingCategory)||RANKING_CATEGORIES_1300[0];
+const rankingRows1300=()=>{
+ const [,label,key,unit]=rankingCategoryMeta();
+ const rows=countryRankings1300().sort((a,b)=>b[key]-a[key]||b.strength-a.strength||a.country.localeCompare(b.country));
+ return {label,key,unit,rows:rows.map((r,i)=>({...r,categoryRank:i+1,categoryValue:r[key]}))};
+};
 const count=()=>Object.keys(profile.collection).length;
 function button(text,action,cls='secondary',extra=''){return `<button class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`;}
 function toast(text){clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').classList.add('visible');toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4200);}
@@ -71,19 +98,32 @@ function render1300Grid(){const q=search1300.toLowerCase().trim(),list=CITIES_13
 function packsPage(){return `<main class="packs-page"><div class="page-title"><div><span class="eyebrow">DISCOVER THE OLD WORLD</span><h1>Five cards. A new beginning<span class="title-dot">.</span></h1><p>Every pack is free. Every city has a story.</p></div><span class="pack-free-pill">UNLIMITED FREE PACKS</span></div><div class="single-pack-layout"><section class="pack-stage"><div class="pack-orbit"></div><div class="pack-art pack-1" aria-hidden="true"><div class="pack-frame"><span class="pack-edition">THE AGE OF REALMS</span><div class="pack-crest">${icon('crown')}</div><strong>CARDWARS</strong><span class="pack-type">EUROPE</span><i></i><small>5 CITY CARDS · VOL. I</small></div></div><span class="pack-stage-label">THE CONTINENTAL COLLECTION</span></section><section class="pack-description"><span class="eyebrow">VOLUME I · c. 600 CE</span><h2>Europe pack</h2><p>Uncover five cities from the old continent, from small frontier settlements to the great imperial capitals.</p><div class="pack-highlights"><span>${icon('cards')} 5 cards per pack</span><span>${icon('coins')} No coins required</span><span>${icon('globe')} ${CITIES.length} cities to discover</span></div>${button('Open free pack '+icon('arrow'),'open-pack','primary large-button')}<p class="pack-guarantee">No purchases. No waiting. Open as many as you like.</p><div class="pack-counters"><div><strong>${profile.packsOpened}</strong><span>PACKS OPENED</span></div><div><strong>${count()}</strong><span>UNIQUE CITIES</span></div><div><strong>${profile.drawn}</strong><span>CARDS DRAWN</span></div></div>${profile.lastPack.length?'<button class="text-btn" data-action="last-pack">View your last pack</button>':''}</section><aside class="drop-rates"><span class="eyebrow">KNOW YOUR ODDS</span><h3>A chance at greatness.</h3><p>Each of the five cards is drawn independently.</p>${RARITIES.map((r,i)=>`<div class="drop-rate"><span style="color:${RARITY_COLORS[i]}"><i></i>${r}</span><strong>${PACK.odds[i]}%</strong><small>+${DUPLICATE_COINS[i]} coins for a duplicate</small></div>`).join('')}<p class="duplicate-note">Already own a city? Keep the extra copy and receive coins based on its rarity.</p></aside></div></main>`;}
 function gamePage(){return `<main class="game-empty"><span class="eyebrow">THE NEXT CHAPTER</span><h1>Game</h1><div class="empty-seal">${icon('army')}</div><p>The campaign is not available yet.</p></main>`;}
 function rankingsPage(){
- const rankings=countryRankings1300(),leader=rankings[0],totalStrength=rankings.reduce((sum,r)=>sum+r.strength,0);
+ const overall=countryRankings1300(),leader=overall[0],board=rankingRows1300(),meta=rankingCategoryMeta();
+ const categoryValue=(r,key)=>key==='strength'?strengthNumber(r.strength):['foodAvg','economyAvg','technologyAvg','stabilityAvg'].includes(key)?strengthNumber(r[key])+'/100':strengthNumber(r[key]);
  return `<main class="rankings-page">
-  <div class="page-title rankings-title"><div><span class="eyebrow">COUNTRY POWER · c. 1300 CE</span><h1>Rankings<span class="title-dot">.</span></h1><p>Every province contributes its own strength. A country's score is the sum of all its researched provinces.</p></div><div class="ranking-leader"><span>#1 CURRENTLY</span><strong>${esc(leader?.country||'—')}</strong><small>${leader?strengthNumber(leader.strength):'—'} strength</small></div></div>
-  <div class="ranking-formula">${icon('help')}<div><strong>Strength formula</strong><p><b>Province</b> = (Food + Economy + Technology + Stability) × 10 − 1000 + Army × 2 + Population ÷ 40 + Navy × 10. <b>Country</b> = sum of every province in that country.</p></div></div>
-  <div class="ranking-overview"><span><strong>${rankings.length}</strong><small>COUNTRIES</small></span><span><strong>${CITIES_1300.length}</strong><small>PROVINCES</small></span><span><strong>${strengthNumber(totalStrength)}</strong><small>TOTAL STRENGTH</small></span></div>
-  <section class="country-ranking-list" aria-label="Country strength ranking">
-   <div class="country-ranking-head"><span>Rank</span><span>Country</span><span>Provinces</span><span>Total strength</span></div>
-   ${rankings.map(r=>`<details class="country-ranking-row ${r.rank<=3?'top-three':''}">
-    <summary><span class="rank-number">#${String(r.rank).padStart(2,'0')}</span><span class="rank-country">${r.rank<=3?icon('star'):flag()}<strong>${esc(r.country)}</strong></span><span class="rank-provinces">${r.provinces.length}</span><span class="rank-strength">${strengthNumber(r.strength)}</span></summary>
-    <div class="province-ranking-wrap"><div class="province-ranking-table">
-     <div class="province-ranking-head"><span>Province</span><span>4 stats ×10 −1000</span><span>Army ×2</span><span>Population ÷40</span><span>Navy ×10</span><span>Strength</span></div>
-     ${r.provinces.map(c=>{const stats=Math.round((c.food+c.economyScore+c.technology+c.stability)*10-1000),army=Math.round((Number(c.army)||0)*2),pop=Math.round((Number(c.people)||0)/40),navy=Math.round((Number(c.navy)||0)*10);return `<div class="province-ranking-row"><span><strong>${esc(displayCityName1300(c))}</strong><small>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</small></span><span>${strengthNumber(stats)}</span><span>${strengthNumber(army)}</span><span>${strengthNumber(pop)}</span><span>${strengthNumber(navy)}</span><span><strong>${strengthNumber(c.strength)}</strong></span></div>`;}).join('')}
-    </div></div>
+  <div class="page-title rankings-title"><div><span class="eyebrow">COUNTRY POWER · c. 1300 CE</span><h1>Rankings<span class="title-dot">.</span></h1><p>Country strength now uses national averages for the four 0–100 stats, total population, army and navy, followed by a bonus for the number of cities.</p></div><div class="ranking-leader"><span>#1 OVERALL</span><strong>${esc(leader?.country||'—')}</strong><small>${leader?strengthNumber(leader.strength):'—'} strength</small></div></div>
+  <div class="ranking-formula">${icon('help')}<div><strong>Country strength formula</strong><p><b>(Average Food × 10 + Average Economy × 10 + Average Technology × 10 + Average Stability × 10 + Total Population ÷ 50 + Total Army × 2 + Total Navy × 10) × city bonus.</b> The city bonus is <b>1 + cities ÷ 100</b>, so 14 cities = <b>×1.14</b>. All displayed scores are rounded to whole numbers.</p></div></div>
+  <div class="ranking-overview"><span><strong>${overall.length}</strong><small>COUNTRIES</small></span><span><strong>${CITIES_1300.length}</strong><small>CITIES</small></span><span><strong>${leader?strengthNumber(leader.cityMultiplier*100-100):'0'}%</strong><small>#1 CITY BONUS</small></span></div>
+  <div class="ranking-category-tabs" aria-label="Ranking category">
+   ${RANKING_CATEGORIES_1300.map(([id,label])=>`<button class="${rankingCategory===id?'active':''}" data-action="ranking-category" data-id="${id}">${label}</button>`).join('')}
+  </div>
+  <div class="ranking-board-title"><div><span class="eyebrow">${esc(board.label.toUpperCase())} SCOREBOARD</span><h2>${esc(board.label)} ranking</h2></div><span>${esc(board.unit)}</span></div>
+  <section class="country-ranking-list" aria-label="${esc(board.label)} country ranking">
+   <div class="country-ranking-head"><span>Rank</span><span>Country</span><span>Cities</span><span>${esc(board.label)}</span></div>
+   ${board.rows.map(r=>`<details class="country-ranking-row ${r.categoryRank<=3?'top-three':''}">
+    <summary><span class="rank-number">#${String(r.categoryRank).padStart(2,'0')}</span><span class="rank-country">${r.categoryRank<=3?icon('star'):flag()}<strong>${esc(r.country)}</strong></span><span class="rank-provinces">${r.cityCount}</span><span class="rank-strength">${categoryValue(r,board.key)}</span></summary>
+    <div class="country-score-breakdown">
+      <div><span>Average Food</span><strong>${strengthNumber(r.foodAvg)} /100</strong><small>×10 = ${strengthNumber(r.foodScore)}</small></div>
+      <div><span>Average Economy</span><strong>${strengthNumber(r.economyAvg)} /100</strong><small>×10 = ${strengthNumber(r.economyScore)}</small></div>
+      <div><span>Average Technology</span><strong>${strengthNumber(r.technologyAvg)} /100</strong><small>×10 = ${strengthNumber(r.technologyScore)}</small></div>
+      <div><span>Average Stability</span><strong>${strengthNumber(r.stabilityAvg)} /100</strong><small>×10 = ${strengthNumber(r.stabilityScore)}</small></div>
+      <div><span>Total Population</span><strong>${strengthNumber(r.population)}</strong><small>÷50 = ${strengthNumber(r.populationScore)}</small></div>
+      <div><span>Total Army</span><strong>${strengthNumber(r.army)}</strong><small>×2 = ${strengthNumber(r.armyScore)}</small></div>
+      <div><span>Total Navy</span><strong>${strengthNumber(r.navy)}</strong><small>×10 = ${strengthNumber(r.navyScore)}</small></div>
+      <div><span>Base score</span><strong>${strengthNumber(r.baseScore)}</strong><small>Before city bonus</small></div>
+      <div class="city-bonus-box"><span>City bonus</span><strong>×${r.cityMultiplier.toFixed(2)}</strong><small>${r.cityCount} cities</small></div>
+      <div class="final-score-box"><span>Overall strength</span><strong>${strengthNumber(r.strength)}</strong><small>${strengthNumber(r.baseScore)} × ${r.cityMultiplier.toFixed(2)}</small></div>
+    </div>
    </details>`).join('')}
   </section>
  </main>`;
@@ -108,6 +148,7 @@ function exportSave(){const a=document.createElement('a'),url=URL.createObjectUR
 function navigate(next){modal.close();view=next;render();window.scrollTo(0,0);}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
  if(['collection','packs','game','rankings','atlas'].includes(a)){navigate(a);return;}
+ if(a==='ranking-category'){rankingCategory=id;render();return;}
  if(a==='close')modal.close();if(a==='collection-era'){collectionEra=id;search1300='';country1300='all';render();}if(a==='country1300'){country1300=id;render1300Grid();}if(a==='filter'){filter=id;render();}if(a==='clear-filters'){search='';country='all';rarity='all';filter='all';render();}
  if(a==='card'&&!(modal.open&&modal.classList.contains('card-dialog')))inspectCard(id);if(a==='card1300'&&!(modal.open&&modal.classList.contains('card-dialog-1300')))inspectCard1300(id);
  if(a==='open-pack')doOpenPack();if(a==='reveal'){revealed.add(+id);revealDialog();}if(a==='reveal-all'){packResult.forEach((_,i)=>revealed.add(i));revealDialog();}
