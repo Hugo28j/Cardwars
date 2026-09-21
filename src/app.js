@@ -328,7 +328,7 @@ function ensureGameProfile(p){
    const ownedCities=[...validHand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
    const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{};
    const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,economy=normaliseGameEconomy1300(g.economy);
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,day,clockStartedAt,lastTickAt,economy};
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,day,clockStartedAt,lastTickAt,economy,campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot};initialiseCampaignIdentity1300(p.activeGame);refreshCampaignStage1300(p.activeGame);
   }
  }
 }
@@ -342,12 +342,68 @@ function toggleDeckCard1300(id){
  else{toast('Your deck already contains 16 cards. Remove one first.');return;}
  save();render();
 }
+
+const CAMPAIGN_STAGES_1300={
+ rebellion:{label:'Rebellion',next:'Free Cities'},
+ free_cities:{label:'Free Cities',next:'Form a Nation'},
+ nation:{label:'Nation',next:'Great Power'}
+};
+function campaignPlayerBaseName1300(){return authUser?.name||'Player';}
+function campaignStageLabel1300(game){return CAMPAIGN_STAGES_1300[game?.campaignStage]?.label||'Rebellion';}
+function gameCountryName1300(game=profile.activeGame){
+ const name=campaignPlayerBaseName1300();
+ if(game?.campaignStage==='nation'&&game.formedNation)return game.formedNation;
+ if(game?.campaignStage==='free_cities')return `${name}'s Free Cities`;
+ return `${name}'s Rebellion`;
+}
+function initialiseCampaignIdentity1300(game){
+ if(!game)return;
+ game.campaignStage=['rebellion','free_cities','nation'].includes(game.campaignStage)?game.campaignStage:'rebellion';
+ game.originCountryByCity=game.originCountryByCity&&typeof game.originCountryByCity==='object'?game.originCountryByCity:{};
+ game.independenceByCity=game.independenceByCity&&typeof game.independenceByCity==='object'?game.independenceByCity:{};
+ for(const id of game.ownedCities||[]){
+  const c=CITY_1300[id];if(!c)continue;
+  game.originCountryByCity[id]??=c.country;
+  if(typeof game.independenceByCity[id]!=='boolean')game.independenceByCity[id]=false;
+ }
+ game.formedNation=typeof game.formedNation==='string'&&game.formedNation?game.formedNation:null;
+ game.won=!!game.won;
+}
+function refreshCampaignStage1300(game){
+ initialiseCampaignIdentity1300(game);
+ if(game.campaignStage==='rebellion'&&(game.ownedCities||[]).length&&game.ownedCities.every(id=>game.independenceByCity[id]===true))game.campaignStage='free_cities';
+}
+function formableRealms1300(game){
+ const owned=new Set(game?.ownedCities||[]),groups=new Map();
+ for(const c of CITIES_1300){
+  const row=groups.get(c.country)||{country:c.country,cities:[]};row.cities.push(c);groups.set(c.country,row);
+ }
+ return [...groups.values()].map(row=>{
+  const held=row.cities.filter(c=>owned.has(c.id)),missing=row.cities.filter(c=>!owned.has(c.id));
+  return {...row,held,missing,progress:row.cities.length?held.length/row.cities.length:0,canForm:game?.campaignStage==='free_cities'&&held.length>0&&missing.length===0};
+ }).filter(row=>row.held.length>0).sort((a,b)=>b.progress-a.progress||a.missing.length-b.missing.length||a.country.localeCompare(b.country));
+}
+function formCampaignNation1300(country){
+ const game=profile.activeGame;if(!game)return;
+ refreshCampaignStage1300(game);
+ const target=formableRealms1300(game).find(x=>x.country===country);
+ if(!target){toast('That country is not linked to any province you own.');return;}
+ if(game.campaignStage!=='free_cities'){toast('All of your cities must first gain independence and become Free Cities.');return;}
+ if(target.missing.length){toast(`You still need ${target.missing.length} province${target.missing.length===1?'':'s'} to form ${target.country}.`);return;}
+ game.campaignStage='nation';game.formedNation=target.country;updateCampaignRankingSnapshot1300(game);checkCampaignVictory1300(game);save();renderGameCountryPanel1300();toast(`${target.country} has been formed.`);
+}
+function checkCampaignVictory1300(game){
+ if(!game||game.campaignStage!=='nation'){if(game)game.won=false;return false;}
+ const playerName=gameCountryName1300(game),rows=buildCampaignRankings1300(game),player=rows.find(r=>r.country===playerName);
+ if(player&&player.rank<=5){game.won=true;game.victoryRank=player.rank;game.victoryDate=gameDate1300(game.day);return true;}
+ game.won=false;game.victoryRank=null;return false;
+}
 function startGame1300(){
  if(profile.deck.length!==16){toast(`Choose exactly 16 owned cards first. You currently have ${profile.deck.length}.`);return;}
  const shuffled=shuffle1300(profile.deck),hand=shuffled.slice(0,4);
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
- profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,economy:freshGameEconomy1300()};
+ profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,economy:freshGameEconomy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
  seedGameEmployment1300(profile.activeGame);updateCampaignRankingSnapshot1300(profile.activeGame);
  selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
 }
@@ -722,7 +778,7 @@ function campaignCityStats1300(game,c,isPlayer){
  };
 }
 function buildCampaignRankings1300(game){
- const playerName=gameCountryName1300(),grouped=new Map();
+ const playerName=gameCountryName1300(game),grouped=new Map();
  for(const c of CITIES_1300){
   const owner=campaignCityOwner1300(game,c),isPlayer=owner===playerName,st=campaignCityStats1300(game,c,isPlayer);
   const entry=grouped.get(owner)||{country:owner,player:isPlayer,cities:[],supportTerritories:[],population:0,army:0,navy:0,foodTotal:0,economyTotal:0,technologyTotal:0,stabilityTotal:0};
@@ -743,7 +799,7 @@ function buildCampaignRankings1300(game){
 }
 function updateCampaignRankingSnapshot1300(game){
  if(!game)return;const d=gameDate1300(game.day);
- game.rankingSnapshot={day:game.day,label:`${d.day} ${d.month} ${d.year}`,rows:buildCampaignRankings1300(game).map(r=>({...r,cities:r.cities.map(c=>c.id),supportTerritories:r.supportTerritories.map(c=>c.id)}))};
+ game.rankingSnapshot={day:game.day,label:`${d.day} ${d.month} ${d.year}`,rows:buildCampaignRankings1300(game).map(r=>({...r,cities:r.cities.map(c=>c.id),supportTerritories:r.supportTerritories.map(c=>c.id)}))};checkCampaignVictory1300(game);
 }
 function campaignRankingRows1300(game){
  if(!game.rankingSnapshot?.rows?.length)updateCampaignRankingSnapshot1300(game);
@@ -757,7 +813,6 @@ function countryRankingsHTML1300(game){
  <div class="campaign-ranking-tabs">${RANKING_CATEGORIES_1300.map(([id,label])=>`<button class="${gameRankingCategory===id?'active':''}" data-action="game-ranking-category" data-id="${id}">${label}</button>`).join('')}</div>
  <section class="campaign-ranking-list">${board.rows.map(r=>`<details class="${r.player?'player':''}"><summary><span>#${String(r.categoryRank).padStart(2,'0')}</span><strong>${r.player?'★ ':''}${esc(r.country)}</strong><small>${r.playableCityCount} cities</small><b>${value(r,board.key)}</b></summary><div class="campaign-ranking-breakdown"><span>Food <b>${r.foodAvg}</b></span><span>Economy <b>${r.economyAvg}</b></span><span>Technology <b>${r.technologyAvg}</b></span><span>Stability <b>${r.stabilityAvg}</b></span><span>Population <b>${strengthNumber(r.population)}</b></span><span>Army <b>${strengthNumber(r.army)}</b></span><span>Navy <b>${strengthNumber(r.navy)}</b></span><span>Overall <b>${strengthNumber(r.strength)}</b></span></div></details>`).join('')}</section>`;
 }
-function gameCountryName1300(){return authUser?.name?`${authUser.name}'s Realm`:'Your Realm';}
 function countryTotals1300(game){
  const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),population=cities.reduce((n,c)=>n+(Number(c.people)||0),0),mil=militaryTotals1300(game);
  const avg=key=>cities.length?Math.round(cities.reduce((n,c)=>n+(Number(c[key])||0),0)/cities.length):0;
@@ -791,8 +846,9 @@ function countryRebellionRows1300(game){
  }).sort((a,b)=>b.risk-a.risk);
 }
 function countryPoliticsHTML1300(game){
- const t=countryTotals1300(game),capital=t.cities[0];
- return `<section class="country-overview-hero"><div class="country-flag-large">${flagShieldHTML1300(game.flag,'country-panel-flag')}</div><div><span>PLAYER REALM</span><h2>${esc(gameCountryName1300())}</h2><p>Capital: <strong>${esc(capital?displayCityName1300(capital):'—')}</strong></p></div></section>
+ refreshCampaignStage1300(game);const t=countryTotals1300(game),capital=t.cities[0],independent=(game.ownedCities||[]).filter(id=>game.independenceByCity?.[id]).length;
+ return `<section class="country-overview-hero"><div class="country-flag-large">${flagShieldHTML1300(game.flag,'country-panel-flag')}</div><div><span>${esc(campaignStageLabel1300(game).toUpperCase())}</span><h2>${esc(gameCountryName1300(game))}</h2><p>Capital: <strong>${esc(capital?displayCityName1300(capital):'—')}</strong></p></div></section>
+ <section class="campaign-path"><div class="${game.campaignStage==='rebellion'?'active done':''}"><span>1</span><strong>Rebellion</strong><small>${independent}/${game.ownedCities.length} cities independent</small></div><div class="${['free_cities','nation'].includes(game.campaignStage)?'active done':''}"><span>2</span><strong>Free Cities</strong><small>All cities recognised as independent</small></div><div class="${game.campaignStage==='nation'?'active done':''}"><span>3</span><strong>Nation</strong><small>Form a country in Decisions</small></div><div class="${game.won?'active done':''}"><span>4</span><strong>Great Power</strong><small>Reach the Overall Top 5 to win</small></div></section>
  <section class="country-stat-grid"><div><span>Provinces</span><strong>${t.cities.length}</strong></div><div><span>Population</span><strong>${strengthNumber(t.population)}</strong></div><div><span>Army</span><strong>${strengthNumber(t.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(t.navy)}</strong></div></section>
  <section class="country-policy-card"><span>GOVERNMENT</span><h3>Player Realm</h3><p>Your country currently has direct player rule. Government reforms, laws, diplomacy and interest groups can be added here later.</p></section>
  <section class="country-national-stats">${[['Food',t.food],['Economy',t.economy],['Technology',t.technology],['Stability',t.stability]].map(([n,v])=>`<div><span>${n}</span><strong>${v}/100</strong><i><b style="width:${v}%"></b></i></div>`).join('')}</section>`;
@@ -822,12 +878,14 @@ function countryPeopleHTML1300(game){
  <div class="country-section-title"><span>POPULATION GROUPS</span><small>Approximate social distribution</small></div>
  <section class="population-groups">${p.groups.map(g=>`<article><div><strong>${g.name}</strong><span>${g.pct}%</span></div><i><b style="width:${g.pct}%"></b></i><small>${strengthNumber(g.count)} people</small></article>`).join('')}</section>`;
 }
-function countryDecisionsHTML1300(){
- return `<div class="country-section-title"><span>NATIONAL DECISIONS</span><small>Framework ready for future mechanics</small></div><section class="decision-list">
-  <article><strong>Form a New Realm</strong><p>Create or restore larger historical countries once territorial requirements are met.</p><button disabled>LOCKED</button></article>
-  <article><strong>Centralise Administration</strong><p>Future decision affecting taxation, stability and local autonomy.</p><button disabled>COMING LATER</button></article>
-  <article><strong>Proclaim a National Ambition</strong><p>Future long-term national objective with rewards and risks.</p><button disabled>COMING LATER</button></article>
- </section>`;
+function countryDecisionsHTML1300(game){
+ refreshCampaignStage1300(game);const candidates=formableRealms1300(game),independenceRows=(game.ownedCities||[]).map(id=>({c:CITY_1300[id],origin:game.originCountryByCity?.[id]||CITY_1300[id]?.country,free:game.independenceByCity?.[id]===true})).filter(x=>x.c);
+ return `<div class="country-section-title"><span>INDEPENDENCE</span><small>${campaignStageLabel1300(game)} · diplomacy and wars are not implemented yet</small></div>
+ <section class="independence-status">${independenceRows.map(r=>`<article><div><strong>${esc(displayCityName1300(r.c))}</strong><small>Rebelling from ${esc(r.origin)}</small></div><span class="${r.free?'free':'pending'}">${r.free?'INDEPENDENT':'REBELLION'}</span></article>`).join('')}</section>
+ <section class="future-diplomacy-note"><strong>Planned independence diplomacy</strong><p>Small or weak parent countries may recognise your secession. Larger powers may try to suppress it. You will be able to ask other countries to defend your independence, negotiate recognition, or return/sell a city to its former owner as a concession.</p></section>
+ <div class="country-section-title"><span>FORMABLE COUNTRIES</span><small>Only countries linked to at least one city you already own</small></div>
+ <section class="formable-country-list">${candidates.length?candidates.map(f=>`<article class="${f.canForm?'ready':''}"><div class="formable-head"><div><strong>${esc(f.country)}</strong><small>${f.held.length}/${f.cities.length} required provinces</small></div><span>${Math.round(f.progress*100)}%</span></div><div class="formable-progress"><i style="width:${Math.round(f.progress*100)}%"></i></div><p><b>Owned:</b> ${f.held.map(c=>esc(displayCityName1300(c))).join(', ')||'None'}</p><p><b>Still needed:</b> ${f.missing.length?f.missing.map(c=>esc(displayCityName1300(c))).join(', '):'All required provinces owned'}</p><button data-action="form-country" data-country="${esc(f.country)}" ${f.canForm?'':'disabled'}>${f.canForm?'FORM '+esc(f.country):game.campaignStage!=='free_cities'?'BECOME FREE CITIES FIRST':'MISSING PROVINCES'}</button></article>`).join(''):'<p class="country-empty">No formable country is linked to your current cities.</p>'}</section>
+ <div class="country-section-title"><span>VICTORY</span><small>Final campaign objective</small></div><section class="great-power-goal"><strong>${game.won?'VICTORY · GREAT POWER':'Become a Great Power'}</strong><p>After forming a real nation, reach the <b>Overall Top 5</b> in the campaign Rankings. Entering the Top 5 wins the campaign.</p></section>`;
 }
 function countryTechnologyHTML1300(game){
  const t=countryTotals1300(game),nodes=[['Crop Administration',50],['Guild Organisation',60],['Improved Metallurgy',68],['Scholastic Networks',76],['Advanced Fortification',84],['Financial Institutions',92]];
@@ -839,8 +897,8 @@ function countryRebellionsHTML1300(game){
 }
 function gameCountryPanelHTML1300(){
  const game=profile.activeGame;if(!game)return '';
- const body=gameCountryTab==='economy'?countryEconomyHTML1300(game):gameCountryTab==='people'?countryPeopleHTML1300(game):gameCountryTab==='decisions'?countryDecisionsHTML1300():gameCountryTab==='technology'?countryTechnologyHTML1300(game):gameCountryTab==='rebellions'?countryRebellionsHTML1300(game):gameCountryTab==='rankings'?countryRankingsHTML1300(game):countryPoliticsHTML1300(game);
- return `<div class="country-panel-head"><button class="country-panel-close" data-action="game-country-close">×</button><div class="country-panel-mini-flag">${flagShieldHTML1300(game.flag)}</div><div><span>YOUR COUNTRY</span><h2>${esc(gameCountryName1300())}</h2></div></div><nav class="country-panel-tabs">${GAME_COUNTRY_TABS.map(([id,label])=>`<button class="${gameCountryTab===id?'active':''}" data-action="game-country-tab" data-id="${id}">${label}</button>`).join('')}</nav><div class="country-panel-scroll">${body}</div>`;
+ const body=gameCountryTab==='economy'?countryEconomyHTML1300(game):gameCountryTab==='people'?countryPeopleHTML1300(game):gameCountryTab==='decisions'?countryDecisionsHTML1300(game):gameCountryTab==='technology'?countryTechnologyHTML1300(game):gameCountryTab==='rebellions'?countryRebellionsHTML1300(game):gameCountryTab==='rankings'?countryRankingsHTML1300(game):countryPoliticsHTML1300(game);
+ return `<div class="country-panel-head"><button class="country-panel-close" data-action="game-country-close">×</button><div class="country-panel-mini-flag">${flagShieldHTML1300(game.flag)}</div><div><span>${esc(campaignStageLabel1300(game).toUpperCase())}</span><h2>${esc(gameCountryName1300(game))}</h2></div></div><nav class="country-panel-tabs">${GAME_COUNTRY_TABS.map(([id,label])=>`<button class="${gameCountryTab===id?'active':''}" data-action="game-country-tab" data-id="${id}">${label}</button>`).join('')}</nav><div class="country-panel-scroll">${body}</div>`;
 }
 function renderGameCountryPanel1300(){
  const panel=$('#game-country-panel');if(!panel)return;
@@ -853,7 +911,7 @@ function openGameCountryPanel1300(){
 function gamePage(){
  if(!profile.activeGame){
   const selected=profile.deck.map(id=>CITY_1300[id]).filter(Boolean);
-  return `<main class="game-start-page"><div class="game-start-card"><span class="eyebrow">NEW CAMPAIGN · 1300 CE</span><h1>Ready for war<span class="title-dot">.</span></h1><p>Your campaign begins on <strong>1 January 1300</strong>. Four random cities are drawn from your 16-card deck as your opening hand.</p><div class="game-deck-status"><span><strong>${profile.deck.length}</strong><small>/16 cards</small></span><div><b style="width:${Math.min(100,profile.deck.length/16*100)}%"></b></div></div><div class="game-start-preview">${selected.slice(0,8).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join('')}${selected.length>8?`<span>+${selected.length-8} more</span>`:''}</div><div class="game-color-picker"><div><span>YOUR REALM COLOR</span><small>Your four opening provinces become this color when the campaign starts.</small></div><div class="game-color-swatches">${PLAYER_REALM_COLORS.map(([hex,name])=>`<button class="${profile.playerColor===hex?'active':''}" data-action="game-color" data-color="${hex}" title="${name}" aria-label="Choose ${name} realm color" style="--swatch:${hex}"></button>`).join('')}</div></div><div class="game-flag-editor"><div class="game-flag-copy"><span>YOUR FLAG</span><strong>Draw your realm flag</strong><small>Default is red. Choose a colour and paint the grid.</small><div class="flag-palette">${FLAG_COLORS_1300.map(c=>`<button class="${flagPaintColor===c?'active':''}" data-action="flag-color" data-color="${c}" style="--flag-paint:${c}" aria-label="Choose flag colour"></button>`).join('')}</div><button class="text-btn flag-reset-btn" data-action="flag-reset">Reset to red</button></div><div class="game-flag-canvas">${flagShieldHTML1300(profile.playerFlag,'editor-preview')}<div class="flag-editor-grid">${flagGridHTML1300(profile.playerFlag,true)}</div></div></div><div class="game-start-actions"><button class="btn primary large-button" data-action="start-game" ${profile.deck.length===16?'':'disabled'}><span>Start Game</span>${icon('arrow')}</button>${profile.deck.length===16?'':`<button class="text-btn" data-action="deck">Choose your 16-card deck</button>`}</div></div></main>`;
+  return `<main class="game-start-page"><div class="game-start-card"><span class="eyebrow">NEW CAMPAIGN · 1300 CE</span><h1>Start a rebellion<span class="title-dot">.</span></h1><p>On <strong>1 January 1300</strong>, four random cities from your 16-card deck rebel together against their parent countries. Win independence for every city, become Free Cities, form a nation, then reach the Overall Top 5 to become a Great Power and win.</p><div class="game-deck-status"><span><strong>${profile.deck.length}</strong><small>/16 cards</small></span><div><b style="width:${Math.min(100,profile.deck.length/16*100)}%"></b></div></div><div class="game-start-preview">${selected.slice(0,8).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join('')}${selected.length>8?`<span>+${selected.length-8} more</span>`:''}</div><div class="game-color-picker"><div><span>YOUR REALM COLOR</span><small>Your four opening provinces become this color when the campaign starts.</small></div><div class="game-color-swatches">${PLAYER_REALM_COLORS.map(([hex,name])=>`<button class="${profile.playerColor===hex?'active':''}" data-action="game-color" data-color="${hex}" title="${name}" aria-label="Choose ${name} realm color" style="--swatch:${hex}"></button>`).join('')}</div></div><div class="game-flag-editor"><div class="game-flag-copy"><span>YOUR FLAG</span><strong>Draw your realm flag</strong><small>Default is red. Choose a colour and paint the grid.</small><div class="flag-palette">${FLAG_COLORS_1300.map(c=>`<button class="${flagPaintColor===c?'active':''}" data-action="flag-color" data-color="${c}" style="--flag-paint:${c}" aria-label="Choose flag colour"></button>`).join('')}</div><button class="text-btn flag-reset-btn" data-action="flag-reset">Reset to red</button></div><div class="game-flag-canvas">${flagShieldHTML1300(profile.playerFlag,'editor-preview')}<div class="flag-editor-grid">${flagGridHTML1300(profile.playerFlag,true)}</div></div></div><div class="game-start-actions"><button class="btn primary large-button" data-action="start-game" ${profile.deck.length===16?'':'disabled'}><span>Start Game</span>${icon('arrow')}</button>${profile.deck.length===16?'':`<button class="text-btn" data-action="deck">Choose your 16-card deck</button>`}</div></div></main>`;
  }
  if(gameScreen==='development')return developmentPage();
  const gameDate=gameDate1300(profile.activeGame.day);
@@ -933,6 +991,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-country-open'){openGameCountryPanel1300();return;}
  if(a==='game-country-close'){gameCountryPanel=false;renderGameCountryPanel1300();return;}
  if(a==='game-country-tab'){if(GAME_COUNTRY_TABS.some(([x])=>x===id)){gameCountryTab=id;renderGameCountryPanel1300();}return;}
+ if(a==='form-country'){formCampaignNation1300(b.dataset.country);return;}
  if(a==='game-ranking-category'){if(RANKING_CATEGORIES_1300.some(([x])=>x===id)){gameRankingCategory=id;renderGameCountryPanel1300();}return;}
  if(a==='game-build-province'){buyGameProvinceBuilding(b.dataset.city,id);return;}
  if(a==='game-tax-adjust'){changeGameTax1300(b.dataset.delta);return;}

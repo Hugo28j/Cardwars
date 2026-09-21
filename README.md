@@ -1,19 +1,33 @@
 # Cardwars · The Age of Realms
 
-A static, English-language city-card collection prototype set around **600 CE**.
+Cardwars is a browser-based historical city-card and grand-strategy prototype focused on **Europe c.1300 CE**.
 
-## Included
+The current game combines a researched city-card collection, packs and deck building with a live campaign map, province ownership, fog of war, buildings, labour, wages, taxation, monthly state finances and campaign rankings.
 
-- **123 original c. 600 CE city cards** from the connected European mainland, with photographs, historical and modern place names, political realm labels, five rarity tiers and seven stats.
-- A separate **c. 1300 research collection**, built country by country. The current set contains 225 researched c. 1300 European cards, with Italy now covered from the Alpine city-states through Rome, Naples, Sicily, Sardinia and Corsica.
-- Unlimited **free packs of five cards**. Each draw is independent: Common 50%, Uncommon 28%, Rare 15%, Epic 6%, Legendary 1%.
-- Duplicate rewards: **10 / 25 / 60 / 150 / 400 coins**. Duplicates within one pack count immediately; extra copies remain in the collection.
-- All cards visible from the start: undiscovered cards are grey, collected cards are coloured. Search and filter by country, rarity or ownership.
-- A geographical atlas with pan, zoom, touch gestures and a dense c. 1300 political layer: the Holy Roman Empire is shown as an umbrella outline over dozens of constituent polities, while Italy and Anatolia are similarly subdivided. Old 600 CE cards no longer appear on this map; only researched 1300 cards are map markers.
-- Browser-local progress, JSON export/import and a confirmed reset.
-- A Game tab reserved for the next development phase.
+## Campaign direction
 
-The campaign, deck building, rebel starts, combat, buildings, taxation, estates and multiplayer are **not implemented in this version**. Navy is a display stat only. Coins are virtual, cannot be purchased and have no monetary value.
+The intended campaign loop is:
+
+**Rebellion → Free Cities → Formed Nation → Great Power**
+
+A new campaign draws four cities from the player's 16-card deck. Those cities immediately leave their historical parent countries and begin a joint rebellion. The player must eventually secure independence for every city, become Free Cities, form a country by controlling all of its required provinces, and then enter the **Overall Top 5** of the live campaign Rankings to win.
+
+The full design rules, including future independence diplomacy, foreign support, returning cities to former owners, nation formation and the Great Power victory condition, are documented in **[GAMEPLAY_VISION.md](GAMEPLAY_VISION.md)**.
+
+War and full diplomacy are not implemented yet; the save format and UI now contain the campaign-state foundations needed for those systems.
+
+## Current systems
+
+- c.1300 researched European city cards with rarity and historical stats.
+- Region-based welcome packs, collection and a 16-card deck.
+- Four random deck cities become the player's opening campaign provinces.
+- Custom player realm colour and drawable flag.
+- Campaign map with city territories, ownership, fog of war and adjacency.
+- Province panel with buildings, workers, wages and local economy.
+- Country panel with Politics, Economy, People, Decisions, Technology, Rebellions and Rankings.
+- Monthly economy with sector taxes, army/navy upkeep and administration / anti-corruption spending.
+- Ownership-aware campaign Rankings that remove conquered/rebel cities from their former countries.
+- Browser-local account/save state.
 
 ## Run locally
 
@@ -24,23 +38,20 @@ npm test
 npm start
 ```
 
-Open `http://localhost:4173`. No npm dependencies or build step are required. Serve over HTTP; ES modules do not work by opening `index.html` as a local file.
+Open `http://localhost:4173`. No npm dependencies or build step are required. Serve over HTTP; ES modules do not work by opening `index.html` directly.
 
 ## GitHub Pages
 
-Publish the repository's `main` branch, root folder. `.nojekyll` keeps the static files unchanged. All photographs, flags, maps and fonts are bundled locally; no live external API is required by the game.
+Publish the repository's `main` branch from the root folder. `.nojekyll` keeps the static files unchanged.
 
-Progress uses `localStorage` key `cardwars.collection.v2`. Saves belong to the current browser and origin; export from the guide to transfer them. Reset affects Cardwars only.
+## Main files
 
-## Data and maintenance
+- `GAMEPLAY_VISION.md` — authoritative campaign progression and future gameplay direction.
+- `src/data1300.js` — c.1300 researched city/card data.
+- `src/app.js` — collection, packs, deck, campaign state, economy and UI.
+- `src/map.js` — map geometry, city territories, hitboxes, fog of war and adjacency.
+- `src/buildings1300.js` — building / sector data and costs.
+- `assets/atlas.json` — playable authored historical political atlas.
+- `src/engine.js` — profile, pack and save helpers.
 
-- `scripts/city-seeds.json`: authored historical city catalogue, coordinates, c. 600 CE political context, modern geographic references and rarity.
-- `scripts/build-catalogue.py`: regenerates `src/data.js`; numerical stats are deterministic game values.
-- `scripts/prepare-collection-assets.py`: retrieves attributed present-day photographs and modern flags (Pillow required).
-- `scripts/prepare-assets.py`: regenerates the coarse upstream c. 1300 reference as `assets/atlas-base.json`; the playable `assets/atlas.json` contains additional authored small-state subdivisions for gameplay.
-- `src/engine.js`: pack draws, rewards, formatting and save validation.
-- `src/map.js`: geographic SVG map, interactions and label placement; map city markers come from the 1300 research catalogue.
-- `src/data1300.js`: researched c. 1300 card catalogue, currently 225 European cards with exact-year political ownership.
-- `tests/engine.test.js`: catalogue, probability boundaries, rewards, saves, reset and asset checks.
-
-Cards display historical political identities for the c. 600 CE setting. Present-day city and country names remain geographic reference metadata only; modern flags are not shown on cards. The Eastern Roman Empire still existed. Historical borders are approximate; city populations, armies, areas and scores are invented for balancing. Photographs show present-day cities or surviving sites, including later buildings. See [SOURCES.md](SOURCES.md) and the in-game credits for attribution and limitations.
+Historical borders and population figures are approximate and gameplay values are balanced estimates. See `SOURCES.md` and the in-game research notes for source and data limitations.

@@ -414,3 +414,29 @@
  .country-panel-tabs{grid-template-columns:repeat(4,1fr)}
  .campaign-ranking-breakdown{grid-template-columns:repeat(2,1fr)}
 }
+
+/* Campaign identity: Rebellion -> Free Cities -> Nation -> Great Power */
+.campaign-path{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#465249;border-bottom:1px solid #465249}
+.campaign-path>div{background:#101915;padding:11px 9px;min-height:76px}
+.campaign-path>div>span{display:grid;place-items:center;width:21px;height:21px;border:1px solid #57665c;border-radius:50%;font-size:7px;color:#829087;margin-bottom:6px}
+.campaign-path strong{display:block;font-family:var(--serif);font-size:13px;color:#87948b}
+.campaign-path small{display:block;font-size:6.5px;line-height:1.35;color:#65736a;margin-top:3px}
+.campaign-path>div.done{background:#18251f}.campaign-path>div.done>span{border-color:#b29758;color:#e4ce8d}.campaign-path>div.done strong{color:#dbc687}
+.independence-status{padding:9px 13px}
+.independence-status article{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #38453e}
+.independence-status strong{display:block;font-family:var(--serif);font-size:14px}.independence-status small{display:block;font-size:7px;color:#7e8b82;margin-top:2px}
+.independence-status>article>span{font-size:7px;letter-spacing:.6px;padding:5px 7px;border:1px solid #75594e;color:#cc8879}
+.independence-status>article>span.free{border-color:#677f61;color:#a9c59b}
+.future-diplomacy-note{margin:2px 13px 12px;padding:12px;border:1px solid #685e43;background:#1b1e17}
+.future-diplomacy-note strong{font-family:var(--serif);font-size:14px;color:#d1b978}.future-diplomacy-note p{font-size:8px;line-height:1.5;color:#8e9a90;margin-top:4px}
+.formable-country-list{padding:9px 13px}
+.formable-country-list article{border:1px solid #435047;background:#121d19;padding:11px;margin-bottom:8px}
+.formable-country-list article.ready{border-color:#a88e54;background:#18241d}
+.formable-head{display:flex;justify-content:space-between;align-items:end;gap:12px}.formable-head strong{display:block;font-family:var(--serif);font-size:16px}.formable-head small{display:block;font-size:7px;color:#7b8980;margin-top:2px}.formable-head>span{font-family:var(--serif);font-size:15px;color:#c5aa69}
+.formable-progress{height:4px;background:#27342e;margin:8px 0}.formable-progress i{display:block;height:100%;background:#ae9559}
+.formable-country-list p{font-size:7.5px;line-height:1.45;color:#87948b;margin:4px 0}.formable-country-list p b{color:#c1cbbf}
+.formable-country-list button{width:100%;margin-top:8px;padding:8px;border:1px solid #5a675e;background:#101915;color:#6f7b73;font-size:7px}
+.formable-country-list button:not(:disabled){border-color:#ad9257;color:#e0ca8c;cursor:pointer}.formable-country-list button:not(:disabled):hover{background:#b49a5d18}
+.great-power-goal{margin:0 13px 16px;padding:14px;border:1px solid #776744;background:linear-gradient(135deg,#1b251d,#171c17)}
+.great-power-goal strong{font-family:var(--serif);font-size:18px;color:#dbc481}.great-power-goal p{font-size:8px;line-height:1.5;color:#8f9c92;margin-top:5px}
+@media(max-width:760px){.campaign-path{grid-template-columns:repeat(2,1fr)}}
