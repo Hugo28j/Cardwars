@@ -382,3 +382,35 @@
  .game-campaign-view .map-top{left:82px;top:55px;right:150px}
  .stability-budget-slider{width:100%}
 }
+
+/* Fine anti-corruption budget and campaign rankings */
+.stability-budget-slider input[type="range"]{min-width:230px}
+.game-map-shell.province-panel-open .game-country-shield{left:408px}
+.game-map-shell.province-panel-open .game-map-actions{left:498px}
+.country-panel-tabs{grid-template-columns:repeat(7,1fr)}
+.country-panel-tabs button{font-size:6.6px;padding-left:3px;padding-right:3px}
+.campaign-ranking-head{display:flex;justify-content:space-between;align-items:end;gap:12px;padding:16px;border-bottom:1px solid #465249;background:#121d19}
+.campaign-ranking-head span{display:block;font-size:8px;letter-spacing:1.1px;color:#c7aa67}
+.campaign-ranking-head strong{display:block;font-family:var(--serif);font-size:22px;margin-top:2px}
+.campaign-ranking-head small{font-size:7px;color:#7d8a82;text-align:right}
+.campaign-ranking-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#39463f;border-bottom:1px solid #465249}
+.campaign-ranking-tabs button{padding:8px 4px;background:#111b17;color:#829087;border:0;font-size:7px}
+.campaign-ranking-tabs button.active{background:#1b2923;color:#dfc982;box-shadow:inset 0 -2px #b89b5e}
+.campaign-ranking-list{padding:9px}
+.campaign-ranking-list details{border:1px solid #435047;background:#121d19;margin-bottom:6px}
+.campaign-ranking-list details.player{border-color:#b39758;background:#1a241d}
+.campaign-ranking-list summary{display:grid;grid-template-columns:42px minmax(0,1fr) 62px 82px;gap:8px;align-items:center;padding:10px;cursor:pointer;list-style:none}
+.campaign-ranking-list summary::-webkit-details-marker{display:none}
+.campaign-ranking-list summary>span{font-size:8px;color:#c1a565}
+.campaign-ranking-list summary>strong{font-family:var(--serif);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.campaign-ranking-list summary>small{font-size:7px;color:#7f8d84}
+.campaign-ranking-list summary>b{text-align:right;font-family:var(--serif);font-size:14px;color:#d8c58a}
+.campaign-ranking-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#39463f;border-top:1px solid #465249}
+.campaign-ranking-breakdown span{background:#101915;padding:8px;font-size:7px;color:#7f8c83}
+.campaign-ranking-breakdown b{display:block;font-family:var(--serif);font-size:13px;color:#d4dacc;margin-top:2px}
+@media(max-width:760px){
+ .game-map-shell.province-panel-open .game-country-shield{display:none}
+ .game-map-shell.province-panel-open .game-map-actions{left:82px}
+ .country-panel-tabs{grid-template-columns:repeat(4,1fr)}
+ .campaign-ranking-breakdown{grid-template-columns:repeat(2,1fr)}
+}
