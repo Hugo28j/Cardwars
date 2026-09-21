@@ -27,6 +27,7 @@ War and full diplomacy are not implemented yet; the save format and UI now conta
 - Country panel with Politics, Economy, People, Decisions, Technology, Rebellions and Rankings.
 - Monthly economy with sector taxes, army/navy upkeep and administration / anti-corruption spending.
 - Ownership-aware campaign Rankings that remove conquered/rebel cities from their former countries.
+- Overall power status modifiers: Rebellions ×0.50, Free Cities / Free Imperial Cities ×0.75, established nations ×1.00.
 - Browser-local account/save state.
 
 ## Run locally

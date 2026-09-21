@@ -521,6 +521,23 @@ function buildBuilding1300(cityId,buildingId){
  save();render();toast(`${building.name} expanded in ${displayCityName1300(c)} for ${row.cost.toLocaleString('en-GB')} florins.`);
 }
 
+const isHistoricalFreeCity1300=country=>/^(Free Imperial City of|Free City of)\b/i.test(String(country||''));
+const baselinePowerModifier1300=country=>isHistoricalFreeCity1300(country)?.75:1;
+const campaignPowerModifier1300=(game,entry)=>{
+ if(entry?.player){
+  if(game?.campaignStage==='rebellion')return .50;
+  if(game?.campaignStage==='free_cities')return .75;
+  return 1;
+ }
+ return baselinePowerModifier1300(entry?.country);
+};
+const powerModifierLabel1300=(modifier,entry,game)=>{
+ if(entry?.player&&game?.campaignStage==='rebellion')return 'Rebellion −50%';
+ if(entry?.player&&game?.campaignStage==='free_cities')return 'Free Cities −25%';
+ if(isHistoricalFreeCity1300(entry?.country))return 'Free City −25%';
+ return 'No status penalty';
+};
+
 const countryRankings1300=()=>{
  const grouped=new Map();
  for(const c of [...CITIES_1300,...SUPPORT_TERRITORIES_1300]){
@@ -546,9 +563,8 @@ const countryRankings1300=()=>{
   const foodScore=foodAvg*50,economyScore=economyAvg*50,technologyScore=technologyAvg*50,stabilityScore=stabilityAvg*50;
   const populationScore=Math.round(entry.population/50),armyScore=Math.round(entry.army*2),navyScore=Math.round(entry.navy*10);
   const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore;
-  const cityMultiplier=1+cityCount/50;
-  const strength=Math.round(baseScore*cityMultiplier);
-  return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,strength};
+  const cityMultiplier=1+cityCount/50,powerModifier=baselinePowerModifier1300(entry.country),rawStrength=Math.round(baseScore*cityMultiplier),strength=Math.round(rawStrength*powerModifier);
+  return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,powerModifier,rawStrength,strength};
  }).sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country)).map((entry,i)=>({...entry,rank:i+1}));
 };
 const RANKING_CATEGORIES_1300=[
@@ -793,8 +809,8 @@ function buildCampaignRankings1300(game){
   const cityCount=entry.cities.length||1,playableCityCount=entry.cities.filter(c=>!c.supportTerritory).length;
   const foodAvg=Math.round(entry.foodTotal/cityCount),economyAvg=Math.round(entry.economyTotal/cityCount),technologyAvg=Math.round(entry.technologyTotal/cityCount),stabilityAvg=Math.round(entry.stabilityTotal/cityCount);
   const foodScore=foodAvg*50,economyScore=economyAvg*50,technologyScore=technologyAvg*50,stabilityScore=stabilityAvg*50,populationScore=Math.round(entry.population/50),armyScore=Math.round(entry.army*2),navyScore=Math.round(entry.navy*10);
-  const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore,cityMultiplier=1+cityCount/50,strength=Math.round(baseScore*cityMultiplier);
-  return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,strength};
+  const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore,cityMultiplier=1+cityCount/50,powerModifier=campaignPowerModifier1300(game,entry),rawStrength=Math.round(baseScore*cityMultiplier),strength=Math.round(rawStrength*powerModifier);
+  return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,powerModifier,rawStrength,strength};
  }).filter(r=>r.playableCityCount>0).sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country)).map((r,i)=>({...r,rank:i+1}));
 }
 function updateCampaignRankingSnapshot1300(game){
@@ -811,7 +827,7 @@ function countryRankingsHTML1300(game){
  const board=campaignRankingRows1300(game),value=(r,key)=>key==='strength'?strengthNumber(r.strength):['foodAvg','economyAvg','technologyAvg','stabilityAvg'].includes(key)?strengthNumber(r[key])+'/100':strengthNumber(r[key]);
  return `<section class="campaign-ranking-head"><div><span>CAMPAIGN RANKINGS</span><strong>${board.rows.length} active countries</strong></div><small>Snapshot: ${esc(game.rankingSnapshot?.label||'1 January 1300')} · updates every month</small></section>
  <div class="campaign-ranking-tabs">${RANKING_CATEGORIES_1300.map(([id,label])=>`<button class="${gameRankingCategory===id?'active':''}" data-action="game-ranking-category" data-id="${id}">${label}</button>`).join('')}</div>
- <section class="campaign-ranking-list">${board.rows.map(r=>`<details class="${r.player?'player':''}"><summary><span>#${String(r.categoryRank).padStart(2,'0')}</span><strong>${r.player?'★ ':''}${esc(r.country)}</strong><small>${r.playableCityCount} cities</small><b>${value(r,board.key)}</b></summary><div class="campaign-ranking-breakdown"><span>Food <b>${r.foodAvg}</b></span><span>Economy <b>${r.economyAvg}</b></span><span>Technology <b>${r.technologyAvg}</b></span><span>Stability <b>${r.stabilityAvg}</b></span><span>Population <b>${strengthNumber(r.population)}</b></span><span>Army <b>${strengthNumber(r.army)}</b></span><span>Navy <b>${strengthNumber(r.navy)}</b></span><span>Overall <b>${strengthNumber(r.strength)}</b></span></div></details>`).join('')}</section>`;
+ <section class="campaign-ranking-list">${board.rows.map(r=>`<details class="${r.player?'player':''}"><summary><span>#${String(r.categoryRank).padStart(2,'0')}</span><strong>${r.player?'★ ':''}${esc(r.country)}</strong><small>${r.playableCityCount} cities · ${r.powerModifier<1?esc(powerModifierLabel1300(r.powerModifier,r,game)):'full power'}</small><b>${value(r,board.key)}</b></summary><div class="campaign-ranking-breakdown"><span>Food <b>${r.foodAvg}</b></span><span>Economy <b>${r.economyAvg}</b></span><span>Technology <b>${r.technologyAvg}</b></span><span>Stability <b>${r.stabilityAvg}</b></span><span>Population <b>${strengthNumber(r.population)}</b></span><span>Army <b>${strengthNumber(r.army)}</b></span><span>Navy <b>${strengthNumber(r.navy)}</b></span><span>Raw power <b>${strengthNumber(r.rawStrength??r.strength)}</b></span><span>Status modifier <b>×${Number(r.powerModifier??1).toFixed(2)}</b></span><span>Overall <b>${strengthNumber(r.strength)}</b></span></div></details>`).join('')}</section>`;
 }
 function countryTotals1300(game){
  const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),population=cities.reduce((n,c)=>n+(Number(c.people)||0),0),mil=militaryTotals1300(game);

@@ -60,6 +60,17 @@ Example: if the player owns one French city, the Kingdom of France is a visible 
 
 The initial implementation uses the c.1300 card country's playable-city set as the formation requirement. More specialised historical formables can later be added as authored data.
 
+## Power-ranking status penalties
+
+Political status affects **Overall power only**. It does not reduce the underlying Food, Economy, Technology, Stability, Population, Army or Navy values shown in their category rankings.
+
+- **Rebellion:** ×0.50 Overall strength (**−50%**).
+- **Free Cities / player free-city league:** ×0.75 Overall strength (**−25%**).
+- **Historical Free Imperial Cities:** ×0.75 Overall strength (**−25%**) in rankings.
+- **Formed / normal countries:** ×1.00 Overall strength.
+
+This penalty exists because rebellions and free cities have less recognised state power, administration and diplomatic weight than established countries with the same raw provincial statistics. The ranking UI should show both raw power and the applied status modifier.
+
 ## Phase 4 — Great Power victory
 
 After forming a nation, the campaign's strategic objective is the live **Overall Rankings**.
