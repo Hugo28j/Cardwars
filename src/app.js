@@ -1,6 +1,6 @@
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-starting-florins-v4';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-province-panel-v2';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-labour-economy-v3';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260921-exact-border-adjacency-v12';
@@ -41,7 +41,7 @@ try{
  const legacyRaw=localStorage.getItem(LEGACY_KEY);
  if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
 }catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
-let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
+let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameClockTimer=null,atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const STARTER_REGIONS_1300=[
@@ -145,6 +145,78 @@ function ensureEconomyProfile(p){
  }
 }
 ensureEconomyProfile(profile);
+const GAME_WAGE_MIN=.02,GAME_WAGE_MAX=.50,GAME_WAGE_STEP=.02,GAME_TAX_MIN=0,GAME_TAX_MAX=30;
+const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
+const money1300=n=>(Number(n)||0).toFixed(2);
+function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},dailyTax:0};}
+function normaliseGameEconomy1300(raw){
+ const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300();
+ e.taxRate=clamp1300(Math.round(Number(e.taxRate)||10),GAME_TAX_MIN,GAME_TAX_MAX);
+ e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.12)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);
+ for(const key of ['cityWages','buildingWages','employment','lastEconomy'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
+ e.dailyTax=Math.max(0,Number(e.dailyTax)||0);return e;
+}
+function gameDate1300(dayIndex=0){
+ const d=new Date(Date.UTC(1300,0,1+Math.max(0,Math.floor(Number(dayIndex)||0))));
+ return {day:d.getUTCDate(),month:GAME_MONTHS_1300[d.getUTCMonth()],year:d.getUTCFullYear()};
+}
+function effectiveCityWage1300(game,cityId){
+ const e=game.economy;return Number.isFinite(Number(e.cityWages[cityId]))?Number(e.cityWages[cityId]):e.nationalWage;
+}
+function effectiveBuildingWage1300(game,cityId,buildingId){
+ const row=game.economy.buildingWages?.[cityId];
+ return row&&Number.isFinite(Number(row[buildingId]))?Number(row[buildingId]):effectiveCityWage1300(game,cityId);
+}
+function cityLabourPool1300(c){return Math.max(50,Math.round((Number(c.people)||0)*.34));}
+function buildingAvailability1300(c,b){
+ if(startingBuildingLevel1300(c,b.id)>0)return {ok:true,reason:'Historical sector already present'};
+ const people=Number(c.people)||0,food=Number(c.food)||0,econ=Number(c.economyScore)||0,tech=Number(c.technology)||0,stab=Number(c.stability)||0,army=Number(c.army)||0;
+ const text=[c.economy,c.historicalRole,c.militaryRole].filter(Boolean).join(' ').toLowerCase(),trade=/trade|market|merchant|fair|commerce|port/.test(text),cloth=/cloth|textile|wool|flax/.test(text),pasture=/sheep|wool|pasture|livestock|cattle/.test(text);
+ switch(b.id){
+  case 'fields':return {ok:food>=48,reason:'Needs a stronger agricultural base'};
+  case 'pastures':return {ok:food>=60||pasture,reason:'Needs grazing or livestock potential'};
+  case 'textiles':return {ok:(econ>=56&&people>=4500)||cloth,reason:'Needs urban craft labour or a cloth economy'};
+  case 'forge':return {ok:tech>=58&&people>=3500,reason:'Needs skilled metalworkers and technical capacity'};
+  case 'market':return {ok:(econ>=50&&people>=3000)||trade,reason:'Needs a viable commercial population'};
+  case 'barracks':return {ok:army>=70||stab>=62,reason:'Needs an established military or administrative base'};
+  case 'dockyard':return {ok:isCoastalCity1300(c),reason:'Requires a coast or major port'};
+  case 'walls':return {ok:stab>=48||people>=7000,reason:'Needs enough population or administration to maintain fortifications'};
+  case 'guildhall':return {ok:econ>=66&&people>=8000,reason:'Needs a developed urban craft economy'};
+  case 'university':return {ok:tech>=77&&people>=9000,reason:'Needs a large, advanced scholarly centre'};
+  default:return {ok:true,reason:''};
+ }
+}
+function seedGameEmployment1300(game){
+ game.economy=normaliseGameEconomy1300(game.economy);
+ for(const cityId of game.ownedCities||[]){
+  const c=CITY_1300[cityId];if(!c)continue;game.economy.employment[cityId]??={};
+  const state=gameProvinceBuildingState(c);let remaining=cityLabourPool1300(c);
+  const sectors=state.buildings.filter(b=>b.level>0).sort((a,b)=>effectiveBuildingWage1300(game,cityId,b.id)-effectiveBuildingWage1300(game,cityId,a.id));
+  for(const row of sectors){const cap=row.maxWorkers*row.level,target=Math.min(remaining,Math.round(cap*.62));game.economy.employment[cityId][row.id]=target;remaining-=target;}
+ }
+}
+function simulateGameEconomyDay1300(game){
+ const e=game.economy=normaliseGameEconomy1300(game.economy);let totalTax=0;
+ for(const cityId of game.ownedCities||[]){
+  const c=CITY_1300[cityId];if(!c)continue;const state=gameProvinceBuildingState(c),labour=cityLabourPool1300(c);
+  e.employment[cityId]??={};e.lastEconomy[cityId]={};
+  const sectors=state.buildings.filter(row=>row.level>0).map(row=>{
+   const capacity=Math.max(1,row.maxWorkers*row.level),wage=effectiveBuildingWage1300(game,cityId,row.id),wageRatio=wage/row.normalWage;
+   const attract=clamp1300(.18+.72*wageRatio,.08,1),local=clamp1300(.78+(Number(c.stability)-50)/250+(Number(c.economyScore)-50)/400,.62,1.08),taxDrag=clamp1300(1-Math.max(0,e.taxRate-10)*.012,.62,1.05);
+   return {row,capacity,wage,desired:Math.round(capacity*clamp1300(attract*local*taxDrag,.05,1)),score:wageRatio+(row.dailyRevenue/capacity)*35};
+  }).sort((a,b)=>b.score-a.score);
+  let remaining=labour;
+  for(const sec of sectors){
+   const target=Math.min(sec.desired,remaining);remaining-=target;
+   const current=Math.max(0,Number(e.employment[cityId][sec.row.id])||0),move=Math.max(5,Math.round(sec.capacity*.08)),workers=Math.round(current+clamp1300(target-current,-move,move));
+   e.employment[cityId][sec.row.id]=workers;
+   const fill=clamp1300(workers/sec.capacity,0,1),productivity=.82+Number(c.economyScore)/500+Number(c.technology)/1000,gross=sec.row.dailyRevenue*sec.row.level*fill*productivity,wageBill=(workers/1000)*sec.wage*3,profit=gross-wageBill,tax=Math.max(0,profit)*(e.taxRate/100);
+   totalTax+=tax;e.lastEconomy[cityId][sec.row.id]={workers,capacity:sec.capacity,wage:sec.wage,gross,wageBill,profit,tax};
+  }
+ }
+ e.dailyTax=Math.round(totalTax*100)/100;game.florins=Math.max(0,Math.round((Number(game.florins)+totalTax)*100)/100);
+}
 function ensureGameProfile(p){
  p.collection1300=p.collection1300&&typeof p.collection1300==='object'&&!Array.isArray(p.collection1300)?p.collection1300:{};
  if(!validRealmColor(p.playerColor))p.playerColor='#c6534d';
@@ -166,7 +238,8 @@ function ensureGameProfile(p){
    const playerColor=validRealmColor(g.playerColor)?g.playerColor:p.playerColor;
    const ownedCities=[...validHand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
    const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{};
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings};
+   const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,economy=normaliseGameEconomy1300(g.economy);
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,day,clockStartedAt,lastTickAt,economy};
   }
  }
 }
@@ -185,7 +258,8 @@ function startGame1300(){
  const shuffled=shuffle1300(profile.deck),hand=shuffled.slice(0,4);
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
- profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,startingFlorins,florins:startingFlorins,buildings:{}};
+ profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,startingFlorins,florins:startingFlorins,buildings:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,economy:freshGameEconomy1300()};
+ seedGameEmployment1300(profile.activeGame);
  selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
 }
 
