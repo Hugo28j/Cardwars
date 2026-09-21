@@ -1,9 +1,11 @@
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-england-home-support-v3';
-import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-packs1300-v5';
+import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-onboarding-auth-v6';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-buildings-v1';
 import {icon} from './icons.js';
+import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260921-city-borders-dark-030-060-v9';
-const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),KEY='cardwars.collection.v2';
+const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),
+ LEGACY_KEY='cardwars.collection.v2',ACCOUNTS_KEY='cardwars.accounts.v1',SESSION_KEY='cardwars.session.v1',PROFILE_PREFIX='cardwars.profile.';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES_1300=new Map([
  ['1300-pozsony','Bratislava'],['1300-kassa','Košice'],['1300-gradec','Gradec'],
@@ -26,11 +28,73 @@ const CARD_ART_1300={
  '1300-jaen':'assets/cards1300/009-jaen.svg',
  '1300-santiago':'assets/cards1300/010-santiago.svg'
 };
-let profile=freshProfile(),storageFailed=false;
-try{const raw=localStorage.getItem(KEY);if(raw){const p=migrateProfile(JSON.parse(raw));if(p&&validateProfile(p))profile=p;else storageFailed=true;}}catch{storageFailed=true;}
+let profile=freshProfile(),storageFailed=false,accounts={},currentAccountKey=null,authUser=null,legacyProfile=null;
+try{
+ accounts=JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}');
+ if(!accounts||typeof accounts!=='object'||Array.isArray(accounts))accounts={};
+ currentAccountKey=localStorage.getItem(SESSION_KEY);
+ if(currentAccountKey&&accounts[currentAccountKey]){
+  authUser=accounts[currentAccountKey];
+  const raw=localStorage.getItem(PROFILE_PREFIX+currentAccountKey);
+  if(raw){const p=migrateProfile(JSON.parse(raw));if(p&&validateProfile(p))profile=p;else storageFailed=true;}
+ }else currentAccountKey=null;
+ const legacyRaw=localStorage.getItem(LEGACY_KEY);
+ if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
+}catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
 let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
+const STARTER_REGIONS_1300=[
+ {id:'iberia',name:'Iberian Region',short:'Iberia',description:'Castile, Aragon, Portugal, Navarre, Granada and the western Mediterranean edge.'},
+ {id:'italy',name:'Italian Region',short:'Italy',description:'The Italian peninsula, Alpine approaches and the city-rich northern Italian sphere.'},
+ {id:'west',name:'Western Europe',short:'West',description:'France, England, the Low Countries and the western imperial frontier.'},
+ {id:'central',name:'Central Europe',short:'Central',description:'The German lands, Bohemia, Austria and the central imperial heartlands.'},
+ {id:'east',name:'Eastern Europe',short:'East',description:'Poland, Hungary and the eastern side of the current 1300 map.'}
+];
+const STARTER_REGION_BY_ID=Object.fromEntries(STARTER_REGIONS_1300.map(r=>[r.id,r]));
+function regionForCity1300(c){
+ const lat=Number(c.lat),lon=Number(c.lon);
+ if(lat<44.8&&lon<4.5)return 'iberia';
+ if(lat<46.9&&lon>=6.5&&lon<18.5)return 'italy';
+ if(lon<7.5)return 'west';
+ if(lon<18)return 'central';
+ return 'east';
+}
+function shuffle1300(list){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function guaranteedEight1300(pool,exclude=new Set()){
+ const result=[],used=new Set(exclude);
+ for(const [rarity,count] of [[0,5],[1,2],[2,1]]){
+  const available=shuffle1300(pool.filter(c=>c.rarity===rarity&&!used.has(c.id)));
+  if(available.length<count)throw new Error('Not enough cards for starter pack');
+  available.slice(0,count).forEach(c=>{result.push({id:c.id,duplicate:false});used.add(c.id);});
+ }
+ return shuffle1300(result);
+}
+function grantCards1300(cards){for(const r of cards)profile.collection1300[r.id]=(profile.collection1300[r.id]||0)+1;profile.packsOpened1300++;profile.drawn1300+=cards.length;profile.lastPack1300=cards;}
+function showStarterPack1300(cards,title,subtitle,nextLabel='Continue'){
+ showDialog(`<div class="starter-pack-reveal"><span class="eyebrow">FREE STARTER PACK · 1300 CE</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p><div class="starter-pack-grid">${cards.map(r=>`<div>${card1300(CITY_1300[r.id],true)}</div>`).join('')}</div><div class="dialog-actions">${button(nextLabel,'close','primary')}</div></div>`,'starter-pack-dialog');
+}
+function chooseStarterRegion1300(regionId){
+ if(profile.starterRegionClaimed)return;
+ const region=STARTER_REGION_BY_ID[regionId];if(!region)return;
+ const pool=CITIES_1300.filter(c=>regionForCity1300(c)===regionId);
+ const cards=guaranteedEight1300(pool);
+ grantCards1300(cards);
+ profile.starterRegion=regionId;profile.starterRegionClaimed=true;profile.starterCardIds=cards.map(x=>x.id);
+ save();render();
+ showStarterPack1300(cards,`${region.name} Pack`,'Guaranteed: 5 Common · 2 Uncommon · 1 Rare','Next: free welcome pack');
+}
+function claimWelcomePack1300(){
+ if(!profile.starterRegionClaimed||profile.welcomePackClaimed)return;
+ const owned=new Set(Object.keys(profile.collection1300));
+ const cards=guaranteedEight1300(CITIES_1300,owned);
+ grantCards1300(cards);
+ profile.welcomePackClaimed=true;profile.welcomeCardIds=cards.map(x=>x.id);profile.onboardingComplete=true;
+ profile.deck=[...profile.starterCardIds,...profile.welcomeCardIds].filter((id,i,a)=>a.indexOf(id)===i).slice(0,16);
+ save();view='deck';render();
+ showStarterPack1300(cards,'Welcome Pack','Eight extra unique 1300 cards. Your first 16-card deck is ready.','Build my deck');
+}
+
 function ensureEconomyProfile(p){
  if(!Number.isSafeInteger(p.florins)||p.florins<0)p.florins=ECONOMY_1300.startFlorins;
  if(!p.buildings||typeof p.buildings!=='object'||Array.isArray(p.buildings))p.buildings={};
@@ -44,30 +108,35 @@ function ensureEconomyProfile(p){
 }
 ensureEconomyProfile(profile);
 function ensureGameProfile(p){
+ p.collection1300=p.collection1300&&typeof p.collection1300==='object'&&!Array.isArray(p.collection1300)?p.collection1300:{};
  if(!Array.isArray(p.deck))p.deck=[];
- p.deck=[...new Set(p.deck)].filter(id=>Object.hasOwn(CITY_1300,id)).slice(0,20);
+ const owned=id=>Object.hasOwn(CITY_1300,id)&&(Number(p.collection1300[id])||0)>0;
+ p.deck=[...new Set(p.deck)].filter(owned).slice(0,16);
+ if(!Array.isArray(p.starterCardIds))p.starterCardIds=[];
+ if(!Array.isArray(p.welcomeCardIds))p.welcomeCardIds=[];
+ p.starterCardIds=[...new Set(p.starterCardIds)].filter(owned).slice(0,8);
+ p.welcomeCardIds=[...new Set(p.welcomeCardIds)].filter(owned).slice(0,8);
  if(p.activeGame){
   const g=p.activeGame;
-  const validDeck=Array.isArray(g.deck)?[...new Set(g.deck)].filter(id=>Object.hasOwn(CITY_1300,id)).slice(0,20):[];
+  const validDeck=Array.isArray(g.deck)?[...new Set(g.deck)].filter(owned).slice(0,16):[];
   const validHand=Array.isArray(g.hand)?[...new Set(g.hand)].filter(id=>validDeck.includes(id)).slice(0,4):[];
-  if(validDeck.length!==20||validHand.length!==4)p.activeGame=null;
+  if(validDeck.length!==16||validHand.length!==4)p.activeGame=null;
   else p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand};
  }
 }
 ensureGameProfile(profile);
 function toggleDeckCard1300(id){
- if(profile.activeGame){toast('End the active campaign before changing your deck.');return;}
- if(!Object.hasOwn(CITY_1300,id))return;
+ if(profile.activeGame){toast('Quit the active campaign before changing your deck.');return;}
+ if(!Object.hasOwn(CITY_1300,id)||(Number(profile.collection1300[id])||0)<=0){toast('You can only use cards you own.');return;}
  const i=profile.deck.indexOf(id);
  if(i>=0)profile.deck.splice(i,1);
- else if(profile.deck.length<20)profile.deck.push(id);
- else{toast('Your deck already contains 20 cards. Remove one first.');return;}
+ else if(profile.deck.length<16)profile.deck.push(id);
+ else{toast('Your deck already contains 16 cards. Remove one first.');return;}
  save();render();
 }
 function startGame1300(){
- if(profile.deck.length!==20){toast(`Choose exactly 20 cards first. You currently have ${profile.deck.length}.`);return;}
- const shuffled=[...profile.deck];
- for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+ if(profile.deck.length!==16){toast(`Choose exactly 16 owned cards first. You currently have ${profile.deck.length}.`);return;}
+ const shuffled=shuffle1300(profile.deck);
  profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand:shuffled.slice(0,4)};
  selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
 }
@@ -145,16 +214,67 @@ const rankingRows1300=()=>{
 };
 function button(text,action,cls='secondary',extra=''){return `<button class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`;}
 function toast(text){clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').classList.add('visible');toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4200);}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(profile));}catch{storageFailed=true;toast('Browser storage is unavailable. Export your collection from the guide.');}}
+function save(){
+ if(!authUser||!currentAccountKey)return;
+ try{localStorage.setItem(PROFILE_PREFIX+currentAccountKey,JSON.stringify(profile));}
+ catch{storageFailed=true;toast('Browser storage is unavailable. Export your campaign from the guide.');}
+}
+function saveAccounts(){try{localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(accounts));}catch{storageFailed=true;}}
+async function codeHash(name,code){
+ const bytes=new TextEncoder().encode(name.toLowerCase()+'|'+code);
+ const hash=await crypto.subtle.digest('SHA-256',bytes);
+ return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function loginPage(){return `<main class="login-page"><section class="login-card"><div class="login-brand"><span class="brand-mark">${icon('crown')}</span><div><strong>CARDWARS</strong><small>THE AGE OF REALMS</small></div></div><span class="eyebrow">PLAYER PROFILE</span><h1>Enter the realm<span class="title-dot">.</span></h1><p>Use a player name and private code for a local profile on this device, or continue with Google once a Google OAuth Client ID is configured.</p><label>Player name<input id="login-name" maxlength="28" autocomplete="username" placeholder="Your name"></label><label>Code<input id="login-code" type="password" maxlength="32" autocomplete="current-password" placeholder="At least 4 characters"></label><button class="btn primary login-continue" data-action="auth-local">Continue</button><div class="login-separator"><span>or</span></div><div id="google-signin" class="google-signin-slot">${GOOGLE_CLIENT_ID?'Loading Google sign-in…':'<button disabled>Continue with Google</button><small>Add your Google OAuth Client ID to src/auth-config.js to activate this.</small>'}</div><small class="login-footnote">Local name + code accounts are stored only in this browser. They are a prototype login, not server-backed authentication.</small></section></main>`;}
+function persistSession(key){currentAccountKey=key;authUser=accounts[key];localStorage.setItem(SESSION_KEY,key);}
+function loadAccountProfile(key){
+ const raw=localStorage.getItem(PROFILE_PREFIX+key);
+ if(raw){const p=migrateProfile(JSON.parse(raw));if(p&&validateProfile(p))return p;}
+ return freshProfile();
+}
+async function localAuth(){
+ const name=$('#login-name')?.value.trim(),code=$('#login-code')?.value||'';
+ if(!name||name.length<2){toast('Enter a player name of at least 2 characters.');return;}
+ if(code.length<4){toast('Your code needs at least 4 characters.');return;}
+ const key='local:'+name.toLowerCase(),hash=await codeHash(name,code),existing=accounts[key];
+ if(existing&&existing.codeHash!==hash){toast('That code is not correct for this player name.');return;}
+ if(!existing){
+  accounts[key]={type:'local',name,codeHash:hash};
+  saveAccounts();
+  const firstLocal=Object.keys(accounts).filter(k=>k.startsWith('local:')).length===1;
+  profile=firstLocal&&legacyProfile?legacyProfile:freshProfile();
+ }else profile=loadAccountProfile(key);
+ persistSession(key);ensureEconomyProfile(profile);ensureGameProfile(profile);save();render();
+}
+function decodeGoogleCredential(token){try{const payload=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(atob(payload).split('').map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join('')));}catch{return null;}}
+function handleGoogleCredential(response){
+ const p=decodeGoogleCredential(response.credential);if(!p?.sub)return;
+ const key='google:'+p.sub;
+ accounts[key]={type:'google',name:p.name||p.email||'Google player',email:p.email||''};saveAccounts();
+ profile=loadAccountProfile(key);persistSession(key);ensureEconomyProfile(profile);ensureGameProfile(profile);save();render();
+}
+function loadGoogleScript(){return new Promise((resolve,reject)=>{if(window.google?.accounts?.id)return resolve();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.defer=true;s.onload=resolve;s.onerror=reject;document.head.appendChild(s);});}
+async function setupGoogleLogin(){
+ if(!GOOGLE_CLIENT_ID||!$('#google-signin'))return;
+ try{await loadGoogleScript();if(!$('#google-signin'))return;google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});$('#google-signin').innerHTML='';google.accounts.id.renderButton($('#google-signin'),{theme:'outline',size:'large',width:320,text:'continue_with'});}catch{if($('#google-signin'))$('#google-signin').textContent='Google sign-in could not load.';}
+}
+function logoutAccount(){try{localStorage.removeItem(SESSION_KEY);}catch{}currentAccountKey=null;authUser=null;profile=freshProfile();view='collection';render();}
+function onboardingPage(){
+ const region=STARTER_REGION_BY_ID[profile.starterRegion];
+ if(!profile.starterRegionClaimed)return `<main class="onboarding-page"><section class="onboarding-intro"><span class="eyebrow">FIRST CAMPAIGN · FREE STARTER PACK 1/2</span><h1>Choose your region<span class="title-dot">.</span></h1><p>Your region pack contains exactly <strong>5 Common, 2 Uncommon and 1 Rare</strong> city from that part of Europe.</p></section><section class="region-choice-grid">${STARTER_REGIONS_1300.map(r=>{const pool=CITIES_1300.filter(c=>regionForCity1300(c)===r.id);return `<button data-action="starter-region" data-id="${r.id}"><span>${r.short}</span><strong>${r.name}</strong><p>${r.description}</p><small>${pool.length} possible 1300 cards · 8 free starter cards</small></button>`;}).join('')}</section></main>`;
+ return `<main class="onboarding-page welcome-pack-page"><section class="welcome-pack-card"><span class="eyebrow">FREE STARTER PACK 2/2</span><h1>Your ${esc(region?.name||'regional')} cards are secured<span class="title-dot">.</span></h1><p>Now open one final free 8-card welcome pack. It avoids every card you already received, so your first two packs give you <strong>16 unique owned cards</strong> — exactly enough for your first deck.</p><div class="starter-progress"><span class="done">1 <small>REGION PACK</small></span><i></i><span>2 <small>WELCOME PACK</small></span></div><button class="btn primary large-button" data-action="starter-welcome">Open free welcome pack ${icon('arrow')}</button></section></main>`;
+}
 function flag(){return `<span class="realm-sigil" aria-hidden="true">${icon('crown')}</span>`;}
-function header(){return `<header class="lobby-header"><button class="brand" data-action="collection" aria-label="Cardwars home"><span class="brand-mark">${icon('crown')}</span><span>CARDWARS<small>THE AGE OF REALMS</small></span></button><nav aria-label="Main navigation">${[['collection','cards','Collection'],['packs','pack','Packs'],['deck','cards','Deck'],['game','army','Game'],['rankings','star','Rankings'],['atlas','globe','Map']].map(([id,i,label])=>`<button class="${view===id?'active':''}" data-action="${id}">${icon(i)}<span>${label}</span></button>`).join('')}</nav><div class="header-tools"><span class="seal-count campaign-florins" title="Campaign treasury for 1300 buildings"><b>ƒ</b> <strong id="florin-total">${profile.florins.toLocaleString('en-GB')}</strong> <small>florins</small></span><button class="reset-button" data-action="reset" title="Reset 1300 campaign progress">Reset</button><button class="icon-btn" data-action="help" aria-label="Game guide and saves">${icon('help')}</button></div></header>`;}
+function header(){return `<header class="lobby-header"><button class="brand" data-action="collection" aria-label="Cardwars home"><span class="brand-mark">${icon('crown')}</span><span>CARDWARS<small>THE AGE OF REALMS</small></span></button><nav aria-label="Main navigation">${[['collection','cards','Collection'],['packs','pack','Packs'],['deck','cards','Deck'],['game','army','Game'],['rankings','star','Rankings'],['atlas','globe','Map']].map(([id,i,label])=>`<button class="${view===id?'active':''}" data-action="${id}">${icon(i)}<span>${label}</span></button>`).join('')}</nav><div class="header-tools"><span class="seal-count campaign-florins" title="Campaign treasury"><b>ƒ</b> <strong id="florin-total">${profile.florins.toLocaleString('en-GB')}</strong> <small>florins</small></span><button class="player-chip" data-action="logout" title="Log out"><strong>${esc(authUser?.name||'Player')}</strong><small>Log out</small></button><button class="reset-button" data-action="reset" title="Reset 1300 campaign progress">Reset</button><button class="icon-btn" data-action="help" aria-label="Game guide and saves">${icon('help')}</button></div></header>`;}
 function footer(){const era=view==='rankings'?'COUNTRY STRENGTH · c. 1300 CE':'EUROPE · c. 1300 CE';return `<footer class="lobby-footer"><span>${era}</span><span class="save-note">${icon('save')} ${storageFailed?'Export a save to keep your progress':'Saved on this device'}</span><button data-action="sources">Historical notes & sources ${icon('arrow')}</button></footer>`;}
 function stat(key,label,value){const icons={food:'wheat',army:'army',navy:'navy',people:'people',size:'size',technology:'tech',satisfaction:'happy'};return `<div class="stat"><span>${icon(icons[key])}${label}</span><strong>${value}</strong></div>`;}
 function card1300(c,compact=false){const displayName=displayCityName1300(c),number=String(CITIES_1300.findIndex(x=>x.id===c.id)).padStart(3,'0'),upgraded=Number.isFinite(c.economyScore)&&Number.isFinite(c.stability),scores=upgraded?[['Food',c.food],['Economy',c.economyScore],['Technology',c.technology],['Stability',c.stability]]:[['Food',c.food],['Technology',c.technology],['Satisfaction',c.satisfaction]],art=CARD_ART_1300[c.id];return `<button class="city-card card-1300 rarity-${c.rarity} ${compact?'compact':''}" style="--rarity:${RARITY_COLORS_1300[c.rarity]}" data-action="card1300" data-id="${c.id}" aria-label="Inspect ${esc(displayName)}, ${esc(c.country)}, c. 1300"><div class="card-photo ${art?'card-photo-1300-art':'card-photo-placeholder'}">${art?`<img src="${art}" alt="Stylised historical reconstruction of ${esc(displayName)} around 1300" loading="${compact?'eager':'lazy'}">`:`<div class="photo-placeholder"><span>${icon('globe')}</span><strong>IMAGE RESERVED</strong><small>Historical artwork will be added later</small></div>`}<span class="rarity-chip">${icon(c.rarity>2?'star':'globe')}${RARITIES_1300[c.rarity]}</span><span class="card-number">1300-${number}</span><div class="card-city"><span class="card-country">${flag(c)} ${c.country}</span><h3 class="${displayName.length>16?'long-name':''}">${displayName}</h3><small>${c.subrealm} · c. 1300 CE</small></div></div><div class="card-stats">${stat('army','Army',c.armyText)}${stat('navy','Navy',c.navyText)}${stat('people','People',c.populationText)}${stat('size','Size',c.sizeText)}<div class="card-scores ${upgraded?'card-scores-4':''}">${scores.map(([label,n])=>`<div><span>${label}</span><strong>${n}<small>/100</small></strong><i style="--value:${n}%"></i></div>`).join('')}</div></div><div class="card-foot"><span>${icon('check')} Researched 1300 card</span><span>Population confidence: ${c.populationConfidence}</span></div></button>`;}
-function render(){world?.destroy();world=null;const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=header()+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;mapState.selected=id;world.refresh();},()=>{});}}
-const PACK_ODDS_1300=[40,30,17,9,4];
+function render(){world?.destroy();world=null;if(!authUser){app.className='lobby auth-view';app.innerHTML=loginPage();setupGoogleLogin();return;}if(!profile.onboardingComplete){app.className='lobby onboarding-view';app.innerHTML=onboardingPage();return;}const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=header()+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;mapState.selected=id;world.refresh();},()=>{});}}
+const PACK_ODDS_1300=[40,30,17,9,4],PACK_PRICE_1300=200;
 function owned1300Count(){return Object.keys(profile.collection1300||{}).length;}
 function drawPack1300(){
+ if(profile.florins<PACK_PRICE_1300){toast(`You need ${(PACK_PRICE_1300-profile.florins).toLocaleString('en-GB')} more florins for this pack.`);return null;}
+ profile.florins-=PACK_PRICE_1300;
  const cards=[];
  for(let i=0;i<5;i++){
   let roll=Math.random()*100,tier=0;
@@ -174,28 +294,29 @@ function drawPack1300(){
 }
 function showPack1300(cards){
  const fresh=cards.filter(x=>!x.duplicate).length;
- showDialog(`<div class="pack1300-reveal"><span class="eyebrow">1300 EUROPE PACK</span><h2>${fresh?fresh+' new '+(fresh===1?'city':'cities'):'Five familiar cities'}</h2><p>Every card in this pack comes from the active c. 1300 collection.</p><div class="pack1300-reveal-grid">${cards.map(r=>{const c=CITY_1300[r.id];return `<div class="pack1300-reveal-card">${card1300(c,true)}<span class="${r.duplicate?'duplicate':''}">${r.duplicate?'DUPLICATE':'NEW CARD'}</span></div>`;}).join('')}</div><div class="dialog-actions">${button('Close','close')}${button('Open another 1300 pack','open-pack-1300','primary')}</div></div>`,'pack1300-dialog');
+ showDialog(`<div class="pack1300-reveal"><span class="eyebrow">1300 EUROPE PACK</span><h2>${fresh?fresh+' new '+(fresh===1?'city':'cities'):'Five familiar cities'}</h2><p>Every card in this pack comes from the active c. 1300 collection.</p><div class="pack1300-reveal-grid">${cards.map(r=>{const c=CITY_1300[r.id];return `<div class="pack1300-reveal-card">${card1300(c,true)}<span class="${r.duplicate?'duplicate':''}">${r.duplicate?'DUPLICATE':'NEW CARD'}</span></div>`;}).join('')}</div><div class="dialog-actions">${button('Close','close')}${button('Buy another pack · ƒ200','open-pack-1300','primary')}</div></div>`,'pack1300-dialog');
 }
 function packs1300Page(){
+ const canBuy=profile.florins>=PACK_PRICE_1300;
  return `<main class="packs1300-page">
-  <div class="page-title packs1300-title"><div><span class="eyebrow">PACKS · c. 1300 CE</span><h1>Open the medieval world<span class="title-dot">.</span></h1><p>Every pack contains five cards exclusively from the 1300 collection. No 600 CE cards can appear.</p></div><div class="pack1300-count"><strong>${owned1300Count()}<small>/${CITIES_1300.length}</small></strong><span>UNIQUE 1300 CARDS FOUND</span></div></div>
+  <div class="page-title packs1300-title"><div><span class="eyebrow">PACKS · c. 1300 CE</span><h1>Grow your collection<span class="title-dot">.</span></h1><p>Your two starter packs were free once. From now on the standard Common Pack costs <strong>ƒ200</strong> and contains only packable 1300 city cards.</p></div><div class="pack1300-count"><strong>${owned1300Count()}<small>/${CITIES_1300.length}</small></strong><span>UNIQUE 1300 CARDS OWNED</span></div></div>
   <div class="packs1300-layout">
-   <section class="pack1300-stage"><div class="pack1300-orbit"></div><div class="pack1300-art"><span>THE AGE OF REALMS</span><i>${icon('crown')}</i><strong>CARDWARS</strong><b>1300</b><small>5 CITY CARDS · EUROPE</small></div></section>
-   <section class="pack1300-copy"><span class="eyebrow">EUROPE · 1300 EDITION</span><h2>Realm Pack</h2><p>Draw five medieval city cards from the researched 1300 set. Support territories such as the hidden England home realm are never packable.</p><div class="pack1300-highlights"><span>${icon('cards')} 5 cards per pack</span><span>${icon('globe')} ${CITIES_1300.length} packable 1300 cities</span><span>${icon('star')} Legendary chance: 4%</span></div>${button('Open 1300 pack '+icon('arrow'),'open-pack-1300','primary large-button')}<div class="pack1300-stats"><span><strong>${profile.packsOpened1300}</strong><small>PACKS OPENED</small></span><span><strong>${profile.drawn1300}</strong><small>CARDS DRAWN</small></span><span><strong>${owned1300Count()}</strong><small>UNIQUE FOUND</small></span></div>${profile.lastPack1300.length?'<button class="text-btn" data-action="last-pack-1300">View last pack</button>':''}</section>
+   <section class="pack1300-stage"><div class="pack1300-orbit"></div><div class="pack1300-art"><span>THE AGE OF REALMS</span><i>${icon('crown')}</i><strong>COMMON PACK</strong><b>ƒ200</b><small>5 CITY CARDS · 1300</small></div></section>
+   <section class="pack1300-copy"><span class="eyebrow">STANDARD PAID PACK</span><h2>Common Pack</h2><p>Draw five cards from the researched 1300 set. The hidden England support territory and every other non-playable support entry are excluded.</p><div class="pack1300-highlights"><span>${icon('cards')} 5 cards per pack</span><span>${icon('coins')} Cost: ƒ200</span><span>${icon('globe')} ${CITIES_1300.length} packable cities</span></div><button class="btn primary large-button" data-action="open-pack-1300" ${canBuy?'':'disabled'}><span>${canBuy?'Buy Common Pack':'Not enough florins'}</span><strong>ƒ200</strong></button><div class="pack1300-stats"><span><strong>${profile.packsOpened1300}</strong><small>PACKS OPENED</small></span><span><strong>${profile.drawn1300}</strong><small>CARDS DRAWN</small></span><span><strong>${owned1300Count()}</strong><small>UNIQUE OWNED</small></span></div>${profile.lastPack1300.length?'<button class="text-btn" data-action="last-pack-1300">View last pack</button>':''}</section>
    <aside class="pack1300-odds"><span class="eyebrow">RARITY ODDS</span><h3>Five independent draws.</h3>${RARITIES_1300.map((name,i)=>`<div><span>${name}</span><strong>${PACK_ODDS_1300[i]}%</strong></div>`).join('')}</aside>
   </div>
  </main>`;
 }
 function deckPage(){
  const locked=!!profile.activeGame,q=deckSearch.toLowerCase().trim();
- const list=CITIES_1300.filter(c=>(deckCountry==='all'||c.country===deckCountry)&&(!q||`${c.name} ${c.country} ${c.subrealm}`.toLowerCase().includes(q))).sort((a,b)=>profile.deck.includes(a.id)-profile.deck.includes(b.id)||b.rarity-a.rarity||b.people-a.people);
+ const list=CITIES_1300.filter(c=>(Number(profile.collection1300[c.id])||0)>0&&(deckCountry==='all'||c.country===deckCountry)&&(!q||`${c.name} ${c.country} ${c.subrealm}`.toLowerCase().includes(q))).sort((a,b)=>profile.deck.includes(a.id)-profile.deck.includes(b.id)||b.rarity-a.rarity||b.people-a.people);
  const selected=profile.deck.map(id=>CITY_1300[id]).filter(Boolean);
  return `<main class="deck-page">
-  <div class="page-title deck-title"><div><span class="eyebrow">YOUR CAMPAIGN DECK · 1300 CE</span><h1>Build your deck<span class="title-dot">.</span></h1><p>Choose exactly 20 city cards. When a campaign starts, four random cities from these 20 become your opening hand.</p></div><div class="deck-counter ${profile.deck.length===20?'ready':''}"><strong>${profile.deck.length}<small>/20</small></strong><span>${profile.deck.length===20?'READY TO PLAY':'CARDS SELECTED'}</span></div></div>
+  <div class="page-title deck-title"><div><span class="eyebrow">YOUR CAMPAIGN DECK · 1300 CE</span><h1>Build your deck<span class="title-dot">.</span></h1><p>Choose exactly 16 owned city cards. When a campaign starts, four random cities from these 16 become your opening hand.</p></div><div class="deck-counter ${profile.deck.length===20?'ready':''}"><strong>${profile.deck.length}<small>/16</small></strong><span>${profile.deck.length===16?'READY TO PLAY':'CARDS SELECTED'}</span></div></div>
   ${locked?`<div class="deck-lock-note">${icon('lock')}<div><strong>Deck locked</strong><p>A campaign is currently active. End it from the Game tab before changing these 20 cards.</p></div></div>`:''}
   <section class="deck-selected-strip">
-   <div class="deck-strip-head"><span>Selected deck</span><strong>${profile.deck.length}/20</strong></div>
-   <div class="deck-slots">${Array.from({length:20},(_,i)=>{const c=selected[i];return c?`<button data-action="deck-toggle" data-id="${c.id}" ${locked?'disabled':''} title="${esc(displayCityName1300(c))}"><b>${String(CITIES_1300.findIndex(x=>x.id===c.id)).padStart(3,'0')}</b><span>${esc(displayCityName1300(c))}</span></button>`:`<i><b>${String(i+1).padStart(2,'0')}</b><span>Empty</span></i>`;}).join('')}</div>
+   <div class="deck-strip-head"><span>Selected deck</span><strong>${profile.deck.length}/16</strong></div>
+   <div class="deck-slots">${Array.from({length:16},(_,i)=>{const c=selected[i];return c?`<button data-action="deck-toggle" data-id="${c.id}" ${locked?'disabled':''} title="${esc(displayCityName1300(c))}"><b>${String(CITIES_1300.findIndex(x=>x.id===c.id)).padStart(3,'0')}</b><span>${esc(displayCityName1300(c))}</span></button>`:`<i><b>${String(i+1).padStart(2,'0')}</b><span>Empty</span></i>`;}).join('')}</div>
   </section>
   <div class="deck-toolbar">
    <label class="search-input">${icon('search')}<input id="deck-search" aria-label="Search deck cards" placeholder="Find a city…" value="${esc(deckSearch)}"></label>
@@ -281,14 +402,14 @@ function developmentPage(){
 function gamePage(){
  if(!profile.activeGame){
   const selected=profile.deck.map(id=>CITY_1300[id]).filter(Boolean);
-  return `<main class="game-start-page"><div class="game-start-card"><span class="eyebrow">NEW CAMPAIGN · 1300 CE</span><h1>Ready for war<span class="title-dot">.</span></h1><p>Your campaign begins on <strong>1 January 1300</strong>. Four random cities are drawn from your 20-card deck as your opening hand.</p><div class="game-deck-status"><span><strong>${profile.deck.length}</strong><small>/20 cards</small></span><div><b style="width:${Math.min(100,profile.deck.length/20*100)}%"></b></div></div><div class="game-start-preview">${selected.slice(0,8).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join('')}${selected.length>8?`<span>+${selected.length-8} more</span>`:''}</div><div class="game-start-actions"><button class="btn primary large-button" data-action="start-game" ${profile.deck.length===20?'':'disabled'}><span>Start Game</span>${icon('arrow')}</button>${profile.deck.length===20?'':`<button class="text-btn" data-action="deck">Choose your 20-card deck</button>`}</div></div></main>`;
+  return `<main class="game-start-page"><div class="game-start-card"><span class="eyebrow">NEW CAMPAIGN · 1300 CE</span><h1>Ready for war<span class="title-dot">.</span></h1><p>Your campaign begins on <strong>1 January 1300</strong>. Four random cities are drawn from your 16-card deck as your opening hand.</p><div class="game-deck-status"><span><strong>${profile.deck.length}</strong><small>/20 cards</small></span><div><b style="width:${Math.min(100,profile.deck.length/16*100)}%"></b></div></div><div class="game-start-preview">${selected.slice(0,8).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join('')}${selected.length>8?`<span>+${selected.length-8} more</span>`:''}</div><div class="game-start-actions"><button class="btn primary large-button" data-action="start-game" ${profile.deck.length===16?'':'disabled'}><span>Start Game</span>${icon('arrow')}</button>${profile.deck.length===16?'':`<button class="text-btn" data-action="deck">Choose your 16-card deck</button>`}</div></div></main>`;
  }
  if(gameScreen==='development')return developmentPage();
  const hand=profile.activeGame.hand.map(id=>CITY_1300[id]).filter(Boolean);
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong>1 January</strong><small>1300</small></div>
   <div class="game-map-actions"><button data-action="game-development">Development</button></div><button class="game-quit-button" data-action="quit-game">Quit</button>
-  <section class="game-hand"><div class="game-hand-label"><span>YOUR HAND</span><strong>4 / 20</strong></div><div class="game-hand-cards">${hand.map(c=>`<button data-action="game-hand-card" data-id="${c.id}"><span class="hand-rarity">${RARITIES_1300[c.rarity]}</span><strong>${esc(displayCityName1300(c))}</strong><small>${esc(c.country)}</small><i>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</i></button>`).join('')}</div></section>
+  <section class="game-hand"><div class="game-hand-label"><span>YOUR HAND</span><strong>4 / 16</strong></div><div class="game-hand-cards">${hand.map(c=>`<button data-action="game-hand-card" data-id="${c.id}"><span class="hand-rarity">${RARITIES_1300[c.rarity]}</span><strong>${esc(displayCityName1300(c))}</strong><small>${esc(c.country)}</small><i>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</i></button>`).join('')}</div></section>
  </div>`;
 }
 function rankingsPage(){
@@ -338,10 +459,14 @@ function showHelp(){showDialog(`<div class="simple-dialog"><span class="eyebrow"
 function showSources(){showDialog(`<div class="simple-dialog"><span class="eyebrow">HISTORY & GEOGRAPHY</span><h2>Behind the 1300 set.</h2><p>The active Cardwars collection now focuses entirely on <strong>Europe around 1300 CE</strong>. Population figures are historical estimates; military values and the four 0–100 gameplay scores are comparative modelling values.</p><p>${esc(RESEARCH_1300_NOTE)}</p><h3>Historical map</h3><p>The atlas uses the c. 1300 layer from <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">Historical Basemaps, André Ourednik and contributors</a>, under <a href="assets/historical-basemaps-LICENSE.txt" target="_blank" rel="noopener">GPL-3.0</a>. Borders are approximate and simplified for gameplay.</p><h3>Card research</h3><p>Each 1300 city card includes its own research sources in the card detail view. Generated historical artwork is illustrative rather than documentary evidence.</p></div>`,'credits-dialog');}
 function exportSave(){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(profile,null,2)],{type:'application/json'}));a.href=url;a.download='cardwars-1300-campaign.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Campaign exported.');}
 function navigate(next){modal.close();view=next;render();window.scrollTo(0,0);}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;
+ if(a==='auth-local'){await localAuth();return;}
+ if(a==='logout'){logoutAccount();return;}
+ if(a==='starter-region'){chooseStarterRegion1300(id);return;}
+ if(a==='starter-welcome'){claimWelcomePack1300();return;}
  if(['collection','packs','deck','game','rankings','atlas'].includes(a)){navigate(a);return;}
  if(a==='ranking-category'){rankingCategory=id;render();return;}
- if(a==='open-pack-1300'){const cards=drawPack1300();render();showPack1300(cards);return;}
+ if(a==='open-pack-1300'){const cards=drawPack1300();if(!cards)return;render();showPack1300(cards);return;}
  if(a==='last-pack-1300'){showPack1300(profile.lastPack1300);return;}
  if(a==='deck-toggle'){toggleDeckCard1300(id);return;}
  if(a==='start-game'){startGame1300();return;}
@@ -354,7 +479,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  if(a==='country1300'){country1300=id;render();}
  if(a==='card1300'&&!(modal.open&&modal.classList.contains('card-dialog-1300')))inspectCard1300(id);
  if(a==='reset')showReset();
- if(a==='confirm-reset'){profile=freshProfile();ensureEconomyProfile(profile);ensureGameProfile(profile);mapState.collection={};search1300='';country1300='all';deckSearch='';deckCountry='all';atlasSearch='';atlasRegion=null;selected1300='1300-seville';buildingCity='1300-seville';gameScreen='map';save();navigate('collection');toast('1300 campaign progress reset.');}
+ if(a==='confirm-reset'){profile=freshProfile();ensureEconomyProfile(profile);ensureGameProfile(profile);mapState.collection={};search1300='';country1300='all';deckSearch='';deckCountry='all';atlasSearch='';atlasRegion=null;selected1300='1300-seville';buildingCity='1300-seville';gameScreen='map';save();render();toast('Player progress reset. Choose a starter region again.');}
  if(a==='locate1300'){selected1300=id;mapState.selected=id;atlasRegion=null;atlasSearch='';navigate('atlas');world.focus(id);app.classList.add('show-panel');}
  if(a==='map-city'){selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.focus(id);app.classList.add('show-panel');}
  if(a==='inspect-selected')inspectCard1300(selected1300);

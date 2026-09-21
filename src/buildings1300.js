@@ -1,7 +1,7 @@
 export const ECONOMY_1300={
  currency:'Florins',
  symbol:'ƒ',
- startFlorins:18000,
+ startFlorins:0,
  maxBuildingLevel:3
 };
 
