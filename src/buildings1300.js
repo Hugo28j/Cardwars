@@ -7,54 +7,54 @@ export const ECONOMY_1300={
 
 export const BUILDINGS_1300=[
  {
-  id:'fields',name:'Manorial Fields',category:'Food',cost:50,
+  id:'fields',name:'Manorial Fields',category:'Food',cost:50,maxWorkers:1600,normalWage:0.08,dailyRevenue:3.0,
   description:'Expand cultivated land, drainage and crop rotation around the city.',
-  effects:{food:4,income:50}
+  effects:{food:4}
  },
  {
-  id:'pastures',name:'Sheep Pastures',category:'Food / Production',cost:65,
+  id:'pastures',name:'Sheep Pastures',category:'Food / Production',cost:65,maxWorkers:1100,normalWage:0.09,dailyRevenue:3.4,
   description:'Organised grazing grounds supply meat, wool and hides to local workshops.',
-  effects:{food:2,economy:1,income:80}
+  effects:{food:2,economy:1}
  },
  {
-  id:'textiles',name:'Textile Workshop',category:'Production',cost:90,
+  id:'textiles',name:'Textile Workshop',category:'Production',cost:90,maxWorkers:750,normalWage:0.12,dailyRevenue:5.5,
   description:'Urban looms turn wool and flax into higher-value cloth for local and export markets.',
-  effects:{economy:4,income:220}
+  effects:{economy:4}
  },
  {
-  id:'forge',name:'Weapons Forge',category:'Military / Production',cost:115,
+  id:'forge',name:'Weapons Forge',category:'Military / Production',cost:115,maxWorkers:480,normalWage:0.15,dailyRevenue:5.8,
   description:'Smiths produce arms, armour and tools while improving military supply.',
-  effects:{technology:1,army:150,income:120}
+  effects:{technology:1,army:150}
  },
  {
-  id:'market',name:'Market Hall',category:'Trade',cost:135,
+  id:'market',name:'Market Hall',category:'Trade',cost:135,maxWorkers:520,normalWage:0.13,dailyRevenue:6.5,
   description:'A regulated central market raises trade volume, tolls and commercial stability.',
-  effects:{economy:3,stability:1,income:250}
+  effects:{economy:3,stability:1}
  },
  {
-  id:'barracks',name:'Professional Barracks',category:'Army',cost:165,
+  id:'barracks',name:'Professional Barracks',category:'Army',cost:165,maxWorkers:380,normalWage:0.16,dailyRevenue:1.0,
   description:'Permanent quarters and training grounds support a larger professional military core.',
-  effects:{army:300,stability:1,income:-90}
+  effects:{army:300,stability:1}
  },
  {
-  id:'dockyard',name:'Royal Dockyard',category:'Navy',cost:200,requiresCoast:true,
+  id:'dockyard',name:'Royal Dockyard',category:'Navy',cost:200,requiresCoast:true,maxWorkers:560,normalWage:0.16,dailyRevenue:4.0,
   description:'Slipways, stores and naval craftsmen expand dedicated military shipping capacity.',
-  effects:{navy:3,economy:1,income:-70}
+  effects:{navy:3,economy:1}
  },
  {
-  id:'walls',name:'Stone Fortifications',category:'Defence',cost:230,
+  id:'walls',name:'Stone Fortifications',category:'Defence',cost:230,maxWorkers:260,normalWage:0.13,dailyRevenue:0.8,
   description:'Improved walls, towers and gates make the province harder to capture and easier to control.',
-  effects:{stability:4,income:-40}
+  effects:{stability:4}
  },
  {
-  id:'guildhall',name:'Guild Hall',category:'Civic / Production',cost:270,
+  id:'guildhall',name:'Guild Hall',category:'Civic / Production',cost:270,maxWorkers:340,normalWage:0.15,dailyRevenue:5.5,
   description:'Recognised guilds coordinate skilled labour, quality standards and urban commerce.',
-  effects:{economy:2,stability:2,income:180}
+  effects:{economy:2,stability:2}
  },
  {
-  id:'university',name:'University & Scriptorium',category:'Knowledge',cost:300,
+  id:'university',name:'University & Scriptorium',category:'Knowledge',cost:300,maxWorkers:220,normalWage:0.18,dailyRevenue:2.5,
   description:'Schools, scholars and manuscript production accelerate administration and technical knowledge.',
-  effects:{technology:5,economy:1,income:-30}
+  effects:{technology:5,economy:1}
  }
 ];
 
