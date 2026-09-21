@@ -21,7 +21,7 @@ const REALMS=[...new Set(CITIES.map(c=>c.realm))].sort((a,b)=>a.localeCompare(b)
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const provinceStrength1300=c=>{
  const scoreTotal=[c.food,c.economyScore,c.technology,c.stability].reduce((sum,n)=>sum+(Number.isFinite(n)?n:0),0);
- return scoreTotal*10+(Number(c.army)||0)+(Number(c.people)||0)/50+(Number(c.navy)||0)*2;
+ return scoreTotal*10-1000+(Number(c.army)||0)*2+(Number(c.people)||0)/40+(Number(c.navy)||0)*10;
 };
 const countryRankings1300=()=>{
  const grouped=new Map();
@@ -61,15 +61,15 @@ function rankingsPage(){
  const rankings=countryRankings1300(),leader=rankings[0],totalStrength=rankings.reduce((sum,r)=>sum+r.strength,0);
  return `<main class="rankings-page">
   <div class="page-title rankings-title"><div><span class="eyebrow">COUNTRY POWER · c. 1300 CE</span><h1>Rankings<span class="title-dot">.</span></h1><p>Every province contributes its own strength. A country's score is the sum of all its researched provinces.</p></div><div class="ranking-leader"><span>#1 CURRENTLY</span><strong>${esc(leader?.country||'—')}</strong><small>${leader?strengthNumber(leader.strength):'—'} strength</small></div></div>
-  <div class="ranking-formula">${icon('help')}<div><strong>Strength formula</strong><p><b>Province</b> = (Food + Economy + Technology + Stability) × 10 + Army + Population ÷ 50 + Navy × 2. <b>Country</b> = sum of every province in that country.</p></div></div>
+  <div class="ranking-formula">${icon('help')}<div><strong>Strength formula</strong><p><b>Province</b> = (Food + Economy + Technology + Stability) × 10 − 1000 + Army × 2 + Population ÷ 40 + Navy × 10. <b>Country</b> = sum of every province in that country.</p></div></div>
   <div class="ranking-overview"><span><strong>${rankings.length}</strong><small>COUNTRIES</small></span><span><strong>${CITIES_1300.length}</strong><small>PROVINCES</small></span><span><strong>${strengthNumber(totalStrength)}</strong><small>TOTAL STRENGTH</small></span></div>
   <section class="country-ranking-list" aria-label="Country strength ranking">
    <div class="country-ranking-head"><span>Rank</span><span>Country</span><span>Provinces</span><span>Total strength</span></div>
    ${rankings.map(r=>`<details class="country-ranking-row ${r.rank<=3?'top-three':''}">
     <summary><span class="rank-number">#${String(r.rank).padStart(2,'0')}</span><span class="rank-country">${r.rank<=3?icon('star'):flag()}<strong>${esc(r.country)}</strong></span><span class="rank-provinces">${r.provinces.length}</span><span class="rank-strength">${strengthNumber(r.strength)}</span></summary>
     <div class="province-ranking-wrap"><div class="province-ranking-table">
-     <div class="province-ranking-head"><span>Province</span><span>4 stats ×10</span><span>Army</span><span>Population ÷50</span><span>Navy ×2</span><span>Strength</span></div>
-     ${r.provinces.map(c=>{const stats=(c.food+c.economyScore+c.technology+c.stability)*10,army=(Number(c.army)||0),pop=(Number(c.people)||0)/50,navy=(Number(c.navy)||0)*2;return `<div class="province-ranking-row"><span><strong>${esc(displayCityName1300(c))}</strong><small>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</small></span><span>${strengthNumber(stats)}</span><span>${strengthNumber(army)}</span><span>${strengthNumber(pop)}</span><span>${strengthNumber(navy)}</span><span><strong>${strengthNumber(c.strength)}</strong></span></div>`;}).join('')}
+     <div class="province-ranking-head"><span>Province</span><span>4 stats ×10 −1000</span><span>Army ×2</span><span>Population ÷40</span><span>Navy ×10</span><span>Strength</span></div>
+     ${r.provinces.map(c=>{const stats=(c.food+c.economyScore+c.technology+c.stability)*10-1000,army=(Number(c.army)||0)*2,pop=(Number(c.people)||0)/40,navy=(Number(c.navy)||0)*10;return `<div class="province-ranking-row"><span><strong>${esc(displayCityName1300(c))}</strong><small>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</small></span><span>${strengthNumber(stats)}</span><span>${strengthNumber(army)}</span><span>${strengthNumber(pop)}</span><span>${strengthNumber(navy)}</span><span><strong>${strengthNumber(c.strength)}</strong></span></div>`;}).join('')}
     </div></div>
    </details>`).join('')}
   </section>
