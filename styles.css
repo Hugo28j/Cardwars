@@ -251,3 +251,101 @@
  .policy-row{align-items:flex-start;flex-direction:column}
  .tax-stepper,.wage-stepper{justify-content:flex-start}
 }
+
+/* Player flag editor */
+.game-flag-editor{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(300px,1.2fr);gap:22px;align-items:center;border-top:1px solid #465248;border-bottom:1px solid #465248;padding:18px 0;margin:8px 0 22px}
+.game-flag-copy>span{display:block;font-size:8px;letter-spacing:1.2px;color:var(--gold)}
+.game-flag-copy>strong{display:block;font-family:var(--serif);font-size:22px;margin-top:3px}
+.game-flag-copy>small{display:block;color:var(--muted);font-size:9px;line-height:1.45;margin-top:5px}
+.flag-palette{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.flag-palette button{width:25px;height:25px;border-radius:50%;background:var(--flag-paint);border:2px solid #15201b;box-shadow:0 0 0 1px #657168}
+.flag-palette button.active{box-shadow:0 0 0 2px #e0cf9b;transform:scale(1.08)}
+.flag-reset-btn{margin-top:10px}
+.game-flag-canvas{display:grid;grid-template-columns:112px minmax(220px,1fr);gap:18px;align-items:center;justify-items:center}
+.flag-shield{position:relative;width:100%;height:100%;overflow:hidden;clip-path:polygon(8% 0,92% 0,100% 8%,96% 68%,78% 88%,50% 100%,22% 88%,4% 68%,0 8%);background:#1a211d;padding:3px}
+.flag-shield>.flag-grid{clip-path:inherit}
+.flag-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;overflow:hidden}
+.flag-grid button{min-width:0;min-height:0;border:0;padding:0;margin:0;background:var(--flag-cell);pointer-events:none}
+.flag-grid.editable button{pointer-events:auto;cursor:crosshair}
+.flag-editor-grid{width:100%;aspect-ratio:3/2;border:2px solid #8b7a55;background:#0f1714;padding:3px;box-shadow:0 8px 24px #0005}
+.flag-editor-grid .flag-grid{clip-path:none}
+.editor-preview{width:105px;height:122px;box-shadow:0 8px 22px #0006}
+
+/* Country shield on campaign map */
+.game-country-shield{position:absolute;left:18px;top:18px;z-index:24;width:74px;height:86px;border:0;background:transparent;padding:0;filter:drop-shadow(0 5px 8px #0009);cursor:pointer}
+.game-country-shield:hover{transform:translateY(-2px)}
+.game-country-shield .map-shield{width:74px;height:86px;border:2px solid #d3bb78;background:#111914;padding:4px}
+
+/* Country management panel */
+.game-country-panel{position:absolute;z-index:30;left:0;top:0;bottom:0;width:570px;background:linear-gradient(180deg,#111c18fa,#0b1311fb);border-right:1px solid #6c785f;box-shadow:16px 0 36px #0008;transform:translateX(-101%);transition:transform .22s ease;overflow:hidden;pointer-events:none}
+.game-country-panel.open{transform:translateX(0);pointer-events:auto}
+.country-panel-head{height:96px;display:flex;align-items:center;gap:14px;padding:12px 54px 12px 18px;background:linear-gradient(135deg,#1d2b25,#111a17);border-bottom:1px solid #58665b;position:relative}
+.country-panel-head>div:last-child>span{display:block;font-size:7px;letter-spacing:1.3px;color:#c8ad6a}
+.country-panel-head h2{font-family:var(--serif);font-size:27px;margin-top:3px}
+.country-panel-close{position:absolute;right:14px;top:13px;width:32px;height:32px;border-radius:50%;border:1px solid #647269;background:#0c1512;color:#dce0d2;font-size:23px}
+.country-panel-close:hover{border-color:#b69a5f;color:#ead08e}
+.country-panel-mini-flag{width:58px;height:66px;flex:0 0 auto}
+.country-panel-mini-flag .flag-shield{width:58px;height:66px;border:1px solid #c5ad70;padding:2px}
+.country-panel-tabs{display:grid;grid-template-columns:repeat(6,1fr);background:#0c1512;border-bottom:1px solid #59675d}
+.country-panel-tabs button{min-width:0;padding:11px 5px;border:0;border-right:1px solid #39453f;background:#111b17;color:#8c9a90;font-size:7px;letter-spacing:.45px}
+.country-panel-tabs button:last-child{border-right:0}
+.country-panel-tabs button.active{background:#1a2822;color:#e0ca8e;box-shadow:inset 0 -2px #c0a35f}
+.country-panel-scroll{height:calc(100% - 136px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:35px;scrollbar-width:thin;scrollbar-color:#677469 #0c1512}
+.country-panel-scroll::-webkit-scrollbar{width:8px}.country-panel-scroll::-webkit-scrollbar-thumb{background:#677469}.country-panel-scroll::-webkit-scrollbar-track{background:#0c1512}
+.country-overview-hero{display:flex;align-items:center;gap:20px;padding:22px;border-bottom:1px solid #465249;background:linear-gradient(135deg,#18251f,#101915)}
+.country-flag-large{width:105px;height:122px;flex:0 0 auto}
+.country-flag-large .country-panel-flag{width:105px;height:122px;border:2px solid #c5ad70;padding:4px}
+.country-overview-hero span,.country-policy-card>span,.country-section-title>span,.tech-summary>span,.rebellion-summary>span,.people-happiness span{font-size:8px;letter-spacing:1.1px;color:#c8aa64}
+.country-overview-hero h2{font-family:var(--serif);font-size:31px;margin:3px 0 5px}
+.country-overview-hero p{font-size:9px;color:#97a49a}
+.country-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #465249}
+.country-stat-grid.people{grid-template-columns:repeat(2,1fr)}
+.country-stat-grid>div{padding:13px;border-right:1px solid #465249}
+.country-stat-grid>div:last-child{border-right:0}
+.country-stat-grid span{display:block;font-size:7px;color:#7e8c82;text-transform:uppercase;letter-spacing:.6px}
+.country-stat-grid strong{display:block;font-family:var(--serif);font-size:18px;margin-top:3px}
+.country-policy-card{padding:16px;border-bottom:1px solid #465249}
+.country-policy-card h3{font-family:var(--serif);font-size:20px;margin:4px 0}
+.country-policy-card p{font-size:9px;line-height:1.55;color:#94a198}
+.country-national-stats{padding:14px}
+.country-national-stats>div{display:grid;grid-template-columns:90px 55px 1fr;gap:8px;align-items:center;margin:8px 0}
+.country-national-stats span{font-size:8px;color:#9eaba0}.country-national-stats strong{font-size:8px;text-align:right}.country-national-stats i{height:5px;background:#26332d}.country-national-stats b{display:block;height:100%;background:#ae955c}
+
+/* Country economy */
+.country-money-hero{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #465249;background:#14201b}
+.country-money-hero>div{padding:17px;border-right:1px solid #465249}.country-money-hero>div:last-child{border-right:0}
+.country-money-hero span{display:block;font-size:7px;letter-spacing:.9px;color:#849188}
+.country-money-hero strong{display:block;font-family:var(--serif);font-size:25px;color:#dfcb90;margin-top:3px}
+.country-money-hero strong.negative,.company-money strong.negative{color:#cf8175}
+.country-budget-table{padding:14px 16px;border-bottom:1px solid #465249}
+.country-budget-title{display:flex!important;justify-content:space-between;border:0!important;padding:0 0 8px!important}.country-budget-title span{font-size:8px;letter-spacing:1px;color:#c4a75f}.country-budget-title small{font-size:7px;color:#77857b}
+.country-budget-table>div{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid #36423c;font-size:9px}
+.country-budget-table>div strong{font-family:var(--serif);font-size:14px}
+.country-budget-table .balance{color:#e0cf9b;border-top-color:#766942}.country-budget-table .last-month{margin-top:6px;color:#839087}
+.country-econ-policy{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:11px 16px;border-bottom:1px solid #3e4a43;background:#0f1916}
+.country-econ-policy>div:first-child span{display:block;font-size:9px}.country-econ-policy>div:first-child small{display:block;font-size:7px;color:#7e8b82;margin-top:2px}
+.country-section-title{display:flex;justify-content:space-between;align-items:end;padding:15px 16px 9px;border-bottom:1px solid #465249}
+.country-section-title small{font-size:7px;color:#79867e}
+.country-company-list{padding:9px}
+.country-company-list article{display:grid;grid-template-columns:54px minmax(0,1fr) 92px;gap:9px;align-items:center;padding:9px;border:1px solid #435048;background:#131f1a;margin-bottom:7px;border-radius:4px}
+.company-icon{width:54px;height:54px;display:grid;place-items:center;color:#d0b975;background:#213029;border:1px solid #59675c}.company-icon .province-building-svg{width:43px;height:43px}
+.company-main>div{display:flex;justify-content:space-between;gap:7px}.company-main strong{font-family:var(--serif);font-size:14px}.company-main>div span{font-size:7px;color:#c5aa68}.company-main small{font-size:7px;color:#7d8b82}.company-main p{font-size:8px;color:#9da99f;margin-top:5px}.company-main b{color:#c7d1c4}
+.company-money{text-align:right}.company-money span,.company-money small{display:block;font-size:7px;color:#7f8d84}.company-money strong{display:block;font-family:var(--serif);font-size:15px;color:#d9cc9a;margin:2px 0}
+.country-empty{padding:18px;color:#849188;font-size:9px}
+
+/* People */
+.people-happiness{padding:18px;border-bottom:1px solid #465249}.people-happiness>div{display:flex;justify-content:space-between;align-items:end}.people-happiness strong{font-family:var(--serif);font-size:30px}.people-happiness strong small{font-size:12px;color:#849188}.people-happiness>i{display:block;height:7px;background:#29362f;margin:9px 0}.people-happiness>i b{display:block;height:100%;background:#ad955a}.people-happiness p{font-size:8px;color:#829087;line-height:1.45}
+.population-groups{padding:10px 16px}.population-groups article{padding:10px 0;border-bottom:1px solid #35423b}.population-groups article>div{display:flex;justify-content:space-between}.population-groups strong{font-family:var(--serif);font-size:14px}.population-groups span{font-size:8px;color:#c3a964}.population-groups i{display:block;height:4px;background:#27342e;margin:6px 0}.population-groups i b{display:block;height:100%;background:#738b78}.population-groups small{font-size:7px;color:#7d8a82}
+
+/* Decisions / technology / rebellions */
+.decision-list{padding:10px}.decision-list article{position:relative;padding:14px 110px 14px 14px;border:1px solid #465249;background:#131e1a;margin-bottom:8px}.decision-list strong{font-family:var(--serif);font-size:16px}.decision-list p{font-size:8px;color:#89968d;line-height:1.45;margin-top:4px}.decision-list button{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:1px solid #59665d;background:#101815;color:#6f7c74;padding:8px;font-size:7px}
+.tech-summary,.rebellion-summary{padding:18px;border-bottom:1px solid #465249}.tech-summary strong,.rebellion-summary strong{display:block;font-family:var(--serif);font-size:31px;margin:4px 0}.tech-summary strong small,.rebellion-summary strong small{font-size:12px;color:#7d8a82}.tech-summary p,.rebellion-summary p{font-size:8px;color:#86938a;line-height:1.45}
+.tech-tree{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px}.tech-tree article{min-height:88px;border:1px solid #4b584f;background:#14201b;padding:12px;position:relative}.tech-tree article.unlocked{border-color:#8f7b49;background:#1a281f}.tech-tree article.locked{opacity:.55}.tech-tree span{font-size:7px;color:#89968c}.tech-tree strong{display:block;font-family:var(--serif);font-size:15px;margin:7px 0}.tech-tree small{font-size:7px;color:#c0a763}
+.rebellion-list{padding:10px 14px}.rebellion-list article{display:grid;grid-template-columns:160px 1fr 38px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #37443d}.rebellion-list strong{display:block;font-family:var(--serif);font-size:13px}.rebellion-list small{font-size:7px;color:#7e8b82}.rebellion-list i{height:5px;background:#2b3731}.rebellion-list i b{display:block;height:100%;background:#a65d52}.rebellion-list>article>span{text-align:right;font-size:8px;color:#c8897f}
+
+@media(max-width:760px){
+ .game-flag-editor{grid-template-columns:1fr}.game-flag-canvas{grid-template-columns:90px 1fr}.editor-preview{width:84px;height:98px}
+ .game-country-shield{left:10px;top:10px;width:62px;height:72px}.game-country-shield .map-shield{width:62px;height:72px}
+ .game-country-panel{width:min(96vw,570px)}.country-panel-tabs{grid-template-columns:repeat(3,1fr)}
+ .country-panel-scroll{height:calc(100% - 172px)}.country-stat-grid{grid-template-columns:repeat(2,1fr)}.country-company-list article{grid-template-columns:48px minmax(0,1fr)}.company-money{grid-column:2;text-align:left}.tech-tree{grid-template-columns:1fr}
+}
