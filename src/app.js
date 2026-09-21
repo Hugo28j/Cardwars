@@ -21,7 +21,7 @@ const REALMS=[...new Set(CITIES.map(c=>c.realm))].sort((a,b)=>a.localeCompare(b)
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const provinceStrength1300=c=>{
  const scoreTotal=[c.food,c.economyScore,c.technology,c.stability].reduce((sum,n)=>sum+(Number.isFinite(n)?n:0),0);
- return scoreTotal*10-1000+(Number(c.army)||0)*2+(Number(c.people)||0)/40+(Number(c.navy)||0)*10;
+ return Math.round(scoreTotal*10-1000+(Number(c.army)||0)*2+(Number(c.people)||0)/40+(Number(c.navy)||0)*10);
 };
 const countryRankings1300=()=>{
  const grouped=new Map();
@@ -36,7 +36,7 @@ const countryRankings1300=()=>{
   .sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country))
   .map((entry,i)=>({...entry,rank:i+1}));
 };
-const strengthNumber=n=>n.toLocaleString('en-GB',{minimumFractionDigits:Number.isInteger(n)?0:1,maximumFractionDigits:1});
+const strengthNumber=n=>Math.round(n).toLocaleString('en-GB');
 const count=()=>Object.keys(profile.collection).length;
 function button(text,action,cls='secondary',extra=''){return `<button class="btn ${cls}" data-action="${action}" ${extra}>${text}</button>`;}
 function toast(text){clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').classList.add('visible');toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4200);}
@@ -69,7 +69,7 @@ function rankingsPage(){
     <summary><span class="rank-number">#${String(r.rank).padStart(2,'0')}</span><span class="rank-country">${r.rank<=3?icon('star'):flag()}<strong>${esc(r.country)}</strong></span><span class="rank-provinces">${r.provinces.length}</span><span class="rank-strength">${strengthNumber(r.strength)}</span></summary>
     <div class="province-ranking-wrap"><div class="province-ranking-table">
      <div class="province-ranking-head"><span>Province</span><span>4 stats ×10 −1000</span><span>Army ×2</span><span>Population ÷40</span><span>Navy ×10</span><span>Strength</span></div>
-     ${r.provinces.map(c=>{const stats=(c.food+c.economyScore+c.technology+c.stability)*10-1000,army=(Number(c.army)||0)*2,pop=(Number(c.people)||0)/40,navy=(Number(c.navy)||0)*10;return `<div class="province-ranking-row"><span><strong>${esc(displayCityName1300(c))}</strong><small>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</small></span><span>${strengthNumber(stats)}</span><span>${strengthNumber(army)}</span><span>${strengthNumber(pop)}</span><span>${strengthNumber(navy)}</span><span><strong>${strengthNumber(c.strength)}</strong></span></div>`;}).join('')}
+     ${r.provinces.map(c=>{const stats=Math.round((c.food+c.economyScore+c.technology+c.stability)*10-1000),army=Math.round((Number(c.army)||0)*2),pop=Math.round((Number(c.people)||0)/40),navy=Math.round((Number(c.navy)||0)*10);return `<div class="province-ranking-row"><span><strong>${esc(displayCityName1300(c))}</strong><small>F ${c.food} · E ${c.economyScore} · T ${c.technology} · S ${c.stability}</small></span><span>${strengthNumber(stats)}</span><span>${strengthNumber(army)}</span><span>${strengthNumber(pop)}</span><span>${strengthNumber(navy)}</span><span><strong>${strengthNumber(c.strength)}</strong></span></div>`;}).join('')}
     </div></div>
    </details>`).join('')}
   </section>
