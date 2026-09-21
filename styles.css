@@ -217,3 +217,37 @@
 .province-building-copy{min-width:0}.province-building-copy>div:first-child{display:flex;justify-content:space-between;gap:5px}.province-building-copy strong{font-family:var(--serif);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.province-building-copy>div:first-child span{font-size:7px;color:#c7aa67;white-space:nowrap}.province-building-copy>small{display:block;font-size:7px;color:#7f8d83;text-transform:uppercase;margin:1px 0 4px}.province-building-copy>p{font-size:8px;line-height:1.35;color:#9ca99f;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.province-building-copy em{display:block;font-style:normal;font-size:7px;color:#bdc8bc;margin-top:5px}.province-level-pips{display:flex;gap:3px;margin-top:6px}.province-level-pips i{height:3px;background:#36433b;flex:1}.province-level-pips i.on{background:#b59a5f}
 .province-building-buy{display:flex;align-items:center}.province-building-buy button{width:100%;min-height:48px;border:1px solid #59675d;background:#111b17;color:#849188;border-radius:3px;padding:5px 3px;font-size:7px}.province-building-buy button:not(:disabled){border-color:#a98f56;color:#ded1a7;cursor:pointer}.province-building-buy button:not(:disabled):hover{background:#b89a5c18}.province-building-buy span,.province-building-buy strong{display:block}.province-building-buy strong{font-family:var(--serif);font-size:13px;color:#d6bd78;margin-top:3px}
 @media(max-width:700px){.game-province-panel{width:min(90vw,370px)}.province-building-card{grid-template-columns:50px minmax(0,1fr) 62px}.province-building-picture{width:50px;height:50px}.province-building-svg{width:40px;height:40px}}
+
+/* Labour economy, wages, taxes and live campaign time */
+.game-date-panel em{display:block;margin-top:5px;font-style:normal;font-size:7px;letter-spacing:.6px;color:#8da092}
+.province-economic-policy{padding:12px 13px;border-bottom:1px solid #465249;background:#0e1815}
+.policy-heading{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:8px}
+.policy-heading span{font-size:8px;letter-spacing:1.1px;color:#c3a864}
+.policy-heading small{font-size:7px;color:#748178;text-align:right}
+.policy-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #39463f}
+.policy-row>div:first-child strong{display:block;font-size:9px}
+.policy-row>div:first-child small{display:block;font-size:7px;color:#7d8a81;margin-top:2px;line-height:1.35}
+.tax-stepper,.wage-stepper{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.tax-stepper button,.wage-stepper button{width:24px;height:24px;border:1px solid #5b695f;background:#15211d;color:#d9dece;border-radius:3px}
+.tax-stepper button:hover,.wage-stepper button:hover:not(:disabled){border-color:#b39a61;color:#e2c982}
+.tax-stepper strong,.wage-stepper strong{min-width:45px;text-align:center;font-family:var(--serif);font-size:13px;color:#dbc98f}
+.wage-stepper .wage-reset{width:auto;padding:0 6px;font-size:7px;color:#8c998f}
+.wage-stepper .wage-reset:disabled{opacity:.3}
+.workforce-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#435048;margin-top:9px}
+.workforce-summary span{background:#121d19;padding:8px}
+.workforce-summary strong{display:block;font-family:var(--serif);font-size:15px}
+.workforce-summary small{display:block;font-size:6px;color:#7d8b82;margin-top:2px;letter-spacing:.5px}
+.sector-economy{display:grid;grid-template-columns:1fr 1fr;gap:3px 7px;margin-top:7px;padding-top:6px;border-top:1px solid #39463f}
+.sector-economy span{font-size:7px;color:#859389}
+.sector-economy span:first-child{grid-column:1/-1}
+.sector-economy b{color:#c9d1c6}
+.sector-economy b.negative{color:#c68378}
+.sector-wage{margin-top:6px}
+.sector-wage>span{display:block;font-size:7px;color:#9eaa9f;margin-bottom:4px}
+.province-building-card.unavailable{opacity:.58}
+.province-building-card.unavailable .province-building-picture{filter:grayscale(.7)}
+@media(max-width:700px){
+ .workforce-summary{grid-template-columns:1fr}
+ .policy-row{align-items:flex-start;flex-direction:column}
+ .tax-stepper,.wage-stepper{justify-content:flex-start}
+}
