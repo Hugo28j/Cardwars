@@ -61,38 +61,71 @@ function regionForCity1300(c){
  return 'east';
 }
 function shuffle1300(list){const a=[...list];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function ownedCardIds1300(){
+ return new Set(Object.entries(profile.collection1300||{}).filter(([,count])=>(Number(count)||0)>0).map(([id])=>id));
+}
 function guaranteedEight1300(pool,exclude=new Set()){
  const result=[],used=new Set(exclude);
  for(const [rarity,count] of [[0,5],[1,2],[2,1]]){
   const available=shuffle1300(pool.filter(c=>c.rarity===rarity&&!used.has(c.id)));
-  if(available.length<count)throw new Error('Not enough cards for starter pack');
+  if(available.length<count)return null;
   available.slice(0,count).forEach(c=>{result.push({id:c.id,duplicate:false});used.add(c.id);});
  }
  return shuffle1300(result);
 }
+function uniqueEight1300(pool,exclude=new Set()){
+ const available=shuffle1300(pool.filter(c=>!exclude.has(c.id)));
+ if(available.length<8)return null;
+ return available.slice(0,8).map(c=>({id:c.id,duplicate:false}));
+}
 function grantCards1300(cards){for(const r of cards)profile.collection1300[r.id]=(profile.collection1300[r.id]||0)+1;profile.packsOpened1300++;profile.drawn1300+=cards.length;profile.lastPack1300=cards;}
+function packFlipCard1300(r,index,{badge=true}={}){
+ const c=CITY_1300[r.id];
+ return `<div class="pack-flip-card ${index===0?'ready':''}" data-reveal-index="${index}">
+  <div class="pack-flip-inner">
+   <button class="pack-flip-back" data-action="reveal-pack-card" data-index="${index}" ${index===0?'':'disabled'} aria-label="Reveal card ${index+1}">
+    <span class="pack-back-crown">${icon('crown')}</span><strong>CARDWARS</strong><b>1300</b><small>${index===0?'CLICK TO REVEAL':'LOCKED'}</small>
+   </button>
+   <div class="pack-flip-front">${card1300(c,true)}${badge?`<span class="pack-result-badge ${r.duplicate?'duplicate':''}">${r.duplicate?'DUPLICATE':'NEW CARD'}</span>`:''}</div>
+  </div>
+ </div>`;
+}
+function revealPackCard1300(buttonEl){
+ const slot=buttonEl.closest('.pack-flip-card');if(!slot||slot.classList.contains('revealed'))return;
+ slot.classList.add('revealed');buttonEl.disabled=true;
+ const index=Number(slot.dataset.revealIndex)||0,next=slot.parentElement?.querySelector(`[data-reveal-index="${index+1}"]`);
+ if(next){
+  next.classList.add('ready');
+  const nextButton=next.querySelector('[data-action="reveal-pack-card"]');
+  if(nextButton){nextButton.disabled=false;nextButton.querySelector('small').textContent='CLICK TO REVEAL';}
+ }else{
+  modal.classList.add('pack-reveal-complete');
+  modal.querySelectorAll('[data-reveal-complete]').forEach(el=>el.disabled=false);
+ }
+}
 function showStarterPack1300(cards,title,subtitle,nextLabel='Continue'){
- showDialog(`<div class="starter-pack-reveal"><span class="eyebrow">FREE STARTER PACK · 1300 CE</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p><div class="starter-pack-grid">${cards.map(r=>`<div>${card1300(CITY_1300[r.id],true)}</div>`).join('')}</div><div class="dialog-actions">${button(nextLabel,'close','primary')}</div></div>`,'starter-pack-dialog');
+ showDialog(`<div class="starter-pack-reveal"><span class="eyebrow">FREE STARTER PACK · 1300 CE</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p><div class="starter-pack-grid">${cards.map((r,i)=>packFlipCard1300(r,i,{badge:false})).join('')}</div><div class="pack-reveal-hint">${icon('cards')} Reveal the cards one by one</div><div class="dialog-actions">${button(nextLabel,'close','primary','data-reveal-complete disabled')}</div></div>`,'starter-pack-dialog');
 }
 function chooseStarterRegion1300(regionId){
  if(profile.starterRegionClaimed)return;
  const region=STARTER_REGION_BY_ID[regionId];if(!region)return;
- const pool=CITIES_1300.filter(c=>regionForCity1300(c)===regionId);
- const cards=guaranteedEight1300(pool);
+ const pool=CITIES_1300.filter(c=>regionForCity1300(c)===regionId),owned=ownedCardIds1300();
+ const cards=guaranteedEight1300(pool,owned);
+ if(!cards){toast('This region no longer has enough unowned Common, Uncommon and Rare cards for the guaranteed starter pack.');return;}
  grantCards1300(cards);
  profile.starterRegion=regionId;profile.starterRegionClaimed=true;profile.starterCardIds=cards.map(x=>x.id);
  save();render();
- showStarterPack1300(cards,`${region.name} Pack`,'Guaranteed: 5 Common · 2 Uncommon · 1 Rare','Next: free welcome pack');
+ showStarterPack1300(cards,`${region.name} Pack`,'Guaranteed: 5 Common · 2 Uncommon · 1 Rare · no duplicates','Next: free welcome pack');
 }
 function claimWelcomePack1300(){
  if(!profile.starterRegionClaimed||profile.welcomePackClaimed)return;
- const owned=new Set(profile.starterCardIds);
- const cards=guaranteedEight1300(CITIES_1300,owned);
+ const cards=uniqueEight1300(CITIES_1300,ownedCardIds1300());
+ if(!cards){toast('There are not enough unowned 1300 cards left for the free welcome pack.');return;}
  grantCards1300(cards);
  profile.welcomePackClaimed=true;profile.welcomeCardIds=cards.map(x=>x.id);profile.onboardingComplete=true;
  profile.deck=[...profile.starterCardIds,...profile.welcomeCardIds].filter((id,i,a)=>a.indexOf(id)===i).slice(0,16);
  save();view='deck';render();
- showStarterPack1300(cards,'Welcome Pack','Eight extra unique 1300 cards. Your first 16-card deck is ready.','Build my deck');
+ showStarterPack1300(cards,'Welcome Pack','Eight random 1300 cards you did not already own. Your first 16-card deck is ready.','Build my deck');
 }
 
 function ensureEconomyProfile(p){
@@ -261,7 +294,7 @@ async function setupGoogleLogin(){
 function logoutAccount(){try{localStorage.removeItem(SESSION_KEY);}catch{}currentAccountKey=null;authUser=null;profile=freshProfile();view='collection';render();}
 function onboardingPage(){
  const region=STARTER_REGION_BY_ID[profile.starterRegion];
- if(!profile.starterRegionClaimed)return `<main class="onboarding-page"><section class="onboarding-intro"><span class="eyebrow">FIRST CAMPAIGN · FREE STARTER PACK 1/2</span><h1>Choose your region<span class="title-dot">.</span></h1><p>Your region pack contains exactly <strong>5 Common, 2 Uncommon and 1 Rare</strong> city from that part of Europe.</p></section><section class="region-choice-grid">${STARTER_REGIONS_1300.map(r=>{const pool=CITIES_1300.filter(c=>regionForCity1300(c)===r.id);return `<button data-action="starter-region" data-id="${r.id}"><span>${r.short}</span><strong>${r.name}</strong><p>${r.description}</p><small>${pool.length} possible 1300 cards · 8 free starter cards</small></button>`;}).join('')}</section></main>`;
+ if(!profile.starterRegionClaimed)return `<main class="onboarding-page"><section class="onboarding-intro"><span class="eyebrow">FIRST CAMPAIGN · FREE STARTER PACK 1/2</span><h1>Choose your region<span class="title-dot">.</span></h1><p>Your region pack contains exactly <strong>5 Common, 2 Uncommon and 1 Rare</strong> city from that part of Europe. Your two free starter packs never draw a card you already own.</p></section><section class="region-choice-grid">${STARTER_REGIONS_1300.map(r=>{const pool=CITIES_1300.filter(c=>regionForCity1300(c)===r.id);return `<button data-action="starter-region" data-id="${r.id}"><span>${r.short}</span><strong>${r.name}</strong><p>${r.description}</p><small>${pool.length} possible 1300 cards · 8 free starter cards</small></button>`;}).join('')}</section></main>`;
  return `<main class="onboarding-page welcome-pack-page"><section class="welcome-pack-card"><span class="eyebrow">FREE STARTER PACK 2/2</span><h1>Your ${esc(region?.name||'regional')} cards are secured<span class="title-dot">.</span></h1><p>Now open one final free 8-card welcome pack. It avoids every card you already received, so your first two packs give you <strong>16 unique owned cards</strong> — exactly enough for your first deck.</p><div class="starter-progress"><span class="done">1 <small>REGION PACK</small></span><i></i><span>2 <small>WELCOME PACK</small></span></div><button class="btn primary large-button" data-action="starter-welcome">Open free welcome pack ${icon('arrow')}</button></section></main>`;
 }
 function flag(){return `<span class="realm-sigil" aria-hidden="true">${icon('crown')}</span>`;}
@@ -294,7 +327,7 @@ function drawPack1300(){
 }
 function showPack1300(cards){
  const fresh=cards.filter(x=>!x.duplicate).length;
- showDialog(`<div class="pack1300-reveal"><span class="eyebrow">1300 EUROPE PACK</span><h2>${fresh?fresh+' new '+(fresh===1?'city':'cities'):'Five familiar cities'}</h2><p>Every card in this pack comes from the active c. 1300 collection.</p><div class="pack1300-reveal-grid">${cards.map(r=>{const c=CITY_1300[r.id];return `<div class="pack1300-reveal-card">${card1300(c,true)}<span class="${r.duplicate?'duplicate':''}">${r.duplicate?'DUPLICATE':'NEW CARD'}</span></div>`;}).join('')}</div><div class="dialog-actions">${button('Close','close')}${button('Buy another pack · ƒ200','open-pack-1300','primary')}</div></div>`,'pack1300-dialog');
+ showDialog(`<div class="pack1300-reveal"><span class="eyebrow">1300 EUROPE PACK</span><h2>${fresh?fresh+' new '+(fresh===1?'city':'cities'):'Five familiar cities'}</h2><p>Reveal the five cards one by one. Paid packs can contain duplicates.</p><div class="pack1300-reveal-grid">${cards.map((r,i)=>packFlipCard1300(r,i)).join('')}</div><div class="pack-reveal-hint">${icon('cards')} Reveal the cards one by one</div><div class="dialog-actions">${button('Close','close','secondary','data-reveal-complete disabled')}${button('Buy another pack · ƒ200','open-pack-1300','primary','data-reveal-complete disabled')}</div></div>`,'pack1300-dialog');
 }
 function packs1300Page(){
  const canBuy=profile.florins>=PACK_PRICE_1300;
@@ -466,6 +499,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='starter-welcome'){claimWelcomePack1300();return;}
  if(['collection','packs','deck','game','rankings','atlas'].includes(a)){navigate(a);return;}
  if(a==='ranking-category'){rankingCategory=id;render();return;}
+ if(a==='reveal-pack-card'){revealPackCard1300(b);return;}
  if(a==='open-pack-1300'){const cards=drawPack1300();if(!cards)return;render();showPack1300(cards);return;}
  if(a==='last-pack-1300'){showPack1300(profile.lastPack1300);return;}
  if(a==='deck-toggle'){toggleDeckCard1300(id);return;}

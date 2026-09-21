@@ -147,3 +147,28 @@
 .pack1300-copy .large-button:disabled{opacity:.4;cursor:not-allowed}
 @media(max-width:1100px){.region-choice-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.starter-pack-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.login-page{padding:18px}.login-card{padding:25px 20px}.login-card h1{font-size:40px}.onboarding-page{padding:36px 16px}.region-choice-grid{grid-template-columns:1fr}.region-choice-grid button{min-height:0}.region-choice-grid p{min-height:0}.welcome-pack-card{padding:30px 18px}.starter-pack-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.deck-slots{grid-template-columns:repeat(4,minmax(0,1fr))}.player-chip{display:none}}
+
+/* Sequential pack card reveal */
+.pack-flip-card{position:relative;min-width:0;min-height:420px;perspective:1200px;opacity:.5;transform:translateY(8px);transition:opacity .25s,transform .25s}
+.pack-flip-card.ready,.pack-flip-card.revealed{opacity:1;transform:none}
+.pack-flip-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .68s cubic-bezier(.2,.72,.2,1)}
+.pack-flip-card.revealed .pack-flip-inner{transform:rotateY(180deg)}
+.pack-flip-back,.pack-flip-front{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:8px}
+.pack-flip-back{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px solid #8c7648;background:radial-gradient(circle at 50% 37%,#33463a,#17221d 66%),linear-gradient(145deg,#243029,#131c18);color:#d9c58c;box-shadow:0 12px 28px #0005;cursor:pointer}
+.pack-flip-back:disabled{cursor:default;filter:brightness(.65)}
+.pack-flip-card.ready:not(.revealed) .pack-flip-back{box-shadow:0 12px 28px #0005,0 0 0 1px #d1af64aa,0 0 22px #d1af6420;animation:packBackPulse 1.8s ease-in-out infinite}
+.pack-back-crown{width:66px;height:66px;display:grid;place-items:center;border:1px solid #9d8450;transform:rotate(45deg);margin-bottom:12px}
+.pack-back-crown .icon{width:37px;height:37px;transform:rotate(-45deg)}
+.pack-flip-back>strong{font-family:var(--serif);font-size:25px;letter-spacing:2px}
+.pack-flip-back>b{font-family:var(--serif);font-size:38px;font-weight:400}
+.pack-flip-back>small{font-size:7px;letter-spacing:1.5px;color:#9da89e}
+.pack-flip-front{transform:rotateY(180deg);pointer-events:none}
+.pack-flip-front>.city-card{height:100%;transform:none!important;pointer-events:none}
+.pack-result-badge{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:8;background:#284634;color:#d7e7ce;border:1px solid #6d986e;padding:4px 7px;font-size:7px;letter-spacing:.8px;white-space:nowrap}
+.pack-result-badge.duplicate{background:#453a27;color:#e3c982;border-color:#8c7544}
+.pack-reveal-hint{display:flex;justify-content:center;align-items:center;gap:7px;color:#9cab9f;font-size:9px;letter-spacing:.6px;margin:-2px 0 10px}.pack-reveal-hint .icon{width:14px;color:var(--gold)}
+.pack1300-dialog:not(.pack-reveal-complete) .modal-close,.starter-pack-dialog:not(.pack-reveal-complete) .modal-close{display:none}
+.pack1300-dialog [data-reveal-complete]:disabled,.starter-pack-dialog [data-reveal-complete]:disabled{opacity:.35;cursor:not-allowed}
+@keyframes packBackPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(max-width:1100px){.pack-flip-card{min-height:410px}}
+@media(max-width:700px){.pack-flip-card{min-height:390px}}
