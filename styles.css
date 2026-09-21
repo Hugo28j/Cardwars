@@ -357,3 +357,28 @@
 .budget-stepper strong{min-width:58px;text-align:center;font-family:var(--serif);font-size:14px;color:#dbc98f}
 .country-econ-policy.stability-spending{background:linear-gradient(90deg,#171d18,#17231e)}
 .country-econ-policy.stability-spending small{max-width:320px;line-height:1.45}
+
+/* Campaign fullscreen HUD + visible flag */
+.flag-grid>span{display:block;min-width:0;min-height:0;background:var(--flag-cell)}
+.game-campaign-view{height:100dvh!important;min-height:0!important;overflow:hidden!important;display:block!important}
+.game-campaign-view .game-map-shell{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+.game-campaign-view .game-map-shell>#game-map-host{position:absolute;inset:0}
+.game-campaign-view .game-country-shield{left:22px;top:20px;width:78px;height:92px;z-index:26}
+.game-campaign-view .game-country-shield .map-shield{width:78px;height:92px;border:2px solid #d3bb78;padding:4px;background:#111914}
+.game-campaign-view .game-map-actions{left:112px;top:24px;z-index:25}
+.game-campaign-view .map-top{left:112px;top:67px;right:210px}
+.game-campaign-view .map-heading{max-width:300px}
+.game-campaign-view .map-heading .eyebrow,.game-campaign-view .map-heading>span:last-child{white-space:nowrap}
+.game-campaign-view .game-date-panel{top:20px;right:24px}
+.game-campaign-view .game-treasury-panel{top:116px;right:24px}
+.stability-budget-slider{width:235px;display:flex;flex-direction:column;gap:5px;align-items:stretch}
+.stability-budget-slider>strong{text-align:right;font-family:var(--serif);font-size:15px;color:#dbc98f}
+.stability-budget-slider input[type="range"]{width:100%;accent-color:#b89b5e;cursor:pointer}
+.stability-budget-slider>div{display:flex;justify-content:space-between;font-size:7px;color:#748178}
+@media(max-width:760px){
+ .game-campaign-view .game-country-shield{left:10px;top:10px;width:64px;height:76px}
+ .game-campaign-view .game-country-shield .map-shield{width:64px;height:76px}
+ .game-campaign-view .game-map-actions{left:82px;top:12px}
+ .game-campaign-view .map-top{left:82px;top:55px;right:150px}
+ .stability-budget-slider{width:100%}
+}
