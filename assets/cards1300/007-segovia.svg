@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+<title id="t">Segovia, c. 1300 — stylised historical reconstruction</title>
+<desc id="d">Atmospheric illustrated reconstruction created for the Cardwars historical city card.</desc>
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#71858f"/><stop offset="1" stop-color="#d1a77a"/></linearGradient>
+ <linearGradient id="land" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#766047"/><stop offset="1" stop-color="#342c25"/></linearGradient>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="7"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .14 0"/><feBlend in="SourceGraphic" mode="multiply"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="1.5"/></filter>
+</defs>
+<rect width="1200" height="800" fill="url(#sky)"/>
+<circle cx="930" cy="130" r="70" fill="#efd8a4" opacity=".62"/>
+<path d="M0 420 Q210 330 420 400 T820 380 T1200 390 V800 H0Z" fill="#635448" opacity=".45"/>
+<path d="M0 505 Q260 450 520 495 T1200 470 V800 H0Z" fill="url(#land)"/>
+<g transform="translate(115 405)" fill="none" stroke="#b0926e" stroke-width="26"><path d="M0 155H900"/><path d="M20 155V30M130 155V30M240 155V30M350 155V30M460 155V30M570 155V30M680 155V30M790 155V30M900 155V30"/><path d="M20 80Q75 10 130 80M130 80Q185 10 240 80M240 80Q295 10 350 80M350 80Q405 10 460 80M460 80Q515 10 570 80M570 80Q625 10 680 80M680 80Q735 10 790 80M790 80Q845 10 900 80"/></g><path d="M0 645 Q180 610 360 640 T720 640 T1080 640 T1200 640V800H0Z" fill="#494038"/><g><rect x="160" y="480" width="85" height="90" fill="#c5a77c"/><path d="M152 480 L202.5 435 L253 480Z" fill="#6d4434"/><rect x="175" y="505" width="16" height="26" fill="#3a312a"/><rect x="214" y="505" width="16" height="26" fill="#3a312a"/></g><g><rect x="890" y="470" width="85" height="90" fill="#c5a77c"/><path d="M882 470 L932.5 425 L983 470Z" fill="#6d4434"/><rect x="905" y="495" width="16" height="26" fill="#3a312a"/><rect x="944" y="495" width="16" height="26" fill="#3a312a"/></g><g transform="translate(730 340) scale(0.85)" fill="#a88d68"><rect x="0" y="30" width="210" height="110"/><rect x="15" y="-30" width="55" height="170"/><rect x="140" y="-50" width="55" height="190"/><path d="M15-30h55v-18h-14v18H43v-18H29v18M140-50h55v-18h-14v18h-13v-18h-14v18" fill="#8e7558"/></g>
+
+<rect width="1200" height="800" fill="#6f4d31" opacity=".06" filter="url(#grain)"/>
+<path d="M0 715 Q260 680 510 720 T1200 700 V800 H0Z" fill="#171d19" opacity=".32"/>
+</svg>
