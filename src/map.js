@@ -243,10 +243,11 @@ export class WorldMap{
    }
    const realmClip='city-realm-'+realm.toLowerCase().replace(/[^a-z0-9]+/g,'-');
    defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${realmClip}"><path d="${realmD}" fill-rule="evenodd"/></clipPath>`);
+   const componentClips=realmPolys.map((poly,i)=>{const id=realmClip+'-component-'+i;defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${id}"><path d="${polygonPath(poly)}"/></clipPath>`);return id;});
    const componentForPoint=p=>{for(let i=0;i<realmPolys.length;i++)if(pointInPolygon(p,realmPolys[i]))return i;return -1;};
    const components=points.map(componentForPoint);
    const cells=cities.map((c,i)=>{const poly=voronoiCell(points[i],points,box),component=components[i],metricPolys=component>=0?[realmPolys[component]]:realmPolys,metrics=visibleCellMetrics(poly,metricPolys,points[i]);return {c,poly,component,cellBox:metrics.box,labelPoint:metrics.center,metrics};});
-   const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(displayCityName(c))} · ${esc(displayRealmName(realm))}</title></path>`).join('');
+   const paths=cells.map(({c,poly,component})=>{const componentClip=component>=0?componentClips[component]:realmClip;return `<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" clip-path="url(#${componentClip})" d="${polygonPath(poly)}"><title>${esc(displayCityName(c))} · ${esc(displayRealmName(realm))}</title></path>`;}).join('');
    const blockerGroups=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)!==realm).map(f=>svgSubpaths(f.d).map(svgSubpathPoints).filter(p=>p.length>=3)).filter(polys=>polys.length);
    const componentByCity=new Map(cells.map(x=>[x.c.id,x.component])),cellEdges=sharedCellEdges(cells);
    let borderPaths='';
@@ -254,7 +255,8 @@ export class WorldMap{
     const ca=componentByCity.get(edge.cities[0]),cb=componentByCity.get(edge.cities[1]);
     // Different islands / disconnected land pieces are never neighbours.
     if(ca>=0&&cb>=0&&ca!==cb)continue;
-    const frags=mergeNearbyFragments(segmentVisibleFragments(edge.a,edge.b,realmPolys,blockerGroups)).map(trimRealmFragment).filter(Boolean);
+    const visiblePolys=ca>=0?[realmPolys[ca]]:realmPolys;
+    const frags=mergeNearbyFragments(segmentVisibleFragments(edge.a,edge.b,visiblePolys,blockerGroups)).map(trimRealmFragment).filter(Boolean);
     // This is the single source of truth: a real visible shared boundary means adjacency.
     if(frags.length){
      const [a,b]=edge.cities;this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);
@@ -264,11 +266,11 @@ export class WorldMap{
    }
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})" style="--city-border:${cityBorderColor(realm)};--city-border-opacity:${cityBorderOpacity(realm)}">${paths}${borderPaths}</g>`);
-   for(const {c,poly,cellBox,labelPoint,metrics} of cells){
-    const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
+   for(const {c,poly,component,cellBox,labelPoint,metrics} of cells){
+    const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-'),componentClip=component>=0?componentClips[component]:realmClip;
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
-    labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
+    labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${componentClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
    }
   }
   // Across different realms, adjacency is derived from the ACTUAL drawn political border.
