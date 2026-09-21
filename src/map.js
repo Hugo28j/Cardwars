@@ -163,8 +163,8 @@ const mixHex=(from,to,amount)=>{
 // Keep Castile exactly as the visual reference the user approved.
 // Other realms get the same subtle city-border contrast relative to their own fill,
 // so the lines cannot disappear into blue/green/purple country colors.
-const cityBorderColor=realm=>'#414b46';
-const cityBorderOpacity=realm=>'.86';
+const cityBorderColor=realm=>'#27332e';
+const cityBorderOpacity=realm=>'.74';
 const cache={};
 let physicalLandCache;
 export class WorldMap{
@@ -275,6 +275,10 @@ export class WorldMap{
   v.y=v.h>=bounds.h?bounds.y+(bounds.h-v.h)/2:Math.max(bounds.y,Math.min(bounds.y+bounds.h-v.h,v.y));
   this.svg.setAttribute('viewBox',`${v.x} ${v.y} ${v.w} ${v.h}`);this.refresh();}
  refresh(){const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
+  // City borders stay readable in the overview, then become progressively stronger as the player zooms in.
+  const cityBorderZoom=Math.max(0,Math.min(1,(.42-unit)/.34));
+  this.svg.style.setProperty('--city-border-zoom-opacity',(.72+cityBorderZoom*.26).toFixed(3));
+  this.svg.style.setProperty('--city-border-zoom-width',(.92+cityBorderZoom*.36).toFixed(3));
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
   const showCityAreas=unit<.082;
   // Country / polity names are centered in the largest safe interior area of their realm.
