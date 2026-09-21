@@ -281,12 +281,11 @@ function gameBuildingPurchaseLevel(cityId,buildingId){
  return Math.max(0,Number(profile.activeGame?.buildings?.[cityId]?.[buildingId])||0);
 }
 function gameProvinceBuildingState(c){
- const bonuses={food:0,economy:0,technology:0,stability:0,army:0,navy:0,income:0};
+ const bonuses={food:0,economy:0,technology:0,stability:0,army:0,navy:0};
  const buildings=BUILDINGS_1300.map(b=>{
-  const historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id);
-  const level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased);
+  const historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased),availability=buildingAvailability1300(c,b);
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
-  return {...b,historical,purchased,level,cost:level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null};
+  return {...b,historical,purchased,level,available:availability.ok,availabilityReason:availability.reason,cost:level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null};
  });
  return {bonuses,buildings,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0)};
 }
@@ -305,63 +304,65 @@ function buildingPicture1300(id){
  };
  return `<svg viewBox="0 0 64 64" class="province-building-svg" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[id]||shapes.guildhall}</svg>`;
 }
+function gameSectorMetrics1300(game,cityId,buildingId){
+ const m=game.economy?.lastEconomy?.[cityId]?.[buildingId];
+ return m||{workers:0,capacity:0,wage:effectiveBuildingWage1300(game,cityId,buildingId),gross:0,wageBill:0,profit:0,tax:0};
+}
+function gameCityEconomySummary1300(game,cityId){
+ const c=CITY_1300[cityId];if(!c)return {workers:0,labour:0,tax:0};
+ const metrics=game.economy?.lastEconomy?.[cityId]||{};
+ return {workers:Object.values(metrics).reduce((n,m)=>n+(Number(m.workers)||0),0),labour:cityLabourPool1300(c),tax:Object.values(metrics).reduce((n,m)=>n+(Number(m.tax)||0),0)};
+}
+function wageStepper1300(scope,cityId,buildingId,value,canReset){
+ const attrs=scope==='national'?'':`data-city="${cityId}"${buildingId?` data-id="${buildingId}"`:''}`,action=scope==='national'?'game-national-wage-adjust':scope==='city'?'game-city-wage-adjust':'game-building-wage-adjust',resetAction=scope==='city'?'game-city-wage-reset':'game-building-wage-reset';
+ return `<div class="wage-stepper"><button data-action="${action}" data-delta="-0.02" ${attrs}>−</button><strong>ƒ${money1300(value)}</strong><button data-action="${action}" data-delta="0.02" ${attrs}>+</button>${scope!=='national'?'<button class="wage-reset" data-action="'+resetAction+'" '+attrs+' '+(canReset?'':'disabled')+'>inherit</button>':''}</div>`;
+}
 function gameProvincePanelHTML(cityId){
  const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c)return '';
- const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c);
- const stats=[
-  ['Food',Math.min(100,c.food+b.food)],
-  ['Economy',Math.min(100,c.economyScore+b.economy)],
-  ['Technology',Math.min(100,c.technology+b.technology)],
-  ['Stability',Math.min(100,c.stability+b.stability)]
- ];
- return `<div class="province-side-head" style="border-left-color:${owned?game.playerColor:'#8a8174'}">
-  <button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button>
-  <span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span>
-  <h2>${esc(displayCityName1300(c))}</h2>
-  <p>${owned?'Your Realm':esc(c.country)}</p>
- </div>
+ const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy);
+ const stats=[['Food',Math.min(100,c.food+b.food)],['Economy',Math.min(100,c.economyScore+b.economy)],['Technology',Math.min(100,c.technology+b.technology)],['Stability',Math.min(100,c.stability+b.stability)]];
+ const summary=owned?gameCityEconomySummary1300(game,cityId):null,cityOverride=Number.isFinite(Number(e.cityWages[cityId])),cityWage=effectiveCityWage1300(game,cityId);
+ return `<div class="province-side-head" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div>
  <div class="province-side-scroll">
-  <section class="province-side-facts">
-   <div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div>
-   <div><span>Starting wealth</span><strong>ƒ${Number(c.startingFlorins).toFixed(2)}</strong></div>
-   <div><span>Army</span><strong>${strengthNumber(c.army+b.army)}</strong></div>
-   <div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div>
-  </section>
-  <section class="province-side-stats">
-   ${stats.map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong><i><b style="width:${value}%"></b></i></div>`).join('')}
-  </section>
+  <section class="province-side-facts"><div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div><div><span>Starting wealth</span><strong>ƒ${money1300(c.startingFlorins)}</strong></div><div><span>Army</span><strong>${strengthNumber(c.army+b.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div></section>
+  <section class="province-side-stats">${stats.map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong><i><b style="width:${value}%"></b></i></div>`).join('')}</section>
+  ${owned?`<section class="province-economic-policy"><div class="policy-heading"><span>ECONOMIC POLICY</span><small>Changes apply next day</small></div>
+   <div class="policy-row"><div><strong>Realm tax</strong><small>Tax on sector profits</small></div><div class="tax-stepper"><button data-action="game-tax-adjust" data-delta="-1">−</button><strong>${e.taxRate}%</strong><button data-action="game-tax-adjust" data-delta="1">+</button></div></div>
+   <div class="policy-row"><div><strong>Realm minimum wage</strong><small>Default for every province</small></div>${wageStepper1300('national',cityId,null,e.nationalWage,false)}</div>
+   <div class="policy-row"><div><strong>Province minimum wage</strong><small>${cityOverride?'Custom rule':'Inherits realm wage'}</small></div>${wageStepper1300('city',cityId,null,cityWage,cityOverride)}</div>
+   <div class="workforce-summary"><span><strong>${strengthNumber(summary.workers)}</strong><small>EMPLOYED</small></span><span><strong>${strengthNumber(summary.labour)}</strong><small>WORKER POOL</small></span><span><strong>ƒ${money1300(summary.tax)}</strong><small>TAX / DAY</small></span></div>
+  </section>`:''}
   <section class="province-side-info"><span>ECONOMY</span><p>${esc(c.economy)}</p><span>HISTORICAL ROLE</span><p>${esc(c.historicalRole)}</p></section>
-  <div class="province-building-header"><div><span>BUILDINGS</span><strong>${state.totalLevels} levels</strong></div><small>${owned?`Treasury <b>ƒ${Number(game.florins).toFixed(2)}</b>`:'Foreign province'}</small></div>
-  <section class="province-building-cards">
-   ${state.buildings.map(row=>{
-    const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,canBuy=owned&&!maxed&&!blocked&&game.florins>=row.cost;
-    const buttonText=!owned?'FOREIGN':maxed?'MAX LEVEL':blocked?'NEEDS PORT':row.level?'UPGRADE':'BUILD';
-    return `<article class="province-building-card ${maxed?'maxed':''}">
-      <div class="province-building-picture">${buildingPicture1300(row.id)}</div>
-      <div class="province-building-copy"><div><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(row.description)}</p><em>${esc(buildingEffectText(row))}</em><div class="province-level-pips">${Array.from({length:ECONOMY_1300.maxBuildingLevel},(_,i)=>`<i class="${i<row.level?'on':''}"></i>`).join('')}</div></div>
-      <div class="province-building-buy"><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&owned&&!blocked&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div>
-     </article>`;
-   }).join('')}
-  </section>
+  <div class="province-building-header"><div><span>SECTORS & BUILDINGS</span><strong>${state.totalLevels} levels</strong></div><small>${owned?`Treasury <b>ƒ${money1300(game.florins)}</b>`:'Foreign province'}</small></div>
+  <section class="province-building-cards">${state.buildings.map(row=>{
+   const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,unavailable=!row.available&&row.level===0,canBuy=owned&&!maxed&&!blocked&&!unavailable&&game.florins>=row.cost,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,override=owned&&Number.isFinite(Number(e.buildingWages?.[c.id]?.[row.id])),effectiveWage=owned?effectiveBuildingWage1300(game,c.id,row.id):0;
+   const buttonText=!owned?'FOREIGN':unavailable?'UNAVAILABLE':maxed?'MAX LEVEL':blocked?'NEEDS PORT':row.level?'UPGRADE':'BUILD';
+   return `<article class="province-building-card ${maxed?'maxed':''} ${unavailable?'unavailable':''}"><div class="province-building-picture">${buildingPicture1300(row.id)}</div><div class="province-building-copy"><div><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em>
+    ${owned&&row.level>0?`<div class="sector-economy"><span>Workers <b>${strengthNumber(m.workers)} / ${strengthNumber(m.capacity)}</b></span><span>Profit/day <b class="${m.profit<0?'negative':''}">ƒ${money1300(m.profit)}</b></span><span>Tax/day <b>ƒ${money1300(m.tax)}</b></span></div><div class="sector-wage"><span>Minimum wage</span>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div>`:''}
+    <div class="province-level-pips">${Array.from({length:ECONOMY_1300.maxBuildingLevel},(_,i)=>`<i class="${i<row.level?'on':''}"></i>`).join('')}</div></div>
+    <div class="province-building-buy"><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&owned&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div></article>`;
+  }).join('')}</section>
  </div>`;
 }
 function renderGameProvincePanel(){
  const panel=$('#game-province-panel');if(!panel)return;
  if(!gameProvincePanel||!CITY_1300[gameProvincePanel]){panel.innerHTML='';panel.classList.remove('open');return;}
- panel.innerHTML=gameProvincePanelHTML(gameProvincePanel);panel.classList.add('open');
+ const scroll=panel.querySelector('.province-side-scroll')?.scrollTop||0;panel.innerHTML=gameProvincePanelHTML(gameProvincePanel);panel.classList.add('open');const next=panel.querySelector('.province-side-scroll');if(next)next.scrollTop=scroll;
 }
 function buyGameProvinceBuilding(cityId,buildingId){
  const game=profile.activeGame,c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!game||!c||!building)return;
  if(!game.ownedCities?.includes(cityId)){toast('You can only build in provinces you own.');return;}
  const row=gameProvinceBuildingState(c).buildings.find(x=>x.id===buildingId);if(!row||row.level>=ECONOMY_1300.maxBuildingLevel)return;
- if(building.requiresCoast&&!isCoastalCity1300(c)){toast('A Royal Dockyard requires a coastal or major port province.');return;}
- if(game.florins<row.cost){toast(`You need ƒ${(row.cost-game.florins).toFixed(2)} more in-game Florins.`);return;}
- game.florins=Math.round((game.florins-row.cost)*100)/100;
- game.buildings??={};game.buildings[cityId]??={};game.buildings[cityId][buildingId]=(game.buildings[cityId][buildingId]||0)+1;
- save();renderGameProvincePanel();
- const amount=$('#game-treasury-amount');if(amount)amount.textContent='ƒ'+Number(game.florins).toFixed(2);
- toast(`${building.name} upgraded in ${displayCityName1300(c)}.`);
+ if(!row.available&&row.level===0){toast(row.availabilityReason);return;}if(building.requiresCoast&&!isCoastalCity1300(c)){toast('A Royal Dockyard requires a coastal or major port province.');return;}
+ if(game.florins<row.cost){toast(`You need ƒ${money1300(row.cost-game.florins)} more in-game Florins.`);return;}
+ game.florins=Math.round((game.florins-row.cost)*100)/100;game.buildings??={};game.buildings[cityId]??={};game.buildings[cityId][buildingId]=(game.buildings[cityId][buildingId]||0)+1;game.economy.employment[cityId]??={};game.economy.employment[cityId][buildingId]??=0;save();renderGameProvincePanel();const amount=$('#game-treasury-amount');if(amount)amount.textContent='ƒ'+money1300(game.florins);toast(`${building.name} upgraded in ${displayCityName1300(c)}.`);
 }
+function changeGameTax1300(delta){const g=profile.activeGame;if(!g)return;g.economy.taxRate=clamp1300(g.economy.taxRate+Number(delta),GAME_TAX_MIN,GAME_TAX_MAX);save();renderGameProvincePanel();}
+function changeNationalWage1300(delta){const g=profile.activeGame;if(!g)return;g.economy.nationalWage=clamp1300(Math.round((g.economy.nationalWage+Number(delta))*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);save();renderGameProvincePanel();}
+function changeCityWage1300(cityId,delta){const g=profile.activeGame;if(!g)return;const current=effectiveCityWage1300(g,cityId);g.economy.cityWages[cityId]=clamp1300(Math.round((current+Number(delta))*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);save();renderGameProvincePanel();}
+function resetCityWage1300(cityId){const g=profile.activeGame;if(!g)return;delete g.economy.cityWages[cityId];save();renderGameProvincePanel();}
+function changeBuildingWage1300(cityId,buildingId,delta){const g=profile.activeGame;if(!g)return;g.economy.buildingWages[cityId]??={};const current=effectiveBuildingWage1300(g,cityId,buildingId);g.economy.buildingWages[cityId][buildingId]=clamp1300(Math.round((current+Number(delta))*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);save();renderGameProvincePanel();}
+function resetBuildingWage1300(cityId,buildingId){const g=profile.activeGame;if(!g)return;if(g.economy.buildingWages[cityId]){delete g.economy.buildingWages[cityId][buildingId];if(!Object.keys(g.economy.buildingWages[cityId]).length)delete g.economy.buildingWages[cityId];}save();renderGameProvincePanel();}
 
 function buildBuilding1300(cityId,buildingId){
  const c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!c||!building)return;
