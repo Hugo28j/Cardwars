@@ -143,6 +143,13 @@ const segmentVisibleFragments=(a,b,realmPolys,blockerGroups=[])=>{const ts=[0,1]
 const mergeNearbyFragments=(frags,maxGap=.35)=>{const out=[];for(const frag of frags){const prev=out[out.length-1];if(prev&&Math.hypot(frag.a[0]-prev.b[0],frag.a[1]-prev.b[1])<=maxGap){prev.b=frag.b;prev.endBoundary=frag.endBoundary;}else out.push({a:[...frag.a],b:[...frag.b],startBoundary:frag.startBoundary,endBoundary:frag.endBoundary});}return out;};
 const trimRealmFragment=frag=>{const a=[...frag.a],b=[...frag.b];return Math.hypot(b[0]-a[0],b[1]-a[1])<.45?null:{a,b};};
 
+const CITY_TERRITORY_POINT_OVERRIDES=new Map([
+ ['Kingdom of Naples|1300-laquila',[463.000,425.000]],
+ ['Kingdom of Naples|1300-salerno',[453.000,472.000]],
+ ['Kingdom of Naples|1300-split',[505.000,405.000]]
+]);
+const cityTerritoryPoint=(realm,c)=>CITY_TERRITORY_POINT_OVERRIDES.get(realm+'|'+c.id)||pos(c.mapLon??c.lon,c.mapLat??c.lat);
+
 const IBERIA_LABEL_ANGLES={
  '1300-santiago':-7,'1300-leon':-5,'1300-burgos':4,'1300-valladolid':0,'1300-salamanca':-3,'1300-zamora':-7,'1300-segovia':5,'1300-avila':-8,
  '1300-plasencia':-9,'1300-badajoz':-11,'1300-toledo':3,'1300-cuenca':10,'1300-guadalajara':5,'1300-cordoba':-5,
@@ -222,7 +229,7 @@ export class WorldMap{
  nearestCityInRealm(realm,clientX,clientY){
   const p=this.mapPoint(clientX,clientY),cities=CITIES.filter(c=>cityRealm(c)===realm);
   let best=null,bestD=Infinity;
-  for(const c of cities){const q=pos(c.mapLon??c.lon,c.mapLat??c.lat),dx=q[0]-p.x,dy=q[1]-p.y,d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=c;}}
+  for(const c of cities){const q=this.cityCenters?.get(c.id)||cityTerritoryPoint(realm,c),dx=q[0]-p.x,dy=q[1]-p.y,d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=c;}}
   return best;
  }
  buildCityTerritories(atlas){
@@ -231,7 +238,7 @@ export class WorldMap{
   for(const realm of this.cityTerritoryRealms||[]){
    const features=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)===realm);if(!features.length)continue;
    const realmD=features.map(f=>f.d).join(''),realmPolys=svgSubpaths(realmD).map(svgSubpathPoints).filter(p=>p.length>=3);if(!realmPolys.length)continue;
-   const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>pos(c.mapLon??c.lon,c.mapLat??c.lat));if(!cities.length)continue;
+   const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>cityTerritoryPoint(realm,c));if(!cities.length)continue;
    cities.forEach((c,i)=>{this.cityCenters.set(c.id,points[i]);if(!this.cityAdjacency.has(c.id))this.cityAdjacency.set(c.id,new Set());});
    const geometryPts=realmPolys.flat(),geometryXs=geometryPts.map(p=>p[0]),geometryYs=geometryPts.map(p=>p[1]);
    this.cityRealmGeometry.set(realm,{realm,polys:realmPolys,cities,points,bbox:{x:Math.min(...geometryXs),y:Math.min(...geometryYs),w:Math.max(...geometryXs)-Math.min(...geometryXs),h:Math.max(...geometryYs)-Math.min(...geometryYs)}});
@@ -305,7 +312,7 @@ export class WorldMap{
  }
  neighboursOf(cityId){return [...(this.cityAdjacency?.get(cityId)||[])];}
  zoom(f,fx=.5,fy=.5){const w=Math.max(28,Math.min(this.overviewWidth||900,this.view.w*f)),r=w/this.view.w;this.view.x+=this.view.w*fx*(1-r);this.view.y+=this.view.h*fy*(1-r);this.view.w=w;this.view.h*=r;this.update();}
- focus(id){this.focusRequest=id;const c=CITY[id];if(!c)return;const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),r=this.host.getBoundingClientRect();this.view.w=310;this.view.h=310*r.height/Math.max(1,r.width);this.view.x=p[0]-this.view.w/2;this.view.y=p[1]-this.view.h/2;this.update();}
+ focus(id){this.focusRequest=id;const c=CITY[id];if(!c)return;const p=this.cityCenters?.get(id)||cityTerritoryPoint(cityRealm(c),c),r=this.host.getBoundingClientRect();this.view.w=310;this.view.h=310*r.height/Math.max(1,r.width);this.view.x=p[0]-this.view.w/2;this.view.y=p[1]-this.view.h/2;this.update();}
  fit(){this.focusRequest=null;const r=this.host.getBoundingClientRect(),aspect=r.width/Math.max(1,r.height);this.overviewWidth=Math.max(bounds.w+30,(bounds.h+70)*aspect);this.view.w=this.overviewWidth;this.view.h=this.view.w/aspect;this.view.x=bounds.x+(bounds.w-this.view.w)/2;this.view.y=bounds.y+(bounds.h-this.view.h)/2;this.update();}
  update(){if(!this.svg)return;const v=this.view;
   v.x=v.w>=bounds.w?bounds.x+(bounds.w-v.w)/2:Math.max(bounds.x,Math.min(bounds.x+bounds.w-v.w,v.x));
