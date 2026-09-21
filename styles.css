@@ -349,3 +349,11 @@
  .game-country-panel{width:min(96vw,570px)}.country-panel-tabs{grid-template-columns:repeat(3,1fr)}
  .country-panel-scroll{height:calc(100% - 172px)}.country-stat-grid{grid-template-columns:repeat(2,1fr)}.country-company-list article{grid-template-columns:48px minmax(0,1fr)}.company-money{grid-column:2;text-align:left}.tech-tree{grid-template-columns:1fr}
 }
+
+/* Monthly state expenses */
+.budget-stepper{display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.budget-stepper button{min-width:34px;height:26px;border:1px solid #5b695f;background:#15211d;color:#d9dece;border-radius:3px;font-size:8px}
+.budget-stepper button:hover{border-color:#b39a61;color:#e2c982}
+.budget-stepper strong{min-width:58px;text-align:center;font-family:var(--serif);font-size:14px;color:#dbc98f}
+.country-econ-policy.stability-spending{background:linear-gradient(90deg,#171d18,#17231e)}
+.country-econ-policy.stability-spending small{max-width:320px;line-height:1.45}
