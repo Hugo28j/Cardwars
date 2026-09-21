@@ -1,5 +1,5 @@
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-england-home-support-v3';
-import {freshProfile,migrateProfile,validateProfile} from './engine.js';
+import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-1300-only-v3';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-buildings-v1';
 import {icon} from './icons.js';
 import {WorldMap} from './map.js?v=20260921-city-borders-dark-030-060-v9';
