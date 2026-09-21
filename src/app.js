@@ -41,7 +41,7 @@ try{
  const legacyRaw=localStorage.getItem(LEGACY_KEY);
  if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
 }catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
-let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
+let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const STARTER_REGIONS_1300=[
@@ -165,7 +165,8 @@ function ensureGameProfile(p){
    const currentTreasury=Number.isFinite(Number(g.florins))?Math.max(0,Math.round(Number(g.florins)*100)/100):startTreasury;
    const playerColor=validRealmColor(g.playerColor)?g.playerColor:p.playerColor;
    const ownedCities=[...validHand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,startingFlorins:startTreasury,florins:currentTreasury};
+   const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{};
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings};
   }
  }
 }
@@ -184,7 +185,7 @@ function startGame1300(){
  const shuffled=shuffle1300(profile.deck),hand=shuffled.slice(0,4);
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
- profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,startingFlorins,florins:startingFlorins};
+ profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,startingFlorins,florins:startingFlorins,buildings:{}};
  selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
 }
 
@@ -202,6 +203,85 @@ function buildingEffectText(b){
  const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',army:'Professional army',navy:'Navy',income:'Annual income'};
  return Object.entries(b.effects).map(([key,value])=>`${labels[key]} ${value>0?'+':''}${value}${key==='income'?' ƒ':''}`).join(' · ');
 }
+function gamePurchasedBuildingLevel(cityId,buildingId){return Math.max(0,Number(profile.activeGame?.buildings?.[cityId]?.[buildingId])||0);}
+function gameBuildingCost1300(building,currentLevel){return Math.round((buildingCost1300(building,currentLevel)/100)*100)/100;}
+function gameCityBuildingState(c){
+ const bonuses={food:0,economy:0,technology:0,stability:0,army:0,navy:0,income:0};
+ const buildings=BUILDINGS_1300.map(b=>{
+  const historical=startingBuildingLevel1300(c,b.id),purchased=gamePurchasedBuildingLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased);
+  for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
+  return {...b,historical,purchased,level,gameCost:level<ECONOMY_1300.maxBuildingLevel?gameBuildingCost1300(b,level):null};
+ });
+ return {buildings,bonuses,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0)};
+}
+function buildingIcon1300(id){
+ const art={
+  fields:'<path d="M9 49c11-14 21-22 46-30M10 55c13-12 25-20 44-25M17 52l-4-10m13 3-4-11m14 4-3-10m14 4-3-9"/><circle cx="48" cy="14" r="6"/>',
+  pastures:'<path d="M13 43c0-9 7-16 16-16h9c7 0 13 5 13 12v9H20c-4 0-7-2-7-5Z"/><path d="M21 27c0-6 4-10 9-10 4 0 7 2 9 6m-20 25v7m25-7v7M50 32l5-4m-7 8 7 2"/>',
+  textiles:'<path d="M14 16h36v34H14zM20 22v22m8-22v22m8-22v22m8-22v22M14 31h36M14 39h36"/><path d="M9 12h46M9 54h46"/>',
+  forge:'<path d="M15 43h34l-5 10H20zM19 39c0-5 4-9 9-9h17v9z"/><path d="m17 14 7 7 15-15 6 6-15 15 7 7-5 5-20-20z"/>',
+  market:'<path d="M10 24h44l-5-12H15zM14 24v29h36V24M22 53V35h12v18"/><path d="M10 24c0 5 8 5 8 0 0 5 8 5 8 0 0 5 8 5 8 0 0 5 8 5 8 0 0 5 8 5 8 0"/>',
+  barracks:'<path d="M13 52h38V25L32 12 13 25zM24 52V39h16v13"/><path d="m17 16 10 10m20-10L37 26M13 12l16 16m22-16L35 28"/>',
+  dockyard:'<path d="M9 42c9 8 37 8 46 0l-5 11H14zM20 40V20h22v20M31 20V10M31 10l13 7H31"/><path d="M12 56c8-3 14 3 20 0 7-3 12 3 20 0"/>',
+  walls:'<path d="M11 52V20h9v8h8v-8h8v8h8v-8h9v32zM20 20v-8h8v8m8 0v-8h8v8"/><path d="M27 52V39h10v13"/>',
+  guildhall:'<path d="M12 52h40M16 48V25h32v23M12 25h40L32 10z"/><path d="M22 48V32h20v16M32 32v16"/><circle cx="32" cy="19" r="3"/>',
+  university:'<path d="M10 18c9-5 16-4 22 1v31c-6-5-13-6-22-1zM54 18c-9-5-16-4-22 1v31c6-5 13-6 22-1z"/><path d="M32 19v31M15 27c5-2 9-2 13 1m-13 7c5-2 9-2 13 1m21-9c-5-2-9-2-13 1m13 7c-5-2-9-2-13 1"/>'
+ };
+ return `<svg class="building-art-icon" viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${art[id]||art.guildhall}</svg>`;
+}
+function buildGameBuilding1300(cityId,buildingId){
+ const game=profile.activeGame,c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!game||!c||!building)return;
+ if(!game.ownedCities?.includes(cityId)){toast('You can only build in provinces you control.');return;}
+ const state=gameCityBuildingState(c),row=state.buildings.find(b=>b.id===buildingId);if(!row||row.level>=ECONOMY_1300.maxBuildingLevel)return;
+ if(building.requiresCoast&&!isCoastalCity1300(c)){toast('A Royal Dockyard requires a coastal or major port province.');return;}
+ if(game.florins<row.gameCost){toast(`You need ƒ${(row.gameCost-game.florins).toFixed(2)} more in-game Florins.`);return;}
+ game.florins=Math.max(0,Math.round((game.florins-row.gameCost)*100)/100);
+ game.buildings??={};game.buildings[cityId]??={};game.buildings[cityId][buildingId]=(game.buildings[cityId][buildingId]||0)+1;
+ save();renderGameProvincePanel();
+ const treasury=$('#game-treasury-amount');if(treasury)treasury.textContent='ƒ'+Number(game.florins).toFixed(2);
+ toast(`${building.name} upgraded in ${displayCityName1300(c)}.`);
+}
+function gameProvincePanelHTML(cityId){
+ const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c)return '';
+ const owned=game.ownedCities?.includes(cityId),state=gameCityBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c);
+ const stats=[
+  ['Food',Math.min(100,c.food+b.food)],['Economy',Math.min(100,c.economyScore+b.economy)],
+  ['Technology',Math.min(100,c.technology+b.technology)],['Stability',Math.min(100,c.stability+b.stability)]
+ ];
+ return `<div class="province-panel-head" style="--province-owner:${owned?game.playerColor:'#8a776b'}">
+   <button class="province-panel-close" data-action="close-game-province" aria-label="Close province panel">×</button>
+   <span class="province-panel-kicker">${owned?'YOUR PROVINCE':'VISIBLE FOREIGN PROVINCE'}</span>
+   <h2>${esc(displayCityName1300(c))}</h2>
+   <p><i></i>${owned?'Your Realm':esc(c.country)}</p>
+   ${owned?`<small>Originally: ${esc(c.country)}</small>`:''}
+  </div>
+  <div class="province-panel-scroll">
+   <section class="province-summary-grid">
+    <div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div>
+    <div><span>Starting wealth</span><strong>ƒ${Number(c.startingFlorins).toFixed(2)}</strong></div>
+    <div><span>Army</span><strong>${strengthNumber(c.army+b.army)}</strong></div>
+    <div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div>
+   </section>
+   <section class="province-stat-bars">
+    ${stats.map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong><i><b style="width:${value}%"></b></i></div>`).join('')}
+   </section>
+   <section class="province-info-copy"><span>Province economy</span><p>${esc(c.economy)}</p><span>Historical role</span><p>${esc(c.historicalRole)}</p></section>
+   <div class="province-buildings-title"><div><span>BUILDINGS</span><strong>${state.totalLevels} total levels</strong></div>${owned?`<small>Treasury: <b>ƒ${Number(game.florins).toFixed(2)}</b></small>`:'<small>Foreign buildings are view-only</small>'}</div>
+   <section class="province-building-list">
+    ${state.buildings.map(row=>{const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,afford=owned&&!maxed&&!blocked&&game.florins>=row.gameCost;return `<article class="province-building-row ${maxed?'maxed':''} ${blocked?'blocked':''}">
+      <div class="province-building-icon">${buildingIcon1300(row.id)}</div>
+      <div class="province-building-main"><div class="province-building-name"><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(row.description)}</p><div class="province-building-effects">${esc(buildingEffectText(row))}</div><div class="province-building-pips">${Array.from({length:ECONOMY_1300.maxBuildingLevel},(_,i)=>`<i class="${i<row.level?'filled':''}"></i>`).join('')}</div></div>
+      <div class="province-building-action">${!owned?'<button disabled>FOREIGN</button>':maxed?'<button disabled>MAX</button>':blocked?'<button disabled>NO PORT</button>':`<button class="${afford?'afford':''}" data-action="game-build" data-city="${c.id}" data-id="${row.id}"><span>${row.level?'Upgrade':'Build'}</span><strong>ƒ${row.gameCost.toFixed(2)}</strong></button>`}</div>
+     </article>`;}).join('')}
+   </section>
+  </div>`;
+}
+function renderGameProvincePanel(){
+ const panel=$('#game-province-panel');if(!panel)return;
+ if(!gameProvincePanel||!CITY_1300[gameProvincePanel]){panel.classList.remove('open');panel.innerHTML='';return;}
+ panel.innerHTML=gameProvincePanelHTML(gameProvincePanel);panel.classList.add('open');
+}
+
 function buildBuilding1300(cityId,buildingId){
  const c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!c||!building)return;
  const state=cityBuildingState(c),row=state.buildings.find(b=>b.id===buildingId);if(!row||row.level>=ECONOMY_1300.maxBuildingLevel)return;
@@ -316,7 +396,7 @@ function header(){return `<header class="lobby-header"><button class="brand" dat
 function footer(){const era=view==='rankings'?'COUNTRY STRENGTH · c. 1300 CE':'EUROPE · c. 1300 CE';return `<footer class="lobby-footer"><span>${era}</span><span class="save-note">${icon('save')} ${storageFailed?'Export a save to keep your progress':'Saved on this device'}</span><button data-action="sources">Historical notes & sources ${icon('arrow')}</button></footer>`;}
 function stat(key,label,value){const icons={food:'wheat',army:'army',navy:'navy',people:'people',size:'size',technology:'tech',satisfaction:'happy'};return `<div class="stat"><span>${icon(icons[key])}${label}</span><strong>${value}</strong></div>`;}
 function card1300(c,compact=false){const displayName=displayCityName1300(c),number=String(CITIES_1300.findIndex(x=>x.id===c.id)).padStart(3,'0'),upgraded=Number.isFinite(c.economyScore)&&Number.isFinite(c.stability),scores=upgraded?[['Food',c.food],['Economy',c.economyScore],['Technology',c.technology],['Stability',c.stability]]:[['Food',c.food],['Technology',c.technology],['Satisfaction',c.satisfaction]],art=CARD_ART_1300[c.id];return `<button class="city-card card-1300 rarity-${c.rarity} ${compact?'compact':''}" style="--rarity:${RARITY_COLORS_1300[c.rarity]}" data-action="card1300" data-id="${c.id}" aria-label="Inspect ${esc(displayName)}, ${esc(c.country)}, c. 1300"><div class="card-photo ${art?'card-photo-1300-art':'card-photo-placeholder'}">${art?`<img src="${art}" alt="Stylised historical reconstruction of ${esc(displayName)} around 1300" loading="${compact?'eager':'lazy'}">`:`<div class="photo-placeholder"><span>${icon('globe')}</span><strong>IMAGE RESERVED</strong><small>Historical artwork will be added later</small></div>`}<span class="rarity-chip">${icon(c.rarity>2?'star':'globe')}${RARITIES_1300[c.rarity]}</span><span class="card-number">1300-${number}</span><div class="card-city"><span class="card-country">${flag(c)} ${c.country}</span><h3 class="${displayName.length>16?'long-name':''}">${displayName}</h3><small>${c.subrealm} · c. 1300 CE</small></div></div><div class="card-stats">${stat('army','Army',c.armyText)}${stat('navy','Navy',c.navyText)}${stat('people','People',c.populationText)}${stat('size','Size',c.sizeText)}<div class="card-scores ${upgraded?'card-scores-4':''}">${scores.map(([label,n])=>`<div><span>${label}</span><strong>${n}<small>/100</small></strong><i style="--value:${n}%"></i></div>`).join('')}</div></div><div class="card-foot"><span>${icon('check')} Researched 1300 card</span><span>Population confidence: ${c.populationConfidence}</span></div></button>`;}
-function render(){world?.destroy();world=null;if(!authUser){app.className='lobby auth-view';app.innerHTML=loginPage();setupGoogleLogin();return;}if(!profile.onboardingComplete){app.className='lobby onboarding-view';app.innerHTML=onboardingPage();return;}const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=header()+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};mapState.game=null;world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};mapState.game={ownedCityIds:[...(profile.activeGame.ownedCities||profile.activeGame.hand)],playerColor:profile.activeGame.playerColor||profile.playerColor,fogOfWar:true};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;mapState.selected=id;world.refresh();},()=>{});}}
+function render(){world?.destroy();world=null;if(!authUser){app.className='lobby auth-view';app.innerHTML=loginPage();setupGoogleLogin();return;}if(!profile.onboardingComplete){app.className='lobby onboarding-view';app.innerHTML=onboardingPage();return;}const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=header()+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};mapState.game=null;world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};mapState.game={ownedCityIds:[...(profile.activeGame.ownedCities||profile.activeGame.hand)],playerColor:profile.activeGame.playerColor||profile.playerColor,fogOfWar:true};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;gameProvincePanel=id;mapState.selected=id;world.refresh();renderGameProvincePanel();},()=>{});}}
 const PACK_ODDS_1300=[40,30,17,9,4],PACK_PRICE_1300=200;
 function owned1300Count(){return Object.keys(profile.collection1300||{}).length;}
 function drawPack1300(){
@@ -453,8 +533,9 @@ function gamePage(){
  }
  if(gameScreen==='development')return developmentPage();
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
-  <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong>1 January</strong><small>1300</small></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong>ƒ${Number(profile.activeGame.florins).toFixed(2)}</strong><small>Opening 4 cities: ƒ${Number(profile.activeGame.startingFlorins).toFixed(2)}</small></div>
-  <div class="game-map-actions"><span class="player-realm-chip" style="--player-realm:${profile.activeGame.playerColor}"><i></i>Your Realm · ${profile.activeGame.ownedCities.length} provinces</span><button data-action="game-development">Development</button></div><button class="game-quit-button" data-action="quit-game">Quit</button>
+  <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong>1 January</strong><small>1300</small></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong id="game-treasury-amount">ƒ${Number(profile.activeGame.florins).toFixed(2)}</strong><small>Opening 4 cities: ƒ${Number(profile.activeGame.startingFlorins).toFixed(2)}</small></div>
+  <div class="game-map-actions"><span class="player-realm-chip" style="--player-realm:${profile.activeGame.playerColor}"><i></i>Your Realm · ${profile.activeGame.ownedCities.length} provinces</span></div><button class="game-quit-button" data-action="quit-game">Quit</button>
+  <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>
  </div>`;
 }
 function rankingsPage(){
@@ -516,10 +597,11 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='last-pack-1300'){showPack1300(profile.lastPack1300);return;}
  if(a==='deck-toggle'){toggleDeckCard1300(id);return;}
  if(a==='game-color'&&!profile.activeGame){const color=b.dataset.color;if(validRealmColor(color)){profile.playerColor=color;save();render();}return;}
- if(a==='start-game'){startGame1300();return;}
+ if(a==='start-game'){gameProvincePanel=null;startGame1300();return;}
  if(a==='game-map'){gameScreen='map';render();return;}
- if(a==='game-development'){gameScreen='development';const first=profile.activeGame?.hand?.[0];if(first)buildingCity=first;render();return;}
- if(a==='quit-game'){profile.activeGame=null;gameScreen='map';save();render();toast('You left the campaign. Your deck and buildings were kept.');return;}
+ if(a==='close-game-province'){gameProvincePanel=null;renderGameProvincePanel();return;}
+ if(a==='game-build'){buildGameBuilding1300(b.dataset.city,id);return;}
+ if(a==='quit-game'){profile.activeGame=null;gameScreen='map';gameProvincePanel=null;save();render();toast('You left the campaign. Your deck was kept.');return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();
  if(a==='country1300'){country1300=id;render();}
