@@ -156,6 +156,14 @@ const colorForRealm=name=>{
  for(const c of String(name))h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;
  return palettes[h%palettes.length];
 };
+const mixHex=(from,to,amount)=>{
+ const a=String(from).replace('#',''),b=String(to).replace('#',''),mix=(i)=>Math.round(parseInt(a.slice(i,i+2),16)*(1-amount)+parseInt(b.slice(i,i+2),16)*amount).toString(16).padStart(2,'0');
+ return '#'+mix(0)+mix(2)+mix(4);
+};
+// Keep Castile exactly as the visual reference the user approved.
+// Other realms get the same subtle city-border contrast relative to their own fill,
+// so the lines cannot disappear into blue/green/purple country colors.
+const cityBorderColor=realm=>realm==='Crown of Castile'?'#7f8b84':mixHex(colorForRealm(realm),'#394840',.36);
 const cache={};
 let physicalLandCache;
 export class WorldMap{
@@ -248,7 +256,7 @@ export class WorldMap{
     borderPaths+=frags.map(f=>`<path class="city-territory-border" d="M${f.a[0].toFixed(3)},${f.a[1].toFixed(3)}L${f.b[0].toFixed(3)},${f.b[1].toFixed(3)}"/>`).join('');
    }
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
-   territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})">${paths}${borderPaths}</g>`);
+   territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})" style="--city-border:${cityBorderColor(realm)}">${paths}${borderPaths}</g>`);
    for(const {c,poly,cellBox,labelPoint,metrics} of cells){
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
