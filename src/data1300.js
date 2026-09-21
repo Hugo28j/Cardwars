@@ -3600,14 +3600,14 @@ export const SUPPORT_TERRITORIES_1300=[
  {
   id:'1300-england-home-realm',name:'England home realm',country:'Kingdom of England',year:1300,
   supportTerritory:true,playable:false,packable:false,
-  people:4500000,populationText:'4.50 M',populationConfidence:'low',
-  army:10000,armyText:'10.0 K',navy:325,navyText:'325',
+  people:500000,populationText:'500 K',populationConfidence:'low',
+  army:3500,armyText:'3.5 K',navy:25,navyText:'25',
   food:70,technology:74,economyScore:78,stability:68,
   historicalRole:'Non-playable national support territory representing England on the British Isles',
   economy:'Agriculture, wool, royal taxation, market towns, ports and long-distance trade',
   militaryRole:'National wartime manpower and maritime mobilisation capacity under Edward I',
   researchSummary:'This support entity represents the non-playable English homeland so the Kingdom of England retains national population, military and naval weight even though the British Isles are not represented by packable city cards.',
-  evidenceNote:'Population uses a broad c.1300 estimate of about 4.5 million for England. Army uses an approximately 10,000-strong field force as a conservative 1300 campaign-scale value. Navy uses 325 as a mobilisation-capacity proxy based on Edward I requisitioning that many ships for a 1293 expedition; it is not a claim that England maintained 325 permanent royal warships.',
+  evidenceNote:'These are deliberately game-scaled support values rather than literal national totals, so England remains comparable with countries represented mainly through playable city cards. The support territory contributes 500,000 population, 3,500 army and 25 navy to the Kingdom of England totals.',
   linkedPlayableCityIds:['1300-perigueux','1300-la-rochelle','1300-bordeaux','1300-bayonne'],
   sources:[
    ['Oxford ORA — English agricultural output and population c.1300','https://ora.ox.ac.uk/objects/uuid:8f6d2c2a-be53-4bdf-b995-b6594689487f'],
