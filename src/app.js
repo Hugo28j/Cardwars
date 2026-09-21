@@ -244,7 +244,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  if(a==='ranking-category'){rankingCategory=id;render();return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();
- if(a==='country1300'){country1300=id;render1300Grid();}
+ if(a==='country1300'){country1300=id;render();}
  if(a==='card1300'&&!(modal.open&&modal.classList.contains('card-dialog-1300')))inspectCard1300(id);
  if(a==='reset')showReset();
  if(a==='confirm-reset'){profile=freshProfile();ensureEconomyProfile(profile);mapState.collection={};search1300='';country1300='all';atlasSearch='';atlasRegion=null;selected1300='1300-seville';buildingCity='1300-seville';save();navigate('collection');toast('1300 campaign progress reset.');}
@@ -259,7 +259,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  if(a==='import')$('#import-file').click();
 });
 document.addEventListener('input',e=>{if(e.target.id==='city-search-1300'){search1300=e.target.value;renderGrid();}if(e.target.id==='atlas-search'){atlasSearch=e.target.value;const list=CITIES_1300.filter(c=>`${c.name} ${c.subrealm} ${c.historicalRole}`.toLowerCase().includes(atlasSearch.toLowerCase()));$('#atlas-city-list').innerHTML=mapList(list);}});
-document.addEventListener('change',e=>{if(e.target.id==='building-city-select'){buildingCity=e.target.value;render();}if(e.target.id==='country-filter-1300'){country1300=e.target.value;render1300Grid();}});
+document.addEventListener('change',e=>{if(e.target.id==='building-city-select'){buildingCity=e.target.value;render();}if(e.target.id==='country-filter-1300'){country1300=e.target.value;render();}});
 $('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>1000000)throw new Error();const p=migrateProfile(JSON.parse(await file.text()));if(!p||!validateProfile(p))throw new Error();ensureEconomyProfile(p);showDialog(`<div class="simple-dialog"><span class="eyebrow">RESTORE CAMPAIGN</span><h2>Import this 1300 campaign?</h2><p>This replaces your current building progress and treasury with <strong>ƒ ${p.florins.toLocaleString('en-GB')}</strong>.</p><div class="dialog-actions">${button('Cancel','close')}${button('Import and replace','confirm-import','primary')}</div></div>`);modal.querySelector('[data-action="confirm-import"]').addEventListener('click',()=>{profile=p;save();navigate('collection');toast('1300 campaign imported.');},{once:true});}catch{toast('Invalid campaign file. Your existing progress was kept.');}});
 modal.addEventListener('click',e=>{if(e.target===modal){const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)modal.close();}});
 render();if(storageFailed)toast('A saved collection could not be loaded. You can import a backup from the guide.');
