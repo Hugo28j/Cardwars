@@ -3,7 +3,7 @@ import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=2026092
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-buildings-v1';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20260921-border-neighbours-v11';
+import {WorldMap} from './map.js?v=20260921-exact-border-adjacency-v12';
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),
  LEGACY_KEY='cardwars.collection.v2',ACCOUNTS_KEY='cardwars.accounts.v1',SESSION_KEY='cardwars.session.v1',PROFILE_PREFIX='cardwars.profile.';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

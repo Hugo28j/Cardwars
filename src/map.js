@@ -227,12 +227,14 @@ export class WorldMap{
  }
  buildCityTerritories(atlas){
   const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels');
-  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();
+  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();this.cityRealmGeometry=new Map();
   for(const realm of this.cityTerritoryRealms||[]){
    const features=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)===realm);if(!features.length)continue;
    const realmD=features.map(f=>f.d).join(''),realmPolys=svgSubpaths(realmD).map(svgSubpathPoints).filter(p=>p.length>=3);if(!realmPolys.length)continue;
    const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>pos(c.mapLon??c.lon,c.mapLat??c.lat));if(!cities.length)continue;
    cities.forEach((c,i)=>{this.cityCenters.set(c.id,points[i]);if(!this.cityAdjacency.has(c.id))this.cityAdjacency.set(c.id,new Set());});
+   const geometryPts=realmPolys.flat(),geometryXs=geometryPts.map(p=>p[0]),geometryYs=geometryPts.map(p=>p[1]);
+   this.cityRealmGeometry.set(realm,{realm,polys:realmPolys,cities,points,bbox:{x:Math.min(...geometryXs),y:Math.min(...geometryYs),w:Math.max(...geometryXs)-Math.min(...geometryXs),h:Math.max(...geometryYs)-Math.min(...geometryYs)}});
    const allPts=realmPolys.flat(),xs=allPts.map(p=>p[0]),ys=allPts.map(p=>p[1]),pad=4;
    let box={x:Math.min(...xs)-pad,y:Math.min(...ys)-pad,w:Math.max(...xs)-Math.min(...xs)+pad*2,h:Math.max(...ys)-Math.min(...ys)+pad*2};
    if(realm==='Kingdom of England'){
@@ -247,15 +249,17 @@ export class WorldMap{
    const paths=cells.map(({c,poly})=>`<path class="city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${polygonPath(poly)}"><title>${esc(displayCityName(c))} · ${esc(displayRealmName(realm))}</title></path>`).join('');
    const blockerGroups=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)!==realm).map(f=>svgSubpaths(f.d).map(svgSubpathPoints).filter(p=>p.length>=3)).filter(polys=>polys.length);
    const componentByCity=new Map(cells.map(x=>[x.c.id,x.component])),cellEdges=sharedCellEdges(cells);
-   for(const edge of cellEdges){const [a,b]=edge.cities;this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);}
    let borderPaths='';
    for(const edge of cellEdges){
-    const key=cityBorderKey(realm,edge.cities[0],edge.cities[1]);if(CITY_BORDER_SKIP.has(key)||CITY_BORDER_MANUAL.has(key))continue;
     const ca=componentByCity.get(edge.cities[0]),cb=componentByCity.get(edge.cities[1]);
-    // If both cities live on different disconnected land pieces (islands / opposite shores),
-    // the sea is already the separator: do not invent an extra city border.
+    // Different islands / disconnected land pieces are never neighbours.
     if(ca>=0&&cb>=0&&ca!==cb)continue;
     const frags=mergeNearbyFragments(segmentVisibleFragments(edge.a,edge.b,realmPolys,blockerGroups)).map(trimRealmFragment).filter(Boolean);
+    // This is the single source of truth: a real visible shared boundary means adjacency.
+    if(frags.length){
+     const [a,b]=edge.cities;this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);
+    }
+    const key=cityBorderKey(realm,edge.cities[0],edge.cities[1]);if(CITY_BORDER_SKIP.has(key)||CITY_BORDER_MANUAL.has(key))continue;
     borderPaths+=frags.map(f=>`<path class="city-territory-border" d="M${f.a[0].toFixed(3)},${f.a[1].toFixed(3)}L${f.b[0].toFixed(3)},${f.b[1].toFixed(3)}"/>`).join('');
    }
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
@@ -267,25 +271,37 @@ export class WorldMap{
     labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
    }
   }
-  // Same-realm Voronoi edges above give exact neighbours inside one realm.
-  // For political borders, build one global Voronoi graph from all playable city centres.
-  // Shared global Voronoi edges are the Delaunay neighbours of a city, which is much more
-  // reliable for fog-of-war than the old "four closest foreign cities" approximation.
-  const territoryCities=CITIES.filter(c=>this.cityCenters.has(c.id)),
-        globalPoints=territoryCities.map(c=>this.cityCenters.get(c.id)),
-        globalBox={x:bounds.x-35,y:bounds.y-35,w:bounds.w+70,h:bounds.h+70},
-        globalCells=territoryCities.map((c,i)=>({c,poly:voronoiCell(globalPoints[i],globalPoints,globalBox)}));
-  for(const edge of sharedCellEdges(globalCells)){
-   const [a,b]=edge.cities,ca=CITY[a],cb=CITY[b];
-   if(!ca||!cb||cityRealm(ca)===cityRealm(cb))continue;
-   const pa=this.cityCenters.get(a),pb=this.cityCenters.get(b),distance=Math.hypot(pa[0]-pb[0],pa[1]-pb[1]);
-   // Extremely long Delaunay links are usually caused by sparse coastlines/islands,
-   // not a meaningful land-border neighbour for province visibility.
-   if(distance>92)continue;
-   this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);
+  // Across different realms, adjacency is derived from the ACTUAL drawn political border.
+  // We sample each realm-boundary segment on both sides. A foreign realm only counts when
+  // the sample truly crosses from realm A into realm B. Merely being geographically close,
+  // or touching at one corner, is not enough.
+  const realmEntries=[...this.cityRealmGeometry.entries()],
+        inGeom=(g,p)=>p[0]>=g.bbox.x-.6&&p[0]<=g.bbox.x+g.bbox.w+.6&&p[1]>=g.bbox.y-.6&&p[1]<=g.bbox.y+g.bbox.h+.6&&pointInCompound(p,g.polys),
+        nearestCity=(g,p)=>{let best=null,bestD=Infinity;for(let i=0;i<g.cities.length;i++){const q=g.points[i],dx=p[0]-q[0],dy=p[1]-q[1],d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=g.cities[i];}}return best;},
+        foreignAcross=(outside,inside,except)=>{let best=null,bestD=Infinity;for(const [r,g] of realmEntries){if(r===except||!inGeom(g,outside)||inGeom(g,inside))continue;const c=nearestCity(g,outside),q=c&&this.cityCenters.get(c.id);if(!q)continue;const dx=outside[0]-q[0],dy=outside[1]-q[1],d=dx*dx+dy*dy;if(d<bestD){bestD=d;best={realm:r,geom:g,city:c};}}return best;},
+        addNeighbour=(a,b)=>{if(!a||!b||a===b)return;this.cityAdjacency.get(a)?.add(b);this.cityAdjacency.get(b)?.add(a);};
+  for(const [realm,g] of realmEntries){
+   for(const poly of g.polys)for(let i=0;i<poly.length;i++){
+    const a=poly[i],b=poly[(i+1)%poly.length],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy);if(len<.08)continue;
+    const nx=-dy/len,ny=dx/len,samples=len>10?3:len>4?2:1;
+    for(let s=0;s<samples;s++){
+     const t=(s+.5)/samples,mid=[a[0]+dx*t,a[1]+dy*t];let linked=false;
+     for(const eps of [.06,.12,.22,.38]){
+      const plus=[mid[0]+nx*eps,mid[1]+ny*eps],minus=[mid[0]-nx*eps,mid[1]-ny*eps],
+            plusIn=inGeom(g,plus),minusIn=inGeom(g,minus);
+      if(plusIn===minusIn)continue;
+      const inside=plusIn?plus:minus,outside=plusIn?minus:plus,other=foreignAcross(outside,inside,realm);
+      if(!other)continue;
+      const ca=nearestCity(g,inside),cb=other.city;
+      if(ca&&cb){addNeighbour(ca.id,cb.id);linked=true;break;}
+     }
+     if(linked)continue;
+    }
+   }
   }
   this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
  }
+ neighboursOf(cityId){return [...(this.cityAdjacency?.get(cityId)||[])];}
  zoom(f,fx=.5,fy=.5){const w=Math.max(28,Math.min(this.overviewWidth||900,this.view.w*f)),r=w/this.view.w;this.view.x+=this.view.w*fx*(1-r);this.view.y+=this.view.h*fy*(1-r);this.view.w=w;this.view.h*=r;this.update();}
  focus(id){this.focusRequest=id;const c=CITY[id];if(!c)return;const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),r=this.host.getBoundingClientRect();this.view.w=310;this.view.h=310*r.height/Math.max(1,r.width);this.view.x=p[0]-this.view.w/2;this.view.y=p[1]-this.view.h/2;this.update();}
  fit(){this.focusRequest=null;const r=this.host.getBoundingClientRect(),aspect=r.width/Math.max(1,r.height);this.overviewWidth=Math.max(bounds.w+30,(bounds.h+70)*aspect);this.view.w=this.overviewWidth;this.view.h=this.view.w/aspect;this.view.x=bounds.x+(bounds.w-this.view.w)/2;this.view.y=bounds.y+(bounds.h-this.view.h)/2;this.update();}
