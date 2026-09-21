@@ -1,5 +1,5 @@
 import {CITIES,CITY,RARITIES,RARITY_COLORS,DUPLICATE_COINS,PACK} from './data.js';
-import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-england-home-support-v1';
+import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-england-home-support-v2';
 import {freshProfile,formatNumber,openPack,validateProfile} from './engine.js';
 import {icon} from './icons.js';
 import {WorldMap} from './map.js?v=20260921-city-borders-dark-030-060-v9';
