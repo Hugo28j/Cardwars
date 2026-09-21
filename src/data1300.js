@@ -3595,5 +3595,27 @@ export const CITIES_1300=[
  }
 ];
 
+
+export const SUPPORT_TERRITORIES_1300=[
+ {
+  id:'1300-england-home-realm',name:'England home realm',country:'Kingdom of England',year:1300,
+  supportTerritory:true,playable:false,packable:false,
+  people:4500000,populationText:'4.50 M',populationConfidence:'low',
+  army:10000,armyText:'10.0 K',navy:325,navyText:'325',
+  food:70,technology:74,economyScore:78,stability:68,
+  historicalRole:'Non-playable national support territory representing England on the British Isles',
+  economy:'Agriculture, wool, royal taxation, market towns, ports and long-distance trade',
+  militaryRole:'National wartime manpower and maritime mobilisation capacity under Edward I',
+  researchSummary:'This support entity represents the non-playable English homeland so the Kingdom of England retains national population, military and naval weight even though the British Isles are not represented by packable city cards.',
+  evidenceNote:'Population uses a broad c.1300 estimate of about 4.5 million for England. Army uses an approximately 10,000-strong field force as a conservative 1300 campaign-scale value. Navy uses 325 as a mobilisation-capacity proxy based on Edward I requisitioning that many ships for a 1293 expedition; it is not a claim that England maintained 325 permanent royal warships.',
+  linkedPlayableCityIds:['1300-perigueux','1300-la-rochelle','1300-bordeaux','1300-bayonne'],
+  sources:[
+   ['Oxford ORA — English agricultural output and population c.1300','https://ora.ox.ac.uk/objects/uuid:8f6d2c2a-be53-4bdf-b995-b6594689487f'],
+   ['Journal of Medieval History — Edward I armies','https://www.sciencedirect.com/science/article/abs/pii/S0304418111000248'],
+   ['Cambridge — Edward I / earlier English fleet mobilisation','https://www.cambridge.org/core/books/abs/edward-iii-and-the-war-at-sea/edward-iii-and-resistance-to-the-navy/A1BB96CA711909182877B369866DD65D']
+  ]
+ }
+];
+
 export const CITY_1300=Object.fromEntries(CITIES_1300.map((c,index)=>[c.id,{...c,index}]));
 export const RESEARCH_1300_NOTE='Population figures are historical estimates, not census counts. Army, navy and all 0–100 scores are comparative Cardwars gameplay estimates. Food, Economy, Technology and Stability are calibrated across the full current c.1300 set, with roughly 50 as middling, 70–80 as strong, 90+ as exceptional and 100 reserved for the strongest card or tied strongest cards in a category. Political ownership follows the exact c.1300 snapshot, including temporary occupations such as Aragonese Murcia.';
