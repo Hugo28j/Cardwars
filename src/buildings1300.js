@@ -7,52 +7,52 @@ export const ECONOMY_1300={
 
 export const BUILDINGS_1300=[
  {
-  id:'fields',name:'Manorial Fields',category:'Food',cost:500,
+  id:'fields',name:'Manorial Fields',category:'Food',cost:50,
   description:'Expand cultivated land, drainage and crop rotation around the city.',
   effects:{food:4,income:50}
  },
  {
-  id:'pastures',name:'Sheep Pastures',category:'Food / Production',cost:700,
+  id:'pastures',name:'Sheep Pastures',category:'Food / Production',cost:65,
   description:'Organised grazing grounds supply meat, wool and hides to local workshops.',
   effects:{food:2,economy:1,income:80}
  },
  {
-  id:'textiles',name:'Textile Workshop',category:'Production',cost:1000,
+  id:'textiles',name:'Textile Workshop',category:'Production',cost:90,
   description:'Urban looms turn wool and flax into higher-value cloth for local and export markets.',
   effects:{economy:4,income:220}
  },
  {
-  id:'forge',name:'Weapons Forge',category:'Military / Production',cost:1250,
+  id:'forge',name:'Weapons Forge',category:'Military / Production',cost:115,
   description:'Smiths produce arms, armour and tools while improving military supply.',
   effects:{technology:1,army:150,income:120}
  },
  {
-  id:'market',name:'Market Hall',category:'Trade',cost:1450,
+  id:'market',name:'Market Hall',category:'Trade',cost:135,
   description:'A regulated central market raises trade volume, tolls and commercial stability.',
   effects:{economy:3,stability:1,income:250}
  },
  {
-  id:'barracks',name:'Professional Barracks',category:'Army',cost:1700,
+  id:'barracks',name:'Professional Barracks',category:'Army',cost:165,
   description:'Permanent quarters and training grounds support a larger professional military core.',
   effects:{army:300,stability:1,income:-90}
  },
  {
-  id:'dockyard',name:'Royal Dockyard',category:'Navy',cost:1950,requiresCoast:true,
+  id:'dockyard',name:'Royal Dockyard',category:'Navy',cost:200,requiresCoast:true,
   description:'Slipways, stores and naval craftsmen expand dedicated military shipping capacity.',
   effects:{navy:3,economy:1,income:-70}
  },
  {
-  id:'walls',name:'Stone Fortifications',category:'Defence',cost:2100,
+  id:'walls',name:'Stone Fortifications',category:'Defence',cost:230,
   description:'Improved walls, towers and gates make the province harder to capture and easier to control.',
   effects:{stability:4,income:-40}
  },
  {
-  id:'guildhall',name:'Guild Hall',category:'Civic / Production',cost:2350,
+  id:'guildhall',name:'Guild Hall',category:'Civic / Production',cost:270,
   description:'Recognised guilds coordinate skilled labour, quality standards and urban commerce.',
   effects:{economy:2,stability:2,income:180}
  },
  {
-  id:'university',name:'University & Scriptorium',category:'Knowledge',cost:3200,
+  id:'university',name:'University & Scriptorium',category:'Knowledge',cost:300,
   description:'Schools, scholars and manuscript production accelerate administration and technical knowledge.',
   effects:{technology:5,economy:1,income:-30}
  }
@@ -84,6 +84,7 @@ export function startingBuildingLevel1300(c,id){
 }
 
 export function buildingCost1300(building,currentLevel){
- const raw=building.cost*(1+Math.max(0,currentLevel)*.65);
- return Math.round(raw/50)*50;
+ const level=Math.max(0,Number(currentLevel)||0);
+ const raw=building.cost*(1+level*.35);
+ return Math.min(400,Math.max(50,Math.round(raw/5)*5));
 }
