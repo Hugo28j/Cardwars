@@ -64,3 +64,45 @@
 .building-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.building-card{border:1px solid #4d5c52;background:linear-gradient(150deg,#18221e,#101817);padding:16px;display:flex;flex-direction:column;min-height:250px;position:relative}.building-card.blocked{opacity:.62}.building-card.maxed{border-color:#a88f565e;background:linear-gradient(150deg,#d8bb8009,#101817)}.building-card-top{display:flex;justify-content:space-between;gap:12px}.building-category,.building-level{font-size:8px;letter-spacing:1px;text-transform:uppercase}.building-category{color:var(--gold)}.building-level{color:var(--muted)}.building-card h3{font-family:var(--serif);font-size:23px;margin:7px 0 5px}.building-card>p{color:var(--muted);font-size:10px;line-height:1.55;min-height:32px}.building-effects{font-size:10px;color:#cad6c5;border-top:1px solid #42504780;border-bottom:1px solid #42504780;padding:9px 0;margin:11px 0}.building-origin{display:flex;gap:16px;color:var(--muted);font-size:9px}.building-origin strong{color:#d9ddce}.building-level-pips{display:flex;gap:5px;margin:11px 0 13px}.building-level-pips i{height:4px;flex:1;background:#314139;border-radius:2px}.building-level-pips i.filled{background:#bda267}.building-card>button{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:10px 11px;border:1px solid #58675d;background:#18231e;color:#d9ded2;font-size:10px}.building-card>button.can-build{border-color:#b69a5c88;background:#d8bb800d;cursor:pointer}.building-card>button.can-build:hover{background:#d8bb8018}.building-card>button strong{color:var(--gold);font-family:var(--serif);font-size:15px}.building-card>button:disabled{color:#718077;justify-content:center}
 @media(max-width:980px){.developed-stats{grid-template-columns:repeat(3,1fr)}.developed-stats>div{border-bottom:1px solid var(--border)}.developed-stats>div:nth-child(3n){border-right:0}.developed-stats>div:nth-last-child(-n+3){border-bottom:0}.development-overview{grid-template-columns:repeat(2,1fr)}.development-overview>span{border-bottom:1px solid var(--border)}.development-overview>span:nth-child(2n){border-right:0}.development-overview>span:nth-last-child(-n+2){border-bottom:0}}
 @media(max-width:700px){.buildings-page{padding:34px 16px 45px}.buildings-title,.city-development-head,.building-catalog-head{align-items:flex-start;flex-direction:column}.treasury-card{width:100%;text-align:left}.city-development-head label{min-width:0;width:100%}.building-catalog-head>p{text-align:left}.building-grid{grid-template-columns:1fr}.developed-stats{grid-template-columns:repeat(2,1fr)}.developed-stats>div,.developed-stats>div:nth-child(3n),.developed-stats>div:nth-last-child(-n+3){border-right:1px solid var(--border);border-bottom:1px solid var(--border)}.developed-stats>div:nth-child(2n){border-right:0}.developed-stats>div:nth-last-child(-n+2){border-bottom:0}.header-tools .campaign-florins small{display:none}}
+
+/* Refined 1300 collection header */
+.collection-1300-page{padding-top:38px}
+.collection-hero-1300{display:flex;align-items:flex-end;justify-content:space-between;gap:42px;padding:30px 32px 28px;margin-bottom:18px;border:1px solid #4d5c5066;border-radius:8px;background:radial-gradient(circle at 83% 18%,#d8bb8010,transparent 28%),linear-gradient(135deg,#15211d,#101918 72%);box-shadow:0 12px 34px #0002;position:relative;overflow:hidden}
+.collection-hero-1300:after{content:'';position:absolute;right:-80px;bottom:-115px;width:330px;height:330px;border:1px solid #b99d5a18;border-radius:50%;box-shadow:0 0 0 38px #b99d5a08,0 0 0 78px #b99d5a05;pointer-events:none}
+.collection-hero-copy{position:relative;z-index:1;max-width:800px}
+.collection-hero-copy h1{font-size:clamp(44px,4.2vw,66px);line-height:1.02;margin:10px 0 13px;letter-spacing:-1.4px}
+.collection-hero-copy>p{color:#aab8aa;font-size:14px;line-height:1.65;max-width:720px}
+.collection-hero-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:19px}
+.collection-hero-tags span{border:1px solid #66736166;background:#ffffff04;border-radius:20px;padding:6px 10px;color:#aeb9a8;font-size:8px;letter-spacing:.8px;text-transform:uppercase}
+.collection-progress-1300{position:relative;z-index:1;min-width:205px;padding:18px 19px 16px;border:1px solid #9b865052;background:#0b1312aa;border-radius:6px}
+.collection-progress-1300>strong{display:block;color:var(--gold);font-size:46px}
+.collection-progress-1300>span{margin:7px 0 12px}
+.collection-progress-1300>small{display:block;color:#829184;font-size:8px;margin-top:9px;letter-spacing:.4px}
+.research-notice-1300{margin:0 0 18px;border-radius:6px;padding:13px 15px;background:linear-gradient(90deg,#b9a66b0c,#ffffff02)}
+.research-notice-1300 strong{font-size:16px}.research-notice-1300 p{font-size:10px;line-height:1.55}
+.collection-toolbar-1300{margin:0 0 19px;padding:13px 14px;border:1px solid #3f4d4466;border-radius:6px;background:#0c1513;align-items:center}
+.collection-all-segment{flex-shrink:0}
+.collection-filters-1300{margin-left:auto}
+.collection-filters-1300 .search-input{min-width:230px;background:#111c18}
+.collection-filters-1300 .search-input input{width:190px}
+.collection-filters-1300 select{min-width:230px;max-width:310px;background:#111c18}
+.collection-meta-1300{margin:0 1px 20px;padding-top:2px}
+@media(max-width:900px){
+ .collection-hero-1300{align-items:flex-start;padding:25px;gap:24px}
+ .collection-progress-1300{min-width:175px}
+ .collection-toolbar-1300{align-items:stretch}
+ .collection-filters-1300{margin-left:0;width:100%}
+ .collection-filters-1300 .search-input,.collection-filters-1300 select{flex:1;min-width:0;max-width:none}
+}
+@media(max-width:700px){
+ .collection-1300-page{padding-top:25px}
+ .collection-hero-1300{flex-direction:column;padding:22px 19px 20px;gap:20px}
+ .collection-hero-copy h1{font-size:42px}
+ .collection-hero-copy>p{font-size:12px}
+ .collection-progress-1300{width:100%;min-width:0}
+ .collection-toolbar-1300{padding:10px}
+ .collection-all-segment{align-self:stretch}
+ .collection-all-segment button{width:100%}
+ .collection-filters-1300{flex-direction:column}
+ .collection-filters-1300 .search-input,.collection-filters-1300 select{width:100%}
+}
