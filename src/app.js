@@ -152,7 +152,7 @@ const money1300=n=>(Number(n)||0).toFixed(2);
 function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},dailyTax:0};}
 function normaliseGameEconomy1300(raw){
  const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300();
- e.taxRate=clamp1300(Math.round(Number(e.taxRate)||10),GAME_TAX_MIN,GAME_TAX_MAX);
+ e.taxRate=clamp1300(Math.round(Number.isFinite(Number(e.taxRate))?Number(e.taxRate):10),GAME_TAX_MIN,GAME_TAX_MAX);
  e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.12)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);
  for(const key of ['cityWages','buildingWages','employment','lastEconomy'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
  e.dailyTax=Math.max(0,Number(e.dailyTax)||0);return e;
@@ -321,8 +321,9 @@ function buildingPicture1300(id){
  return `<svg viewBox="0 0 64 64" class="province-building-svg" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[id]||shapes.guildhall}</svg>`;
 }
 function gameSectorMetrics1300(game,cityId,buildingId){
- const m=game.economy?.lastEconomy?.[cityId]?.[buildingId];
- return m||{workers:0,capacity:0,wage:effectiveBuildingWage1300(game,cityId,buildingId),gross:0,wageBill:0,profit:0,tax:0};
+ const m=game.economy?.lastEconomy?.[cityId]?.[buildingId];if(m)return m;
+ const c=CITY_1300[cityId],row=c?gameProvinceBuildingState(c).buildings.find(x=>x.id===buildingId):null,workers=Math.max(0,Number(game.economy?.employment?.[cityId]?.[buildingId])||0),capacity=row?row.maxWorkers*row.level:0;
+ return {workers,capacity,wage:effectiveBuildingWage1300(game,cityId,buildingId),gross:0,wageBill:0,profit:0,tax:0};
 }
 function gameCityEconomySummary1300(game,cityId){
  const c=CITY_1300[cityId];if(!c)return {workers:0,labour:0,tax:0};
