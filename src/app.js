@@ -2,7 +2,7 @@ import {CITIES,CITY,RARITIES,RARITY_COLORS,DUPLICATE_COINS,PACK} from './data.js
 import {CITIES_1300,CITY_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260920-merge-frankfurt-into-mainz-v1';
 import {freshProfile,formatNumber,openPack,validateProfile} from './engine.js';
 import {icon} from './icons.js';
-import {WorldMap} from './map.js?v=20260921-visible-city-borders-all-realms-v1';
+import {WorldMap} from './map.js?v=20260921-darker-city-borders-v2';
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),KEY='cardwars.collection.v2';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES_1300=new Map([
