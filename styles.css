@@ -272,7 +272,7 @@
 .editor-preview{width:105px;height:122px;box-shadow:0 8px 22px #0006}
 
 /* Country shield on campaign map */
-.game-country-shield{position:absolute;left:18px;top:18px;z-index:24;width:74px;height:86px;border:0;background:transparent;padding:0;filter:drop-shadow(0 5px 8px #0009);cursor:pointer}
+.game-country-shield{position:absolute;left:18px;top:18px;z-index:24;width:74px;height:86px;border:0;background:transparent;padding:0;filter:drop-shadow(0 5px 8px #0009);cursor:pointer;transition:left .22s ease,transform .15s ease}
 .game-country-shield:hover{transform:translateY(-2px)}
 .game-country-shield .map-shield{width:74px;height:86px;border:2px solid #d3bb78;background:#111914;padding:4px}
 
@@ -385,7 +385,7 @@
 
 /* Fine anti-corruption budget and campaign rankings */
 .stability-budget-slider input[type="range"]{min-width:230px}
-.game-map-shell.province-panel-open .game-country-shield{left:408px}
+.game-map-shell.province-panel-open .game-country-shield{left:477px}
 .game-map-shell.province-panel-open .game-map-actions{left:498px}
 .country-panel-tabs{grid-template-columns:repeat(7,1fr)}
 .country-panel-tabs button{font-size:6.6px;padding-left:3px;padding-right:3px}
@@ -1027,5 +1027,70 @@
   gap:2px;
   padding-left:6px;
   padding-right:6px;
+ }
+}
+
+
+/* Final province market spacing + building finance redesign */
+.province-market-columns,.province-market-row{
+ grid-template-columns:56px 54px 44px 46px 40px 44px 64px 68px;
+ gap:3px;
+ min-width:0;
+ padding-left:8px;
+ padding-right:8px;
+}
+.province-market-columns span:nth-child(1),.province-market-row>strong{text-align:left}
+.province-market-columns span:nth-child(2){text-align:right}
+
+.building-detail-wage-section{padding-top:11px;padding-bottom:11px;background:#101a16}
+.building-workers-card{
+ margin-bottom:8px;
+ padding:14px 15px;
+ border:1px solid #46534b;
+ background:#14201b;
+}
+.building-workers-card>span{display:block;font-size:7px;letter-spacing:.75px;color:#819087}
+.building-workers-card>strong{
+ display:block;
+ margin-top:6px;
+ font-family:var(--serif);
+ font-size:24px;
+ color:#e3dfc8;
+ white-space:nowrap;
+}
+.building-workers-card>strong small{font-size:13px;color:#89968d}
+.building-finance-list{border:1px solid #414f47;background:#111b17}
+.building-finance-list>div{
+ min-height:43px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:14px;
+ padding:9px 12px;
+ border-bottom:1px solid #354239;
+}
+.building-finance-list>div:last-child{border-bottom:0}
+.building-finance-list span{font-size:8px;letter-spacing:.45px;color:#89978d;text-transform:uppercase}
+.building-finance-list strong{font-family:var(--serif);font-size:17px;white-space:nowrap}
+.building-finance-list strong.positive{color:#7fc38d}
+.building-finance-list strong.negative{color:#d37c72}
+.building-finance-list strong.neutral{color:#d8d9c7}
+.building-finance-list .profit{background:#15221c;align-items:flex-start}
+.building-finance-list .profit>div{display:flex;flex-direction:column}
+.building-finance-list .profit small{
+ display:block;
+ margin-left:auto;
+ margin-top:3px;
+ font-size:7px;
+ color:#75837a;
+ white-space:nowrap;
+}
+.building-finance-grid{display:none}
+
+@media(max-width:700px){
+ .game-campaign-view .game-country-shield.province-open{left:auto;right:10px}
+ .province-market-columns,.province-market-row{
+  grid-template-columns:54px 52px 42px 44px 38px 42px 60px 64px;
+  min-width:408px;
  }
 }
