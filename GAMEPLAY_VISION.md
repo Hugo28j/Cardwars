@@ -89,8 +89,9 @@ The same progression should work with multiple real players. Each human-controll
 
 ## Buildings and administration scaling
 
-The c.1300 province economy now uses **25 building / sector types** rather than a universal build list.
+The c.1300 province economy now uses **33 building / sector types** rather than a universal build list.
 
+- The expanded economy, production chains, construction and trade rules are documented in **[ECONOMY.md](ECONOMY.md)**.
 - Buildings have city-specific availability rules based on coastal access, rivers/crossings, population, food base, trade importance, religious importance, technology and the historical/economic text attached to each city.
 - Existing historical sectors are seeded automatically when a city strongly matches the building's role.
 - Important c.1300 sectors include mills, breweries, tanneries, fisheries, saltworks, quarries, timber yards, warehouses, merchant quarters, customs houses, mints, bridges/tolls, monasteries, cathedrals and hospitals in addition to the original ten sectors.

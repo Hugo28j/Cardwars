@@ -1,1 +1,11 @@
-{"name":"cardwars","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test tests/engine.test.js","start":"python -m http.server 4173"}}
+{
+  "name": "cardwars",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/profile.test.js tests/economy.test.js",
+    "start": "python -m http.server 4173",
+    "test:legacy": "node --test tests/engine.test.js"
+  }
+}
