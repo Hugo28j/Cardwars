@@ -702,3 +702,46 @@
  .country-panel-tabs button{font-size:10px;padding:12px 6px}
  .dip-acceptance-wrap{margin-left:12px;margin-right:12px}
 }
+
+
+/* Dynamic monthly Food / Economy / Technology / Stability */
+.dynamic-stat-cap{display:flex;align-items:center;gap:8px;padding:9px 13px;background:#101b17;border-bottom:1px solid #465249}
+.dynamic-stat-cap span{font-size:8px;letter-spacing:.9px;color:#c5a968}
+.dynamic-stat-cap strong{font-family:var(--serif);font-size:16px;color:#e0cf98;margin-left:auto}
+.dynamic-stat-cap small{font-size:7px;color:#849188}
+.province-side-stats.dynamic>div{grid-template-columns:72px 90px 1fr;grid-template-areas:"label value change" "bar bar bar";row-gap:4px;margin:9px 0}
+.province-side-stats.dynamic span{grid-area:label}
+.province-side-stats.dynamic strong{grid-area:value;text-align:left;font-size:10px;color:#d8ded2}
+.province-side-stats.dynamic strong small{font-size:7px;color:#77857c}
+.province-side-stats.dynamic em{grid-area:change;text-align:right;font-style:normal;font-size:7px}
+.province-side-stats.dynamic em.positive,.workforce-summary strong.positive,.province-tech-investments b.positive{color:#79c58a}
+.province-side-stats.dynamic em.negative,.workforce-summary strong.negative,.province-tech-investments b.negative{color:#d87b72}
+.province-side-stats.dynamic em.neutral,.province-tech-investments b.neutral{color:#849188}
+.province-side-stats.dynamic i{grid-area:bar;height:5px}
+.technology-investment-row{align-items:flex-start}
+.province-tech-slider{width:190px;display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.province-tech-slider>strong{text-align:right;font-family:var(--serif);font-size:14px;color:#dbc98f}
+.province-tech-slider input[type="range"]{width:100%;accent-color:#8ca17b;cursor:pointer}
+.province-tech-slider>small{font-size:7px;color:#78867d;text-align:right;line-height:1.25}
+
+.tech-tree-bonus{display:grid;grid-template-columns:1fr auto;gap:3px 12px;align-items:end;margin-top:12px;padding:10px;border:1px solid #536158;background:#121d18}
+.tech-tree-bonus span{font-size:8px;letter-spacing:.8px;color:#c3a864}
+.tech-tree-bonus strong{font-size:20px!important;margin:0!important}
+.tech-tree-bonus small{grid-column:1/-1;font-size:8px;color:#8d9a91}
+.tech-tree article p{font-size:8px;line-height:1.4;color:#91a097;margin:5px 0 8px}
+.province-tech-investments{padding:10px 14px}
+.province-tech-investments article{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid #39463f}
+.province-tech-investments article>div:first-child strong{display:block;font-family:var(--serif);font-size:14px}
+.province-tech-investments article>div:first-child small{display:block;margin-top:4px;font-size:8px;color:#8c998f;line-height:1.4}
+.province-tech-investments .province-tech-slider{width:100%}
+
+.country-national-stats strong{min-width:92px}
+.country-national-stats>div{grid-template-columns:90px 110px 1fr}
+.country-policy-card h3{color:#e1cc91}
+
+@media(max-width:760px){
+ .province-side-stats.dynamic>div{grid-template-columns:65px 84px 1fr}
+ .province-tech-slider{width:150px}
+ .province-tech-investments article{grid-template-columns:1fr}
+ .province-tech-investments .province-tech-slider{width:100%}
+}
