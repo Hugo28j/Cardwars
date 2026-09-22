@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260921-starting-florins-v4';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260922-army-five-percent-v5';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES=new Map([
