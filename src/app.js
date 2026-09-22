@@ -851,9 +851,9 @@ function gameBuildingDetailHTML1300(cityId,buildingId){
 
 function gameProvincePanelHTML(cityId){
  const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c)return '';
- const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy);
- const stats=[['Food',Math.min(100,c.food+b.food)],['Economy',Math.min(100,c.economyScore+b.economy)],['Technology',Math.min(100,c.technology+b.technology)],['Stability',owned?effectiveProvinceStability1300(game,c,b.stability):Math.min(100,c.stability+b.stability)]];
- const summary=owned?gameCityEconomySummary1300(game,cityId):null,cityOverride=Number.isFinite(Number(e.cityWages[cityId])),cityWage=effectiveCityWage1300(game,cityId);
+ const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy),cap=owned?gameStatCap1300(game):100;
+ const live=owned?provinceDynamicStats1300(game,c):{food:roundStat1300(Math.min(100,c.food+b.food)),economy:roundStat1300(Math.min(100,c.economyScore+b.economy)),technology:roundStat1300(Math.min(100,c.technology+b.technology)),stability:roundStat1300(Math.min(100,c.stability+b.stability)),cap:100},changes=e.lastStatChanges?.[cityId]||{},stats=[['Food',live.food,'food'],['Economy',live.economy,'economy'],['Technology',live.technology,'technology'],['Stability',live.stability,'stability']];
+ const summary=owned?gameCityEconomySummary1300(game,cityId):null,cityOverride=Number.isFinite(Number(e.cityWages[cityId])),cityWage=effectiveCityWage1300(game,cityId),techMax=provinceTechnologyBudgetMax1300(c),techBudget=Math.min(Number(e.technologyBudgets?.[cityId])||0,techMax),techNeed=technologyBudgetNeed1300(c);
  const detail=gameProvinceBuildingDetail?gameBuildingDetailHTML1300(cityId,gameProvinceBuildingDetail):'';
  if(gameProvinceBuildingDetail&&!detail)gameProvinceBuildingDetail=null;
  if(detail)return `<div class="province-side-head detail-open" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div><div class="province-side-scroll building-detail-scroll">${detail}</div>`;
