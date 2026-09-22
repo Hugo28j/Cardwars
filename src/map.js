@@ -241,7 +241,7 @@ export class WorldMap{
  }
  buildCityTerritories(atlas){
   const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels');
-  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();this.cityRealmGeometry=new Map();
+  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();this.cityUnitAnchors=new Map();this.cityRealmGeometry=new Map();
   for(const realm of this.cityTerritoryRealms||[]){
    const features=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)===realm);if(!features.length)continue;
    const realmD=features.map(f=>f.d).join(''),realmPolys=svgSubpaths(realmD).map(svgSubpathPoints).filter(p=>p.length>=3);if(!realmPolys.length)continue;
@@ -281,6 +281,7 @@ export class WorldMap{
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})" style="--city-border:${cityBorderColor(realm)};--city-border-opacity:${cityBorderOpacity(realm)}">${paths}${borderPaths}</g>`);
    for(const {c,poly,component,cellBox,labelPoint,metrics} of cells){
+    this.cityUnitAnchors.set(c.id,{point:labelPoint,clearance:metrics.clearance});
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-'),componentClip=component>=0?componentClips[component]:realmClip;
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
@@ -405,8 +406,8 @@ export class WorldMap{
     for(const c of CITIES){
      if(!visibleCities.has(c.id))continue;
      const owned=ownedCities.has(c.id),override=game?.militaryByCity?.[c.id],army=Math.max(0,Number(override?.army??c.army)||0),navy=Math.max(0,Number(override?.navy??c.navy)||0);
-     const land=this.cityCenters?.get(c.id)||cityTerritoryPoint(cityRealm(c),c),sq=screen(...land);
-     if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55)pieces.push(`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${land}) scale(${unit}) translate(-17,-22)"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned)}</g>`);
+      const unitAnchor=this.cityUnitAnchors?.get(c.id),land=unitAnchor?.point||this.cityCenters?.get(c.id)||cityTerritoryPoint(cityRealm(c),c),sq=screen(...land);
+     if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55)pieces.push(`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${land}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned)}</g>`);
      if(navy>0){const coast=this.coastMarkerForCity(c);if(coast){const cq=screen(...coast);if(cq.x>-55&&cq.y>-55&&cq.x<width+55&&cq.y<height+55)pieces.push(`<g class="navy-map-marker" data-unit-city="${c.id}" transform="translate(${coast}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(navy)} ships</title>${shipPiece(navy,owned)}</g>`);}}
     }
     militaryLayer.innerHTML=pieces.join('');
