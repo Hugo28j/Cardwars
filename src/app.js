@@ -478,12 +478,14 @@ function professionalArmyState1300(game){
   rawByCity[id]=Math.max(0,Math.round(Number(c.army)||0));rawTotal+=rawByCity[id];
  }
  const percent=10+bonusPct,limit=Math.max(0,Math.floor(population*percent/100)),scale=rawTotal>limit&&rawTotal>0?limit/rawTotal:1,byCity={};
- let assigned=0;
- ids.forEach((id,index)=>{
-  let n=index===ids.length-1?Math.max(0,Math.min(rawByCity[id],limit-assigned)):Math.max(0,Math.min(rawByCity[id],Math.floor(rawByCity[id]*scale)));
-  if(scale===1)n=rawByCity[id];byCity[id]=n;assigned+=n;
- });
- return {population,basePercent:10,bonusPercent:bonusPct,percent,limit,rawTotal,army:Math.min(rawTotal,limit),byCity};
+ for(const id of ids)byCity[id]=scale===1?rawByCity[id]:Math.floor(rawByCity[id]*scale);
+ if(scale<1){
+  let remaining=limit-Object.values(byCity).reduce((n,x)=>n+x,0);
+  const order=[...ids].sort((a,b)=>(rawByCity[b]*scale-byCity[b])-(rawByCity[a]*scale-byCity[a]));
+  for(const id of order){if(remaining<=0)break;if(byCity[id]<rawByCity[id]){byCity[id]++;remaining--;}}
+ }
+ const army=Object.values(byCity).reduce((n,x)=>n+x,0);
+ return {population,basePercent:10,bonusPercent:bonusPct,percent,limit,rawTotal,army,byCity};
 }
 function campaignMilitaryByCity1300(game){
  const out={};if(!game)return out;const prof=professionalArmyState1300(game);
@@ -1351,7 +1353,7 @@ function countryPoliticsHTML1300(game){
  refreshCampaignStage1300(game);const t=countryTotals1300(game),capital=t.cities[0],independent=(game.ownedCities||[]).filter(id=>game.independenceByCity?.[id]).length;
  return `<section class="country-overview-hero"><div class="country-flag-large">${flagShieldHTML1300(game.flag,'country-panel-flag')}</div><div><span>${esc(campaignStageLabel1300(game).toUpperCase())}</span><h2>${esc(gameCountryName1300(game))}</h2><p>Capital: <strong>${esc(capital?displayCityName1300(capital):'—')}</strong></p></div></section>
  <section class="campaign-path"><div class="${game.campaignStage==='rebellion'?'active done':''}"><span>1</span><strong>Rebellion</strong><small>${independent}/${game.ownedCities.length} cities independent</small></div><div class="${['free_cities','nation'].includes(game.campaignStage)?'active done':''}"><span>2</span><strong>Free Cities</strong><small>All cities recognised as independent</small></div><div class="${game.campaignStage==='nation'?'active done':''}"><span>3</span><strong>Nation</strong><small>Form a country in Decisions</small></div><div class="${game.won?'active done':''}"><span>4</span><strong>Great Power</strong><small>Reach the Overall Top 5 to win</small></div></section>
- <section class="country-stat-grid"><div><span>Provinces</span><strong>${t.cities.length}</strong></div><div><span>Population</span><strong>${strengthNumber(t.population)}</strong></div><div><span>Army</span><strong>${strengthNumber(t.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(t.navy)}</strong></div></section>
+ <section class="country-stat-grid"><div><span>Provinces</span><strong>${t.cities.length}</strong></div><div><span>Population</span><strong>${strengthNumber(t.population)}</strong></div><div><span>Professional army</span><strong>${strengthNumber(t.army)} / ${strengthNumber(t.armyLimit)}</strong><small>${Number(t.armyLimitPercent).toFixed(0)}% population cap</small></div><div><span>Navy</span><strong>${strengthNumber(t.navy)}</strong></div></section>
  <section class="country-policy-card"><span>DYNAMIC REALM STATS</span><h3>Current limit: ${t.cap.toFixed(2)}</h3><p>The maximum starts at 100.00 and rises by 0.10 after every completed campaign month. All four values are stored to two decimal places.</p></section>
  <section class="country-national-stats">${[['Food',t.food],['Economy',t.economy],['Technology',t.technology],['Stability',t.stability]].map(([n,v])=>`<div><span>${n}</span><strong>${Number(v).toFixed(2)} / ${t.cap.toFixed(2)}</strong><i><b style="width:${clamp1300(v/t.cap*100,0,100)}%"></b></i></div>`).join('')}</section>`;
 }
