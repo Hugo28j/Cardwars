@@ -895,3 +895,5 @@
  .owned-building-card .owned-building-metrics{gap:7px}
  .owned-building-card .owned-building-metrics>div strong{font-size:14px}
 }
+
+.country-stat-grid>div small{display:block;margin-top:3px;font-size:7px;line-height:1.25;color:#819087}
