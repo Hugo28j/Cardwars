@@ -826,3 +826,72 @@
  .building-catalog-icon{width:58px;height:58px}
  .building-catalog-icon .province-building-svg{width:44px;height:44px}
 }
+
+
+/* Building card readability: full name above icon, one-line workforce counts */
+.owned-building-card{
+ display:grid;
+ grid-template-columns:76px minmax(0,1fr) 96px;
+ grid-template-areas:
+  "title title title"
+  "icon main buy";
+ gap:10px 12px;
+ align-items:center;
+ min-height:132px;
+ padding:11px 12px 12px;
+}
+.owned-building-card .owned-building-title{
+ grid-area:title;
+ display:flex;
+ justify-content:space-between;
+ align-items:flex-start;
+ gap:12px;
+ width:100%;
+ padding:0 0 8px;
+ border-bottom:1px solid #3e4b44;
+}
+.owned-building-card .owned-building-title strong{
+ font-family:var(--serif);
+ font-size:19px;
+ line-height:1.2;
+ color:#e3e6da;
+ white-space:normal;
+ overflow:visible;
+ text-overflow:clip;
+ overflow-wrap:anywhere;
+}
+.owned-building-card .owned-building-title span{
+ flex:0 0 auto;
+ font-size:8px;
+ letter-spacing:.7px;
+ color:#d0b36b;
+ white-space:nowrap;
+ padding-top:3px;
+}
+.owned-building-card .province-building-picture{grid-area:icon}
+.owned-building-card .owned-building-main{grid-area:main;min-width:0}
+.owned-building-card .compact-upgrade{grid-area:buy}
+.owned-building-card .owned-building-metrics{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:10px;margin-top:0}
+.owned-building-card .owned-building-metrics>div{min-width:0}
+.owned-building-card .owned-building-metrics>div strong{
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+ font-size:16px;
+}
+.owned-building-card .owned-building-metrics>div strong small{white-space:nowrap}
+.owned-building-card .owned-building-metrics>div span{white-space:nowrap}
+.owned-building-card .compact-upgrade button{min-height:72px}
+
+@media(max-width:700px){
+ .owned-building-card{
+  grid-template-columns:64px minmax(0,1fr) 82px;
+  grid-template-areas:
+   "title title title"
+   "icon main buy";
+  gap:9px;
+  min-height:126px;
+ }
+ .owned-building-card .owned-building-title strong{font-size:17px}
+ .owned-building-card .owned-building-metrics{gap:7px}
+ .owned-building-card .owned-building-metrics>div strong{font-size:14px}
+}
