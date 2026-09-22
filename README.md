@@ -25,7 +25,13 @@ War and full diplomacy are not implemented yet; the save format and UI now conta
 - Campaign map with city territories, ownership, fog of war and adjacency.
 - Province panel with buildings, workers, wages and local economy.
 - Country panel with Politics, Economy, People, Decisions, Technology, Rebellions and Rankings.
-- Monthly economy with sector taxes, army/navy upkeep and administration / anti-corruption spending.
+- 20 market goods with inventories, supply/demand prices, household consumption and constrained merchant trade.
+- 33 medieval building types with five levels, input/output production chains, workers, production methods and subsidies.
+- Two simultaneous construction slots with material costs, building time, cancellation and private investment.
+- Trade laws, per-good import/export priorities, infrastructure, market access and seasonal harvests.
+- Daily-accrued taxation, army/navy upkeep, administration, debt interest and unpaid obligations.
+- Living standards and unrest respond to wages, prices, jobs, taxes and shortages.
+- Pause, 1×/3×/6× speed and manual day stepping; 24-month economic history.
 - Ownership-aware campaign Rankings that remove conquered/rebel cities from their former countries.
 - Overall power status modifiers: Rebellions ×0.50, Free Cities / Free Imperial Cities ×0.75, established nations ×1.00.
 - Browser-local account/save state.
@@ -51,8 +57,11 @@ Publish the repository's `main` branch from the root folder. `.nojekyll` keeps t
 - `src/data1300.js` — c.1300 researched city/card data.
 - `src/app.js` — collection, packs, deck, campaign state, economy and UI.
 - `src/map.js` — map geometry, city territories, hitboxes, fog of war and adjacency.
-- `src/buildings1300.js` — building / sector data and costs.
+- `src/buildings1300.js` — building catalogue, starting levels, availability and costs.
+- `src/economy1300.js` — deterministic daily economy, construction, goods, trade and fiscal settlement.
+- `src/economy-ui1300.js` — Overview, Market, Construction, Production and Society screens.
+- `ECONOMY.md` — rules, model limits and validation.
 - `assets/atlas.json` — playable authored historical political atlas.
-- `src/engine.js` — profile, pack and save helpers.
+- `src/engine.js` — profile validation and migration.
 
 Historical borders and population figures are approximate and gameplay values are balanced estimates. See `SOURCES.md` and the in-game research notes for source and data limitations.

@@ -2,7 +2,7 @@ export const ECONOMY_1300={
  currency:'Florins',
  symbol:'ƒ',
  startFlorins:0,
- maxBuildingLevel:3
+ maxBuildingLevel:5
 };
 
 export const BUILDINGS_1300=[
@@ -132,6 +132,16 @@ export const BUILDINGS_1300=[
   description:'Religious and civic hospitals provide lodging, poor relief and basic care to travellers and residents.',
   effects:{stability:4,food:1}
  }
+,
+ {id:'ironmine',name:'Iron Mine',category:'Resource',cost:140,maxWorkers:650,normalWage:.13,monthlyRevenue:5,effects:{economy:2},description:'Extract iron ore for tools, weapons and skilled metalwork.'},
+ {id:'charcoal',name:'Charcoal Burners',category:'Resource',cost:65,maxWorkers:350,normalWage:.09,monthlyRevenue:4,effects:{economy:1},description:'Turn timber into the fuel required by medieval furnaces.'},
+ {id:'tools',name:'Toolsmiths',category:'Production',cost:120,maxWorkers:420,normalWage:.15,monthlyRevenue:6,effects:{technology:2,economy:2},description:'Forge iron and charcoal into tools for farms, mines and construction.'},
+ {id:'bakery',name:'Bakers Guild',category:'Food / Production',cost:75,maxWorkers:320,normalWage:.11,monthlyRevenue:4,effects:{food:3},description:'Bake milled flour into staple food for the growing towns.'},
+ {id:'vineyard',name:'Vineyards & Wine Press',category:'Food / Trade',cost:110,maxWorkers:520,normalWage:.11,monthlyRevenue:5,effects:{economy:2,food:1},description:'Cultivate grapes and press wine for prosperous households and export.'},
+ {id:'glassworks',name:'Glassmakers',category:'Production',cost:170,maxWorkers:280,normalWage:.16,monthlyRevenue:6,effects:{technology:2,economy:3},description:'Use fuel and minerals to supply glass vessels and windows.'},
+ {id:'roads',name:'Roads & Caravan Inns',category:'Infrastructure',cost:110,maxWorkers:220,normalWage:.10,monthlyRevenue:3,effects:{economy:2,stability:1},description:'Connect rural suppliers, towns and caravans; improve market access.'},
+ {id:'builders',name:'Masons & Builders Guild',category:'Construction',cost:125,maxWorkers:400,normalWage:.14,monthlyRevenue:4,effects:{economy:1},description:'Skilled masons and carpenters accelerate the national construction queue.'},
+
 ];
 
 export const BUILDING_1300=Object.fromEntries(BUILDINGS_1300.map(b=>[b.id,b]));
@@ -172,6 +182,14 @@ export function startingBuildingLevel1300(c,id){
   case 'monastery': return religious&&tech>=58?2:religious||tech>=72?1:0;
   case 'cathedral': return religious&&people>=18000?2:religious&&people>=7000?1:0;
   case 'hospital': return people>=25000&&stab>=62?2:people>=9000&&stab>=55?1:0;
+  case 'ironmine':return /iron|ore|mining/.test(text)?1:0;
+  case 'charcoal':return timber||tech>=65?1:0;
+  case 'tools':return tech>=65&&people>=5000?1:0;
+  case 'bakery':return people>=6000?1:0;
+  case 'vineyard':return /wine|vineyard|grape/.test(text)?1:0;
+  case 'glassworks':return /glass/.test(text)?1:0;
+  case 'roads':return trade?1:0;
+  case 'builders':return people>=15000?1:0;
   default:return 0;
  }
 }
@@ -180,4 +198,45 @@ export function buildingCost1300(building,currentLevel){
  const level=Math.max(0,Number(currentLevel)||0);
  const raw=building.cost*(1+level*.35);
  return Math.min(400,Math.max(50,Math.round(raw/5)*5));
+}
+
+export function buildingAvailability1300(c,b){
+ if(startingBuildingLevel1300(c,b.id)>0)return {ok:true,reason:'Historical sector already present'};
+ const people=Number(c.people)||0,food=Number(c.food)||0,econ=Number(c.economyScore)||0,tech=Number(c.technology)||0,stab=Number(c.stability)||0,army=Number(c.army)||0,navy=Number(c.navy)||0,coastal=isCoastalCity1300(c);
+ const text=[c.name,c.subrealm,c.economy,c.historicalRole,c.militaryRole,c.researchSummary].filter(Boolean).join(' ').toLowerCase(),trade=/trade|market|merchant|fair|commerce|emporium|port|shipping/.test(text),cloth=/cloth|textile|wool|flax|weav/.test(text),pasture=/sheep|wool|pasture|livestock|cattle/.test(text),river=/river|rhine|danube|seine|thames|po |elbe|meuse|loire|douro|tagus|crossing|bridge/.test(text),leather=/leather|hide|tanner/.test(text),salt=/salt|brine/.test(text),timber=/timber|wood|forest|lumber/.test(text),stone=/stone|quarr|marble/.test(text),religious=/cathedral|bishop|archbishop|abbey|monastery|monastic|pilgrim|church/.test(text),finance=/mint|coin|bank|finance|money|royal capital|court/.test(text);
+ switch(b.id){
+  case 'fields':return {ok:food>=48,reason:'Needs a stronger agricultural base'};
+  case 'pastures':return {ok:food>=60||pasture,reason:'Needs grazing or livestock potential'};
+  case 'textiles':return {ok:(econ>=56&&people>=4500)||cloth,reason:'Needs urban craft labour or a cloth economy'};
+  case 'forge':return {ok:tech>=58&&people>=3500,reason:'Needs skilled metalworkers and technical capacity'};
+  case 'market':return {ok:(econ>=50&&people>=3000)||trade,reason:'Needs a viable commercial population'};
+  case 'barracks':return {ok:army>=70||stab>=62,reason:'Needs an established military or administrative base'};
+  case 'dockyard':return {ok:isCoastalCity1300(c),reason:'Requires a coast or major port'};
+  case 'walls':return {ok:stab>=48||people>=7000,reason:'Needs enough population or administration to maintain fortifications'};
+  case 'guildhall':return {ok:econ>=66&&people>=8000,reason:'Needs a developed urban craft economy'};
+  case 'university':return {ok:tech>=77&&people>=9000,reason:'Needs a large, advanced scholarly centre'};
+  case 'watermill':return {ok:river||food>=68,reason:'Needs a useful river/water source or a strong grain economy'};
+  case 'brewery':return {ok:food>=52&&people>=3500,reason:'Needs grain supply and a sizeable local market'};
+  case 'tannery':return {ok:leather||pasture||people>=6000&&econ>=54,reason:'Needs hides/livestock or enough urban craft demand'};
+  case 'fishery':return {ok:coastal,reason:'Requires a coastal or major port province'};
+  case 'saltworks':return {ok:salt||coastal&&econ>=72,reason:'Needs salt/brine resources or a strong coastal trade economy'};
+  case 'quarry':return {ok:stone||people>=8000&&stab>=55,reason:'Needs workable stone deposits and organised labour'};
+  case 'lumberyard':return {ok:timber||food>=60,reason:'Needs nearby woodland or a strong rural hinterland'};
+  case 'warehouse':return {ok:trade&&econ>=58,reason:'Needs established trade, markets or a port'};
+  case 'merchantquarter':return {ok:trade&&econ>=70&&people>=7000,reason:'Needs a wealthy commercial city with sustained merchant traffic'};
+  case 'customshouse':return {ok:(coastal||river)&&trade&&econ>=60,reason:'Needs a port, river crossing or major trade route'};
+  case 'mint':return {ok:finance||econ>=82&&tech>=68&&people>=12000,reason:'Needs strong fiscal authority, skilled metalwork and major commerce'};
+  case 'bridge':return {ok:river||/crossing|bridge/.test(text),reason:'Needs a major river or strategic crossing'};
+  case 'monastery':return {ok:religious||tech>=65&&stab>=55,reason:'Needs a strong ecclesiastical or scholarly base'};
+  case 'cathedral':return {ok:religious&&people>=6000,reason:'Requires an important bishopric, archbishopric or major church centre'};
+  case 'hospital':return {ok:people>=7000&&stab>=48,reason:'Needs a sufficiently large and organised urban population'};
+  case 'ironmine':return {ok:/iron|ore|mining|mine|metal|mountain/.test(text)||tech>=65,reason:'Needs ore deposits or developed metalworking'};
+  case 'charcoal':return {ok:timber||food>=55,reason:'Needs woodland in the rural hinterland'};
+  case 'tools':return {ok:tech>=55&&people>=3000,reason:'Needs skilled metalworkers'};
+  case 'bakery':return {ok:people>=2000,reason:'Needs an urban food market'};
+  case 'vineyard':return {ok:/wine|vine|grape/.test(text)||(Number(c.lat)<49&&food>=60),reason:'Needs suitable viticulture land'};
+  case 'glassworks':return {ok:tech>=70&&econ>=65,reason:'Needs advanced crafts and commerce'};
+  case 'roads':case 'builders':return {ok:true,reason:''};
+  default:return {ok:false,reason:'Unknown sector'};
+ }
 }
