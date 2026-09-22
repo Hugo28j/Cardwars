@@ -1,7 +1,7 @@
 import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260922-diplomacy-v1';
-import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-starting-florins-v4';
+import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-indirect-stats-v8';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260922-middle-mouse-off-v17';
@@ -485,15 +485,10 @@ function effectiveProvinceStability1300(game,c,buildingBonus=0){
  return roundStat1300(clamp1300((Number(c?.stability)||0)+(Number(buildingBonus)||0),0,100));
 }
 function professionalArmyState1300(game){
- const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]),population=ids.reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0);
- let bonusPct=0,rawTotal=0;
- const rawByCity={};
- for(const id of ids){
-  const c=CITY_1300[id],b=gameProvinceBuildingState(c).bonuses;
-  bonusPct+=Number(b.professionalArmyLimit)||0;
-  rawByCity[id]=Math.max(0,Math.round(Number(c.army)||0));rawTotal+=rawByCity[id];
- }
- const percent=10+bonusPct,limit=Math.max(0,Math.floor(population*percent/100)),scale=rawTotal>limit&&rawTotal>0?limit/rawTotal:1,byCity={};
+ const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]),population=ids.reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0),percent=5;
+ let rawTotal=0;const rawByCity={};
+ for(const id of ids){const c=CITY_1300[id];rawByCity[id]=Math.max(0,Math.round(Number(c.army)||0));rawTotal+=rawByCity[id];}
+ const limit=Math.max(0,Math.floor(population*percent/100)),scale=rawTotal>limit&&rawTotal>0?limit/rawTotal:1,byCity={};
  for(const id of ids)byCity[id]=scale===1?rawByCity[id]:Math.floor(rawByCity[id]*scale);
  if(scale<1){
   let remaining=limit-Object.values(byCity).reduce((n,x)=>n+x,0);
@@ -501,7 +496,7 @@ function professionalArmyState1300(game){
   for(const id of order){if(remaining<=0)break;if(byCity[id]<rawByCity[id]){byCity[id]++;remaining--;}}
  }
  const army=Object.values(byCity).reduce((n,x)=>n+x,0);
- return {population,basePercent:10,bonusPercent:bonusPct,percent,limit,rawTotal,army,byCity};
+ return {population,basePercent:5,bonusPercent:0,percent,limit,rawTotal,army,byCity};
 }
 function unprofessionalArmyState1300(game){
  const population=(game?.ownedCities||[]).reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0),percent=25,limit=Math.max(0,Math.floor(population*percent/100));
