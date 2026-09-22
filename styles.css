@@ -1107,3 +1107,37 @@
   min-width:390px;
  }
 }
+
+
+/* Compact seven-column market + military manpower in Population tab */
+.province-market-columns,.province-market-row{
+ grid-template-columns:54px 48px 38px 42px 38px 58px 60px;
+ gap:2px;
+ padding-left:7px;
+ padding-right:7px;
+}
+.province-market-columns span{font-size:6px;letter-spacing:.25px}
+.province-market-row>strong{font-size:8.4px}
+.province-market-row>span{font-size:7.4px}
+.province-market-row>b,.province-market-row>em{font-size:8.6px}
+.province-market-row>em{padding-right:1px}
+
+.population-army-summary{padding:10px 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;border-bottom:1px solid #465249}
+.population-army-summary article{padding:12px;border:1px solid #445148;background:#121d19}
+.population-army-summary article>div:first-child{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.population-army-summary article>div:first-child span{font-size:8px;letter-spacing:.7px;color:#c3a964}
+.population-army-summary article>div:first-child strong{font-family:var(--serif);font-size:19px;color:#e0e4d7;white-space:nowrap}
+.population-army-summary article>div:first-child strong small{font-size:10px;color:#7e8b83}
+.population-army-numbers{display:flex;justify-content:space-between;gap:10px;margin-top:7px}
+.population-army-numbers b{font-size:8px;color:#b9c4ba}
+.population-army-numbers em{font-size:8px;font-style:normal;color:#7f8d84}
+.population-army-summary article>i{display:block;height:5px;margin-top:8px;background:#28352f}
+.population-army-summary article>i>b{display:block;height:100%;background:#7d927d}
+
+@media(max-width:700px){
+ .province-market-columns,.province-market-row{
+  grid-template-columns:52px 46px 36px 40px 36px 56px 58px;
+  min-width:336px;
+ }
+ .population-army-summary{grid-template-columns:1fr}
+}
