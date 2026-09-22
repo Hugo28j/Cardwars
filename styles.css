@@ -897,3 +897,55 @@
 }
 
 .country-stat-grid>div small{display:block;margin-top:3px;font-size:7px;line-height:1.25;color:#819087}
+
+
+/* Clear province market table + tighter upgrade column */
+.province-market-head{align-items:flex-start;padding:13px 14px 9px}
+.province-market-head>div{min-width:0}
+.province-market-head strong{font-size:16px}
+.province-market-head small{max-width:245px;text-align:right;line-height:1.35;font-size:7.5px}
+.province-market-clear{border-bottom:1px solid #465249;overflow-x:auto;background:#0d1714}
+.province-market-columns,.province-market-row{
+ display:grid;
+ grid-template-columns:minmax(82px,1.25fr) 58px 58px 72px 64px 58px;
+ gap:6px;
+ align-items:center;
+ min-width:420px;
+ padding:0 13px;
+}
+.province-market-columns{min-height:28px;background:#13201b;border-bottom:1px solid #465249}
+.province-market-columns span{font-size:7px;font-weight:700;letter-spacing:.7px;color:#a99560;text-align:right}
+.province-market-columns span:first-child{text-align:left}
+.province-market-row{min-height:38px;border-bottom:1px solid #344139}
+.province-market-row:last-child{border-bottom:0}
+.province-market-row>strong{font-size:9px;color:#d5ddd2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.province-market-row>span{font-size:8px;color:#a7b2aa;text-align:right;font-variant-numeric:tabular-nums}
+.province-market-row>b,.province-market-row>em,.province-market-row>i{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.province-market-row>b{font-family:var(--serif);font-size:10px;font-style:normal}
+.province-market-row>b.positive{color:#77bd87}.province-market-row>b.negative{color:#d27b72}.province-market-row>b.neutral{color:#9ca99f}
+.province-market-row>em{font-family:var(--serif);font-size:10px;font-style:normal;color:#ddcd99}
+.province-market-row>i{font-size:7px;font-style:normal;color:#8d9b91}
+.province-market-row>i.up{color:#d69a73}.province-market-row>i.down{color:#7fb28a}.province-market-row>i.flat{color:#87948b}
+
+.owned-building-card{
+ grid-template-columns:76px minmax(0,1fr) 76px;
+}
+.owned-building-card .compact-upgrade button{
+ min-height:66px;
+ padding:5px 2px;
+}
+.owned-building-card .compact-upgrade span{font-size:7px;letter-spacing:.45px}
+.owned-building-card .compact-upgrade strong{font-size:16px;margin-top:4px}
+.owned-building-card .owned-building-metrics{
+ grid-template-columns:minmax(92px,1fr) minmax(112px,1fr);
+ gap:12px;
+}
+.owned-building-card .owned-building-metrics>div span{font-size:7.5px;letter-spacing:.55px}
+.owned-building-card .owned-building-metrics>div strong{font-size:15px}
+
+@media(max-width:700px){
+ .owned-building-card{grid-template-columns:64px minmax(0,1fr) 68px}
+ .owned-building-card .owned-building-metrics{grid-template-columns:minmax(78px,1fr) minmax(98px,1fr);gap:7px}
+ .province-market-head{display:block}
+ .province-market-head small{display:block;max-width:none;text-align:left;margin-top:4px}
+}
