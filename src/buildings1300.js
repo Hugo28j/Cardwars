@@ -138,7 +138,9 @@ export const BUILDING_1300=Object.fromEntries(BUILDINGS_1300.map(b=>[b.id,b]));
 
 export function isCoastalCity1300(c){
  const text=[c.subrealm,c.historicalRole,c.economy,c.militaryRole,c.researchSummary].filter(Boolean).join(' ').toLowerCase();
- return (Number(c.navy)||0)>0||/(port|harbou?r|coast|maritime|shipping|adriatic|mediterranean|atlantic|baltic|black sea|north sea|strait|channel)/i.test(text);
+ // River ports (Danube/Rhine/etc.) are not sea access. A city only counts as coastal
+ // when it has historical naval activity or explicit sea/coast language.
+ return (Number(c.navy)||0)>0||/(coast|coastal|maritime|seaport|sea port|harbou?r on the sea|adriatic|mediterranean|atlantic|baltic|black sea|north sea|english channel|strait of|ocean)/i.test(text);
 }
 
 export function startingBuildingLevel1300(c,id){
