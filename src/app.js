@@ -300,7 +300,65 @@ function diplomacyChance1300(game,country,base=0){
  const rel=diplomacyRelation1300(game,country),target=Math.max(1,diplomacyCountryStats1300(country).strength||1),ratio=diplomacyPlayerStrength1300(game)/target;
  return clamp1300(base+rel*.65+Math.min(25,ratio*18),5,95);
 }
-function diplomacyRoll1300(chance){return Math.random()*100<chance;}
+function diplomacyAccepts1300(score){return Number(score)>=50;}
+function acceptanceLabel1300(score){return score>=75?'Very likely':score>=50?'Will accept':score>=35?'Unlikely':score>=15?'Very unlikely':'Will refuse';}
+function acceptanceClass1300(score){return score>=50?'accept':score>=35?'borderline':'reject';}
+function acceptanceMeterHTML1300(score,note=''){
+ const n=clamp1300(Math.round(Number(score)||0),0,100);
+ return `<div class="dip-acceptance-meter ${acceptanceClass1300(n)}"><div><strong>Acceptance</strong><span>${n}% · ${acceptanceLabel1300(n).toUpperCase()}</span></div><i><b style="width:${n}%"></b><em></em></i>${note?`<small>${esc(note)}</small>`:''}</div>`;
+}
+function diplomacyGoodInterest1300(model,goodId){
+ if(goodId==='florins')return 1;
+ const balance=Number(model?.balances?.[goodId])||0,scale=Math.max(3,(Number(model?.popK)||1)*.08),pressure=clamp1300(balance/scale,-1.4,1.4);
+ return clamp1300(1-pressure*.48,.34,1.75);
+}
+function allianceAssessment1300(game,country){
+ const {d,stats}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country);
+ if(d.wars[country])return {score:0,note:'War makes an alliance impossible.'};
+ if(d.alliances[country])return {score:100,note:'An alliance is already active.'};
+ const ratio=diplomacyPlayerStrength1300(game)/Math.max(1,stats.strength||1),power=clamp1300(Math.log2(Math.max(.15,ratio))*12,-20,20),score=clamp1300(Math.round(28+rel*.55+power+(d.recognitions[country]?6:0)),1,99);
+ return {score,note:rel<20?'Relations are still too cold for a serious alliance.':ratio<.55?'They see your realm as too weak to be a useful ally.':ratio>2.5?'Your strength makes the alliance useful, but also somewhat threatening.':'Relations and strategic strength both affect this decision.'};
+}
+function moneyRequestAssessment1300(game,country,amount){
+ const {d}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country),n=Math.max(0,Number(amount)||0);
+ if(d.wars[country])return {score:0,note:'They will not finance an enemy.'};
+ if(n<=0)return {score:0,note:'Enter an amount first.'};
+ if(n>d.aiTreasuries[country])return {score:0,note:'The request is larger than their available diplomatic treasury.'};
+ const treasuryShare=n/Math.max(1,d.aiTreasuries[country]),score=clamp1300(Math.round(24+rel*.5+(d.alliances[country]?18:0)+(d.recognitions[country]?5:0)-treasuryShare*72),1,99);
+ return {score,note:treasuryShare>.35?'You are asking for a large share of their treasury.':d.alliances[country]?'Your alliance makes financial support more attractive.':'Better relations make financial aid more likely.'};
+}
+function independenceAssessment1300(game,country){
+ const {d,stats}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country),pending=(game.ownedCities||[]).filter(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country&&game.independenceByCity?.[id]!==true);
+ if(!pending.length)return {score:0,note:'There are no rebel provinces from this country awaiting recognition.'};
+ if(d.wars[country])return {score:0,note:'They will not recognise independence while the war continues.'};
+ const ratio=diplomacyPlayerStrength1300(game)/Math.max(1,stats.strength||1),militaryPressure=clamp1300((ratio-.45)*38,-12,28),territoryCost=Math.min(22,pending.length*5),score=clamp1300(Math.round(18+rel*.34+militaryPressure-territoryCost+(d.alliances[country]?12:0)),1,99);
+ return {score,note:ratio>=1?'Your strength makes suppressing the rebellion costly for them.':pending.length>2?'They are reluctant to recognise the loss of several provinces.':'Relations, military pressure and the number of lost provinces drive this choice.'};
+}
+function citySaleAssessment1300(game,country,cityId,price){
+ const c=CITY_1300[cityId],{d}=ensureDiplomacyCountry1300(game,country),n=Math.max(0,Number(price)||0),rel=diplomacyRelation1300(game,country);
+ if(!c||!game.ownedCities?.includes(cityId))return {score:0,note:'Choose one of your provinces.'};
+ if(game.ownedCities.length<=1)return {score:0,note:'You cannot sell your final province.'};
+ if(d.wars[country])return {score:0,note:'Peaceful city sales are unavailable during war.'};
+ if(n>d.aiTreasuries[country])return {score:0,note:'They cannot afford the asking price.'};
+ const home=(game.originCountryByCity?.[cityId]||c.country)===country,cityValue=Math.max(4,(Number(c.startingFlorins)||1)*12+(Number(c.people)||0)/12000+(Number(c.economyScore)||50)/10),ideal=cityValue*(home?1.55:1)*(1+Math.max(-.25,rel/250)),priceRatio=n/Math.max(.01,ideal),score=clamp1300(Math.round(88-priceRatio*38+rel*.08+(home?10:0)),1,99);
+ return {score,ideal,home,note:home?'They value this province extra because it historically belongs to their realm.':priceRatio>.9?'The price is close to or above what they consider the province worth.':'The price is attractive compared with their valuation.'};
+}
+function tradeAssessment1300(game,country,offerAsset,offerAmount,requestAsset,requestAmount){
+ const {d,model}=ensureDiplomacyCountry1300(game,country),oa=String(offerAsset||''),ra=String(requestAsset||''),on=Math.max(0,Number(offerAmount)||0),rn=Math.max(0,Number(requestAmount)||0),rel=diplomacyRelation1300(game,country);
+ if(d.wars[country])return {score:0,note:'Normal trade is suspended during war.'};
+ if(!on||!rn||oa===ra)return {score:0,note:'Choose two different assets and enter both amounts.'};
+ if(oa==='florins'&&game.florins<on)return {score:0,note:'You cannot afford your own offer.'};
+ if(oa!=='florins'&&(Number(d.tradeStockpile[oa])||0)<on)return {score:0,note:`You do not have enough ${GOOD_1300[oa]?.name||oa} in trade stock.`};
+ if(ra==='florins'&&d.aiTreasuries[country]<rn)return {score:0,note:'Their treasury cannot cover this request.'};
+ if(ra!=='florins'&&(Number(d.aiGoods[country]?.[ra])||0)<rn)return {score:0,note:`They do not have enough ${GOOD_1300[ra]?.name||ra} available.`};
+ const offerInterest=diplomacyGoodInterest1300(model,oa),requestInterest=diplomacyGoodInterest1300(model,ra),offerValue=diplomacyAssetValue1300(oa,on)*offerInterest,requestValue=diplomacyAssetValue1300(ra,rn)*requestInterest,ratio=offerValue/Math.max(.0001,requestValue),score=clamp1300(Math.round(50+(ratio-1)*58+rel*.18),1,99);
+ let note='The AI compares the value of both sides of the deal.';
+ if(oa!=='florins'&&offerInterest>=1.25)note=`They currently need ${GOOD_1300[oa]?.name||oa}, so your offer is especially valuable.`;
+ else if(oa!=='florins'&&offerInterest<=.7)note=`They already have plenty of ${GOOD_1300[oa]?.name||oa}, so they value your offer less.`;
+ else if(ra!=='florins'&&requestInterest<=.7)note=`They have a surplus of ${GOOD_1300[ra]?.name||ra}, so they are happy to trade it away.`;
+ else if(ra!=='florins'&&requestInterest>=1.25)note=`${GOOD_1300[ra]?.name||ra} is scarce for them, so they are reluctant to give it away.`;
+ return {score,note,offerInterest,requestInterest,offerValue,requestValue,ratio};
+}
 function improveRelations1300(country){
  const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),last=Number(d.lastImproveDay[country]);
  if(d.wars[country]){toast('You cannot improve relations while at war.');return;}
@@ -316,39 +374,38 @@ function declareWar1300(country){
  d.wars[country]=true;d.alliances[country]=false;setDiplomacyRelation1300(game,country,-100);diplomacyLog1300(game,country,'War declared.');save();renderGameDiplomacyPanel1300();toast(`War declared on ${country}. Combat and occupations can now be expanded on top of this war state.`);
 }
 function requestAlliance1300(country){
- const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country);if(d.wars[country]){toast('You cannot request an alliance while at war.');return;}if(d.alliances[country]){toast('You are already allied.');return;}
- const chance=diplomacyChance1300(game,country,18);if(rel<20||!diplomacyRoll1300(chance)){setDiplomacyRelation1300(game,country,rel-3);diplomacyLog1300(game,country,`Alliance request rejected (${Math.round(chance)}% acceptance estimate).`);toast(`${country} rejected the alliance.`);}else{d.alliances[country]=true;setDiplomacyRelation1300(game,country,rel+8);diplomacyLog1300(game,country,'Alliance accepted.');toast(`${country} accepted your alliance.`);}save();renderGameDiplomacyPanel1300();
+ const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country),assessment=allianceAssessment1300(game,country);if(d.wars[country]){toast('You cannot request an alliance while at war.');return;}if(d.alliances[country]){toast('You are already allied.');return;}
+ if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-3);diplomacyLog1300(game,country,`Alliance request rejected (${assessment.score}% acceptance).`);toast(`${country} rejected the alliance.`);}else{d.alliances[country]=true;setDiplomacyRelation1300(game,country,rel+8);diplomacyLog1300(game,country,`Alliance accepted (${assessment.score}% acceptance).`);toast(`${country} accepted your alliance.`);}save();renderGameDiplomacyPanel1300();
 }
 function requestMoney1300(country,amount){
- const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),n=Math.round(Math.max(0,Number(amount)||0)*100)/100,rel=diplomacyRelation1300(game,country);
+ const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),n=Math.round(Math.max(0,Number(amount)||0)*100)/100,rel=diplomacyRelation1300(game,country),assessment=moneyRequestAssessment1300(game,country,n);
  if(!n){toast('Enter an amount of Florins to request.');return;}if(d.wars[country]){toast('They will not fund you while at war.');return;}if(n>d.aiTreasuries[country]){toast(`${country} does not have that much available treasury.`);return;}
- const pressure=Math.max(0,n/Math.max(1,d.aiTreasuries[country]))*70,chance=clamp1300(diplomacyChance1300(game,country,8)-pressure,3,90);
- if(rel<25||!diplomacyRoll1300(chance)){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Request for ƒ${money1300(n)} rejected.`);toast(`${country} refused the request.`);}else{d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;setDiplomacyRelation1300(game,country,rel+1);diplomacyLog1300(game,country,`Received ƒ${money1300(n)} in financial aid.`);toast(`${country} sent ƒ${money1300(n)}.`);}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();
+ if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Request for ƒ${money1300(n)} rejected (${assessment.score}% acceptance).`);toast(`${country} refused the request.`);}else{d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;setDiplomacyRelation1300(game,country,rel+1);diplomacyLog1300(game,country,`Received ƒ${money1300(n)} in financial aid (${assessment.score}% acceptance).`);toast(`${country} sent ƒ${money1300(n)}.`);}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();
 }
 function requestIndependence1300(country){
  const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),pending=(game.ownedCities||[]).filter(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country&&game.independenceByCity?.[id]!==true);
  if(!pending.length){toast('You have no unrecognised rebel provinces from this country.');return;}if(d.wars[country]){toast('Recognition cannot be negotiated while you are at war.');return;}
- const chance=diplomacyChance1300(game,country,12)+Math.min(18,pending.length*3),rel=diplomacyRelation1300(game,country);
- if(!diplomacyRoll1300(chance)){setDiplomacyRelation1300(game,country,rel-4);diplomacyLog1300(game,country,`Independence recognition rejected for ${pending.length} province${pending.length===1?'':'s'}.`);toast(`${country} refused to recognise your independence.`);}
- else{for(const id of pending)game.independenceByCity[id]=true;d.recognitions[country]=true;setDiplomacyRelation1300(game,country,Math.max(15,rel+10));refreshCampaignStage1300(game);diplomacyLog1300(game,country,`Recognised the independence of ${pending.length} rebel province${pending.length===1?'':'s'}.`);toast(`${country} recognised your independence.`);}
+ const assessment=independenceAssessment1300(game,country),rel=diplomacyRelation1300(game,country);
+ if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-4);diplomacyLog1300(game,country,`Independence recognition rejected for ${pending.length} province${pending.length===1?'':'s'} (${assessment.score}% acceptance).`);toast(`${country} refused to recognise your independence.`);}
+ else{for(const id of pending)game.independenceByCity[id]=true;d.recognitions[country]=true;setDiplomacyRelation1300(game,country,Math.max(15,rel+10));refreshCampaignStage1300(game);diplomacyLog1300(game,country,`Recognised the independence of ${pending.length} rebel province${pending.length===1?'':'s'} (${assessment.score}% acceptance).`);toast(`${country} recognised your independence.`);}
  updateCampaignRankingSnapshot1300(game);save();renderGameDiplomacyPanel1300();renderGameCountryPanel1300();
 }
 function sellCityToCountry1300(country,cityId,price){
  const game=profile.activeGame;if(!game||!country)return;const c=CITY_1300[cityId],{d}=ensureDiplomacyCountry1300(game,country),n=Math.round(Math.max(0,Number(price)||0)*100)/100;if(!c||!game.ownedCities?.includes(cityId)){toast('Choose one of your provinces.');return;}if(game.ownedCities.length<=1){toast('You cannot sell your final province.');return;}if(d.wars[country]){toast('You cannot peacefully sell a city while at war.');return;}if(n>d.aiTreasuries[country]){toast(`${country} cannot afford that price.`);return;}
- const rel=diplomacyRelation1300(game,country),home=(game.originCountryByCity?.[cityId]||c.country)===country,cityValue=Math.max(4,(Number(c.startingFlorins)||1)*12+(Number(c.people)||0)/12000+(Number(c.economyScore)||50)/10),maxPrice=cityValue*(home?1.55:1)*(1+Math.max(-.25,rel/250));
- if(n>maxPrice){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Rejected offer to buy ${displayCityName1300(c)} for ƒ${money1300(n)}.`);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the city price.`);return;}
+ const rel=diplomacyRelation1300(game,country),assessment=citySaleAssessment1300(game,country,cityId,n);
+ if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Rejected offer to buy ${displayCityName1300(c)} for ƒ${money1300(n)} (${assessment.score}% acceptance).`);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the city price.`);return;}
  d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;game.ownedCities=game.ownedCities.filter(id=>id!==cityId);game.cityOwners??={};game.cityOwners[cityId]=country;delete game.buildings?.[cityId];for(const key of ['employment','lastEconomy','markets','pops','cityWages'])delete game.economy?.[key]?.[cityId];delete game.economy?.buildingWages?.[cityId];setDiplomacyRelation1300(game,country,rel+5);diplomacyLog1300(game,country,`Bought ${displayCityName1300(c)} for ƒ${money1300(n)}.`);refreshCampaignStage1300(game);updateCampaignRankingSnapshot1300(game);if(world?.state?.game){world.state.game.ownedCityIds=[...game.ownedCities];world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.refresh();}if(gameProvincePanel===cityId){gameProvincePanel=null;gameProvinceBuildingDetail=null;renderGameProvincePanel();}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`${displayCityName1300(c)} was sold to ${country}.`);
 }
 function diplomacyAssetValue1300(asset,amount){if(asset==='florins')return Number(amount)||0;const g=GOOD_1300[asset];return (Number(amount)||0)*(Number(g?.basePrice)||1)*FLORINS_PER_MARKET_VALUE;}
 function executeDiplomaticTrade1300(country,offerAsset,offerAmount,requestAsset,requestAmount){
- const game=profile.activeGame;if(!game||!country)return;const {d,model}=ensureDiplomacyCountry1300(game,country),oa=String(offerAsset||''),ra=String(requestAsset||''),on=Math.round(Math.max(0,Number(offerAmount)||0)*100)/100,rn=Math.round(Math.max(0,Number(requestAmount)||0)*100)/100;if(!on||!rn||oa===ra){toast('Choose two different assets and enter both amounts.');return;}if(d.wars[country]){toast('Normal trade is suspended while at war.');return;}
+ const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),oa=String(offerAsset||''),ra=String(requestAsset||''),on=Math.round(Math.max(0,Number(offerAmount)||0)*100)/100,rn=Math.round(Math.max(0,Number(requestAmount)||0)*100)/100,assessment=tradeAssessment1300(game,country,oa,on,ra,rn);if(!on||!rn||oa===ra){toast('Choose two different assets and enter both amounts.');return;}if(d.wars[country]){toast('Normal trade is suspended while at war.');return;}
  if(oa==='florins'){if(game.florins<on){toast('You do not have enough Florins for this offer.');return;}}else if((Number(d.tradeStockpile[oa])||0)<on){toast(`You only have ${money1300(d.tradeStockpile[oa]||0)} ${GOOD_1300[oa]?.name||oa} in trade stock.`);return;}
  if(ra==='florins'){if(d.aiTreasuries[country]<rn){toast(`${country} cannot pay that many Florins.`);return;}}else if((Number(d.aiGoods[country]?.[ra])||0)<rn){toast(`${country} does not have that much ${GOOD_1300[ra]?.name||ra} available.`);return;}
- const rel=diplomacyRelation1300(game,country),needBonus=oa==='florins'?1:(model.balances[oa]||0)<0?1.35:1,requestPenalty=ra==='florins'?1:(model.balances[ra]||0)>0?.82:1.25,offerValue=diplomacyAssetValue1300(oa,on)*needBonus,requestValue=diplomacyAssetValue1300(ra,rn)*requestPenalty,threshold=clamp1300(1.08-rel/300,.72,1.35);
- if(offerValue<requestValue*threshold){setDiplomacyRelation1300(game,country,rel-1);diplomacyLog1300(game,country,'Rejected an unfavourable trade proposal.');save();renderGameDiplomacyPanel1300();toast(`${country} rejected the trade as too unfavourable.`);return;}
+ const rel=diplomacyRelation1300(game,country);
+ if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-1);diplomacyLog1300(game,country,`Rejected trade proposal (${assessment.score}% acceptance): ${assessment.note}`);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the trade.`);return;}
  if(oa==='florins'){game.florins=Math.round((game.florins-on)*100)/100;d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]+on)*100)/100;}else{d.tradeStockpile[oa]=Math.round((d.tradeStockpile[oa]-on)*100)/100;d.aiGoods[country][oa]=Math.round(((Number(d.aiGoods[country][oa])||0)+on)*100)/100;}
  if(ra==='florins'){d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-rn)*100)/100;game.florins=Math.round((game.florins+rn)*100)/100;}else{d.aiGoods[country][ra]=Math.round((d.aiGoods[country][ra]-rn)*100)/100;d.tradeStockpile[ra]=Math.round(((Number(d.tradeStockpile[ra])||0)+rn)*100)/100;}
- setDiplomacyRelation1300(game,country,rel+1);diplomacyLog1300(game,country,`Trade completed: offered ${on} ${oa==='florins'?'Florins':GOOD_1300[oa]?.name||oa}, received ${rn} ${ra==='florins'?'Florins':GOOD_1300[ra]?.name||ra}.`);save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`Trade with ${country} completed.`);
+ setDiplomacyRelation1300(game,country,rel+1);diplomacyLog1300(game,country,`Trade completed (${assessment.score}% acceptance): offered ${on} ${oa==='florins'?'Florins':GOOD_1300[oa]?.name||oa}, received ${rn} ${ra==='florins'?'Florins':GOOD_1300[ra]?.name||ra}.`);save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`Trade with ${country} completed.`);
 }
 function normaliseGameEconomy1300(raw){
  const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300();
