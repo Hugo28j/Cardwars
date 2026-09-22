@@ -771,9 +771,9 @@ function buildingEffectText(b){
  return Object.entries(b.effects).map(([key,value])=>`${labels[key]||key} ${value>0?'+':''}${value}${key==='income'?' ƒ':key==='professionalArmyLimit'?'%':''}`).join(' · ');
 }
 function compactBuildingWorkers1300(value){
- const n=Math.max(0,Math.round(Number(value)||0));
- if(n>=1000000)return (n/1000000).toFixed(n<10000000?1:0)+'M';
- if(n>=10000)return (n/1000).toFixed(n<100000?1:0)+'K';
+ const n=Math.max(0,Math.round(Number(value)||0)),compact=(x,d,suffix)=>x.toFixed(d).replace('.',',')+suffix;
+ if(n>=1000000)return compact(n/1000000,n<10000000?1:0,'M');
+ if(n>=10000)return compact(n/1000,n<100000?1:0,'K');
  return n.toLocaleString('en-GB');
 }
 function gameBuildingPurchaseLevel(cityId,buildingId){
