@@ -301,7 +301,7 @@ function diplomacyChance1300(game,country,base=0){
  return clamp1300(base+rel*.65+Math.min(25,ratio*18),5,95);
 }
 function diplomacyAccepts1300(score){return Number(score)>=50;}
-function acceptanceLabel1300(score){return score>=75?'Very likely':score>=50?'Will accept':score>=35?'Unlikely':score>=15?'Very unlikely':'Will refuse';}
+function acceptanceLabel1300(score){return score>=50?'Will accept':'Will refuse';}
 function acceptanceClass1300(score){return score>=50?'accept':score>=35?'borderline':'reject';}
 function acceptanceMeterHTML1300(score,note=''){
  const n=clamp1300(Math.round(Number(score)||0),0,100);
