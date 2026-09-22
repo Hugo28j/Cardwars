@@ -689,43 +689,90 @@ function footer(){const era=view==='rankings'?'COUNTRY STRENGTH · c. 1300 CE':'
 function stat(key,label,value){const icons={food:'wheat',army:'army',navy:'navy',people:'people',size:'size',technology:'tech',satisfaction:'happy'};return `<div class="stat"><span>${icon(icons[key])}${label}</span><strong>${value}</strong></div>`;}
 function card1300(c,compact=false){const displayName=displayCityName1300(c),number=String(CITIES_1300.findIndex(x=>x.id===c.id)).padStart(3,'0'),upgraded=Number.isFinite(c.economyScore)&&Number.isFinite(c.stability),scores=upgraded?[['Food',c.food],['Economy',c.economyScore],['Technology',c.technology],['Stability',c.stability]]:[['Food',c.food],['Technology',c.technology],['Satisfaction',c.satisfaction]],art=CARD_ART_1300[c.id];return `<button class="city-card card-1300 rarity-${c.rarity} ${compact?'compact':''}" style="--rarity:${RARITY_COLORS_1300[c.rarity]}" data-action="card1300" data-id="${c.id}" aria-label="Inspect ${esc(displayName)}, ${esc(c.country)}, c. 1300"><div class="card-photo ${art?'card-photo-1300-art':'card-photo-placeholder'}">${art?`<img src="${art}" alt="Stylised historical reconstruction of ${esc(displayName)} around 1300" loading="${compact?'eager':'lazy'}">`:`<div class="photo-placeholder"><span>${icon('globe')}</span><strong>IMAGE RESERVED</strong><small>Historical artwork will be added later</small></div>`}<span class="rarity-chip">${icon(c.rarity>2?'star':'globe')}${RARITIES_1300[c.rarity]}</span><span class="card-number">1300-${number}</span><div class="card-city"><span class="card-country">${flag(c)} ${c.country}</span><h3 class="${displayName.length>16?'long-name':''}">${displayName}</h3><small>${c.subrealm} · c. 1300 CE</small></div></div><div class="card-stats">${stat('army','Army',c.armyText)}${stat('navy','Navy',c.navyText)}${stat('people','People',c.populationText)}${stat('size','Size',c.sizeText)}<div class="card-scores ${upgraded?'card-scores-4':''}">${scores.map(([label,n])=>`<div><span>${label}</span><strong>${n}<small>/100</small></strong><i style="--value:${n}%"></i></div>`).join('')}</div></div><div class="card-foot"><span>${icon('check')} Researched 1300 card</span><span>Population confidence: ${c.populationConfidence}</span></div></button>`;}
 function render(){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;if(!authUser){app.className='lobby auth-view';app.innerHTML=loginPage();setupGoogleLogin();return;}if(!profile.onboardingComplete){app.className='lobby onboarding-view';app.innerHTML=onboardingPage();return;}const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=(campaignMap?'':header())+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};mapState.game=null;world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};mapState.game={ownedCityIds:[...(profile.activeGame.ownedCities||profile.activeGame.hand)],playerColor:profile.activeGame.playerColor||profile.playerColor,fogOfWar:true,militaryByCity:campaignMilitaryByCity1300(profile.activeGame)};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;gameCountryPanel=false;renderGameCountryPanel1300();gameProvincePanel=id;mapState.selected=id;world.refresh();renderGameProvincePanel();},()=>{});setupGameClock1300();}}
-const PACK_ODDS_1300=[40,30,17,9,4],PACK_PRICE_1300=200;
+const PACK_TYPES_1300={
+ common:{id:'common',name:'Common Pack',price:200,odds:[57.5,35,5,2,.5],eyebrow:'STANDARD PAID PACK',accent:'common'},
+ epic:{id:'epic',name:'Epic Pack',price:500,odds:[40,30,17,9,4],eyebrow:'PREMIUM PAID PACK',accent:'epic'}
+};
+const PACK_ODDS_1300=PACK_TYPES_1300.common.odds,PACK_PRICE_1300=PACK_TYPES_1300.common.price;
 function owned1300Count(){return Object.keys(profile.collection1300||{}).length;}
-function drawPack1300(){
- if(profile.florins<PACK_PRICE_1300){toast(`You need ${(PACK_PRICE_1300-profile.florins).toLocaleString('en-GB')} more florins for this pack.`);return null;}
- profile.florins-=PACK_PRICE_1300;
+function drawPaidPack1300(typeId='common'){
+ const pack=PACK_TYPES_1300[typeId]||PACK_TYPES_1300.common;
+ if(profile.florins<pack.price){toast(`You need ${(pack.price-profile.florins).toLocaleString('en-GB')} more florins for this pack.`);return null;}
+ profile.florins-=pack.price;
  const cards=[];
  for(let i=0;i<5;i++){
   let roll=Math.random()*100,tier=0;
-  for(;tier<PACK_ODDS_1300.length-1;tier++){if(roll<PACK_ODDS_1300[tier])break;roll-=PACK_ODDS_1300[tier];}
+  for(;tier<pack.odds.length-1;tier++){if(roll<pack.odds[tier])break;roll-=pack.odds[tier];}
   let pool=CITIES_1300.filter(c=>c.rarity===tier);
   if(!pool.length)pool=CITIES_1300;
-  const c=pool[Math.floor(Math.random()*pool.length)];
-  const duplicate=!!profile.collection1300[c.id];
+  const c=pool[Math.floor(Math.random()*pool.length)],duplicate=!!profile.collection1300[c.id];
   profile.collection1300[c.id]=(profile.collection1300[c.id]||0)+1;
   cards.push({id:c.id,duplicate});
  }
- profile.packsOpened1300++;
- profile.drawn1300+=cards.length;
- profile.lastPack1300=cards;
- save();
- return cards;
+ profile.packsOpened1300++;profile.drawn1300+=cards.length;profile.lastPack1300=cards;profile.lastPackType1300=pack.id;save();
+ return {cards,pack};
 }
-function showPack1300(cards){
- const fresh=cards.filter(x=>!x.duplicate).length;
- showDialog(`<div class="pack1300-reveal"><span class="eyebrow">1300 EUROPE PACK</span><h2>${fresh?fresh+' new '+(fresh===1?'city':'cities'):'Five familiar cities'}</h2><p>Reveal the five cards one by one. Paid packs can contain duplicates.</p><div class="pack1300-reveal-grid">${cards.map((r,i)=>packFlipCard1300(r,i)).join('')}</div><div class="pack-reveal-hint">${icon('cards')} Reveal the cards one by one</div><div class="dialog-actions">${button('Close','close','secondary','data-reveal-complete disabled')}${button('Buy another pack · ƒ200','open-pack-1300','primary','data-reveal-complete disabled')}</div></div>`,'pack1300-dialog');
+function drawPack1300(){const result=drawPaidPack1300('common');return result?.cards||null;}
+function packFlipCard1300(r,index,{badge=true,total=5}={}){
+ const c=CITY_1300[r.id],offset=Math.min(index,7);
+ return `<div class="pack-flip-card ${index===0?'ready':''}" data-reveal-index="${index}" style="--stack-index:${index};--stack-offset:${offset};z-index:${total-index}">
+  <div class="pack-flip-inner">
+   <div class="pack-flip-back">
+    <span class="pack-back-crown">${icon('crown')}</span><strong>CARDWARS</strong><b>1300</b><small>${index===0?'CLICK TO REVEAL':'NEXT CARD'}</small>
+   </div>
+   <div class="pack-flip-front">${card1300(c,true)}${badge?`<span class="pack-result-badge ${r.duplicate?'duplicate':''}">${r.duplicate?'DUPLICATE':'NEW CARD'}</span>`:''}</div>
+  </div>
+  <button class="pack-stack-click" data-action="reveal-pack-card" data-index="${index}" ${index===0?'':'disabled'} aria-label="Reveal card ${index+1}"></button>
+ </div>`;
+}
+function revealPackCard1300(buttonEl){
+ const slot=buttonEl.closest('.pack-flip-card');if(!slot||slot.classList.contains('dismissed'))return;
+ const index=Number(slot.dataset.revealIndex)||0;
+ if(!slot.classList.contains('revealed')){
+  slot.classList.add('revealed');
+  slot.querySelector('.pack-flip-back small')?.replaceChildren(document.createTextNode('CLICK AGAIN FOR NEXT'));
+  const hint=modal.querySelector('.pack-reveal-hint span');if(hint)hint.textContent='Click the revealed card again for the next card';
+  return;
+ }
+ slot.classList.add('dismissed');buttonEl.disabled=true;
+ const next=slot.parentElement?.querySelector(`[data-reveal-index="${index+1}"]`);
+ if(next){
+  next.classList.add('ready');
+  const nextButton=next.querySelector('[data-action="reveal-pack-card"]');if(nextButton)nextButton.disabled=false;
+  const hint=modal.querySelector('.pack-reveal-hint span');if(hint)hint.textContent='Click the top card to reveal it';
+ }else{
+  modal.classList.add('pack-reveal-complete');
+  modal.querySelectorAll('[data-reveal-complete]').forEach(el=>el.disabled=false);
+  const hint=modal.querySelector('.pack-reveal-hint span');if(hint)hint.textContent='Pack complete';
+ }
+}
+function showPack1300(cards,typeId='common',{allowRepurchase=true}={}){
+ const pack=PACK_TYPES_1300[typeId]||PACK_TYPES_1300.common,fresh=cards.filter(x=>!x.duplicate).length;
+ showDialog(`<div class="pack1300-reveal ${pack.accent}-reveal"><span class="eyebrow">${esc(pack.name.toUpperCase())} · 1300 CE</span><h2>${fresh?fresh+' new '+(fresh===1?'city':'cities'):'Five familiar cities'}</h2><p>The cards are stacked. Click the top card once to reveal it, then click it again to move to the next card.</p><div class="pack1300-reveal-grid pack-card-stack">${cards.map((r,i)=>packFlipCard1300(r,i,{total:cards.length})).join('')}</div><div class="pack-reveal-hint">${icon('cards')} <span>Click the top card to reveal it</span></div><div class="dialog-actions">${button('Close','close','secondary','data-reveal-complete disabled')}${allowRepurchase?button(`Buy another ${pack.name} · ƒ${pack.price}`,pack.id==='epic'?'open-epic-pack-1300':'open-pack-1300','primary','data-reveal-complete disabled'):''}</div></div>`,'pack1300-dialog');
+}
+function showStarterPack1300(cards,title,subtitle,nextLabel='Continue'){
+ showDialog(`<div class="starter-pack-reveal"><span class="eyebrow">FREE STARTER PACK · 1300 CE</span><h2>${esc(title)}</h2><p>${esc(subtitle)} Click the top card once to reveal it, then again for the next card.</p><div class="starter-pack-grid pack-card-stack">${cards.map((r,i)=>packFlipCard1300(r,i,{badge:false,total:cards.length})).join('')}</div><div class="pack-reveal-hint">${icon('cards')} <span>Click the top card to reveal it</span></div><div class="dialog-actions">${button(nextLabel,'close','primary','data-reveal-complete disabled')}</div></div>`,'starter-pack-dialog');
+}
+function packOffer1300(pack){
+ const canBuy=profile.florins>=pack.price;
+ return `<section class="pack-shop-card ${pack.accent}">
+  <div class="pack1300-stage"><div class="pack1300-orbit"></div><div class="pack1300-art"><span>THE AGE OF REALMS</span><i>${icon('crown')}</i><strong>${esc(pack.name.toUpperCase())}</strong><b>ƒ${pack.price}</b><small>5 CITY CARDS · 1300</small></div></div>
+  <div class="pack1300-copy"><span class="eyebrow">${pack.eyebrow}</span><h2>${esc(pack.name)}</h2><p>${pack.id==='epic'?'Uses the original higher-rarity paid-pack odds.':'The standard affordable pack with rarer high-tier pulls.'} Five independent draws from the packable 1300 city-card set.</p>
+   <div class="pack1300-highlights"><span>${icon('cards')} 5 cards per pack</span><span>${icon('coins')} Cost: ƒ${pack.price}</span><span>${icon('globe')} ${CITIES_1300.length} packable cities</span></div>
+   <button class="btn primary large-button" data-action="${pack.id==='epic'?'open-epic-pack-1300':'open-pack-1300'}" ${canBuy?'':'disabled'}><span>${canBuy?'Buy '+pack.name:'Not enough florins'}</span><strong>ƒ${pack.price}</strong></button>
+  </div>
+  <aside class="pack1300-odds"><span class="eyebrow">RARITY ODDS</span><h3>Per card.</h3>${RARITIES_1300.map((name,i)=>`<div><span>${name}</span><strong>${pack.odds[i]}%</strong></div>`).join('')}</aside>
+ </section>`;
 }
 function packs1300Page(){
- const canBuy=profile.florins>=PACK_PRICE_1300;
  return `<main class="packs1300-page">
-  <div class="page-title packs1300-title"><div><span class="eyebrow">PACKS · c. 1300 CE</span><h1>Grow your collection<span class="title-dot">.</span></h1><p>Your two starter packs were free once. From now on the standard Common Pack costs <strong>ƒ200</strong> and contains only packable 1300 city cards.</p></div><div class="pack1300-count"><strong>${owned1300Count()}<small>/${CITIES_1300.length}</small></strong><span>UNIQUE 1300 CARDS OWNED</span></div></div>
-  <div class="packs1300-layout">
-   <section class="pack1300-stage"><div class="pack1300-orbit"></div><div class="pack1300-art"><span>THE AGE OF REALMS</span><i>${icon('crown')}</i><strong>COMMON PACK</strong><b>ƒ200</b><small>5 CITY CARDS · 1300</small></div></section>
-   <section class="pack1300-copy"><span class="eyebrow">STANDARD PAID PACK</span><h2>Common Pack</h2><p>Draw five cards from the researched 1300 set. The hidden England support territory and every other non-playable support entry are excluded.</p><div class="pack1300-highlights"><span>${icon('cards')} 5 cards per pack</span><span>${icon('coins')} Cost: ƒ200</span><span>${icon('globe')} ${CITIES_1300.length} packable cities</span></div><button class="btn primary large-button" data-action="open-pack-1300" ${canBuy?'':'disabled'}><span>${canBuy?'Buy Common Pack':'Not enough florins'}</span><strong>ƒ200</strong></button><div class="pack1300-stats"><span><strong>${profile.packsOpened1300}</strong><small>PACKS OPENED</small></span><span><strong>${profile.drawn1300}</strong><small>CARDS DRAWN</small></span><span><strong>${owned1300Count()}</strong><small>UNIQUE OWNED</small></span></div>${profile.lastPack1300.length?'<button class="text-btn" data-action="last-pack-1300">View last pack</button>':''}</section>
-   <aside class="pack1300-odds"><span class="eyebrow">RARITY ODDS</span><h3>Five independent draws.</h3>${RARITIES_1300.map((name,i)=>`<div><span>${name}</span><strong>${PACK_ODDS_1300[i]}%</strong></div>`).join('')}</aside>
-  </div>
+  <div class="page-title packs1300-title"><div><span class="eyebrow">PACKS · c. 1300 CE</span><h1>Grow your collection<span class="title-dot">.</span></h1><p>Choose between the ƒ200 Common Pack and the higher-rarity ƒ500 Epic Pack. Both contain five packable 1300 city cards.</p></div><div class="pack1300-count"><strong>${owned1300Count()}<small>/${CITIES_1300.length}</small></strong><span>UNIQUE 1300 CARDS OWNED</span></div></div>
+  <div class="pack-shop-list">${packOffer1300(PACK_TYPES_1300.common)}${packOffer1300(PACK_TYPES_1300.epic)}</div>
+  <section class="pack1300-stats pack-shop-stats"><span><strong>${profile.packsOpened1300}</strong><small>PACKS OPENED</small></span><span><strong>${profile.drawn1300}</strong><small>CARDS DRAWN</small></span><span><strong>${owned1300Count()}</strong><small>UNIQUE OWNED</small></span></section>
+  ${profile.lastPack1300.length?'<button class="text-btn pack-last-button" data-action="last-pack-1300">View last pack</button>':''}
  </main>`;
 }
+
 function deckPage(){
  const locked=!!profile.activeGame,q=deckSearch.toLowerCase().trim();
  const list=CITIES_1300.filter(c=>(Number(profile.collection1300[c.id])||0)>0&&(deckCountry==='all'||c.country===deckCountry)&&(!q||`${c.name} ${c.country} ${c.subrealm}`.toLowerCase().includes(q))).sort((a,b)=>profile.deck.includes(a.id)-profile.deck.includes(b.id)||b.rarity-a.rarity||b.people-a.people);
@@ -1041,8 +1088,9 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(['collection','packs','deck','game','rankings','atlas'].includes(a)){navigate(a);return;}
  if(a==='ranking-category'){rankingCategory=id;render();return;}
  if(a==='reveal-pack-card'){revealPackCard1300(b);return;}
- if(a==='open-pack-1300'){const cards=drawPack1300();if(!cards)return;render();showPack1300(cards);return;}
- if(a==='last-pack-1300'){showPack1300(profile.lastPack1300);return;}
+ if(a==='open-pack-1300'){const result=drawPaidPack1300('common');if(!result)return;render();showPack1300(result.cards,'common');return;}
+ if(a==='open-epic-pack-1300'){const result=drawPaidPack1300('epic');if(!result)return;render();showPack1300(result.cards,'epic');return;}
+ if(a==='last-pack-1300'){showPack1300(profile.lastPack1300,profile.lastPackType1300||'common',{allowRepurchase:false});return;}
  if(a==='deck-toggle'){toggleDeckCard1300(id);return;}
  if(a==='game-color'&&!profile.activeGame){const color=b.dataset.color;if(validRealmColor(color)){profile.playerColor=color;save();render();}return;}
  if(a==='flag-color'&&!profile.activeGame){const c=b.dataset.color;if(FLAG_COLORS_1300.includes(c)){flagPaintColor=c;render();}return;}

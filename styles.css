@@ -470,3 +470,36 @@
 .province-building-cards{padding-bottom:24px}
 .province-building-copy>small{letter-spacing:.35px;text-transform:uppercase}
 .province-building-card.unavailable .province-building-copy p{font-style:italic}
+
+/* Two paid pack tiers */
+.pack-shop-list{display:flex;flex-direction:column;gap:34px;padding:22px 0}
+.pack-shop-card{display:grid;grid-template-columns:.85fr 1fr .72fr;gap:34px;align-items:center;padding:26px;border:1px solid #526057;background:linear-gradient(145deg,#131e1a,#0e1714);border-radius:10px}
+.pack-shop-card .pack1300-stage{height:365px}
+.pack-shop-card .pack1300-copy h2{font-size:42px}
+.pack-shop-card.epic{border-color:#795c8b;background:radial-gradient(circle at 17% 45%,#6f4a841f,transparent 33%),linear-gradient(145deg,#191821,#101316)}
+.pack-shop-card.epic .pack1300-art{border-color:#a877bd;background:linear-gradient(155deg,#372641,#17131e);box-shadow:0 18px 42px #0008,0 0 28px #80579b20}
+.pack-shop-card.epic .pack1300-art>i{border-color:#9f70b4;color:#d4a8e5}
+.pack-shop-card.epic .pack1300-art>b,.pack-shop-card.epic .pack1300-odds>div strong{color:#d3a8e2}
+.pack-shop-card.epic .pack1300-odds{border-left-color:#6c5377}
+.pack-shop-stats{max-width:520px;margin:0 auto 10px}
+.pack-last-button{display:block;margin:12px auto 0}
+
+/* One physical stack: click once to reveal, again to move on */
+.pack1300-reveal{min-width:min(760px,90vw);text-align:center}
+.pack-card-stack{position:relative!important;display:block!important;width:min(310px,72vw);height:445px;margin:24px auto 18px!important;overflow:visible}
+.pack-card-stack .pack-flip-card{position:absolute;inset:0;min-height:0;height:100%;width:100%;opacity:1;perspective:1200px;transform:translate(calc(var(--stack-offset)*2.2px),calc(var(--stack-offset)*2.6px)) rotate(calc((var(--stack-offset) - 2)*.45deg));transition:transform .42s ease,opacity .35s ease,filter .25s ease}
+.pack-card-stack .pack-flip-card:not(.ready):not(.revealed){filter:brightness(.72)}
+.pack-card-stack .pack-flip-card.ready{filter:none}
+.pack-card-stack .pack-flip-card.dismissed{opacity:0;transform:translate(-145%,-6%) rotate(-10deg) scale(.94);pointer-events:none}
+.pack-card-stack .pack-flip-card.dismissed .pack-stack-click{pointer-events:none}
+.pack-stack-click{position:absolute;inset:0;z-index:20;width:100%;height:100%;border:0;background:transparent;cursor:pointer;border-radius:8px}
+.pack-stack-click:disabled{cursor:default}
+.pack-flip-back{pointer-events:none}
+.pack-flip-card.ready:not(.revealed) .pack-flip-back{animation:packBackPulse 1.8s ease-in-out infinite}
+.pack-flip-card.revealed .pack-flip-front{pointer-events:none}
+.pack-flip-card.revealed .pack-stack-click{cursor:pointer}
+.pack-card-stack:before,.pack-card-stack:after{content:'';position:absolute;inset:8px -8px -8px 8px;border:1px solid #574b36;background:#101713;border-radius:8px;z-index:-1;box-shadow:0 12px 30px #0005}
+.pack-card-stack:after{inset:14px -14px -14px 14px;opacity:.55;z-index:-2}
+.epic-reveal .pack-card-stack:before,.epic-reveal .pack-card-stack:after{border-color:#6f527e}
+@media(max-width:1100px){.pack-shop-card{grid-template-columns:1fr 1fr}.pack-shop-card .pack1300-odds{grid-column:1/-1;border-left:0;border-top:1px solid var(--border);padding:18px 0 0}}
+@media(max-width:700px){.pack-shop-card{grid-template-columns:1fr;padding:16px}.pack-shop-card .pack1300-stage{height:300px}.pack-shop-card .pack1300-odds{grid-column:auto}.pack-card-stack{height:410px;width:min(290px,82vw)}}
