@@ -527,7 +527,7 @@ function gameProvincePanelHTML(cityId){
   </section>`:''}
   <section class="province-side-info"><span>ECONOMY</span><p>${esc(c.economy)}</p><span>HISTORICAL ROLE</span><p>${esc(c.historicalRole)}</p></section>
   <div class="province-building-header"><div><span>SECTORS & BUILDINGS</span><strong>${state.totalLevels} levels</strong></div><small>${owned?`Treasury <b>ƒ${money1300(game.florins)}</b>`:'Foreign province'}</small></div>
-  <section class="province-building-cards">${state.buildings.map(row=>{
+  <section class="province-building-cards">${state.buildings.filter(row=>row.level>0||(row.available&&(!row.requiresCoast||coastal))).map(row=>{
    const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,unavailable=!row.available&&row.level===0,canBuy=owned&&!maxed&&!blocked&&!unavailable&&game.florins>=row.cost,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,override=owned&&Number.isFinite(Number(e.buildingWages?.[c.id]?.[row.id])),effectiveWage=owned?effectiveBuildingWage1300(game,c.id,row.id):0;
    const buttonText=!owned?'FOREIGN':unavailable?'UNAVAILABLE':maxed?'MAX LEVEL':blocked?'NEEDS PORT':row.level?'UPGRADE':'BUILD';
    return `<article class="province-building-card ${maxed?'maxed':''} ${unavailable?'unavailable':''}"><div class="province-building-picture">${buildingPicture1300(row.id)}</div><div class="province-building-copy"><div><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em>
