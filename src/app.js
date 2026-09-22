@@ -592,8 +592,10 @@ function applyLiveDynamicStats1300(game,factor=1/30){
   const techBudget=Math.min(Number(e.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(c)),techNeed=technologyBudgetNeed1300(c),techRatio=techNeed?techBudget/techNeed:0,technologyDelta=clamp1300((techRatio-.35)*.12+treeUnlocked*.008,-.05,.28),stabilityDelta=stabilityPolicyMonthlyDelta1300(game);
   e.statRemainders[id]??={};
   const apply=(key,monthlyDelta,bonus)=>{
-   const maxBase=Math.max(0,cap-(Number(bonus)||0)),before=Number(row[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry,step=roundStat1300(raw);
-   e.statRemainders[id][key]=round(raw-step,6);
+   const maxBase=Math.max(0,cap-(Number(bonus)||0)),before=Number(row[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry;
+   let step=roundStat1300(raw);
+   if(step===0&&Math.abs(monthlyDelta)>=.001&&before>0&&before<maxBase){step=Math.sign(monthlyDelta)*.01;e.statRemainders[id][key]=0;}
+   else e.statRemainders[id][key]=round(raw-step,6);
    row[key]=roundStat1300(clamp1300(before+step,0,maxBase));
    if(row[key]===0||row[key]===maxBase)e.statRemainders[id][key]=0;
    return roundStat1300(row[key]-before);
