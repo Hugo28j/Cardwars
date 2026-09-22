@@ -158,7 +158,7 @@ try{
  const legacyRaw=localStorage.getItem(LEGACY_KEY);
  if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
 }catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
-let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameCountryPanel=false,gameCountryTab='politics',gameRankingCategory='overall',gameClockTimer=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
+let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceBuildingDetail=null,gameCountryPanel=false,gameCountryTab='politics',gameRankingCategory='overall',gameClockTimer=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const STARTER_REGIONS_1300=[
@@ -605,11 +605,52 @@ function wageStepper1300(scope,cityId,buildingId,value,canReset){
  const attrs=scope==='national'?'':`data-city="${cityId}"${buildingId?` data-id="${buildingId}"`:''}`,action=scope==='national'?'game-national-wage-adjust':scope==='city'?'game-city-wage-adjust':'game-building-wage-adjust',resetAction=scope==='city'?'game-city-wage-reset':'game-building-wage-reset';
  return `<div class="wage-stepper"><button data-action="${action}" data-delta="-0.02" ${attrs}>−</button><strong>ƒ${money1300(value)}</strong><button data-action="${action}" data-delta="0.02" ${attrs}>+</button>${scope!=='national'?'<button class="wage-reset" data-action="'+resetAction+'" '+attrs+' '+(canReset?'':'disabled')+'>inherit</button>':''}</div>`;
 }
+function buildingMoneyTone1300(value,{cost=false}={}){
+ const n=Number(value)||0;
+ if(cost&&n>0)return 'negative';
+ if(n>0)return 'positive';
+ if(n<0)return 'negative';
+ return 'neutral';
+}
+function gameBuildingDetailHTML1300(cityId,buildingId){
+ const game=profile.activeGame,c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!game||!c||!building)return '';
+ const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),row=state.buildings.find(x=>x.id===buildingId);if(!row)return '';
+ const coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy),maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,unavailable=!row.available&&row.level===0,canBuy=owned&&!maxed&&!blocked&&!unavailable&&game.florins>=row.cost,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,override=owned&&Number.isFinite(Number(e.buildingWages?.[c.id]?.[row.id])),effectiveWage=owned?effectiveBuildingWage1300(game,c.id,row.id):0,buttonText=!owned?'FOREIGN':unavailable?'UNAVAILABLE':maxed?'MAX LEVEL':blocked?'NEEDS PORT':row.level?'UPGRADE':'BUILD';
+ const employment=m?Math.round((m.workers/Math.max(1,m.capacity))*100):0,throughput=m?Math.round((m.throughput||0)*100):0;
+ return `<section class="building-detail-view">
+  <div class="building-detail-toolbar"><button data-action="game-building-detail-back" class="building-detail-back" aria-label="Back to buildings">← <span>Back</span></button><span>${esc(displayCityName1300(c))}</span></div>
+  <div class="building-detail-hero">
+   <div class="building-detail-icon">${buildingPicture1300(row.id)}</div>
+   <div><span class="building-detail-category">${esc(row.category)}</span><h2>${esc(row.name)}</h2><strong>Level ${row.level} / ${ECONOMY_1300.maxBuildingLevel}</strong><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em></div>
+  </div>
+  ${owned&&row.level>0?`<div class="building-detail-section"><div class="building-detail-section-title"><span>PRODUCTION</span><small>Live weekly market simulation</small></div>
+   <div class="building-flow-grid"><article><span>INPUTS</span><strong>${esc(goodFlowText1300(m.inputs))}</strong></article><article><span>OUTPUTS</span><strong>${esc(goodFlowText1300(m.outputs))}</strong></article></div>
+   <div class="building-detail-progress"><div><span>Throughput</span><strong>${throughput}%</strong></div><i><b style="width:${Math.max(0,Math.min(100,throughput))}%"></b></i></div>
+   <div class="building-detail-progress"><div><span>Employment</span><strong>${employment}%</strong></div><i><b style="width:${Math.max(0,Math.min(100,employment))}%"></b></i></div>
+  </div>
+  <div class="building-detail-section"><div class="building-detail-section-title"><span>FINANCES</span><small>Per month</small></div>
+   <div class="building-finance-grid">
+    <article><span>Workers</span><strong class="neutral">${strengthNumber(m.workers)} / ${strengthNumber(m.capacity)}</strong></article>
+    <article><span>Revenue</span><strong class="${buildingMoneyTone1300(m.gross)}">+ƒ${money1300(Math.abs(m.gross||0))}</strong></article>
+    <article><span>Input costs</span><strong class="${buildingMoneyTone1300(m.inputCost,{cost:true})}">-ƒ${money1300(Math.abs(m.inputCost||0))}</strong></article>
+    <article><span>Wages</span><strong class="${buildingMoneyTone1300(m.wageBill,{cost:true})}">-ƒ${money1300(Math.abs(m.wageBill||0))}</strong></article>
+    <article class="profit"><span>Profit</span><strong class="${buildingMoneyTone1300(m.profit)}">${m.profit>=0?'+':'-'}ƒ${money1300(Math.abs(m.profit||0))}</strong></article>
+    <article><span>Tax paid</span><strong class="${buildingMoneyTone1300(m.tax,{cost:true})}">-ƒ${money1300(Math.abs(m.tax||0))}</strong></article>
+   </div>
+  </div>
+  <div class="building-detail-section"><div class="building-detail-section-title"><span>LABOUR</span><small>Building-specific policy</small></div><div class="building-detail-wage"><div><span>Minimum wage</span><small>${override?'Custom wage':'Inherited wage'}</small></div>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div></div>`:''}
+  ${owned?`<div class="building-detail-upgrade"><div><span>Treasury</span><strong>ƒ${money1300(game.florins)}</strong></div><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div>`:''}
+ </section>`;
+}
+
 function gameProvincePanelHTML(cityId){
  const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c)return '';
  const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy);
  const stats=[['Food',Math.min(100,c.food+b.food)],['Economy',Math.min(100,c.economyScore+b.economy)],['Technology',Math.min(100,c.technology+b.technology)],['Stability',owned?effectiveProvinceStability1300(game,c,b.stability):Math.min(100,c.stability+b.stability)]];
  const summary=owned?gameCityEconomySummary1300(game,cityId):null,cityOverride=Number.isFinite(Number(e.cityWages[cityId])),cityWage=effectiveCityWage1300(game,cityId);
+ const detail=gameProvinceBuildingDetail?gameBuildingDetailHTML1300(cityId,gameProvinceBuildingDetail):'';
+ if(gameProvinceBuildingDetail&&!detail)gameProvinceBuildingDetail=null;
+ if(detail)return `<div class="province-side-head detail-open" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div><div class="province-side-scroll building-detail-scroll">${detail}</div>`;
  return `<div class="province-side-head" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div>
  <div class="province-side-scroll">
   <section class="province-side-facts"><div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div><div><span>Starting wealth</span><strong>ƒ${money1300(c.startingFlorins)}</strong></div><div><span>Army</span><strong>${strengthNumber(c.army+b.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div></section>
@@ -626,7 +667,7 @@ function gameProvincePanelHTML(cityId){
   <section class="province-building-cards">${state.buildings.filter(row=>row.level>0||(row.available&&(!row.requiresCoast||coastal))).map(row=>{
    const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,unavailable=!row.available&&row.level===0,canBuy=owned&&!maxed&&!blocked&&!unavailable&&game.florins>=row.cost,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,override=owned&&Number.isFinite(Number(e.buildingWages?.[c.id]?.[row.id])),effectiveWage=owned?effectiveBuildingWage1300(game,c.id,row.id):0;
    const buttonText=!owned?'FOREIGN':unavailable?'UNAVAILABLE':maxed?'MAX LEVEL':blocked?'NEEDS PORT':row.level?'UPGRADE':'BUILD';
-   return `<article class="province-building-card ${maxed?'maxed':''} ${unavailable?'unavailable':''}"><div class="province-building-picture">${buildingPicture1300(row.id)}</div><div class="province-building-copy"><div><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em>
+   return `<article class="province-building-card ${maxed?'maxed':''} ${unavailable?'unavailable':''}"><button class="province-building-picture building-detail-trigger" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details" aria-label="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>Details</span></button><div class="province-building-copy"><div><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em>
     ${owned&&row.level>0?`<div class="sector-production"><span><b>Inputs</b> ${esc(goodFlowText1300(m.inputs))}</span><span><b>Outputs</b> ${esc(goodFlowText1300(m.outputs))}</span><small>Throughput ${Math.round((m.throughput||0)*100)}% · employment ${Math.round((m.workers/Math.max(1,m.capacity))*100)}%</small></div><div class="sector-economy expanded"><span>Workers <b>${strengthNumber(m.workers)} / ${strengthNumber(m.capacity)}</b></span><span>Revenue/month <b>ƒ${money1300(m.gross)}</b></span><span>Inputs/month <b>-ƒ${money1300(m.inputCost||0)}</b></span><span>Wages/month <b>-ƒ${money1300(m.wageBill)}</b></span><span>Profit/month <b class="${m.profit<0?'negative':''}">ƒ${money1300(m.profit)}</b></span><span>Tax/month <b>ƒ${money1300(m.tax)}</b></span></div><div class="sector-wage"><span>Minimum wage</span>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div>`:''}
     <div class="province-level-pips">${Array.from({length:ECONOMY_1300.maxBuildingLevel},(_,i)=>`<i class="${i<row.level?'on':''}"></i>`).join('')}</div></div>
     <div class="province-building-buy"><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&owned&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div></article>`;
@@ -784,7 +825,7 @@ function header(){return `<header class="lobby-header"><button class="brand" dat
 function footer(){const era=view==='rankings'?'COUNTRY STRENGTH · c. 1300 CE':'EUROPE · c. 1300 CE';return `<footer class="lobby-footer"><span>${era}</span><span class="save-note">${icon('save')} ${storageFailed?'Export a save to keep your progress':'Saved on this device'}</span><button data-action="sources">Historical notes & sources ${icon('arrow')}</button></footer>`;}
 function stat(key,label,value){const icons={food:'wheat',army:'army',navy:'navy',people:'people',size:'size',technology:'tech',satisfaction:'happy'};return `<div class="stat"><span>${icon(icons[key])}${label}</span><strong>${value}</strong></div>`;}
 function card1300(c,compact=false){const displayName=displayCityName1300(c),number=String(CITIES_1300.findIndex(x=>x.id===c.id)).padStart(3,'0'),upgraded=Number.isFinite(c.economyScore)&&Number.isFinite(c.stability),scores=upgraded?[['Food',c.food],['Economy',c.economyScore],['Technology',c.technology],['Stability',c.stability]]:[['Food',c.food],['Technology',c.technology],['Satisfaction',c.satisfaction]],art=CARD_ART_1300[c.id];return `<button class="city-card card-1300 rarity-${c.rarity} ${compact?'compact':''}" style="--rarity:${RARITY_COLORS_1300[c.rarity]}" data-action="card1300" data-id="${c.id}" aria-label="Inspect ${esc(displayName)}, ${esc(c.country)}, c. 1300"><div class="card-photo ${art?'card-photo-1300-art':'card-photo-placeholder'}">${art?`<img src="${art}" alt="Stylised historical reconstruction of ${esc(displayName)} around 1300" loading="${compact?'eager':'lazy'}">`:`<div class="photo-placeholder"><span>${icon('globe')}</span><strong>IMAGE RESERVED</strong><small>Historical artwork will be added later</small></div>`}<span class="rarity-chip">${icon(c.rarity>2?'star':'globe')}${RARITIES_1300[c.rarity]}</span><span class="card-number">1300-${number}</span><div class="card-city"><span class="card-country">${flag(c)} ${c.country}</span><h3 class="${displayName.length>16?'long-name':''}">${displayName}</h3><small>${c.subrealm} · c. 1300 CE</small></div></div><div class="card-stats">${stat('army','Army',c.armyText)}${stat('navy','Navy',c.navyText)}${stat('people','People',c.populationText)}${stat('size','Size',c.sizeText)}<div class="card-scores ${upgraded?'card-scores-4':''}">${scores.map(([label,n])=>`<div><span>${label}</span><strong>${n}<small>/100</small></strong><i style="--value:${n}%"></i></div>`).join('')}</div></div><div class="card-foot"><span>${icon('check')} Researched 1300 card</span><span>Population confidence: ${c.populationConfidence}</span></div></button>`;}
-function render(){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;if(!authUser){app.className='lobby auth-view';app.innerHTML=loginPage();setupGoogleLogin();return;}if(!profile.onboardingComplete){app.className='lobby onboarding-view';app.innerHTML=onboardingPage();return;}const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=(campaignMap?'':header())+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};mapState.game=null;world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};mapState.game={ownedCityIds:[...(profile.activeGame.ownedCities||profile.activeGame.hand)],playerColor:profile.activeGame.playerColor||profile.playerColor,fogOfWar:true,militaryByCity:campaignMilitaryByCity1300(profile.activeGame)};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;gameCountryPanel=false;renderGameCountryPanel1300();gameProvincePanel=id;mapState.selected=id;world.refresh();renderGameProvincePanel();},()=>{});setupGameClock1300();}}
+function render(){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;if(!authUser){app.className='lobby auth-view';app.innerHTML=loginPage();setupGoogleLogin();return;}if(!profile.onboardingComplete){app.className='lobby onboarding-view';app.innerHTML=onboardingPage();return;}const campaignMap=view==='game'&&!!profile.activeGame&&gameScreen==='map';app.className=view==='atlas'?'lobby atlas-view':campaignMap?'lobby atlas-view game-campaign-view':'lobby';app.innerHTML=(campaignMap?'':header())+(view==='collection'?collectionPage():view==='packs'?packs1300Page():view==='deck'?deckPage():view==='game'?gamePage():view==='rankings'?rankingsPage():atlasPage())+((view==='atlas'||campaignMap)?'':footer());if(view==='collection')renderGrid();if(view==='atlas'){renderAtlasPanel();mapState.selected=selected1300;mapState.collection={};mapState.game=null;world=new WorldMap($('#map-host'),mapState,id=>{selected1300=id;mapState.selected=id;atlasRegion=null;renderAtlasPanel();world.refresh();app.classList.add('show-panel');},region=>{atlasRegion=region;atlasSearch='';renderAtlasPanel();app.classList.add('show-panel');});}if(campaignMap){mapState.selected=selected1300;mapState.collection={};mapState.game={ownedCityIds:[...(profile.activeGame.ownedCities||profile.activeGame.hand)],playerColor:profile.activeGame.playerColor||profile.playerColor,fogOfWar:true,militaryByCity:campaignMilitaryByCity1300(profile.activeGame)};world=new WorldMap($('#game-map-host'),mapState,id=>{selected1300=id;gameCountryPanel=false;renderGameCountryPanel1300();gameProvincePanel=id;gameProvinceBuildingDetail=null;mapState.selected=id;world.refresh();renderGameProvincePanel();},()=>{});setupGameClock1300();}}
 const PACK_TYPES_1300={
  common:{id:'common',name:'Common Pack',price:200,odds:[57.5,35,5,2,.5],eyebrow:'STANDARD PAID PACK',accent:'common'},
  epic:{id:'epic',name:'Epic Pack',price:500,odds:[40,30,17,9,4],eyebrow:'PREMIUM PAID PACK',accent:'epic'}
@@ -1117,7 +1158,7 @@ function renderGameCountryPanel1300(){
  const oldScroll=panel.querySelector('.country-panel-scroll')?.scrollTop||0;panel.innerHTML=gameCountryPanelHTML1300();panel.classList.add('open');const sc=panel.querySelector('.country-panel-scroll');if(sc)sc.scrollTop=oldScroll;
 }
 function openGameCountryPanel1300(){
- if(!profile.activeGame)return;gameProvincePanel=null;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
+ if(!profile.activeGame)return;gameProvincePanel=null;gameProvinceBuildingDetail=null;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
 }
 function gamePage(){
  if(!profile.activeGame){
@@ -1197,9 +1238,11 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='flag-color'&&!profile.activeGame){const c=b.dataset.color;if(FLAG_COLORS_1300.includes(c)){flagPaintColor=c;render();}return;}
  if(a==='flag-cell'&&!profile.activeGame){const i=Number(b.dataset.index);if(Number.isInteger(i)&&i>=0&&i<FLAG_SIZE){profile.playerFlag=normaliseFlag1300(profile.playerFlag);profile.playerFlag[i]=flagPaintColor;save();document.querySelectorAll('[data-flag-index="'+i+'"]').forEach(el=>el.style.setProperty('--flag-cell',flagPaintColor));}return;}
  if(a==='flag-reset'&&!profile.activeGame){profile.playerFlag=Array(FLAG_SIZE).fill(DEFAULT_FLAG_COLOR);save();render();return;}
- if(a==='start-game'){gameProvincePanel=null;gameCountryPanel=false;startGame1300();return;}
+ if(a==='start-game'){gameProvincePanel=null;gameProvinceBuildingDetail=null;gameCountryPanel=false;startGame1300();return;}
  if(a==='game-map'){gameScreen='map';render();return;}
- if(a==='close-game-province'){gameProvincePanel=null;renderGameProvincePanel();return;}
+ if(a==='close-game-province'){gameProvincePanel=null;gameProvinceBuildingDetail=null;renderGameProvincePanel();return;}
+ if(a==='game-building-detail'){if(BUILDING_1300[id]&&CITY_1300[b.dataset.city]){gameProvincePanel=b.dataset.city;gameProvinceBuildingDetail=id;renderGameProvincePanel();}return;}
+ if(a==='game-building-detail-back'){gameProvinceBuildingDetail=null;renderGameProvincePanel();return;}
  if(a==='game-country-open'){openGameCountryPanel1300();return;}
  if(a==='game-country-close'){gameCountryPanel=false;renderGameCountryPanel1300();return;}
  if(a==='game-country-tab'){if(GAME_COUNTRY_TABS.some(([x])=>x===id)){gameCountryTab=id;renderGameCountryPanel1300();}return;}
@@ -1212,7 +1255,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-city-wage-reset'){resetCityWage1300(b.dataset.city);return;}
  if(a==='game-building-wage-adjust'){changeBuildingWage1300(b.dataset.city,id,b.dataset.delta);return;}
  if(a==='game-building-wage-reset'){resetBuildingWage1300(b.dataset.city,id);return;}
- if(a==='quit-game'){profile.activeGame=null;gameScreen='map';gameProvincePanel=null;gameCountryPanel=false;save();render();toast('You left the campaign. Your deck was kept.');return;}
+ if(a==='quit-game'){profile.activeGame=null;gameScreen='map';gameProvincePanel=null;gameProvinceBuildingDetail=null;gameCountryPanel=false;save();render();toast('You left the campaign. Your deck was kept.');return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();
  if(a==='country1300'){country1300=id;render();}

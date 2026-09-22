@@ -530,3 +530,48 @@
  .country-market-table>div span:nth-of-type(2){display:none}
  .province-market-list>div{grid-template-columns:1fr 72px 104px}
 }
+
+/* Province building detail mode */
+.province-building-picture.building-detail-trigger{position:relative;border:1px solid #627064;font:inherit;padding:0;cursor:pointer;overflow:hidden}
+.province-building-picture.building-detail-trigger:hover{border-color:#d0b56e;background:radial-gradient(circle at 50% 35%,#536653,#1c2b24);transform:translateY(-1px)}
+.province-building-picture.building-detail-trigger>span{position:absolute;left:0;right:0;bottom:0;padding:3px 2px;background:#0c1512e8;color:#dcc47d;font-size:6px;letter-spacing:.7px;text-transform:uppercase;opacity:0;transition:opacity .18s}
+.province-building-picture.building-detail-trigger:hover>span{opacity:1}
+.building-detail-scroll{background:#0e1714}
+.building-detail-view{min-height:100%;padding-bottom:28px}
+.building-detail-toolbar{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:#101a16f5;border-bottom:1px solid #48564d;backdrop-filter:blur(8px)}
+.building-detail-toolbar>span{font-size:7px;letter-spacing:.7px;color:#7d8b82;text-transform:uppercase}
+.building-detail-back{display:flex;align-items:center;gap:7px;border:1px solid #5e6d62;background:#15211d;color:#d7dfd3;border-radius:3px;padding:7px 11px;cursor:pointer;font-size:9px}
+.building-detail-back:hover{border-color:#c1a45f;color:#ead28d}
+.building-detail-hero{display:grid;grid-template-columns:108px minmax(0,1fr);gap:15px;padding:18px 14px;border-bottom:1px solid #465349;background:linear-gradient(135deg,#17251f,#101915)}
+.building-detail-icon{width:108px;height:108px;display:grid;place-items:center;border:1px solid #8a7751;background:radial-gradient(circle at 50% 35%,#4b604e,#17231e);color:#d7bb71;border-radius:5px;box-shadow:inset 0 0 20px #0005,0 8px 22px #0003}
+.building-detail-icon .province-building-svg{width:82px;height:82px;stroke-width:2}
+.building-detail-category{display:block;font-size:7px;letter-spacing:1px;color:#8e9e92;text-transform:uppercase;margin-bottom:4px}
+.building-detail-hero h2{font-family:var(--serif);font-size:27px;line-height:1.05;margin:0;color:#f0ead8}
+.building-detail-hero>div>strong{display:block;margin-top:5px;font-size:9px;color:#d3b66c}
+.building-detail-hero p{font-size:9px;line-height:1.5;color:#a7b3aa;margin-top:9px}
+.building-detail-hero em{display:block;font-style:normal;font-size:8px;line-height:1.4;color:#d2d9ce;margin-top:7px}
+.building-detail-section{padding:15px 14px;border-bottom:1px solid #465349}
+.building-detail-section-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}
+.building-detail-section-title span{font-size:8px;letter-spacing:1.2px;color:#c9aa61}
+.building-detail-section-title small{font-size:7px;color:#74837a}
+.building-flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.building-flow-grid article{padding:11px;border:1px solid #46554c;background:#14201b}
+.building-flow-grid span{display:block;font-size:7px;letter-spacing:.8px;color:#76857c;margin-bottom:5px}
+.building-flow-grid strong{font-size:11px;line-height:1.45;color:#d9e0d5}
+.building-detail-progress{margin-top:11px}.building-detail-progress>div{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.building-detail-progress span{font-size:8px;color:#9ba89f}.building-detail-progress strong{font-family:var(--serif);font-size:14px;color:#dcc47e}
+.building-detail-progress>i{display:block;height:7px;background:#2d3a33;overflow:hidden}.building-detail-progress>i>b{display:block;height:100%;background:linear-gradient(90deg,#8a774e,#d0b66c)}
+.building-finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.building-finance-grid article{min-height:70px;padding:10px;border:1px solid #414f47;background:#121d19}
+.building-finance-grid article.profit{grid-column:1/-1;background:#15221c}
+.building-finance-grid span{display:block;font-size:7px;color:#7f8e84;text-transform:uppercase;letter-spacing:.5px}
+.building-finance-grid strong{display:block;margin-top:6px;font-family:var(--serif);font-size:18px}
+.building-finance-grid strong.positive{color:#7fc38d}.building-finance-grid strong.negative{color:#d37c72}.building-finance-grid strong.neutral{color:#d8d9c7}
+.building-detail-wage{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.building-detail-wage>div>span{display:block;font-size:9px;color:#cbd3c8}.building-detail-wage>div>small{display:block;font-size:7px;color:#728078;margin-top:2px}
+.building-detail-upgrade{display:grid;grid-template-columns:1fr 1.3fr;gap:10px;align-items:center;padding:16px 14px;background:#111c18}
+.building-detail-upgrade>div span{display:block;font-size:7px;color:#76847b;text-transform:uppercase}.building-detail-upgrade>div strong{display:block;font-family:var(--serif);font-size:19px;color:#dfca8a;margin-top:3px}
+.building-detail-upgrade>button{min-height:54px;border:1px solid #a28a54;background:#1b261f;color:#ead69a;border-radius:4px;cursor:pointer}
+.building-detail-upgrade>button:disabled{border-color:#465349;color:#69766d;background:#121a17;cursor:default}
+.building-detail-upgrade>button span,.building-detail-upgrade>button strong{display:block}.building-detail-upgrade>button span{font-size:8px;letter-spacing:.6px}.building-detail-upgrade>button strong{font-family:var(--serif);font-size:17px;margin-top:3px}
+@media(max-width:700px){.building-detail-hero{grid-template-columns:86px minmax(0,1fr)}.building-detail-icon{width:86px;height:86px}.building-detail-icon .province-building-svg{width:65px;height:65px}.building-detail-hero h2{font-size:22px}.building-finance-grid{grid-template-columns:1fr}.building-finance-grid article.profit{grid-column:auto}}
