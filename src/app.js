@@ -216,33 +216,7 @@ function uniqueEight1300(pool,exclude=new Set()){
  return available.slice(0,8).map(c=>({id:c.id,duplicate:false}));
 }
 function grantCards1300(cards){for(const r of cards)profile.collection1300[r.id]=(profile.collection1300[r.id]||0)+1;profile.packsOpened1300++;profile.drawn1300+=cards.length;profile.lastPack1300=cards;}
-function packFlipCard1300(r,index,{badge=true}={}){
- const c=CITY_1300[r.id];
- return `<div class="pack-flip-card ${index===0?'ready':''}" data-reveal-index="${index}">
-  <div class="pack-flip-inner">
-   <button class="pack-flip-back" data-action="reveal-pack-card" data-index="${index}" ${index===0?'':'disabled'} aria-label="Reveal card ${index+1}">
-    <span class="pack-back-crown">${icon('crown')}</span><strong>CARDWARS</strong><b>1300</b><small>${index===0?'CLICK TO REVEAL':'LOCKED'}</small>
-   </button>
-   <div class="pack-flip-front">${card1300(c,true)}${badge?`<span class="pack-result-badge ${r.duplicate?'duplicate':''}">${r.duplicate?'DUPLICATE':'NEW CARD'}</span>`:''}</div>
-  </div>
- </div>`;
-}
-function revealPackCard1300(buttonEl){
- const slot=buttonEl.closest('.pack-flip-card');if(!slot||slot.classList.contains('revealed'))return;
- slot.classList.add('revealed');buttonEl.disabled=true;
- const index=Number(slot.dataset.revealIndex)||0,next=slot.parentElement?.querySelector(`[data-reveal-index="${index+1}"]`);
- if(next){
-  next.classList.add('ready');
-  const nextButton=next.querySelector('[data-action="reveal-pack-card"]');
-  if(nextButton){nextButton.disabled=false;nextButton.querySelector('small').textContent='CLICK TO REVEAL';}
- }else{
-  modal.classList.add('pack-reveal-complete');
-  modal.querySelectorAll('[data-reveal-complete]').forEach(el=>el.disabled=false);
- }
-}
-function showStarterPack1300(cards,title,subtitle,nextLabel='Continue'){
- showDialog(`<div class="starter-pack-reveal"><span class="eyebrow">FREE STARTER PACK · 1300 CE</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p><div class="starter-pack-grid">${cards.map((r,i)=>packFlipCard1300(r,i,{badge:false})).join('')}</div><div class="pack-reveal-hint">${icon('cards')} Reveal the cards one by one</div><div class="dialog-actions">${button(nextLabel,'close','primary','data-reveal-complete disabled')}</div></div>`,'starter-pack-dialog');
-}
+// Pack reveal rendering is defined with the paid-pack system below so starter and paid packs share one stacked reveal flow.
 function chooseStarterRegion1300(regionId){
  if(profile.starterRegionClaimed)return;
  const region=STARTER_REGION_BY_ID[regionId];if(!region)return;
