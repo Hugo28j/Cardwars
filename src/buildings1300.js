@@ -34,7 +34,7 @@ export const BUILDINGS_1300=[
  {
   id:'barracks',name:'Professional Barracks',category:'Army',cost:165,maxWorkers:380,normalWage:0.16,monthlyRevenue:1.0,
   description:'Permanent quarters and training grounds support a larger professional military core.',
-  effects:{,stability:1}
+  effects:{stability:1}
  },
  {
   id:'dockyard',name:'Royal Dockyard',category:'Navy',cost:200,requiresCoast:true,maxWorkers:560,normalWage:0.16,monthlyRevenue:4.0,
