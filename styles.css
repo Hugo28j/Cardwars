@@ -575,3 +575,77 @@
 .building-detail-upgrade>button:disabled{border-color:#465349;color:#69766d;background:#121a17;cursor:default}
 .building-detail-upgrade>button span,.building-detail-upgrade>button strong{display:block}.building-detail-upgrade>button span{font-size:8px;letter-spacing:.6px}.building-detail-upgrade>button strong{font-family:var(--serif);font-size:17px;margin-top:3px}
 @media(max-width:700px){.building-detail-hero{grid-template-columns:86px minmax(0,1fr)}.building-detail-icon{width:86px;height:86px}.building-detail-icon .province-building-svg{width:65px;height:65px}.building-detail-hero h2{font-size:22px}.building-finance-grid{grid-template-columns:1fr}.building-finance-grid article.profit{grid-column:auto}}
+
+
+/* Campaign diplomacy / foreign country panel */
+.game-diplomacy-panel{position:absolute;z-index:31;right:0;top:0;bottom:0;width:560px;background:linear-gradient(180deg,#111c18fc,#09110ffc);border-left:1px solid #6c785f;box-shadow:-16px 0 36px #0009;transform:translateX(101%);transition:transform .22s ease;overflow:hidden;pointer-events:none}
+.game-diplomacy-panel.open{transform:translateX(0);pointer-events:auto}
+.dip-panel-head{height:98px;display:flex;align-items:center;gap:14px;padding:12px 54px 12px 18px;background:linear-gradient(135deg,#202d27,#111a17);border-bottom:1px solid #58665b;position:relative}
+.dip-panel-head>div:last-child>span{display:block;font-size:7px;letter-spacing:1.3px;color:#c8ad6a}
+.dip-panel-head h2{font-family:var(--serif);font-size:25px;margin:3px 0 2px;line-height:1.05}
+.dip-panel-head small{font-size:7px;letter-spacing:.8px;color:#97a49a}
+.dip-panel-head small.positive,.dip-relation-card strong.positive{color:#77c58b}
+.dip-panel-head small.negative,.dip-relation-card strong.negative{color:#df776f}
+.dip-realm-seal{width:58px;height:66px;display:grid;place-items:center;border:1px solid #b89d61;background:radial-gradient(circle at 50% 35%,#3b4838,#17211c 68%);clip-path:polygon(50% 0,94% 16%,89% 70%,50% 100%,11% 70%,6% 16%);color:#d4b76e;flex:0 0 auto}
+.dip-realm-seal svg{width:29px;height:29px}
+.dip-scroll{height:calc(100% - 98px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:38px;scrollbar-width:thin;scrollbar-color:#677469 #0c1512}
+.dip-relation-card{padding:18px;border-bottom:1px solid #465249;background:linear-gradient(135deg,#18251f,#101915)}
+.dip-relation-card>div{display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 12px}
+.dip-relation-card span,.dip-section-title span,.dip-market-signals span,.dip-your-stock>span,.dip-trade-builder span{font-size:8px;letter-spacing:1.05px;color:#c8aa64}
+.dip-relation-card strong{font-size:26px;grid-row:1/3;grid-column:2}
+.dip-relation-card strong.neutral{color:#e0d8c2}
+.dip-relation-card small{font-size:9px;color:#98a59b}
+.dip-relation-card>i{display:block;height:6px;margin-top:12px;background:#26332d;border:1px solid #4e5b53;overflow:hidden}
+.dip-relation-card>i b{display:block;height:100%;background:linear-gradient(90deg,#a84f4b 0%,#b99f62 50%,#5ca071 100%)}
+.dip-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #465249}
+.dip-stat-grid>div{padding:12px;border-right:1px solid #465249;border-bottom:1px solid #465249}
+.dip-stat-grid>div:nth-child(3n){border-right:0}
+.dip-stat-grid span{display:block;font-size:7px;letter-spacing:.65px;color:#849289}
+.dip-stat-grid strong{display:block;margin-top:4px;font-family:var(--serif);font-size:17px}
+.dip-section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:18px 18px 8px}
+.dip-section-title small{font-size:8px;color:#7f8c83;text-align:right}
+.dip-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px 10px}
+.dip-action-grid button{min-height:66px;text-align:left;padding:11px;border:1px solid #536158;background:#15211d;color:#dbe0d1;border-radius:4px}
+.dip-action-grid button:hover:not(:disabled){border-color:#b29a61;background:#1a2923}
+.dip-action-grid button.danger{border-color:#80524d}
+.dip-action-grid button.danger:hover:not(:disabled){border-color:#c2675e;background:#2b1b19}
+.dip-action-grid button:disabled,.dip-request-row button:disabled,.dip-sell-row button:disabled,.dip-trade-builder button:disabled{opacity:.42;cursor:not-allowed}
+.dip-action-grid strong{display:block;font-size:10px;margin-bottom:4px}
+.dip-action-grid small{display:block;font-size:8px;line-height:1.35;color:#8e9b92}
+.dip-request-row,.dip-sell-row{margin:8px 18px 0;padding:12px;border:1px solid #465249;background:#111b17;display:grid;grid-template-columns:minmax(0,1fr) 88px 92px;gap:8px;align-items:center}
+.dip-request-row.independence{grid-template-columns:minmax(0,1fr) 132px}
+.dip-request-row strong{display:block;font-size:10px}.dip-request-row small{display:block;margin-top:3px;font-size:8px;color:#87958c;line-height:1.3}
+.dip-request-row input,.dip-sell-row input,.dip-sell-row select,.dip-trade-builder input,.dip-trade-builder select{width:100%;height:32px;border:1px solid #536158;background:#0c1512;color:#dde2d5;padding:5px 7px;border-radius:3px;font-size:9px}
+.dip-request-row button,.dip-sell-row button,.dip-trade-builder button{height:32px;border:1px solid #88764e;background:#2a2518;color:#e6cd8c;font-size:8px;letter-spacing:.55px;border-radius:3px}
+.dip-sell-row{grid-template-columns:minmax(0,1fr) 112px 100px}
+.dip-sell-row label{font-size:7px;color:#8e9b92}
+.dip-sell-row label input{margin-top:3px}
+.dip-market-signals{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px}
+.dip-market-signals>div{padding:11px;border:1px solid #465249;background:#111b17;min-height:88px}
+.dip-market-signals span{display:block;margin-bottom:7px}
+.dip-market-signals b,.dip-your-stock b{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-top:1px solid #28352e;font-size:9px;font-weight:600}
+.dip-market-signals b small,.dip-your-stock b small{font-size:8px;color:#91a097}
+.dip-market-signals>div>small,.dip-your-stock small{font-size:8px;color:#7f8c83}
+.dip-your-stock{margin:8px 18px 0;padding:11px;border:1px solid #465249;background:#111b17}
+.dip-your-stock>span{display:block;margin-bottom:6px}
+.dip-your-stock>div{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
+.dip-trade-builder{display:grid;grid-template-columns:1fr 26px 1fr;gap:8px;align-items:end;margin:8px 18px 0;padding:12px;border:1px solid #6b624a;background:linear-gradient(135deg,#1a221b,#121711)}
+.dip-trade-builder>div{display:grid;grid-template-columns:1fr 76px;gap:6px}
+.dip-trade-builder>div span{grid-column:1/-1}
+.dip-trade-builder>em{font-style:normal;text-align:center;color:#c5aa68;font-size:19px;padding-bottom:6px}
+.dip-trade-builder>button{grid-column:1/-1;margin-top:3px}
+.dip-city-list{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 8px}
+.dip-city-list span{padding:6px 8px;border:1px solid #465249;background:#121c18;font-size:8px;color:#aeb9b0;border-radius:3px}
+.dip-city-list>small{font-size:8px;color:#7f8c83}
+.dip-history{margin:0 18px;border:1px solid #465249;background:#0e1714}
+.dip-history article{display:grid;grid-template-columns:112px 1fr;gap:10px;padding:9px 10px;border-bottom:1px solid #344038}
+.dip-history article:last-child{border-bottom:0}.dip-history article span{font-size:7px;color:#c1a767;letter-spacing:.35px}.dip-history article p,.dip-history>p{font-size:8px;color:#9aa79f;line-height:1.4}.dip-history>p{padding:11px}
+@media(max-width:760px){
+ .game-diplomacy-panel{width:min(96vw,560px)}
+ .dip-action-grid{grid-template-columns:1fr}
+ .dip-request-row,.dip-request-row.independence,.dip-sell-row{grid-template-columns:1fr}
+ .dip-market-signals{grid-template-columns:1fr}
+ .dip-trade-builder{grid-template-columns:1fr}
+ .dip-trade-builder>em{transform:rotate(90deg);padding:0}
+ .dip-your-stock>div{grid-template-columns:1fr}
+}
