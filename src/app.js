@@ -159,7 +159,7 @@ try{
  const legacyRaw=localStorage.getItem(LEGACY_KEY);
  if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
 }catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
-let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceBuildingDetail=null,gameCountryPanel=false,gameCountryTab='politics',gameDiplomacyCountry=null,gameRankingCategory='overall',gameClockTimer=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
+let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceBuildingDetail=null,gameProvinceBuildingCatalog=false,gameCountryPanel=false,gameCountryTab='politics',gameDiplomacyCountry=null,gameRankingCategory='overall',gameClockTimer=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const STARTER_REGIONS_1300=[
@@ -860,6 +860,16 @@ function gameBuildingDetailHTML1300(cityId,buildingId){
  </section>`;
 }
 
+function gameProvinceBuildingCatalogHTML1300(cityId){
+ const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c||!game.ownedCities?.includes(cityId))return '';
+ const state=gameProvinceBuildingState(c),coastal=isCoastalCity1300(c),rows=state.buildings.filter(row=>row.level===0&&row.available&&(!row.requiresCoast||coastal));
+ return `<div class="province-side-head building-catalog-head" style="border-left-color:${game.playerColor}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>NEW BUILDING</span><h2>${esc(displayCityName1300(c))}</h2><p>Choose a new sector for this province</p></div>
+ <div class="province-side-scroll building-catalog-scroll">
+  <div class="building-catalog-toolbar"><button data-action="game-building-catalog-back">← BACK TO BUILDINGS</button><div><span>CREATE A NEW BUILDING</span><strong>Available in ${esc(displayCityName1300(c))}</strong></div><em>Treasury ƒ${money1300(game.florins)}</em></div>
+  <section class="building-catalog-list">${rows.length?rows.map(row=>{const canBuy=game.florins>=row.cost;return `<article class="building-catalog-card"><button class="building-catalog-icon" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>DETAILS</span></button><div class="building-catalog-copy"><span>${esc(row.category)}</span><strong>${esc(row.name)}</strong><p>${esc(row.description)}</p><em>${esc(buildingEffectText(row))}</em></div><button class="building-catalog-buy" data-action="game-build-province" data-city="${c.id}" data-id="${row.id}" ${canBuy?'':'disabled'}><span>BUILD</span><strong>ƒ${Number(row.cost).toFixed(0)}</strong></button></article>`;}).join(''):'<div class="building-catalog-empty"><strong>No new buildings available</strong><p>Every currently available building type already exists here, or this province does not meet the requirements for another type yet.</p></div>'}</section>
+ </div>`;
+}
+
 function gameProvincePanelHTML(cityId){
  const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c)return '';
  const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy),cap=owned?gameStatCap1300(game):100;
@@ -868,6 +878,8 @@ function gameProvincePanelHTML(cityId){
  const detail=gameProvinceBuildingDetail?gameBuildingDetailHTML1300(cityId,gameProvinceBuildingDetail):'';
  if(gameProvinceBuildingDetail&&!detail)gameProvinceBuildingDetail=null;
  if(detail)return `<div class="province-side-head detail-open" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div><div class="province-side-scroll building-detail-scroll">${detail}</div>`;
+ if(gameProvinceBuildingCatalog&&owned)return gameProvinceBuildingCatalogHTML1300(cityId);
+ const existing=state.buildings.filter(row=>row.level>0);
  return `<div class="province-side-head" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div>
  <div class="province-side-scroll">
   <section class="province-side-facts"><div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div><div><span>Starting wealth</span><strong>ƒ${money1300(c.startingFlorins)}</strong></div><div><span>Army</span><strong>${strengthNumber(c.army+b.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div></section>
@@ -882,15 +894,16 @@ function gameProvincePanelHTML(cityId){
   </section>`:''}
   <section class="province-side-info"><span>ECONOMY</span><p>${esc(c.economy)}</p><span>HISTORICAL ROLE</span><p>${esc(c.historicalRole)}</p></section>
   ${owned?provinceMarketHTML1300(game,c.id):''}
-  <div class="province-building-header"><div><span>SECTORS & BUILDINGS</span><strong>${state.totalLevels} levels</strong></div><small>${owned?`Treasury <b>ƒ${money1300(game.florins)}</b>`:'Foreign province'}</small></div>
-  <section class="province-building-cards">${state.buildings.filter(row=>row.level>0||(row.available&&(!row.requiresCoast||coastal))).map(row=>{
-   const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,blocked=row.requiresCoast&&!coastal,unavailable=!row.available&&row.level===0,canBuy=owned&&!maxed&&!blocked&&!unavailable&&game.florins>=row.cost,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,override=owned&&Number.isFinite(Number(e.buildingWages?.[c.id]?.[row.id])),effectiveWage=owned?effectiveBuildingWage1300(game,c.id,row.id):0;
-   const buttonText=!owned?'FOREIGN':unavailable?'UNAVAILABLE':maxed?'MAX LEVEL':blocked?'NEEDS PORT':row.level?'UPGRADE':'BUILD';
-   return `<article class="province-building-card ${maxed?'maxed':''} ${unavailable?'unavailable':''}"><button class="province-building-picture building-detail-trigger" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details" aria-label="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>Details</span></button><div class="province-building-copy"><div><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div><small>${esc(row.category)}</small><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em>
-    ${owned&&row.level>0?`<div class="sector-production"><span><b>Inputs</b> ${esc(goodFlowText1300(m.inputs))}</span><span><b>Outputs</b> ${esc(goodFlowText1300(m.outputs))}</span><small>Throughput ${Math.round((m.throughput||0)*100)}% · employment ${Math.round((m.workers/Math.max(1,m.capacity))*100)}%</small></div><div class="sector-economy expanded"><span>Workers <b>${strengthNumber(m.workers)} / ${strengthNumber(m.capacity)}</b></span><span>Revenue/month <b>ƒ${money1300(m.gross)}</b></span><span>Inputs/month <b>-ƒ${money1300(m.inputCost||0)}</b></span><span>Wages/month <b>-ƒ${money1300(m.wageBill)}</b></span><span>Profit/month <b class="${m.profit<0?'negative':''}">ƒ${money1300(m.profit)}</b></span><span>Tax/month <b>ƒ${money1300(m.tax)}</b></span></div><div class="sector-wage"><span>Minimum wage</span>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div>`:''}
-    <div class="province-level-pips">${Array.from({length:ECONOMY_1300.maxBuildingLevel},(_,i)=>`<i class="${i<row.level?'on':''}"></i>`).join('')}</div></div>
-    <div class="province-building-buy"><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&owned&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div></article>`;
-  }).join('')}</section>
+  <div class="province-building-header"><div><span>BUILDINGS IN THIS PROVINCE</span><strong>${existing.length} building type${existing.length===1?'':'s'}</strong></div><small>${owned?`Treasury <b>ƒ${money1300(game.florins)}</b>`:'Foreign province'}</small></div>
+  <section class="province-building-cards compact-owned-buildings">${existing.length?existing.map(row=>{
+   const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,canUpgrade=owned&&!maxed&&game.florins>=row.cost,profit=Number(m?.profit)||0;
+   return `<article class="province-building-card owned-building-card ${maxed?'maxed':''}">
+    <button class="province-building-picture building-detail-trigger" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details" aria-label="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>DETAILS</span></button>
+    <div class="owned-building-main"><div class="owned-building-title"><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div>${owned?`<div class="owned-building-metrics"><div><span>HIRED</span><strong>${strengthNumber(m.workers)} <small>/ ${strengthNumber(m.capacity)}</small></strong></div><div><span>MONTHLY PROFIT</span><strong class="${profit<0?'negative':'positive'}">${profit>=0?'+':'-'}ƒ${money1300(Math.abs(profit))}</strong></div></div>`:`<div class="owned-building-metrics foreign"><div><span>STATUS</span><strong>FOREIGN BUILDING</strong></div></div>`}</div>
+    <div class="province-building-buy compact-upgrade"><button ${canUpgrade?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${maxed?'MAX LEVEL':owned?'UPGRADE':'FOREIGN'}</span>${row.cost!==null&&owned&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div>
+   </article>`;
+  }).join(''):'<div class="owned-building-empty"><strong>No buildings yet</strong><p>Create the first building for this province below.</p></div>'}</section>
+  ${owned?`<div class="create-building-wrap"><button class="create-new-building" data-action="game-building-catalog-open"><span>＋</span><div><strong>CREATE A NEW BUILDING</strong><small>Choose from buildings this province can support</small></div></button></div>`:''}
  </div>`;
 }
 function renderGameProvincePanel(){
