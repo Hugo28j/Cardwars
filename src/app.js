@@ -592,15 +592,16 @@ function applyLiveDynamicStats1300(game,factor=1/30){
   const techBudget=Math.min(Number(e.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(c)),techNeed=technologyBudgetNeed1300(c),techRatio=techNeed?techBudget/techNeed:0,technologyDelta=clamp1300((techRatio-.35)*.12+treeUnlocked*.008,-.05,.28),stabilityDelta=stabilityPolicyMonthlyDelta1300(game);
   e.statRemainders[id]??={};
   const apply=(key,monthlyDelta,bonus)=>{
-   const maxBase=Math.max(0,cap-(Number(bonus)||0)),before=Number(row[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry;
-   let step=roundStat1300(raw);
-   if(step===0&&Math.abs(monthlyDelta)>=.001&&before>0&&before<maxBase){step=Math.sign(monthlyDelta)*.01;e.statRemainders[id][key]=0;}
-   else e.statRemainders[id][key]=round(raw-step,6);
-   row[key]=roundStat1300(clamp1300(before+step,0,maxBase));
-   if(row[key]===0||row[key]===maxBase)e.statRemainders[id][key]=0;
-   return roundStat1300(row[key]-before);
+   const beforeShown=Number(current[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry;
+   let requested=roundStat1300(raw);
+   if(requested===0&&Math.abs(monthlyDelta)>=.001&&beforeShown>0&&beforeShown<cap)requested=Math.sign(monthlyDelta)*.01;
+   const afterShown=roundStat1300(clamp1300(beforeShown+requested,0,cap)),actual=roundStat1300(afterShown-beforeShown),baseAfter=roundStat1300(Math.max(0,afterShown-(Number(bonus)||0)));
+   row[key]=baseAfter;e.statRemainders[id][key]=round(raw-actual,6);
+   if(afterShown===0||afterShown===cap)e.statRemainders[id][key]=0;
+   return actual;
   };
   e.lastStatChanges[id]={food:apply('food',foodDelta,b.food),economy:apply('economy',economyDelta,b.economy),technology:apply('technology',technologyDelta,b.technology),stability:apply('stability',stabilityDelta,b.stability)};
+  e.lastStatUpdateDay=Number(game.day)||0;
  }
 }
 
@@ -864,18 +865,18 @@ function provinceMarketHTML1300(game,cityId){
  const market=game.economy?.markets?.[cityId];if(!market)return '';
  const rows=GOODS_1300.map(g=>{
   const m=market.goods?.[g.id];if(!m)return null;
-  const need=Math.max(0,Number(m.need)||Number(m.demand)||0),bought=Math.max(0,Number(m.bought)||0),sold=Math.max(0,Number(m.sold)||0),stock=Math.max(0,Number(m.stock)||0),price=Number(m.price)||g.basePrice,profit=Number(m.tradeProfit)||0;
-  return {g,need,bought,sold,stock,price,profit,activity:need+bought+sold+stock};
+  const produced=Math.max(0,Number(m.supply)||0),need=Math.max(0,Number(m.need)||Number(m.demand)||0),bought=Math.max(0,Number(m.bought)||0),sold=Math.max(0,Number(m.sold)||0),stock=Math.max(0,Number(m.stock)||0),marketPrice=Number(m.price)||g.basePrice,unitPrice=marketPrice*FLORINS_PER_MARKET_VALUE,profit=Number(m.tradeProfit)||0;
+  return {g,produced,need,bought,sold,stock,unitPrice,profit,activity:produced+need+bought+sold+stock};
  }).filter(Boolean).sort((a,b)=>b.activity-a.activity).slice(0,9);
  return `<div class="province-market-head"><div><span>LOCAL MARKET</span><strong>Market access ${Math.round((market.marketAccess||1)*100)}%</strong></div></div>
  <section class="province-market-clear">
-  <div class="province-market-columns"><span>GOOD</span><span>NEED</span><span>BOUGHT</span><span>SOLD</span><span>STOCK</span><span>PROFIT</span><span>PRICE / 1</span></div>
-  ${rows.map(r=>`<div class="province-market-row"><strong>${esc(r.g.name)}</strong><span>${goodQty1300(r.need)}</span><span>${goodQty1300(r.bought)}</span><span>${goodQty1300(r.sold)}</span><span>${goodQty1300(r.stock)}</span><b class="${r.profit>0?'positive':r.profit<0?'negative':'neutral'}">${r.profit>=0?'+':'-'}ƒ${money1300(Math.abs(r.profit))}</b><em>ƒ${money1300(r.price)}</em></div>`).join('')}
+  <div class="province-market-columns"><span>GOOD</span><span>PRODUCED</span><span>NEED</span><span>BOUGHT</span><span>SOLD</span><span>STOCK</span><span>PROFIT</span><span>PRICE / 1</span></div>
+  ${rows.map(r=>`<div class="province-market-row"><strong>${esc(r.g.name)}</strong><span>${goodQty1300(r.produced)}</span><span>${goodQty1300(r.need)}</span><span>${goodQty1300(r.bought)}</span><span>${goodQty1300(r.sold)}</span><span>${goodQty1300(r.stock)}</span><b class="${r.profit>0?'positive':r.profit<0?'negative':'neutral'}">${r.profit>=0?'+':'-'}ƒ${money1300(Math.abs(r.profit))}</b><em>ƒ${money1300(r.unitPrice)}</em></div>`).join('')}
  </section>`;
 }
 function countryMarketHTML1300(game){
  const rows=aggregateMarkets1300(game.economy?.markets||{}).sort((a,b)=>Math.abs(b.changePct)-Math.abs(a.changePct)).slice(0,10);
- return `<div class="country-section-title"><span>GOODS MARKET</span><small>Owned local markets · weekly price tick</small></div><section class="country-market-table">${rows.map(r=>`<div><strong>${esc(r.name)}</strong><span>Supply ${goodQty1300(r.supply)}</span><span>Demand ${goodQty1300(r.demand)}</span><b>ƒ${money1300(r.price)}</b><i class="${r.changePct>1?'up':r.changePct<-1?'down':''}">${r.changePct>=0?'+':''}${r.changePct}%</i></div>`).join('')}</section>`;
+ return `<div class="country-section-title"><span>GOODS MARKET</span><small>Owned local markets · weekly price tick</small></div><section class="country-market-table">${rows.map(r=>`<div><strong>${esc(r.name)}</strong><span>Supply ${goodQty1300(r.supply)}</span><span>Demand ${goodQty1300(r.demand)}</span><b>ƒ${money1300(r.price*FLORINS_PER_MARKET_VALUE)}</b><i class="${r.changePct>1?'up':r.changePct<-1?'down':''}">${r.changePct>=0?'+':''}${r.changePct}%</i></div>`).join('')}</section>`;
 }
 function gameSectorMetrics1300(game,cityId,buildingId){
  const m=game.economy?.lastEconomy?.[cityId]?.[buildingId];if(m)return m;
