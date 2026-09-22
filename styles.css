@@ -203,7 +203,7 @@
 }
 
 /* Stable province sidebar on the active campaign map */
-.game-province-panel{position:absolute;z-index:25;left:0;top:0;bottom:0;width:390px;background:#101a17f7;border-right:1px solid #617065;box-shadow:14px 0 32px #0007;transform:translateX(-101%);transition:transform .22s ease;overflow:hidden;pointer-events:none}
+.game-province-panel{position:absolute;z-index:25;left:0;top:0;bottom:0;width:455px;background:#101a17f7;border-right:1px solid #617065;box-shadow:14px 0 32px #0007;transform:translateX(-101%);transition:transform .22s ease;overflow:hidden;pointer-events:none}
 .game-province-panel.open{transform:translateX(0);pointer-events:auto}
 .province-side-head{position:relative;padding:18px 46px 14px 18px;border-left:5px solid #8a8174;border-bottom:1px solid #526057;background:#17231f}
 .province-side-head>span{font-size:7px;letter-spacing:1.2px;color:#c2a967}.province-side-head h2{font-family:var(--serif);font-size:30px;margin:4px 0}.province-side-head p{font-size:10px;color:#9eaba1}.province-side-close{position:absolute;right:12px;top:11px;width:30px;height:30px;border:1px solid #657368;background:#0d1714;color:#d8decf;border-radius:50%;font-size:22px;line-height:1}.province-side-close:hover{border-color:#b49a61;color:#e0c987}
@@ -1001,4 +1001,31 @@
  .province-market-row>strong{font-size:8px}
  .province-market-row>span{font-size:7px}
  .province-market-row>b,.province-market-row>em{font-size:8.5px}
+}
+
+
+/* Eight-column local market: Produced + real florin price per unit */
+.province-market-columns,.province-market-row{
+ grid-template-columns:74px 52px 42px 48px 42px 44px 58px 56px;
+ gap:3px;
+ min-width:0;
+ padding-left:8px;
+ padding-right:8px;
+}
+.province-market-columns span{font-size:6.1px;letter-spacing:.35px}
+.province-market-row>strong{font-size:8.5px}
+.province-market-row>span{font-size:7.5px}
+.province-market-row>b,.province-market-row>em{font-size:8.8px}
+.province-market-row>em{white-space:nowrap}
+
+@media(max-width:700px){
+ .game-province-panel{width:min(94vw,420px)}
+ .province-market-clear{overflow-x:auto}
+ .province-market-columns,.province-market-row{
+  grid-template-columns:68px 50px 40px 46px 40px 42px 56px 54px;
+  min-width:420px;
+  gap:2px;
+  padding-left:6px;
+  padding-right:6px;
+ }
 }
