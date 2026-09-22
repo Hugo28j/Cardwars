@@ -1429,7 +1429,7 @@ export const CITIES_1300=[
  {
   id:'1300-luxembourg',name:'Luxembourg',modern:'Luxembourg',country:'County of Luxembourg',subrealm:'County of Luxembourg · fortified comital capital',
   lon:6.1319,lat:49.6116,rarity:0,year:1300,people:5000,populationText:'5.0 K',populationRange:'4–7 K',populationConfidence:'low',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:60,technology:62,economyScore:59,stability:66,
   startingFlorins:0.88,
   historicalRole:'Fortress-capital of the rising House of Luxembourg',
@@ -1962,7 +1962,7 @@ export const CITIES_1300=[
  {
   id:'1300-landshut',name:'Landshut',modern:'Landshut',country:'Duchy of Lower Bavaria',subrealm:'Lower Bavaria · principal ducal capital',
   lon:12.1522,lat:48.5442,rarity:1,year:1300,people:9000,populationText:'9.0 K',populationRange:'7–11 K',populationConfidence:'low',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
   food:78,technology:64,economyScore:68,stability:71,
   startingFlorins:2.06,
   historicalRole:'Principal capital of Lower Bavaria after the 1255 Wittelsbach partition',
@@ -2066,7 +2066,7 @@ export const CITIES_1300=[
  {
   id:'1300-graz',name:'Graz',modern:'Graz',country:'Duchy of Styria',subrealm:'Habsburg Duchy of Styria · principal urban and ducal centre',
   lon:15.4395,lat:47.0707,rarity:1,year:1300,people:2000,populationText:'2.0 K',populationRange:'1.8–2.2 K',populationConfidence:'high',
-  sizeText:'0.6 km²',sizeConfidence:'low',army:150,armyText:'150',navy:0,navyText:'0',
+  sizeText:'0.6 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
   food:72,technology:64,economyScore:68,stability:68,
   startingFlorins:0.97,
   historicalRole:'Leading city of Styria under Habsburg rule',
@@ -2118,7 +2118,7 @@ export const CITIES_1300=[
  {
   id:'1300-merano',name:'Merano',modern:'Merano',country:'County of Tyrol',subrealm:'County of Tyrol · principal comital town',
   lon:11.1590,lat:46.6713,rarity:0,year:1300,people:1300,populationText:'1.3 K',populationRange:'1–1.5 K',populationConfidence:'medium',
-  sizeText:'0.35 km²',sizeConfidence:'low',army:100,armyText:'100',navy:0,navyText:'0',
+  sizeText:'0.35 km²',sizeConfidence:'low',army:50,armyText:'50',navy:0,navyText:'0',
   food:69,technology:64,economyScore:61,stability:74,
   startingFlorins:0.55,
   historicalRole:'Principal urban centre of the County of Tyrol before Innsbruck’s later rise',
