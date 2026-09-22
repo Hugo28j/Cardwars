@@ -649,3 +649,56 @@
  .dip-trade-builder>em{transform:rotate(90deg);padding:0}
  .dip-your-stock>div{grid-template-columns:1fr}
 }
+
+
+/* Diplomacy acceptance clarity + larger readable tabs */
+.country-panel-tabs{background:#0a1210;border-bottom-color:#728078}
+.country-panel-tabs button{padding:13px 5px;font-size:9.5px;font-weight:700;letter-spacing:.62px;color:#b6c2ba;line-height:1.15}
+.country-panel-tabs button:hover{background:#18251f;color:#e1e6da}
+.country-panel-tabs button.active{background:#24352d;color:#f1d58d;box-shadow:inset 0 -3px #d0ae5d}
+.country-panel-head>div:last-child>span{font-size:9px}
+.country-panel-head h2{font-size:29px}
+.country-stat-grid span{font-size:8.5px;color:#9aa89f}
+.country-overview-hero span,.country-policy-card>span,.country-section-title>span,.tech-summary>span,.rebellion-summary>span,.people-happiness span{font-size:9.5px}
+.country-overview-hero p,.country-policy-card p,.country-section-title small{font-size:10px;line-height:1.45}
+
+.dip-panel-head>div:last-child>span{font-size:9px}
+.dip-panel-head small{font-size:9px}
+.dip-relation-card span,.dip-section-title span,.dip-market-signals span,.dip-your-stock>span,.dip-trade-builder span{font-size:9.5px}
+.dip-relation-card small{font-size:10px}
+.dip-stat-grid span{font-size:8.5px;color:#9ba9a0}
+.dip-section-title small{font-size:9px;line-height:1.35}
+.dip-action-grid strong,.dip-request-row strong{font-size:11px}
+.dip-action-grid small,.dip-request-row small{font-size:9.5px;line-height:1.45}
+.dip-request-row input,.dip-sell-row input,.dip-sell-row select,.dip-trade-builder input,.dip-trade-builder select{font-size:10px}
+.dip-request-row button,.dip-sell-row button,.dip-trade-builder button{font-size:9px;font-weight:700}
+.dip-market-signals b,.dip-your-stock b{font-size:10px}
+.dip-market-signals b small,.dip-your-stock b small{font-size:9px}
+.dip-history article span{font-size:8.5px}.dip-history article p,.dip-history>p{font-size:9.5px}
+
+.dip-acceptance-wrap{margin:8px 18px 12px;padding:11px 12px;border:1px solid #4d5d54;background:#0f1915}
+.dip-acceptance-wrap.compact{margin-top:5px}
+.dip-acceptance-wrap.trade{border-color:#6c654d;background:#131912}
+.dip-acceptance-title{display:block;margin-bottom:7px;font-size:9px;letter-spacing:1px;color:#c8aa64}
+.dip-acceptance-meter>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dip-acceptance-meter>div strong{font-size:10px;color:#dce2d6}
+.dip-acceptance-meter>div span{font-size:9px;font-weight:800;letter-spacing:.45px}
+.dip-acceptance-meter.accept>div span{color:#7fd091}
+.dip-acceptance-meter.borderline>div span{color:#dfbd6c}
+.dip-acceptance-meter.reject>div span{color:#df776f}
+.dip-acceptance-meter>i{position:relative;display:block;height:10px;margin-top:7px;background:#25312b;border:1px solid #526057;overflow:hidden;border-radius:2px}
+.dip-acceptance-meter>i b{display:block;height:100%;transition:width .16s ease}
+.dip-acceptance-meter.accept>i b{background:#5f9f70}
+.dip-acceptance-meter.borderline>i b{background:#b59652}
+.dip-acceptance-meter.reject>i b{background:#a4544e}
+.dip-acceptance-meter>i em{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#f0e0b0;opacity:.9}
+.dip-acceptance-meter>small{display:block;margin-top:7px;font-size:9px;line-height:1.4;color:#a5b0a8}
+
+.ranking-category-tabs button{font-size:10px;font-weight:700;letter-spacing:.45px}
+.atlas-panel-switch button{font-size:9.5px;font-weight:700}
+
+@media(max-width:760px){
+ .country-panel-tabs{grid-template-columns:repeat(3,1fr)}
+ .country-panel-tabs button{font-size:10px;padding:12px 6px}
+ .dip-acceptance-wrap{margin-left:12px;margin-right:12px}
+}
