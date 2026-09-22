@@ -745,3 +745,13 @@
  .province-tech-investments article{grid-template-columns:1fr}
  .province-tech-investments .province-tech-slider{width:100%}
 }
+
+/* Expanded diplomacy: directional values, action reasons and memories. */
+.dip-detail-note{font-size:12px;line-height:1.6;color:#bdb7a3;padding:12px;background:#ffffff05;border:1px solid #cfb07424;border-radius:8px}
+.dip-score-breakdown{padding:15px;border:1px solid #cfb07433;border-radius:10px;margin:12px 0;background:#101919}
+.dip-score-breakdown>strong,.dip-score-breakdown>small{display:block;margin-bottom:10px}
+.dip-score-breakdown>small{font-size:11px;color:#bdb7a3}
+.dip-score-breakdown>div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:12px}
+.dip-score-breakdown .positive{color:#88c6a0}.dip-score-breakdown .negative{color:#ec9292}
+.dip-memory{border-bottom:1px solid #cfb07426;padding:12px 0;font-size:12px}.dip-memory summary{cursor:pointer;color:#cfb074}.dip-memory p{display:flex;justify-content:space-between;gap:12px;line-height:1.5}
+.dip-action-grid button:disabled{opacity:.45;cursor:not-allowed}.dip-stat-grid strong{overflow-wrap:anywhere}
