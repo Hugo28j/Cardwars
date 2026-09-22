@@ -48,6 +48,7 @@ Publish the repository's `main` branch from the root folder. `.nojekyll` keeps t
 ## Main files
 
 - `GAMEPLAY_VISION.md` — authoritative campaign progression and future gameplay direction.
+- `ECONOMY_DESIGN.md` — goods, local markets, production, Pops and economic roadmap.
 - `src/data1300.js` — c.1300 researched city/card data.
 - `src/app.js` — collection, packs, deck, campaign state, economy and UI.
 - `src/map.js` — map geometry, city territories, hitboxes, fog of war and adjacency.

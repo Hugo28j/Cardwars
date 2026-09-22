@@ -87,6 +87,10 @@ The Top 5 requirement is the campaign victory condition, not merely a visual ach
 
 The same progression should work with multiple real players. Each human-controlled set of opening cities begins as a rebellion against the relevant historical parent countries. Future multiplayer work must keep ownership, independence and diplomatic obligations player-specific.
 
+## Victoria-style economic simulation
+
+The campaign now uses a weekly local-market economy with goods, prices, inputs, outputs, grouped Pops and price-driven building profit. See **ECONOMY_DESIGN.md** for implementation details and the roadmap.
+
 ## Buildings and administration scaling
 
 The c.1300 province economy now uses **25 building / sector types** rather than a universal build list.
