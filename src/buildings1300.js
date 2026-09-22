@@ -9,12 +9,12 @@ export const BUILDINGS_1300=[
  {
   id:'fields',name:'Manorial Fields',category:'Food',cost:50,maxWorkers:1600,normalWage:0.08,monthlyRevenue:3.0,
   description:'Expand cultivated land, drainage and crop rotation around the city.',
-  effects:{food:4}
+  effects:{}
  },
  {
   id:'pastures',name:'Sheep Pastures',category:'Food / Production',cost:65,maxWorkers:1100,normalWage:0.09,monthlyRevenue:3.4,
   description:'Organised grazing grounds supply meat, wool and hides to local workshops.',
-  effects:{food:2,economy:1}
+  effects:{economy:1}
  },
  {
   id:'textiles',name:'Textile Workshop',category:'Production',cost:90,maxWorkers:750,normalWage:0.12,monthlyRevenue:5.5,
@@ -24,7 +24,7 @@ export const BUILDINGS_1300=[
  {
   id:'forge',name:'Weapons Forge',category:'Military / Production',cost:115,maxWorkers:480,normalWage:0.15,monthlyRevenue:5.8,
   description:'Smiths produce arms, armour and tools while improving military supply.',
-  effects:{technology:1,professionalArmyLimit:1}
+  effects:{professionalArmyLimit:1}
  },
  {
   id:'market',name:'Market Hall',category:'Trade',cost:135,maxWorkers:520,normalWage:0.13,monthlyRevenue:6.5,
@@ -54,18 +54,18 @@ export const BUILDINGS_1300=[
  {
   id:'university',name:'University & Scriptorium',category:'Knowledge',cost:300,maxWorkers:220,normalWage:0.18,monthlyRevenue:2.5,
   description:'Schools, scholars and manuscript production accelerate administration and technical knowledge.',
-  effects:{technology:5,economy:1}
+  effects:{economy:1}
  }
  ,
  {
   id:'watermill',name:'Watermill',category:'Food / Production',cost:80,maxWorkers:260,normalWage:0.10,monthlyRevenue:4.2,
   description:'River-driven mills grind grain faster and support bakers, brewers and urban food supply.',
-  effects:{food:2,economy:1}
+  effects:{economy:1}
  },
  {
   id:'brewery',name:'Brewery & Alehouse',category:'Food / Urban',cost:85,maxWorkers:300,normalWage:0.11,monthlyRevenue:4.4,
   description:'Brewers turn grain into durable drink while alehouses create a dependable urban market.',
-  effects:{food:1,economy:2,stability:1}
+  effects:{economy:2,stability:1}
  },
  {
   id:'tannery',name:'Tannery',category:'Production',cost:95,maxWorkers:360,normalWage:0.11,monthlyRevenue:5.0,
@@ -75,12 +75,12 @@ export const BUILDINGS_1300=[
  {
   id:'fishery',name:'Fishing Wharf',category:'Food / Maritime',cost:90,requiresCoast:true,maxWorkers:500,normalWage:0.10,monthlyRevenue:4.8,
   description:'Wharves, boats and curing sheds expand coastal fishing and preserved-food trade.',
-  effects:{food:3,economy:1}
+  effects:{economy:1}
  },
  {
   id:'saltworks',name:'Saltworks',category:'Resource / Trade',cost:120,maxWorkers:420,normalWage:0.12,monthlyRevenue:6.4,
   description:'Salt pans, brine works and salt depots supply food preservation and long-distance trade.',
-  effects:{food:1,economy:4}
+  effects:{economy:4}
  },
  {
   id:'quarry',name:'Stone Quarry',category:'Resource',cost:105,maxWorkers:650,normalWage:0.11,monthlyRevenue:4.7,
@@ -100,7 +100,7 @@ export const BUILDINGS_1300=[
  {
   id:'merchantquarter',name:'Merchant Quarter',category:'Trade / Urban',cost:180,maxWorkers:600,normalWage:0.14,monthlyRevenue:8.2,
   description:'Foreign and local merchants cluster around counting houses, inns, brokers and wholesale markets.',
-  effects:{economy:5,technology:1}
+  effects:{economy:5}
  },
  {
   id:'customshouse',name:'Customs House',category:'Trade / Administration',cost:155,maxWorkers:180,normalWage:0.15,monthlyRevenue:6.8,
@@ -110,7 +110,7 @@ export const BUILDINGS_1300=[
  {
   id:'mint',name:'Royal Mint',category:'Finance / Administration',cost:220,maxWorkers:160,normalWage:0.18,monthlyRevenue:7.0,
   description:'A licensed mint strikes coin, strengthens fiscal administration and supports larger commercial transactions.',
-  effects:{economy:4,technology:1,stability:1}
+  effects:{economy:4,stability:1}
  },
  {
   id:'bridge',name:'Bridge & River Toll',category:'Infrastructure / Trade',cost:130,maxWorkers:180,normalWage:0.12,monthlyRevenue:5.6,
@@ -120,17 +120,17 @@ export const BUILDINGS_1300=[
  {
   id:'monastery',name:'Monastery',category:'Clergy / Knowledge',cost:160,maxWorkers:280,normalWage:0.11,monthlyRevenue:2.4,
   description:'Monastic houses organise estates, charity, manuscript copying and local education.',
-  effects:{technology:2,stability:3,food:1}
+  effects:{stability:3}
  },
  {
   id:'cathedral',name:'Cathedral Chapter',category:'Clergy / Civic',cost:240,maxWorkers:240,normalWage:0.15,monthlyRevenue:2.8,
   description:'A major cathedral chapter concentrates clergy, patronage, schools and civic prestige.',
-  effects:{stability:4,technology:2,economy:1}
+  effects:{stability:4,economy:1}
  },
  {
   id:'hospital',name:'Hospital & Hospice',category:'Civic / Welfare',cost:150,maxWorkers:220,normalWage:0.12,monthlyRevenue:1.6,
   description:'Religious and civic hospitals provide lodging, poor relief and basic care to travellers and residents.',
-  effects:{stability:4,food:1}
+  effects:{stability:4}
  }
 ];
 
