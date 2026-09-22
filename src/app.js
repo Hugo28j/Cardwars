@@ -64,7 +64,7 @@ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
 const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.0025;
 
-function blankGood(g,previous){const price=Number(previous?.price);return {goodId:g.id,supply:0,demand:0,price:Number.isFinite(price)&&price>0?price:g.basePrice,targetPrice:g.basePrice,basePrice:g.basePrice};}
+function blankGood(g,previous){const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice;return {goodId:g.id,supply:0,demand:0,price:start,previousPrice:start,targetPrice:g.basePrice,basePrice:g.basePrice};}
 function ensureMarket(previous={}){const goods={};for(const g of GOODS_1300)goods[g.id]=blankGood(g,previous?.goods?.[g.id]);return {goods,marketAccess:Number.isFinite(Number(previous?.marketAccess))?Number(previous.marketAccess):1,priceIndex:Number.isFinite(Number(previous?.priceIndex))?Number(previous.priceIndex):1};}
 function addOrder(row,key,amount){if(row&&Number(amount)>0)row[key]+=Number(amount);}
 function normalizedPrice(market,id){const g=GOOD_1300[id],p=market.goods[id]?.price||g?.basePrice||1;return p/(g?.basePrice||p||1);}
@@ -256,7 +256,7 @@ const GAME_WAGE_MIN=.02,GAME_WAGE_MAX=.50,GAME_WAGE_STEP=.02,GAME_TAX_MIN=0,GAME
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
-function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},lastMarketTickDay:null,monthlyTax:0,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed month yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0};}
+function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,monthlyTax:0,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed month yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0};}
 function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},history:[]};}
 function normaliseGameDiplomacy1300(raw){
  const d=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameDiplomacy1300();
@@ -422,7 +422,7 @@ function normaliseGameEconomy1300(raw){
  const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300(),hadDynamic=!!(e.dynamicStats&&typeof e.dynamicStats==='object'&&!Array.isArray(e.dynamicStats));
  e.taxRate=clamp1300(Math.round(Number.isFinite(Number(e.taxRate))?Number(e.taxRate):10),GAME_TAX_MIN,GAME_TAX_MAX);
  e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.12)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);
- for(const key of ['cityWages','buildingWages','employment','lastEconomy','markets','pops','dynamicStats','technologyBudgets','lastStatChanges'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
+ for(const key of ['cityWages','buildingWages','employment','lastEconomy','markets','pops','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
  e.lastMarketTickDay=Number.isFinite(Number(e.lastMarketTickDay))?Number(e.lastMarketTickDay):null;
  e.monthlyTax=Math.max(0,Number.isFinite(Number(e.monthlyTax))?Number(e.monthlyTax):(Number(e.dailyTax)||0));
  for(const key of ['monthRevenue','monthExpenses','lastMonthRevenue','lastMonthExpenses','lastMonthBalance'])e[key]=Number.isFinite(Number(e[key]))?Number(e[key]):0;
@@ -550,16 +550,34 @@ function technologyTreeUnlockedCount1300(game){
  const tech=countryTotals1300(game).technology,thresholds=[50,60,68,76,84,92];
  return thresholds.filter(x=>tech>=x).length;
 }
-function applyMonthlyDynamicStats1300(game){
+function stabilityPolicyMonthlyDelta1300(game){
+ const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1;
+ let delta=0;
+ if(ratio<.20)delta=-.35;
+ else if(ratio<.60)delta=-.18;
+ else if(ratio<.95)delta=-.06;
+ else if(ratio<=1.15)delta=.01;
+ else if(ratio<=1.60)delta=.14;
+ else delta=.27;
+ delta-=Math.max(0,e.corruption-35)*.002;
+ return round(delta,4);
+}
+function applyLiveDynamicStats1300(game,factor=1/30){
  ensureGameDynamicStats1300(game);const e=game.economy,cap=gameStatCap1300(game),treeUnlocked=technologyTreeUnlockedCount1300(game);
  for(const id of game.ownedCities||[]){
   const c=CITY_1300[id];if(!c)continue;const row=e.dynamicStats[id],b=gameProvinceBuildingState(c).bonuses,current=provinceDynamicStats1300(game,c),market=e.markets?.[id],pop=e.pops?.[id],metrics=Object.values(e.lastEconomy?.[id]||{});
   const foodGoods=['grain','fish','meat'],foodRows=foodGoods.map(gid=>({def:GOOD_1300[gid],m:market?.goods?.[gid]})).filter(x=>x.m),foodSupply=foodRows.reduce((n,x)=>n+(Number(x.m.supply)||0),0),foodDemand=foodRows.reduce((n,x)=>n+(Number(x.m.demand)||0),0),availability=foodDemand>0?clamp1300(foodSupply/foodDemand,.45,1.55):1,priceRatio=foodRows.length?foodRows.reduce((n,x)=>n+(Number(x.m.price)||x.def.basePrice)/x.def.basePrice,0)/foodRows.length:1;
   const groups=pop?.groups||[],popN=groups.reduce((n,g)=>n+(Number(g.size)||0),0),avgSol=popN?groups.reduce((n,g)=>n+(Number(g.standardOfLiving)||10)*(Number(g.size)||0),0)/popN:10,wageRatio=effectiveCityWage1300(game,id)/.12,affordability=clamp1300((.72+.28*wageRatio+(avgSol-10)*.018)/Math.max(.65,priceRatio),.5,1.5),foodTarget=clamp1300((Number(c.food)||50)+(availability-1)*24+(affordability-1)*20,0,cap),foodDelta=clamp1300((foodTarget-current.food)*.08,-.40,.40);
   const profit=metrics.reduce((n,m)=>n+(Number(m.profit)||0),0),gross=metrics.reduce((n,m)=>n+(Number(m.gross)||0),0),workers=metrics.reduce((n,m)=>n+(Number(m.workers)||0),0),capacity=metrics.reduce((n,m)=>n+(Number(m.capacity)||0),0),margin=profit/Math.max(1,Math.abs(gross)),employment=capacity?workers/capacity:0,economyDelta=metrics.length?clamp1300(margin*.24+(employment-.58)*.10,-.32,.32):-.05;
-  const techBudget=Math.min(Number(e.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(c)),techNeed=technologyBudgetNeed1300(c),techRatio=techNeed?techBudget/techNeed:0,technologyDelta=clamp1300((techRatio-.35)*.12+treeUnlocked*.008,-.05,.28);
-  const stabilityDelta=Number(e.lastStabilityChange)||0;
-  const apply=(key,delta,bonus)=>{const maxBase=Math.max(0,cap-(Number(bonus)||0)),before=Number(row[key])||0;row[key]=roundStat1300(clamp1300(before+delta,0,maxBase));return roundStat1300(row[key]-before);};
+  const techBudget=Math.min(Number(e.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(c)),techNeed=technologyBudgetNeed1300(c),techRatio=techNeed?techBudget/techNeed:0,technologyDelta=clamp1300((techRatio-.35)*.12+treeUnlocked*.008,-.05,.28),stabilityDelta=stabilityPolicyMonthlyDelta1300(game);
+  e.statRemainders[id]??={};
+  const apply=(key,monthlyDelta,bonus)=>{
+   const maxBase=Math.max(0,cap-(Number(bonus)||0)),before=Number(row[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry,step=roundStat1300(raw);
+   e.statRemainders[id][key]=round(raw-step,6);
+   row[key]=roundStat1300(clamp1300(before+step,0,maxBase));
+   if(row[key]===0||row[key]===maxBase)e.statRemainders[id][key]=0;
+   return roundStat1300(row[key]-before);
+  };
   e.lastStatChanges[id]={food:apply('food',foodDelta,b.food),economy:apply('economy',economyDelta,b.economy),technology:apply('technology',technologyDelta,b.technology),stability:apply('stability',stabilityDelta,b.stability)};
  }
 }
@@ -637,13 +655,13 @@ function refreshGameClockUI1300(){
 function settleGameMonth1300(game,finishedDate){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=monthlyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100;
  e.lastMonthRevenue=revenue;e.lastMonthExpenses=expenses;e.lastMonthBalance=balance;e.lastMonthLabel=`${finishedDate.month} ${finishedDate.year}`;
- game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyMonthlyStabilityPolicy1300(game);applyMonthlyDynamicStats1300(game);initializeDiplomacyWorld1300(game);for(const event of monthlyDiplomacy(game,completedCampaignMonths1300(game),Object.fromEntries(countryRankings1300().map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.monthRevenue=0;e.monthExpenses=monthlyStateExpenses1300(game).total;
+ game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyMonthlyStabilityPolicy1300(game);initializeDiplomacyWorld1300(game);for(const event of monthlyDiplomacy(game,completedCampaignMonths1300(game),Object.fromEntries(countryRankings1300().map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.monthRevenue=0;e.monthExpenses=monthlyStateExpenses1300(game).total;
 }
 function advanceGameDay1300(){
  const game=profile.activeGame;if(!game)return;
  const before=gameDate1300(game.day);game.day=(Number(game.day)||0)+1;const after=gameDate1300(game.day);
  if(before.month!==after.month||before.year!==after.year)settleGameMonth1300(game,before);
- simulateGameEconomyDay1300(game);save();refreshGameClockUI1300();if(gameProvincePanel)renderGameProvincePanel();if(gameCountryPanel)renderGameCountryPanel1300();if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
+ simulateGameEconomyDay1300(game);applyLiveDynamicStats1300(game,1/30);save();refreshGameClockUI1300();if(gameProvincePanel)renderGameProvincePanel();if(gameCountryPanel)renderGameCountryPanel1300();if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
 }
 function setupGameClock1300(){
  if(gameClockTimer)clearInterval(gameClockTimer);refreshGameClockUI1300();
