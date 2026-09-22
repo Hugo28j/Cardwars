@@ -873,8 +873,8 @@ function provinceMarketHTML1300(game,cityId){
  }).filter(Boolean).sort((a,b)=>b.activity-a.activity).slice(0,9);
  return `<div class="province-market-head"><div><span>LOCAL MARKET</span><strong>Market access ${Math.round((market.marketAccess||1)*100)}%</strong></div></div>
  <section class="province-market-clear">
-  <div class="province-market-columns"><span>GOOD</span><span>PRODUCED</span><span>NEED</span><span>BOUGHT</span><span>SOLD</span><span>STOCK</span><span>PROFIT</span><span>PRICE / 1</span></div>
-  ${rows.map(r=>`<div class="province-market-row"><strong>${esc(r.g.name)}</strong><span>${goodQty1300(r.produced)}</span><span>${goodQty1300(r.need)}</span><span>${goodQty1300(r.bought)}</span><span>${goodQty1300(r.sold)}</span><span>${goodQty1300(r.stock)}</span><b class="${r.profit>0?'positive':r.profit<0?'negative':'neutral'}">${r.profit>=0?'+':'-'}ƒ${money1300(Math.abs(r.profit))}</b><em>ƒ${money1300(r.unitPrice)}</em></div>`).join('')}
+  <div class="province-market-columns"><span>GOOD</span><span>PRODUCED</span><span>NEED</span><span>BOUGHT</span><span>SOLD</span><span>PROFIT</span><span>PRICE / 1</span></div>
+  ${rows.map(r=>`<div class="province-market-row"><strong>${esc(r.g.name)}</strong><span>${goodQty1300(r.produced)}</span><span>${goodQty1300(r.need)}</span><span>${goodQty1300(r.bought)}</span><span>${goodQty1300(r.sold)}</span><b class="${r.profit>0?'positive':r.profit<0?'negative':'neutral'}">${r.profit>=0?'+':'-'}ƒ${money1300(Math.abs(r.profit))}</b><em>ƒ${money1300(r.unitPrice)}</em></div>`).join('')}
  </section>`;
 }
 function countryMarketHTML1300(game){
