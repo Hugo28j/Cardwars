@@ -64,7 +64,10 @@ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
 const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.0025;
 
-function blankGood(g,previous){const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice;return {goodId:g.id,supply:0,demand:0,price:start,previousPrice:start,targetPrice:g.basePrice,basePrice:g.basePrice};}
+function blankGood(g,previous){
+ const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0);
+ return {goodId:g.id,supply:0,demand:0,need:0,bought:0,sold:0,stock,fulfilled:0,tradeProfit:0,price:start,previousPrice:start,targetPrice:g.basePrice,basePrice:g.basePrice};
+}
 function ensureMarket(previous={}){const goods={};for(const g of GOODS_1300)goods[g.id]=blankGood(g,previous?.goods?.[g.id]);return {goods,marketAccess:Number.isFinite(Number(previous?.marketAccess))?Number(previous.marketAccess):1,priceIndex:Number.isFinite(Number(previous?.priceIndex))?Number(previous.priceIndex):1};}
 function addOrder(row,key,amount){if(row&&Number(amount)>0)row[key]+=Number(amount);}
 function normalizedPrice(market,id){const g=GOOD_1300[id],p=market.goods[id]?.price||g?.basePrice||1;return p/(g?.basePrice||p||1);}
@@ -84,8 +87,21 @@ function popOrders(city,market,popState){
 }
 function infrastructure(city){const levels=(city.sectors||[]).reduce((n,s)=>n+(Number(s.level)||0),0),support=(city.sectors||[]).reduce((n,s)=>n+(['market','warehouse','merchantquarter','customshouse','bridge','dockyard'].includes(s.id)?Number(s.level)||0:0),0),capacity=10+(Number(city.economy)||50)/5+support*4,usage=Math.max(1,levels*1.7);return {capacity,usage,access:clamp(capacity/usage,.35,1)};}
 function updatePrices(market){
- for(const g of GOODS_1300){const row=market.goods[g.id],s=row.supply,d=row.demand,imbalance=(d-s)/Math.max(s,d,1),modifier=clamp(imbalance*.75,-.75,.75);row.targetPrice=round(g.basePrice*(1+modifier),4);row.price=round(row.price+(row.targetPrice-row.price)*.15,4);}
+ for(const g of GOODS_1300){
+  const row=market.goods[g.id],s=row.supply+Math.min(Number(row.stock)||0,Math.max(0,row.demand)*.5),d=row.demand,imbalance=(d-s)/Math.max(s,d,1),modifier=clamp(imbalance*.75,-.75,.75);
+  row.targetPrice=round(g.basePrice*(1+modifier),4);row.price=round(row.price+(row.targetPrice-row.price)*.15,4);
+ }
  const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];market.priceIndex=round(basket.reduce((n,[id,w])=>n+normalizedPrice(market,id)*w,0),4);
+}
+function settleMarketFlows1300(market){
+ const access=clamp(Number(market?.marketAccess)||1,.35,1);
+ for(const g of GOODS_1300){
+  const row=market.goods[g.id],need=Math.max(0,Number(row.demand)||0),produced=Math.max(0,Number(row.supply)||0),oldStock=Math.max(0,Number(row.stock)||0);
+  const productionUsed=Math.min(produced,need),remainingNeed=Math.max(0,need-productionUsed),stockUsed=Math.min(oldStock,remainingNeed),shortage=Math.max(0,remainingNeed-stockUsed);
+  const bought=shortage*access,surplus=Math.max(0,produced-productionUsed),exportShare=clamp(.45+access*.45,.60,.90),sold=surplus*exportShare;
+  const carried=Math.max(0,oldStock-stockUsed+surplus-sold),decay=g.category==='food'?.90:g.category==='service'?0:.97,stock=carried*decay,fulfilled=productionUsed+stockUsed+bought;
+  row.need=round(need,3);row.bought=round(bought,3);row.sold=round(sold,3);row.stock=round(stock,3);row.fulfilled=round(fulfilled,3);row.tradeProfit=round((sold-bought)*row.price*FLORINS_PER_MARKET_VALUE*WEEKS_PER_MONTH,4);
+ }
 }
 function sectorPotential(sector,city){const def=BUILDING_PRODUCTION_1300[sector.id]||{inputs:{},outputs:{services:1}},level=Math.max(0,Number(sector.level)||0),capacity=Math.max(1,Number(sector.capacity)||1),workers=clamp(Number(sector.workers)||0,0,capacity),employmentRatio=workers/capacity,technologyFactor=.86+clamp(Number(city.technology)||50,0,100)/500,economyOfScale=1+Math.min(level*.01,.30);return {def,level,capacity,workers,employmentRatio,potential:level*employmentRatio*technologyFactor*economyOfScale};}
 function updatePops(city,market,previous,sectors){
@@ -98,14 +114,14 @@ function updatePops(city,market,previous,sectors){
 function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35}={}){
  const markets={},pops={},sectorsByCity={};let weeklyTax=0;
  for(const city of cities){
-  const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};ambientSupply(city,market);popOrders(city,market,popState);
+  const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};market.marketAccess=round(infrastructure(city).access,4);ambientSupply(city,market);popOrders(city,market,popState);
   for(const sector of city.sectors||[]){if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city);for(const [id,n] of Object.entries(p.def.inputs||{}))addOrder(market.goods[id],'demand',n*p.potential);for(const [id,n] of Object.entries(p.def.outputs||{}))addOrder(market.goods[id],'supply',n*p.potential);}
  }
- for(const market of Object.values(markets))updatePrices(market);
+ for(const market of Object.values(markets)){updatePrices(market);settleMarketFlows1300(market);}
  for(const city of cities){
   const market=markets[city.id],infra=infrastructure(city),rows=sectorsByCity[city.id]={};market.marketAccess=round(infra.access,4);
   for(const sector of city.sectors||[]){
-   if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp(market.goods[id].supply/Math.max(market.goods[id].demand,1e-6),.15,1))):1,throughput=clamp(p.employmentRatio*availability*infra.access,0,1.15),scale=p.level*throughput*(.86+clamp(Number(city.technology)||50,0,100)/500)*(1+Math.min(p.level*.01,.30));
+   if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp((Number(market.goods[id].fulfilled)||0)/Math.max(market.goods[id].demand,1e-6),.15,1))):1,throughput=clamp(p.employmentRatio*availability*infra.access,0,1.15),scale=p.level*throughput*(.86+clamp(Number(city.technology)||50,0,100)/500)*(1+Math.min(p.level*.01,.30));
    let revenueValue=0,inputValue=0;const outputs={},inputs={};
    for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale;outputs[id]=round(q,3);revenueValue+=q*market.goods[id].price;}
    for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale;inputs[id]=round(q,3);inputValue+=q*market.goods[id].price;}
@@ -570,7 +586,7 @@ function applyLiveDynamicStats1300(game,factor=1/30){
  ensureGameDynamicStats1300(game);const e=game.economy,cap=gameStatCap1300(game),treeUnlocked=technologyTreeUnlockedCount1300(game);
  for(const id of game.ownedCities||[]){
   const c=CITY_1300[id];if(!c)continue;const row=e.dynamicStats[id],b=gameProvinceBuildingState(c).bonuses,current=provinceDynamicStats1300(game,c),market=e.markets?.[id],pop=e.pops?.[id],metrics=Object.values(e.lastEconomy?.[id]||{});
-  const foodGoods=['grain','fish','meat'],foodRows=foodGoods.map(gid=>({def:GOOD_1300[gid],m:market?.goods?.[gid]})).filter(x=>x.m),foodSupply=foodRows.reduce((n,x)=>n+(Number(x.m.supply)||0),0),foodDemand=foodRows.reduce((n,x)=>n+(Number(x.m.demand)||0),0),availability=foodDemand>0?clamp1300(foodSupply/foodDemand,.45,1.55):1,priceRatio=foodRows.length?foodRows.reduce((n,x)=>n+(Number(x.m.price)||x.def.basePrice)/x.def.basePrice,0)/foodRows.length:1;
+  const foodGoods=['grain','fish','meat'],foodRows=foodGoods.map(gid=>({def:GOOD_1300[gid],m:market?.goods?.[gid]})).filter(x=>x.m),foodSupply=foodRows.reduce((n,x)=>n+(Number(x.m.fulfilled)||Number(x.m.supply)||0),0),foodDemand=foodRows.reduce((n,x)=>n+(Number(x.m.need)||Number(x.m.demand)||0),0),availability=foodDemand>0?clamp1300(foodSupply/foodDemand,.45,1.55):1,priceRatio=foodRows.length?foodRows.reduce((n,x)=>n+(Number(x.m.price)||x.def.basePrice)/x.def.basePrice,0)/foodRows.length:1;
   const groups=pop?.groups||[],popN=groups.reduce((n,g)=>n+(Number(g.size)||0),0),avgSol=popN?groups.reduce((n,g)=>n+(Number(g.standardOfLiving)||10)*(Number(g.size)||0),0)/popN:10,wageRatio=effectiveCityWage1300(game,id)/.12,affordability=clamp1300((.72+.28*wageRatio+(avgSol-10)*.018)/Math.max(.65,priceRatio),.5,1.5),foodTarget=clamp1300((Number(c.food)||50)+(availability-1)*24+(affordability-1)*20,0,cap),foodDelta=clamp1300((foodTarget-current.food)*.08,-.40,.40);
   const profit=metrics.reduce((n,m)=>n+(Number(m.profit)||0),0),gross=metrics.reduce((n,m)=>n+(Number(m.gross)||0),0),workers=metrics.reduce((n,m)=>n+(Number(m.workers)||0),0),capacity=metrics.reduce((n,m)=>n+(Number(m.capacity)||0),0),margin=profit/Math.max(1,Math.abs(gross)),employment=capacity?workers/capacity:0,economyDelta=metrics.length?clamp1300(margin*.24+(employment-.58)*.10,-.32,.32):-.05;
   const techBudget=Math.min(Number(e.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(c)),techNeed=technologyBudgetNeed1300(c),techRatio=techNeed?techBudget/techNeed:0,technologyDelta=clamp1300((techRatio-.35)*.12+treeUnlocked*.008,-.05,.28),stabilityDelta=stabilityPolicyMonthlyDelta1300(game);
