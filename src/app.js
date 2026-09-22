@@ -768,6 +768,12 @@ function buildingEffectText(b){
  const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',professionalArmyLimit:'Professional army limit',navy:'Navy',income:'Annual income'};
  return Object.entries(b.effects).map(([key,value])=>`${labels[key]||key} ${value>0?'+':''}${value}${key==='income'?' ƒ':key==='professionalArmyLimit'?'%':''}`).join(' · ');
 }
+function compactBuildingWorkers1300(value){
+ const n=Math.max(0,Math.round(Number(value)||0));
+ if(n>=1000000)return (n/1000000).toFixed(n<10000000?1:0)+'M';
+ if(n>=10000)return (n/1000).toFixed(n<100000?1:0)+'K';
+ return n.toLocaleString('en-GB');
+}
 function gameBuildingPurchaseLevel(cityId,buildingId){
  return Math.max(0,Number(profile.activeGame?.buildings?.[cityId]?.[buildingId])||0);
 }
@@ -895,7 +901,7 @@ function gameProvincePanelHTML(cityId){
  const existing=state.buildings.filter(row=>row.level>0);
  return `<div class="province-side-head" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div>
  <div class="province-side-scroll">
-  <section class="province-side-facts"><div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div><div><span>Starting wealth</span><strong>ƒ${money1300(c.startingFlorins)}</strong></div><div><span>Army</span><strong>${strengthNumber(c.army+b.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div></section>
+  <section class="province-side-facts"><div><span>Population</span><strong>${esc(c.populationText||strengthNumber(c.people))}</strong></div><div><span>Starting wealth</span><strong>ƒ${money1300(c.startingFlorins)}</strong></div><div><span>Professional army</span><strong>${strengthNumber(owned?(professionalArmyState1300(game).byCity[c.id]||0):c.army)}</strong></div><div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div></section>
   <div class="dynamic-stat-cap"><span>DYNAMIC STAT LIMIT</span><strong>${cap.toFixed(2)}</strong><small>+0.10 every completed month</small></div>
   <section class="province-side-stats dynamic">${stats.map(([label,value,key])=>{const change=Number(changes[key])||0,pct=cap?clamp1300(value/cap*100,0,100):0;return `<div><span>${label}</span><strong>${Number(value).toFixed(2)} <small>/ ${cap.toFixed(2)}</small></strong><em class="${change>0?'positive':change<0?'negative':'neutral'}">${change>0?'+':''}${change.toFixed(2)} last month</em><i><b style="width:${pct}%"></b></i></div>`;}).join('')}</section>
   ${owned?`<section class="province-economic-policy"><div class="policy-heading"><span>ECONOMIC POLICY</span><small>Changes apply next day</small></div>
@@ -911,8 +917,9 @@ function gameProvincePanelHTML(cityId){
   <section class="province-building-cards compact-owned-buildings">${existing.length?existing.map(row=>{
    const maxed=row.level>=ECONOMY_1300.maxBuildingLevel,m=owned?gameSectorMetrics1300(game,c.id,row.id):null,canUpgrade=owned&&!maxed&&game.florins>=row.cost,profit=Number(m?.profit)||0;
    return `<article class="province-building-card owned-building-card ${maxed?'maxed':''}">
+    <div class="owned-building-title"><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div>
     <button class="province-building-picture building-detail-trigger" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details" aria-label="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>DETAILS</span></button>
-    <div class="owned-building-main"><div class="owned-building-title"><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div>${owned?`<div class="owned-building-metrics"><div><span>HIRED</span><strong>${strengthNumber(m.workers)} <small>/ ${strengthNumber(m.capacity)}</small></strong></div><div><span>MONTHLY PROFIT</span><strong class="${profit<0?'negative':'positive'}">${profit>=0?'+':'-'}ƒ${money1300(Math.abs(profit))}</strong></div></div>`:`<div class="owned-building-metrics foreign"><div><span>STATUS</span><strong>FOREIGN BUILDING</strong></div></div>`}</div>
+    <div class="owned-building-main">${owned?`<div class="owned-building-metrics"><div><span>HIRED</span><strong>${compactBuildingWorkers1300(m.workers)} <small>/ ${compactBuildingWorkers1300(m.capacity)}</small></strong></div><div><span>MONTHLY PROFIT</span><strong class="${profit<0?'negative':'positive'}">${profit>=0?'+':'-'}ƒ${money1300(Math.abs(profit))}</strong></div></div>`:`<div class="owned-building-metrics foreign"><div><span>STATUS</span><strong>FOREIGN BUILDING</strong></div></div>`}</div>
     <div class="province-building-buy compact-upgrade"><button ${canUpgrade?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${maxed?'MAX LEVEL':owned?'UPGRADE':'FOREIGN'}</span>${row.cost!==null&&owned&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div>
    </article>`;
   }).join(''):'<div class="owned-building-empty"><strong>No buildings yet</strong><p>Create the first building for this province below.</p></div>'}</section>
@@ -1213,7 +1220,7 @@ function render1300Grid(){const q=search1300.toLowerCase().trim(),list=CITIES_13
 function developmentPage(){
  const c=CITY_1300[buildingCity]||CITIES_1300[0];buildingCity=c.id;
  const state=cityBuildingState(c),b=state.bonuses;
- const developed={food:Math.min(100,c.food+b.food),economy:Math.min(100,c.economyScore+b.economy),technology:Math.min(100,c.technology+b.technology),stability:Math.min(100,c.stability+b.stability),army:c.army+b.army,navy:c.navy+b.navy};
+ const developed={food:Math.min(100,c.food+b.food),economy:Math.min(100,c.economyScore+b.economy),technology:Math.min(100,c.technology+b.technology),stability:Math.min(100,c.stability+b.stability),army:c.army,navy:c.navy+b.navy};
  const countryOptions=COUNTRIES_1300.map(countryName=>`<optgroup label="${esc(countryName)}">${CITIES_1300.filter(x=>x.country===countryName).sort((a,z)=>displayCityName1300(a).localeCompare(displayCityName1300(z))).map(x=>`<option value="${x.id}" ${x.id===c.id?'selected':''}>${esc(displayCityName1300(x))}</option>`).join('')}</optgroup>`).join('');
  const statBox=(label,base,value)=>`<div><span>${label}</span><strong>${strengthNumber(value)}</strong><small>Base ${strengthNumber(base)}${value!==base?` · +${strengthNumber(value-base)} buildings`:''}</small></div>`;
  return `<main class="buildings-page">
@@ -1261,11 +1268,11 @@ function campaignCityOwner1300(game,c){
 }
 function campaignCityStats1300(game,c,isPlayer){
  if(!isPlayer)return {food:Number(c.food)||0,economy:Number(c.economyScore)||0,technology:Number(c.technology)||0,stability:Number(c.stability)||0,population:Number(c.people)||0,army:Number(c.army)||0,navy:Number(c.navy)||0};
- const state=gameProvinceBuildingState(c),b=state.bonuses,stats=provinceDynamicStats1300(game,c);
+ const state=gameProvinceBuildingState(c),b=state.bonuses,stats=provinceDynamicStats1300(game,c),prof=professionalArmyState1300(game);
  return {
   food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,
   population:Number(c.people)||0,
-  army:(Number(c.army)||0)+(Number(b.army)||0),
+  army:Number(prof.byCity[c.id])||0,
   navy:(Number(c.navy)||0)+(Number(b.navy)||0)
  };
 }
@@ -1308,7 +1315,7 @@ function countryRankingsHTML1300(game){
 function countryTotals1300(game){
  const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),population=cities.reduce((n,c)=>n+(Number(c.people)||0),0),mil=militaryTotals1300(game),cap=gameStatCap1300(game);
  const avg=key=>cities.length?roundStat1300(cities.reduce((n,c)=>n+(Number(provinceDynamicStats1300(game,c)[key])||0),0)/cities.length):0;
- return {cities,population,army:mil.army,navy:mil.navy,food:avg('food'),economy:avg('economy'),technology:avg('technology'),stability:avg('stability'),cap};
+ return {cities,population,army:mil.army,armyLimit:mil.professionalArmyLimit,armyLimitPercent:mil.professionalArmyPercent,armyLimitBonusPercent:mil.professionalArmyBonusPercent,navy:mil.navy,food:avg('food'),economy:avg('economy'),technology:avg('technology'),stability:avg('stability'),cap};
 }
 function countrySectorRows1300(game){
  const rows=new Map();
