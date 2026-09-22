@@ -755,3 +755,74 @@
 .dip-score-breakdown .positive{color:#88c6a0}.dip-score-breakdown .negative{color:#ec9292}
 .dip-memory{border-bottom:1px solid #cfb07426;padding:12px 0;font-size:12px}.dip-memory summary{cursor:pointer;color:#cfb074}.dip-memory p{display:flex;justify-content:space-between;gap:12px;line-height:1.5}
 .dip-action-grid button:disabled{opacity:.45;cursor:not-allowed}.dip-stat-grid strong{overflow-wrap:anywhere}
+
+
+/* Simplified owned-building list + separate new-building catalog */
+.compact-owned-buildings{padding:10px}
+.owned-building-card{grid-template-columns:76px minmax(0,1fr) 96px;gap:12px;align-items:center;min-height:106px;padding:11px 12px}
+.owned-building-card .province-building-picture{width:76px;height:76px}
+.owned-building-card .province-building-svg{width:56px;height:56px}
+.owned-building-card .province-building-picture span{font-size:7px;letter-spacing:.7px}
+.owned-building-main{min-width:0}
+.owned-building-title{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding-bottom:8px;border-bottom:1px solid #3e4b44}
+.owned-building-title strong{font-family:var(--serif);font-size:18px;color:#e3e6da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.owned-building-title span{font-size:8px;letter-spacing:.7px;color:#d0b36b;white-space:nowrap}
+.owned-building-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.owned-building-metrics>div span{display:block;font-size:8px;letter-spacing:.75px;color:#809087}
+.owned-building-metrics>div strong{display:block;margin-top:3px;font-family:var(--serif);font-size:17px;color:#dce2d7}
+.owned-building-metrics>div strong small{font-size:10px;color:#7c8a82}
+.owned-building-metrics strong.positive{color:#7fc48b}
+.owned-building-metrics strong.negative{color:#d47b72}
+.owned-building-metrics.foreign{grid-template-columns:1fr}
+.compact-upgrade{align-self:stretch}
+.compact-upgrade button{min-height:78px;font-size:9px;letter-spacing:.7px;font-weight:700}
+.compact-upgrade strong{font-size:19px;margin-top:6px}
+.owned-building-empty{margin:4px 0;padding:20px;text-align:center;border:1px dashed #4b594f;background:#111b17}
+.owned-building-empty strong{font-family:var(--serif);font-size:18px}
+.owned-building-empty p{margin-top:5px;font-size:9px;color:#87958c}
+
+.create-building-wrap{padding:0 10px 15px}
+.create-new-building{width:100%;display:flex;align-items:center;gap:13px;padding:14px 16px;border:1px solid #9a824e;background:linear-gradient(135deg,#1d2c25,#14201b);color:#e4d6a8;text-align:left;border-radius:4px;cursor:pointer}
+.create-new-building:hover{background:linear-gradient(135deg,#263a30,#17261f);border-color:#c2a45f}
+.create-new-building>span{display:grid;place-items:center;width:42px;height:42px;flex:0 0 auto;border:1px solid #aa9157;font-family:var(--serif);font-size:29px;color:#d9bd72}
+.create-new-building strong{display:block;font-family:var(--serif);font-size:16px;letter-spacing:.25px}
+.create-new-building small{display:block;margin-top:3px;font-size:9px;color:#91a097}
+
+.building-catalog-toolbar{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:13px;border-bottom:1px solid #465249;background:#101a16}
+.building-catalog-toolbar>button{border:1px solid #5a675f;background:#131f1a;color:#cbd3c7;padding:8px 10px;font-size:8px;cursor:pointer}
+.building-catalog-toolbar>button:hover{border-color:#b59a60;color:#e4d09b}
+.building-catalog-toolbar>div span{display:block;font-size:8px;letter-spacing:1px;color:#c8aa64}
+.building-catalog-toolbar>div strong{display:block;font-family:var(--serif);font-size:17px;margin-top:2px}
+.building-catalog-toolbar>em{font-style:normal;font-size:9px;color:#d5c487;white-space:nowrap}
+.building-catalog-list{padding:10px}
+.building-catalog-card{display:grid;grid-template-columns:68px minmax(0,1fr) 86px;gap:11px;align-items:center;padding:11px;margin-bottom:8px;border:1px solid #465349;background:#15211d;border-radius:4px}
+.building-catalog-icon{width:68px;height:68px;display:grid;place-items:center;border:1px solid #617064;background:radial-gradient(circle at 50% 35%,#415246,#1a2822);color:#d2bb78;border-radius:4px;cursor:pointer}
+.building-catalog-icon .province-building-svg{width:50px;height:50px}
+.building-catalog-icon span{font-size:7px;letter-spacing:.7px}
+.building-catalog-copy{min-width:0}
+.building-catalog-copy>span{display:block;font-size:8px;letter-spacing:.65px;color:#c6aa67;text-transform:uppercase}
+.building-catalog-copy>strong{display:block;font-family:var(--serif);font-size:17px;margin:2px 0 4px;color:#e0e5d9}
+.building-catalog-copy p{font-size:9px;line-height:1.35;color:#93a097}
+.building-catalog-copy em{display:block;margin-top:5px;font-style:normal;font-size:8px;color:#bec9bd}
+.building-catalog-buy{min-height:62px;border:1px solid #9b8350;background:#111b17;color:#e2d2a3;border-radius:3px;cursor:pointer}
+.building-catalog-buy:not(:disabled):hover{background:#1e2c25}
+.building-catalog-buy:disabled{opacity:.38;cursor:not-allowed}
+.building-catalog-buy span,.building-catalog-buy strong{display:block}
+.building-catalog-buy span{font-size:8px;font-weight:700;letter-spacing:.7px}
+.building-catalog-buy strong{margin-top:5px;font-family:var(--serif);font-size:17px;color:#d9bd72}
+.building-catalog-empty{padding:28px 18px;text-align:center;border:1px dashed #4c5a50;background:#101915}
+.building-catalog-empty strong{font-family:var(--serif);font-size:19px}
+.building-catalog-empty p{font-size:9px;line-height:1.45;color:#89968d;margin-top:6px}
+
+@media(max-width:700px){
+ .owned-building-card{grid-template-columns:64px minmax(0,1fr) 82px;gap:9px}
+ .owned-building-card .province-building-picture{width:64px;height:64px}
+ .owned-building-card .province-building-svg{width:48px;height:48px}
+ .owned-building-title strong{font-size:16px}
+ .owned-building-metrics>div strong{font-size:15px}
+ .building-catalog-toolbar{grid-template-columns:1fr auto}
+ .building-catalog-toolbar>button{grid-column:1/-1;justify-self:start}
+ .building-catalog-card{grid-template-columns:58px minmax(0,1fr) 78px;gap:8px}
+ .building-catalog-icon{width:58px;height:58px}
+ .building-catalog-icon .province-building-svg{width:44px;height:44px}
+}
