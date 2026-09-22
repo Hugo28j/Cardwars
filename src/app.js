@@ -487,6 +487,10 @@ function professionalArmyState1300(game){
  const army=Object.values(byCity).reduce((n,x)=>n+x,0);
  return {population,basePercent:10,bonusPercent:bonusPct,percent,limit,rawTotal,army,byCity};
 }
+function unprofessionalArmyState1300(game){
+ const population=(game?.ownedCities||[]).reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0),percent=25,limit=Math.max(0,Math.floor(population*percent/100));
+ return {population,percent,limit,army:0};
+}
 function campaignMilitaryByCity1300(game){
  const out={};if(!game)return out;const prof=professionalArmyState1300(game);
  for(const id of game.ownedCities||[]){
@@ -840,8 +844,16 @@ function goodQty1300(n){const v=Number(n)||0;return v>=1000?(v/1000).toFixed(1)+
 function goodFlowText1300(map){return Object.entries(map||{}).filter(([,n])=>Number(n)>0).map(([id,n])=>`${GOOD_1300[id]?.name||id} ${goodQty1300(n)}`).join(' · ')||'None';}
 function provinceMarketHTML1300(game,cityId){
  const market=game.economy?.markets?.[cityId];if(!market)return '';
- const rows=GOODS_1300.map(g=>{const m=market.goods?.[g.id];if(!m)return null;return {g,m,pct:(m.price/g.basePrice-1)*100};}).filter(Boolean).sort((a,b)=>Math.abs(b.pct)-Math.abs(a.pct)).slice(0,7);
- return `<div class="province-market-head"><div><span>LOCAL MARKET</span><strong>Market access ${Math.round((market.marketAccess||1)*100)}%</strong></div><small>Prices update weekly</small></div><section class="province-market-list">${rows.map(({g,m,pct})=>`<div><strong>${esc(g.name)}</strong><span>S ${goodQty1300(m.supply)} · D ${goodQty1300(m.demand)}</span><b>ƒ${money1300(m.price)} <i class="${pct>1?'up':pct<-1?'down':''}">${pct>=0?'+':''}${pct.toFixed(1)}%</i></b></div>`).join('')}</section>`;
+ const rows=GOODS_1300.map(g=>{
+  const m=market.goods?.[g.id];if(!m)return null;
+  const bought=Number(m.demand)||0,sold=Number(m.supply)||0,price=Number(m.price)||g.basePrice,previous=Number(m.previousPrice)||price,updatePct=previous>0?(price/previous-1)*100:0,profit=(sold-bought)*price*FLORINS_PER_MARKET_VALUE*WEEKS_PER_MONTH;
+  return {g,m,bought,sold,price,updatePct,profit,activity:bought+sold};
+ }).filter(Boolean).sort((a,b)=>b.activity-a.activity).slice(0,8);
+ return `<div class="province-market-head"><div><span>LOCAL MARKET</span><strong>Market access ${Math.round((market.marketAccess||1)*100)}%</strong></div><small>Bought = local demand · Sold = local supply · Profit = estimated monthly trade balance</small></div>
+ <section class="province-market-clear">
+  <div class="province-market-columns"><span>GOOD</span><span>BOUGHT</span><span>SOLD</span><span>PROFIT</span><span>PRICE</span><span>UPDATE</span></div>
+  ${rows.map(r=>`<div class="province-market-row"><strong>${esc(r.g.name)}</strong><span>${goodQty1300(r.bought)}</span><span>${goodQty1300(r.sold)}</span><b class="${r.profit>0?'positive':r.profit<0?'negative':'neutral'}">${r.profit>=0?'+':'-'}ƒ${money1300(Math.abs(r.profit))}</b><em>ƒ${money1300(r.price)}</em><i class="${r.updatePct>0.05?'up':r.updatePct<-.05?'down':'flat'}">${r.updatePct>=0?'+':''}${r.updatePct.toFixed(1)}%</i></div>`).join('')}
+ </section>`;
 }
 function countryMarketHTML1300(game){
  const rows=aggregateMarkets1300(game.economy?.markets||{}).sort((a,b)=>Math.abs(b.changePct)-Math.abs(a.changePct)).slice(0,10);
@@ -955,7 +967,7 @@ function buyGameProvinceBuilding(cityId,buildingId){
  const game=profile.activeGame,c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!game||!c||!building)return;
  if(!game.ownedCities?.includes(cityId)){toast('You can only build in provinces you own.');return;}
  const row=gameProvinceBuildingState(c).buildings.find(x=>x.id===buildingId);if(!row||row.level>=ECONOMY_1300.maxBuildingLevel)return;const wasNewBuilding=row.level===0;
- if(!row.available&&row.level===0){toast(row.availabilityReason);return;}if(building.requiresCoast&&!isCoastalCity1300(c)){toast('A Royal Dockyard requires a coastal or major port province.');return;}
+ if(!row.available&&row.level===0){toast(row.availabilityReason);return;}if(building.requiresCoast&&!isCoastalCity1300(c)){toast('This building requires real access to the sea. River ports do not count as coastal access.');return;}
  if(game.florins<row.cost){toast(`You need ƒ${money1300(row.cost-game.florins)} more in-game Florins.`);return;}
  game.florins=Math.round((game.florins-row.cost)*100)/100;game.buildings??={};game.buildings[cityId]??={};game.buildings[cityId][buildingId]=(game.buildings[cityId][buildingId]||0)+1;game.economy.employment[cityId]??={};game.economy.employment[cityId][buildingId]??=0;simulateGameEconomyDay1300(game,{forceMarket:true,collectRevenue:false});if(wasNewBuilding&&gameProvinceBuildingCatalog&&!gameProvinceBuildingDetail)gameProvinceBuildingCatalog=false;save();renderGameProvincePanel();syncCampaignMilitaryOverlay1300(game);const amount=$('#game-treasury-amount');if(amount)amount.textContent='ƒ'+money1300(game.florins);toast(`${building.name} upgraded in ${displayCityName1300(c)}.`);
 }
@@ -973,7 +985,7 @@ function resetBuildingWage1300(cityId,buildingId){const g=profile.activeGame;if(
 function buildBuilding1300(cityId,buildingId){
  const c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!c||!building)return;
  const state=cityBuildingState(c),row=state.buildings.find(b=>b.id===buildingId);if(!row||row.level>=ECONOMY_1300.maxBuildingLevel)return;
- if(building.requiresCoast&&!isCoastalCity1300(c)){toast('A Royal Dockyard requires a coastal or major port city.');return;}
+ if(building.requiresCoast&&!isCoastalCity1300(c)){toast('This building requires real access to the sea. River ports do not count as coastal access.');return;}
  if(profile.florins<row.cost){toast(`You need ${(row.cost-profile.florins).toLocaleString('en-GB')} more florins.`);return;}
  profile.florins-=row.cost;
  profile.buildings[c.id]??={};profile.buildings[c.id][buildingId]=(profile.buildings[c.id][buildingId]||0)+1;
