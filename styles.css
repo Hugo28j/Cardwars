@@ -949,3 +949,56 @@
  .province-market-head{display:block}
  .province-market-head small{display:block;max-width:none;text-align:left;margin-top:4px}
 }
+
+
+/* Province facts: hide impossible navy + compact seven-column market */
+.province-side-facts.no-navy .province-population-fact{
+ grid-column:1/-1;
+ border-right:0;
+ padding-top:14px;
+ padding-bottom:14px;
+}
+.province-side-facts.no-navy .province-population-fact strong{font-size:22px}
+.province-side-facts.no-navy>div:nth-child(2){border-right:1px solid #465249;border-bottom:0}
+.province-side-facts.no-navy>div:nth-child(3){border-right:0;border-bottom:0}
+
+.province-market-head{display:block;padding:12px 10px 8px}
+.province-market-head strong{font-size:16px}
+.province-market-clear{overflow-x:hidden}
+.province-market-columns,.province-market-row{
+ grid-template-columns:64px 40px 45px 40px 43px 55px 50px;
+ gap:3px;
+ min-width:0;
+ padding-left:7px;
+ padding-right:7px;
+}
+.province-market-columns{min-height:31px}
+.province-market-columns span{
+ font-size:6.4px;
+ letter-spacing:.45px;
+ line-height:1.05;
+ white-space:normal;
+}
+.province-market-row{min-height:38px}
+.province-market-row>strong{
+ font-size:8.5px;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+.province-market-row>span{font-size:7.5px}
+.province-market-row>b{font-size:9px}
+.province-market-row>em{font-size:9px}
+.province-market-row>strong,.province-market-row>span,.province-market-row>b,.province-market-row>em{white-space:nowrap}
+
+@media(max-width:700px){
+ .province-market-columns,.province-market-row{
+  grid-template-columns:58px 37px 41px 37px 39px 50px 47px;
+  gap:2px;
+  padding-left:6px;
+  padding-right:6px;
+ }
+ .province-market-columns span{font-size:6px}
+ .province-market-row>strong{font-size:8px}
+ .province-market-row>span{font-size:7px}
+ .province-market-row>b,.province-market-row>em{font-size:8.5px}
+}
