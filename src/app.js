@@ -468,13 +468,28 @@ function effectiveProvinceStability1300(game,c,buildingBonus=0){
  if(game?.ownedCities?.includes(c?.id))return provinceDynamicStats1300(game,c).stability;
  return roundStat1300(clamp1300((Number(c?.stability)||0)+(Number(buildingBonus)||0),0,100));
 }
+function professionalArmyState1300(game){
+ const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]),population=ids.reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0);
+ let bonusPct=0,rawTotal=0;
+ const rawByCity={};
+ for(const id of ids){
+  const c=CITY_1300[id],b=gameProvinceBuildingState(c).bonuses;
+  bonusPct+=Number(b.professionalArmyLimit)||0;
+  rawByCity[id]=Math.max(0,Math.round(Number(c.army)||0));rawTotal+=rawByCity[id];
+ }
+ const percent=10+bonusPct,limit=Math.max(0,Math.floor(population*percent/100)),scale=rawTotal>limit&&rawTotal>0?limit/rawTotal:1,byCity={};
+ let assigned=0;
+ ids.forEach((id,index)=>{
+  let n=index===ids.length-1?Math.max(0,Math.min(rawByCity[id],limit-assigned)):Math.max(0,Math.min(rawByCity[id],Math.floor(rawByCity[id]*scale)));
+  if(scale===1)n=rawByCity[id];byCity[id]=n;assigned+=n;
+ });
+ return {population,basePercent:10,bonusPercent:bonusPct,percent,limit,rawTotal,army:Math.min(rawTotal,limit),byCity};
+}
 function campaignMilitaryByCity1300(game){
- const out={};if(!game)return out;
- const owned=new Set(game.ownedCities||[]);
- for(const id of owned){
-  const c=CITY_1300[id];if(!c)continue;
-  const b=gameProvinceBuildingState(c).bonuses;
-  out[id]={army:(Number(c.army)||0)+(Number(b.army)||0),navy:(Number(c.navy)||0)+(Number(b.navy)||0)};
+ const out={};if(!game)return out;const prof=professionalArmyState1300(game);
+ for(const id of game.ownedCities||[]){
+  const c=CITY_1300[id];if(!c)continue;const b=gameProvinceBuildingState(c).bonuses;
+  out[id]={army:Number(prof.byCity[id])||0,navy:(Number(c.navy)||0)+(Number(b.navy)||0)};
  }
  return out;
 }
@@ -484,14 +499,12 @@ function syncCampaignMilitaryOverlay1300(game=profile.activeGame){
  world.refresh();
 }
 function militaryTotals1300(game){
- let army=0,navy=0;
+ const prof=professionalArmyState1300(game);let navy=0;
  for(const cityId of game?.ownedCities||[]){
-  const c=CITY_1300[cityId];if(!c)continue;
-  const b=gameProvinceBuildingState(c).bonuses;
-  army+=(Number(c.army)||0)+(Number(b.army)||0);
+  const c=CITY_1300[cityId];if(!c)continue;const b=gameProvinceBuildingState(c).bonuses;
   navy+=(Number(c.navy)||0)+(Number(b.navy)||0);
  }
- return {army,navy};
+ return {army:prof.army,navy,professionalArmyLimit:prof.limit,professionalArmyPercent:prof.percent,professionalArmyBonusPercent:prof.bonusPercent};
 }
 function stabilityBudgetMax1300(game){
  const population=(game?.ownedCities||[]).reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0),lerp=(a,b,t)=>a+(b-a)*clamp1300(t,0,1);
@@ -743,7 +756,7 @@ function startGame1300(){
 
 const purchasedBuildingLevel=(cityId,buildingId)=>Math.max(0,Number(profile.buildings?.[cityId]?.[buildingId])||0);
 function cityBuildingState(c){
- const bonuses={food:0,economy:0,technology:0,stability:0,army:0,navy:0,income:0};
+ const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0,income:0};
  const buildings=BUILDINGS_1300.map(b=>{
   const historical=startingBuildingLevel1300(c,b.id),purchased=purchasedBuildingLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased);
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
@@ -752,14 +765,14 @@ function cityBuildingState(c){
  return {buildings,bonuses,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0),historicalLevels:buildings.reduce((sum,b)=>sum+b.historical,0)};
 }
 function buildingEffectText(b){
- const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',army:'Professional army',navy:'Navy',income:'Annual income'};
- return Object.entries(b.effects).map(([key,value])=>`${labels[key]} ${value>0?'+':''}${value}${key==='income'?' ƒ':''}`).join(' · ');
+ const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',professionalArmyLimit:'Professional army limit',navy:'Navy',income:'Annual income'};
+ return Object.entries(b.effects).map(([key,value])=>`${labels[key]||key} ${value>0?'+':''}${value}${key==='income'?' ƒ':key==='professionalArmyLimit'?'%':''}`).join(' · ');
 }
 function gameBuildingPurchaseLevel(cityId,buildingId){
  return Math.max(0,Number(profile.activeGame?.buildings?.[cityId]?.[buildingId])||0);
 }
 function gameProvinceBuildingState(c){
- const bonuses={food:0,economy:0,technology:0,stability:0,army:0,navy:0};
+ const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0};
  const buildings=BUILDINGS_1300.map(b=>{
   const historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased),availability=buildingAvailability1300(c,b);
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
