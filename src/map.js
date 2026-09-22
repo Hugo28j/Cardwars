@@ -281,8 +281,8 @@ export class WorldMap{
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})" style="--city-border:${cityBorderColor(realm)};--city-border-opacity:${cityBorderOpacity(realm)}">${paths}${borderPaths}</g>`);
    for(const {c,poly,component,cellBox,labelPoint,metrics} of cells){
-    this.cityUnitAnchors.set(c.id,{point:labelPoint,clearance:metrics.clearance});
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-'),componentClip=component>=0?componentClips[component]:realmClip;
+    this.cityUnitAnchors.set(c.id,{point:labelPoint,clearance:metrics.clearance,cellClip,componentClip});
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
     const angle=IBERIA_LABEL_ANGLES[c.id]||0;
     labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${componentClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
@@ -407,7 +407,7 @@ export class WorldMap{
      if(!visibleCities.has(c.id))continue;
      const owned=ownedCities.has(c.id),override=game?.militaryByCity?.[c.id],army=Math.max(0,Number(override?.army??c.army)||0),navy=Math.max(0,Number(override?.navy??c.navy)||0);
       const unitAnchor=this.cityUnitAnchors?.get(c.id),land=unitAnchor?.point||this.cityCenters?.get(c.id)||cityTerritoryPoint(cityRealm(c),c),sq=screen(...land);
-     if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55)pieces.push(`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${land}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned)}</g>`);
+      if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55){const armyMarkup=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${land}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned)}</g>`;pieces.push(unitAnchor?.cellClip&&unitAnchor?.componentClip?`<g clip-path="url(#${unitAnchor.componentClip})"><g clip-path="url(#${unitAnchor.cellClip})">${armyMarkup}</g></g>`:armyMarkup);}
      if(navy>0){const coast=this.coastMarkerForCity(c);if(coast){const cq=screen(...coast);if(cq.x>-55&&cq.y>-55&&cq.x<width+55&&cq.y<height+55)pieces.push(`<g class="navy-map-marker" data-unit-city="${c.id}" transform="translate(${coast}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(navy)} ships</title>${shipPiece(navy,owned)}</g>`);}}
     }
     militaryLayer.innerHTML=pieces.join('');
