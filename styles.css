@@ -465,3 +465,8 @@
 .military-count text{font-family:var(--serif);font-size:9px;font-weight:700;fill:#f3e5bc;paint-order:stroke;stroke:#0a110f;stroke-width:1.4px}
 .military-count.player-count rect{fill:var(--player-realm-color,#c6534d);stroke:#f1d59c}
 .army-map-marker,.navy-map-marker{pointer-events:none}
+
+/* Expanded c.1300 building catalogue */
+.province-building-cards{padding-bottom:24px}
+.province-building-copy>small{letter-spacing:.35px;text-transform:uppercase}
+.province-building-card.unavailable .province-building-copy p{font-style:italic}

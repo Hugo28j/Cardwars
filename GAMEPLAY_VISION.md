@@ -87,6 +87,16 @@ The Top 5 requirement is the campaign victory condition, not merely a visual ach
 
 The same progression should work with multiple real players. Each human-controlled set of opening cities begins as a rebellion against the relevant historical parent countries. Future multiplayer work must keep ownership, independence and diplomatic obligations player-specific.
 
+## Buildings and administration scaling
+
+The c.1300 province economy now uses **25 building / sector types** rather than a universal build list.
+
+- Buildings have city-specific availability rules based on coastal access, rivers/crossings, population, food base, trade importance, religious importance, technology and the historical/economic text attached to each city.
+- Existing historical sectors are seeded automatically when a city strongly matches the building's role.
+- Important c.1300 sectors include mills, breweries, tanneries, fisheries, saltworks, quarries, timber yards, warehouses, merchant quarters, customs houses, mints, bridges/tolls, monasteries, cathedrals and hospitals in addition to the original ten sectors.
+- Administration / anti-corruption spending is intentionally cheap for tiny rebellions and Free Cities, then rises non-linearly as the number of controlled provinces grows. Population adds a smaller secondary cost.
+- Current recommended administration formula: approximately `0.5 + 0.35 × cities^1.75 + population / 150,000`, capped at ƒ100/month.
+
 ## Military visibility and upkeep
 
 Military information follows campaign fog of war.

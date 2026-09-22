@@ -1,6 +1,6 @@
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-starting-florins-v4';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260921-monthly-sector-economy-v4';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-buildings-25-v5';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260921-military-map-pieces-v15';
@@ -217,8 +217,10 @@ function militaryTotals1300(game){
  return {army,navy};
 }
 function stabilityBudgetNeed1300(game){
- const cities=(game?.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),population=cities.reduce((n,c)=>n+(Number(c.people)||0),0);
- return Math.round(Math.min(100,Math.max(5,cities.length*3+population/25000))*100)/100;
+ const cities=(game?.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),count=cities.length,population=cities.reduce((n,c)=>n+(Number(c.people)||0),0);
+ // Small rebellions/free-city leagues are cheap to administer; costs accelerate non-linearly as the realm grows.
+ const cityScale=.5+Math.pow(Math.max(1,count),1.75)*.35,populationScale=population/150000;
+ return Math.round(Math.min(100,Math.max(.75,cityScale+populationScale))*100)/100;
 }
 function monthlyStateExpenses1300(game){
  const e=normaliseGameEconomy1300(game.economy),mil=militaryTotals1300(game);
@@ -248,8 +250,8 @@ function effectiveBuildingWage1300(game,cityId,buildingId){
 function cityLabourPool1300(c){return Math.max(50,Math.round((Number(c.people)||0)*.34));}
 function buildingAvailability1300(c,b){
  if(startingBuildingLevel1300(c,b.id)>0)return {ok:true,reason:'Historical sector already present'};
- const people=Number(c.people)||0,food=Number(c.food)||0,econ=Number(c.economyScore)||0,tech=Number(c.technology)||0,stab=Number(c.stability)||0,army=Number(c.army)||0;
- const text=[c.economy,c.historicalRole,c.militaryRole].filter(Boolean).join(' ').toLowerCase(),trade=/trade|market|merchant|fair|commerce|port/.test(text),cloth=/cloth|textile|wool|flax/.test(text),pasture=/sheep|wool|pasture|livestock|cattle/.test(text);
+ const people=Number(c.people)||0,food=Number(c.food)||0,econ=Number(c.economyScore)||0,tech=Number(c.technology)||0,stab=Number(c.stability)||0,army=Number(c.army)||0,navy=Number(c.navy)||0,coastal=isCoastalCity1300(c);
+ const text=[c.name,c.subrealm,c.economy,c.historicalRole,c.militaryRole,c.researchSummary].filter(Boolean).join(' ').toLowerCase(),trade=/trade|market|merchant|fair|commerce|emporium|port|shipping/.test(text),cloth=/cloth|textile|wool|flax|weav/.test(text),pasture=/sheep|wool|pasture|livestock|cattle/.test(text),river=/river|rhine|danube|seine|thames|po |elbe|meuse|loire|douro|tagus|crossing|bridge/.test(text),leather=/leather|hide|tanner/.test(text),salt=/salt|brine/.test(text),timber=/timber|wood|forest|lumber/.test(text),stone=/stone|quarr|marble/.test(text),religious=/cathedral|bishop|archbishop|abbey|monastery|monastic|pilgrim|church/.test(text),finance=/mint|coin|bank|finance|money|royal capital|court/.test(text);
  switch(b.id){
   case 'fields':return {ok:food>=48,reason:'Needs a stronger agricultural base'};
   case 'pastures':return {ok:food>=60||pasture,reason:'Needs grazing or livestock potential'};
@@ -261,6 +263,21 @@ function buildingAvailability1300(c,b){
   case 'walls':return {ok:stab>=48||people>=7000,reason:'Needs enough population or administration to maintain fortifications'};
   case 'guildhall':return {ok:econ>=66&&people>=8000,reason:'Needs a developed urban craft economy'};
   case 'university':return {ok:tech>=77&&people>=9000,reason:'Needs a large, advanced scholarly centre'};
+  case 'watermill':return {ok:river||food>=68,reason:'Needs a useful river/water source or a strong grain economy'};
+  case 'brewery':return {ok:food>=52&&people>=3500,reason:'Needs grain supply and a sizeable local market'};
+  case 'tannery':return {ok:leather||pasture||people>=6000&&econ>=54,reason:'Needs hides/livestock or enough urban craft demand'};
+  case 'fishery':return {ok:coastal,reason:'Requires a coastal or major port province'};
+  case 'saltworks':return {ok:salt||coastal&&econ>=72,reason:'Needs salt/brine resources or a strong coastal trade economy'};
+  case 'quarry':return {ok:stone||people>=8000&&stab>=55,reason:'Needs workable stone deposits and organised labour'};
+  case 'lumberyard':return {ok:timber||food>=60,reason:'Needs nearby woodland or a strong rural hinterland'};
+  case 'warehouse':return {ok:trade&&econ>=58,reason:'Needs established trade, markets or a port'};
+  case 'merchantquarter':return {ok:trade&&econ>=70&&people>=7000,reason:'Needs a wealthy commercial city with sustained merchant traffic'};
+  case 'customshouse':return {ok:(coastal||river)&&trade&&econ>=60,reason:'Needs a port, river crossing or major trade route'};
+  case 'mint':return {ok:finance||econ>=82&&tech>=68&&people>=12000,reason:'Needs strong fiscal authority, skilled metalwork and major commerce'};
+  case 'bridge':return {ok:river||/crossing|bridge/.test(text),reason:'Needs a major river or strategic crossing'};
+  case 'monastery':return {ok:religious||tech>=65&&stab>=55,reason:'Needs a strong ecclesiastical or scholarly base'};
+  case 'cathedral':return {ok:religious&&people>=6000,reason:'Requires an important bishopric, archbishopric or major church centre'};
+  case 'hospital':return {ok:people>=7000&&stab>=48,reason:'Needs a sufficiently large and organised urban population'};
   default:return {ok:true,reason:''};
  }
 }
@@ -460,7 +477,22 @@ function buildingPicture1300(id){
   dockyard:'<path d="M8 42c10 9 38 9 48 0l-6 12H14zM19 40V19h24v21M31 19V8M31 8l15 8H31"/><path d="M11 57c8-4 14 4 21 0 7-4 13 4 21 0"/>',
   walls:'<path d="M10 53V20h10v8h8v-8h8v8h8v-8h10v33zM20 20v-9h8v9m8 0v-9h8v9"/><path d="M27 53V39h10v14"/>',
   guildhall:'<path d="M11 53h42M15 49V25h34v24M11 25h42L32 9z"/><path d="M22 49V33h20v16M32 33v16"/><circle cx="32" cy="18" r="3"/>',
-  university:'<path d="M9 18c9-5 17-4 23 1v32c-6-5-14-6-23-1zM55 18c-9-5-17-4-23 1v32c6-5 14-6 23-1z"/><path d="M32 19v32M14 27c6-2 10-2 14 1m-14 8c6-2 10-2 14 1m22-10c-6-2-10-2-14 1m14 8c-6-2-10-2-14 1"/>'
+  university:'<path d="M9 18c9-5 17-4 23 1v32c-6-5-14-6-23-1zM55 18c-9-5-17-4-23 1v32c6-5 14-6 23-1z"/><path d="M32 19v32M14 27c6-2 10-2 14 1m-14 8c6-2 10-2 14 1m22-10c-6-2-10-2-14 1m14 8c-6-2-10-2-14 1"/>',
+  watermill:'<circle cx="19" cy="35" r="12"/><path d="M19 18v34M2 35h34M7 23l24 24M31 23 7 47M34 53h21V27H34M39 53V38h10v15"/>',
+  brewery:'<path d="M16 18h27v34H16zM43 25h7c6 0 7 17 0 18h-7M21 12h17M24 18v-6h11v6"/><path d="M21 29h17M21 38h17"/>',
+  tannery:'<path d="M11 18c9-7 16-7 22-2 7-5 14-4 21 2l-7 11 3 20-18-5-18 5 3-20z"/><path d="M32 15v29M19 24c9 5 17 5 26 0"/>',
+  fishery:'<path d="M8 35c12-13 28-13 40 0-12 13-28 13-40 0zM48 35l9-8v16z"/><circle cx="20" cy="32" r="2"/><path d="M12 51c10-5 16 5 26 0 8-4 12 4 20 0"/>',
+  saltworks:'<path d="M9 43h46v10H9zM14 31h36v12M21 20h22v11"/><path d="M17 52 24 43m9 9 7-9m9 9 4-9M24 14l3-5m8 5 3-5"/>',
+  quarry:'<path d="M8 50 19 29l12 8 9-20 16 33z"/><path d="m12 18 9 9m-4-15 10 10M38 33l11 7"/>',
+  lumberyard:'<path d="M10 49h44M14 42h36M18 35h28"/><circle cx="19" cy="42" r="7"/><circle cx="39" cy="42" r="7"/><path d="M50 32 57 18M46 30l8-16"/>',
+  warehouse:'<path d="M9 52h46V23L32 10 9 23zM15 52V29h34v23"/><path d="M15 36h34M24 29v23m16-23v23"/>',
+  merchantquarter:'<path d="M8 52h48M12 47V24h16v23M36 47V17h16v30"/><path d="M16 24v-8h8v8M40 17V9h8v8M17 33h6m18-7h6m-6 9h6"/>',
+  customshouse:'<path d="M10 52h44M14 48V24h36v24M10 24h44L32 10z"/><path d="M22 48V31m10 17V31m10 17V31M19 18h26"/>',
+  mint:'<circle cx="32" cy="32" r="20"/><circle cx="32" cy="32" r="13"/><path d="M32 18v28M25 24h11c7 0 7 8 0 8H28c-7 0-7 8 0 8h11"/>',
+  bridge:'<path d="M7 45h50M10 45c4-19 14-19 20 0m4 0c4-19 14-19 20 0M10 31h44"/><path d="M8 53c9-4 15 4 24 0 9-4 15 4 24 0"/>',
+  monastery:'<path d="M10 53h44V27L32 12 10 27zM27 53V38h10v15"/><path d="M32 12V5M27 9h10M16 32h8m16 0h8"/>',
+  cathedral:'<path d="M9 53h46L50 26l-10 8-8-21-8 21-10-8zM28 53V39h8v14"/><path d="M32 13V5M27 9h10M18 39h6m16 0h6"/>',
+  hospital:'<path d="M11 52h42V20H11zM26 12h12v8H26z"/><path d="M32 27v18M23 36h18M17 47h30"/>'
  };
  return `<svg viewBox="0 0 64 64" class="province-building-svg" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[id]||shapes.guildhall}</svg>`;
 }
