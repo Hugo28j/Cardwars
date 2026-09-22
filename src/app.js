@@ -1,7 +1,7 @@
 import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260922-diplomacy-v1';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-starting-florins-v4';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-limit-v6';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-sea-access-v7';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260922-army-province-anchor-v16';
@@ -405,7 +405,7 @@ function sellCityToCountry1300(country,cityId,price){
  const game=profile.activeGame;if(!game||!country)return;const c=CITY_1300[cityId],{d}=ensureDiplomacyCountry1300(game,country),n=Math.round(Math.max(0,Number(price)||0)*100)/100;if(!c||!game.ownedCities?.includes(cityId)){toast('Choose one of your provinces.');return;}if(game.ownedCities.length<=1){toast('You cannot sell your final province.');return;}if(d.wars[country]){toast('You cannot peacefully sell a city while at war.');return;}if(n>d.aiTreasuries[country]){toast(`${country} cannot afford that price.`);return;}
  const rel=diplomacyRelation1300(game,country),assessment=citySaleAssessment1300(game,country,cityId,n);
  if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Rejected offer to buy ${displayCityName1300(c)} for ƒ${money1300(n)} (${assessment.score}% acceptance).`);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the city price.`);return;}
- d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;game.ownedCities=game.ownedCities.filter(id=>id!==cityId);game.cityOwners??={};game.cityOwners[cityId]=country;delete game.buildings?.[cityId];for(const key of ['employment','lastEconomy','markets','pops','cityWages','dynamicStats','technologyBudgets','lastStatChanges'])delete game.economy?.[key]?.[cityId];delete game.economy?.buildingWages?.[cityId];setDiplomacyRelation1300(game,country,rel+5);diplomacyLog1300(game,country,`Bought ${displayCityName1300(c)} for ƒ${money1300(n)}.`);refreshCampaignStage1300(game);updateCampaignRankingSnapshot1300(game);if(world?.state?.game){world.state.game.ownedCityIds=[...game.ownedCities];world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.refresh();}if(gameProvincePanel===cityId){gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`${displayCityName1300(c)} was sold to ${country}.`);
+ d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;game.ownedCities=game.ownedCities.filter(id=>id!==cityId);game.cityOwners??={};game.cityOwners[cityId]=country;delete game.buildings?.[cityId];for(const key of ['employment','lastEconomy','markets','pops','cityWages','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])delete game.economy?.[key]?.[cityId];delete game.economy?.buildingWages?.[cityId];setDiplomacyRelation1300(game,country,rel+5);diplomacyLog1300(game,country,`Bought ${displayCityName1300(c)} for ƒ${money1300(n)}.`);refreshCampaignStage1300(game);updateCampaignRankingSnapshot1300(game);if(world?.state?.game){world.state.game.ownedCityIds=[...game.ownedCities];world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.refresh();}if(gameProvincePanel===cityId){gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`${displayCityName1300(c)} was sold to ${country}.`);
 }
 function diplomacyAssetValue1300(asset,amount){if(asset==='florins')return Number(amount)||0;const g=GOOD_1300[asset];return (Number(amount)||0)*(Number(g?.basePrice)||1)*FLORINS_PER_MARKET_VALUE;}
 function executeDiplomaticTrade1300(country,offerAsset,offerAmount,requestAsset,requestAmount){
@@ -782,7 +782,7 @@ const purchasedBuildingLevel=(cityId,buildingId)=>Math.max(0,Number(profile.buil
 function cityBuildingState(c){
  const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0,income:0};
  const buildings=BUILDINGS_1300.map(b=>{
-  const historical=startingBuildingLevel1300(c,b.id),purchased=purchasedBuildingLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased);
+  const historical=startingBuildingLevel1300(c,b.id),purchased=purchasedBuildingLevel(c.id,b.id),coastAllowed=!b.requiresCoast||isCoastalCity1300(c),level=coastAllowed?Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased):0;
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
   return {...b,historical,purchased,level,cost:level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null};
  });
@@ -804,7 +804,7 @@ function gameBuildingPurchaseLevel(cityId,buildingId){
 function gameProvinceBuildingState(c){
  const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0};
  const buildings=BUILDINGS_1300.map(b=>{
-  const historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id),level=Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased),availability=buildingAvailability1300(c,b);
+  const historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id),coastAllowed=!b.requiresCoast||isCoastalCity1300(c),level=coastAllowed?Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased):0,availability=buildingAvailability1300(c,b);
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
   return {...b,historical,purchased,level,available:availability.ok,availabilityReason:availability.reason,cost:level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null};
  });
