@@ -1,7 +1,7 @@
 import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260922-diplomacy-v1';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260921-starting-florins-v4';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-sea-access-v7';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-indirect-stats-v8';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260922-middle-mouse-off-v17';
@@ -585,22 +585,25 @@ function stabilityPolicyMonthlyDelta1300(game){
 function applyLiveDynamicStats1300(game,factor=1/30){
  ensureGameDynamicStats1300(game);const e=game.economy,cap=gameStatCap1300(game),treeUnlocked=technologyTreeUnlockedCount1300(game);
  for(const id of game.ownedCities||[]){
-  const c=CITY_1300[id];if(!c)continue;const row=e.dynamicStats[id],b=gameProvinceBuildingState(c).bonuses,current=provinceDynamicStats1300(game,c),market=e.markets?.[id],pop=e.pops?.[id],metrics=Object.values(e.lastEconomy?.[id]||{});
-  const foodGoods=['grain','fish','meat'],foodRows=foodGoods.map(gid=>({def:GOOD_1300[gid],m:market?.goods?.[gid]})).filter(x=>x.m),foodSupply=foodRows.reduce((n,x)=>n+(Number(x.m.fulfilled)||Number(x.m.supply)||0),0),foodDemand=foodRows.reduce((n,x)=>n+(Number(x.m.need)||Number(x.m.demand)||0),0),availability=foodDemand>0?clamp1300(foodSupply/foodDemand,.45,1.55):1,priceRatio=foodRows.length?foodRows.reduce((n,x)=>n+(Number(x.m.price)||x.def.basePrice)/x.def.basePrice,0)/foodRows.length:1;
-  const groups=pop?.groups||[],popN=groups.reduce((n,g)=>n+(Number(g.size)||0),0),avgSol=popN?groups.reduce((n,g)=>n+(Number(g.standardOfLiving)||10)*(Number(g.size)||0),0)/popN:10,wageRatio=effectiveCityWage1300(game,id)/.12,affordability=clamp1300((.72+.28*wageRatio+(avgSol-10)*.018)/Math.max(.65,priceRatio),.5,1.5),foodTarget=clamp1300((Number(c.food)||50)+(availability-1)*24+(affordability-1)*20,0,cap),foodDelta=clamp1300((foodTarget-current.food)*.08,-.40,.40);
+  const c=CITY_1300[id];if(!c)continue;const row=e.dynamicStats[id],b=gameProvinceBuildingState(c).bonuses,market=e.markets?.[id],pop=e.pops?.[id],metrics=Object.values(e.lastEconomy?.[id]||{});
+  const foodDefs=[['grain',.82],['fish',1.08],['meat',1.18]],foodRows=foodDefs.map(([gid,quality])=>({def:GOOD_1300[gid],quality,m:market?.goods?.[gid]})).filter(x=>x.m);
+  const foodNeed=foodRows.reduce((n,x)=>n+(Number(x.m.need)||Number(x.m.demand)||0),0),foodFulfilled=foodRows.reduce((n,x)=>n+(Number(x.m.fulfilled)||0),0),availability=foodNeed>0?clamp1300(foodFulfilled/foodNeed,.35,1.25):1;
+  const quality=foodFulfilled>0?foodRows.reduce((n,x)=>n+(Number(x.m.fulfilled)||0)*x.quality,0)/foodFulfilled:.72,variety=foodRows.filter(x=>(Number(x.m.fulfilled)||0)>Math.max(.05,foodFulfilled*.08)).length,priceRatio=foodRows.length?foodRows.reduce((n,x)=>n+(Number(x.m.price)||x.def.basePrice)/x.def.basePrice,0)/foodRows.length:1;
+  const groups=pop?.groups||[],popN=groups.reduce((n,g)=>n+(Number(g.size)||0),0),avgSol=popN?groups.reduce((n,g)=>n+(Number(g.standardOfLiving)||10)*(Number(g.size)||0),0)/popN:10,wageRatio=effectiveCityWage1300(game,id)/.12,affordability=clamp1300((.72+.28*wageRatio+(avgSol-10)*.018)/Math.max(.65,priceRatio),.45,1.45),varietyBonus=(variety-1)*.035;
+  const currentFood=Number(row.food)||0,foodTarget=clamp1300((Number(c.food)||50)+(availability-1)*28+(affordability-1)*22+(quality-1)*17+varietyBonus*18,0,cap),foodDelta=clamp1300((foodTarget-currentFood)*.09,-.45,.45);
   const profit=metrics.reduce((n,m)=>n+(Number(m.profit)||0),0),gross=metrics.reduce((n,m)=>n+(Number(m.gross)||0),0),workers=metrics.reduce((n,m)=>n+(Number(m.workers)||0),0),capacity=metrics.reduce((n,m)=>n+(Number(m.capacity)||0),0),margin=profit/Math.max(1,Math.abs(gross)),employment=capacity?workers/capacity:0,economyDelta=metrics.length?clamp1300(margin*.24+(employment-.58)*.10,-.32,.32):-.05;
   const techBudget=Math.min(Number(e.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(c)),techNeed=technologyBudgetNeed1300(c),techRatio=techNeed?techBudget/techNeed:0,technologyDelta=clamp1300((techRatio-.35)*.12+treeUnlocked*.008,-.05,.28),stabilityDelta=stabilityPolicyMonthlyDelta1300(game);
   e.statRemainders[id]??={};
-  const apply=(key,monthlyDelta,bonus)=>{
-   const beforeShown=Number(current[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry;
-   let requested=roundStat1300(raw);
-   if(requested===0&&Math.abs(monthlyDelta)>=.001&&beforeShown>0&&beforeShown<cap)requested=Math.sign(monthlyDelta)*.01;
-   const afterShown=roundStat1300(clamp1300(beforeShown+requested,0,cap)),actual=roundStat1300(afterShown-beforeShown),baseAfter=roundStat1300(Math.max(0,afterShown-(Number(bonus)||0)));
-   row[key]=baseAfter;e.statRemainders[id][key]=round(raw-actual,6);
-   if(afterShown===0||afterShown===cap)e.statRemainders[id][key]=0;
+  const apply=(key,monthlyDelta,bonus=0)=>{
+   const before=Number(row[key])||0,carry=Number(e.statRemainders[id][key])||0,raw=monthlyDelta*factor+carry,maxBase=Math.max(0,cap-(Number(bonus)||0));
+   let step=roundStat1300(raw);
+   if(step===0&&Math.abs(monthlyDelta)>=.001&&before>0&&before<maxBase)step=Math.sign(monthlyDelta)*.01;
+   const after=roundStat1300(clamp1300(before+step,0,maxBase)),actual=roundStat1300(after-before);
+   row[key]=after;e.statRemainders[id][key]=round(raw-actual,6);
+   if(after===0||after===maxBase)e.statRemainders[id][key]=0;
    return actual;
   };
-  e.lastStatChanges[id]={food:apply('food',foodDelta,b.food),economy:apply('economy',economyDelta,b.economy),technology:apply('technology',technologyDelta,b.technology),stability:apply('stability',stabilityDelta,b.stability)};
+  e.lastStatChanges[id]={food:apply('food',foodDelta,0),economy:apply('economy',economyDelta,b.economy),technology:apply('technology',technologyDelta,0),stability:apply('stability',stabilityDelta,b.stability)};
   e.lastStatUpdateDay=Number(game.day)||0;
  }
 }
@@ -908,24 +911,24 @@ function gameBuildingDetailHTML1300(cityId,buildingId){
   <div class="building-detail-toolbar"><button data-action="game-building-detail-back" class="building-detail-back" aria-label="Back to buildings">← <span>Back</span></button><span>${esc(displayCityName1300(c))}</span></div>
   <div class="building-detail-hero">
    <div class="building-detail-icon">${buildingPicture1300(row.id)}</div>
-   <div><span class="building-detail-category">${esc(row.category)}</span><h2>${esc(row.name)}</h2><strong>Level ${row.level} / ${ECONOMY_1300.maxBuildingLevel}</strong><p>${esc(unavailable?row.availabilityReason:row.description)}</p><em>${esc(buildingEffectText(row))}</em></div>
+   <div><span class="building-detail-category">${esc(row.category)}</span><h2>${esc(row.name)}</h2><strong>Level ${row.level} / ${ECONOMY_1300.maxBuildingLevel}</strong><p>${esc(unavailable?row.availabilityReason:row.description)}</p>${buildingEffectText(row)?`<em>${esc(buildingEffectText(row))}</em>`:''}</div>
   </div>
   ${owned&&row.level>0?`<div class="building-detail-section"><div class="building-detail-section-title"><span>PRODUCTION</span><small>Live weekly market simulation</small></div>
    <div class="building-flow-grid"><article><span>INPUTS</span><strong>${esc(goodFlowText1300(m.inputs))}</strong></article><article><span>OUTPUTS</span><strong>${esc(goodFlowText1300(m.outputs))}</strong></article></div>
    <div class="building-detail-progress"><div><span>Throughput</span><strong>${throughput}%</strong></div><i><b style="width:${Math.max(0,Math.min(100,throughput))}%"></b></i></div>
    <div class="building-detail-progress"><div><span>Employment</span><strong>${employment}%</strong></div><i><b style="width:${Math.max(0,Math.min(100,employment))}%"></b></i></div>
   </div>
+  <div class="building-detail-section building-detail-wage-section"><div class="building-detail-wage"><div><span>Minimum wage</span><small>${override?'Custom wage':'Inherited wage'}</small></div>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div></div>
   <div class="building-detail-section"><div class="building-detail-section-title"><span>FINANCES</span><small>Per month</small></div>
-   <div class="building-finance-grid">
-    <article><span>Workers</span><strong class="neutral">${strengthNumber(m.workers)} / ${strengthNumber(m.capacity)}</strong></article>
-    <article><span>Revenue</span><strong class="${buildingMoneyTone1300(m.gross)}">+ƒ${money1300(Math.abs(m.gross||0))}</strong></article>
-    <article><span>Input costs</span><strong class="${buildingMoneyTone1300(m.inputCost,{cost:true})}">-ƒ${money1300(Math.abs(m.inputCost||0))}</strong></article>
-    <article><span>Wages</span><strong class="${buildingMoneyTone1300(m.wageBill,{cost:true})}">-ƒ${money1300(Math.abs(m.wageBill||0))}</strong></article>
-    <article class="profit"><span>Profit</span><strong class="${buildingMoneyTone1300(m.profit)}">${m.profit>=0?'+':'-'}ƒ${money1300(Math.abs(m.profit||0))}</strong></article>
-    <article><span>Tax paid</span><strong class="${buildingMoneyTone1300(m.tax,{cost:true})}">-ƒ${money1300(Math.abs(m.tax||0))}</strong></article>
+   <div class="building-workers-card"><span>WORKERS</span><strong>${compactBuildingWorkers1300(m.workers)} <small>/ ${compactBuildingWorkers1300(m.capacity)}</small></strong></div>
+   <div class="building-finance-list">
+    <div><span>Revenue</span><strong class="${buildingMoneyTone1300(m.gross)}">+ƒ${money1300(Math.abs(m.gross||0))}</strong></div>
+    <div><span>Input costs</span><strong class="${buildingMoneyTone1300(m.inputCost,{cost:true})}">-ƒ${money1300(Math.abs(m.inputCost||0))}</strong></div>
+    <div><span>Wages</span><strong class="${buildingMoneyTone1300(m.wageBill,{cost:true})}">-ƒ${money1300(Math.abs(m.wageBill||0))}</strong></div>
+    <div class="profit"><span>Profit</span><strong class="${buildingMoneyTone1300(m.profit)}">${m.profit>=0?'+':'-'}ƒ${money1300(Math.abs(m.profit||0))}</strong></div>
+    <div><span>Tax paid</span><strong class="${buildingMoneyTone1300(m.tax,{cost:true})}">-ƒ${money1300(Math.abs(m.tax||0))}</strong></div>
    </div>
-  </div>
-  <div class="building-detail-section"><div class="building-detail-section-title"><span>LABOUR</span><small>Building-specific policy</small></div><div class="building-detail-wage"><div><span>Minimum wage</span><small>${override?'Custom wage':'Inherited wage'}</small></div>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div></div>`:''}
+  </div>`:''}
   ${owned?`<div class="building-detail-upgrade"><div><span>Treasury</span><strong>ƒ${money1300(game.florins)}</strong></div><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div>`:''}
  </section>`;
 }
@@ -1521,7 +1524,7 @@ function gamePage(){
  const gameDate=gameDate1300(profile.activeGame.day);
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong id="game-treasury-amount">ƒ${money1300(profile.activeGame.florins)}</strong><small id="game-daily-tax">Month balance: ƒ${money1300((profile.activeGame.economy?.monthRevenue||0)-(profile.activeGame.economy?.monthExpenses||0))}</small></div>
-  <button class="game-country-shield" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
+  <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
   <div class="game-map-actions"><span class="player-realm-chip" style="--player-realm:${profile.activeGame.playerColor}"><i></i>Your Realm · ${profile.activeGame.ownedCities.length} provinces</span></div><button class="game-quit-button" data-action="quit-game">Quit</button>
   <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>
   <aside id="game-country-panel" class="game-country-panel ${gameCountryPanel?'open':''}">${gameCountryPanel?gameCountryPanelHTML1300():''}</aside>
