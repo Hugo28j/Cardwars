@@ -386,7 +386,7 @@
 /* Fine anti-corruption budget and campaign rankings */
 .stability-budget-slider input[type="range"]{min-width:230px}
 .game-map-shell.province-panel-open .game-country-shield{left:477px}
-.game-map-shell.province-panel-open .game-map-actions{left:498px}
+.game-map-shell.province-panel-open .game-map-actions{left:568px}
 .country-panel-tabs{grid-template-columns:repeat(7,1fr)}
 .country-panel-tabs button{font-size:6.6px;padding-left:3px;padding-right:3px}
 .campaign-ranking-head{display:flex;justify-content:space-between;align-items:end;gap:12px;padding:16px;border-bottom:1px solid #465249;background:#121d19}
@@ -1092,5 +1092,18 @@
  .province-market-columns,.province-market-row{
   grid-template-columns:54px 52px 42px 44px 38px 42px 60px 64px;
   min-width:408px;
+ }
+}
+
+
+/* Seven-column local market after hiding STOCK */
+.province-market-columns,.province-market-row{
+ grid-template-columns:64px 56px 46px 48px 44px 70px 72px;
+ gap:4px;
+}
+@media(max-width:700px){
+ .province-market-columns,.province-market-row{
+  grid-template-columns:62px 54px 44px 46px 42px 66px 68px;
+  min-width:390px;
  }
 }
