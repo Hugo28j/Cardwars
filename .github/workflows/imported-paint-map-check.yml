@@ -1,0 +1,35 @@
+name: Validate imported paint map
+
+on:
+  push:
+    branches:
+      - map/import-user-paint-20260923
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check map JavaScript
+        run: node --check src/map.js
+      - name: Validate imported paint JSON
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('assets/map-paint-import-20260923.json'))
+          assert p['version']=='cardwars-map-paint-v3'
+          assert len(p['operations'])==5
+          assert [x['type'] for x in p['operations']]==['erase','draw','draw','draw','draw']
+          assert all(len(x['points'])>=2 for x in p['operations'])
+          print('paint import valid')
+          PY
+      - name: Verify runtime wiring
+        run: |
+          grep -q "map-paint-import-20260923.json" src/map.js
+          grep -q "renderMapPaintOverlay" src/map.js
+          grep -q "map-paint-overlay" src/map.js
+          grep -q "user-map-paint-v1" src/app.js
+          grep -q "user-map-paint-v1" index.html
