@@ -1679,32 +1679,23 @@ function updateDiplomacyActionModalPreview1300(){
  }
 }
 function updateDiplomacyAcceptancePreview1300(){updateDiplomacyActionModalPreview1300();}
+
 function diplomacyCountryPanelHTML1300(country){
  const game=profile.activeGame;if(!game||!country)return '';
- const {d,stats,model}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country),war=!!d.wars[country],ally=!!d.alliances[country],cities=diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory),pending=(game.ownedCities||[]).filter(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country&&game.independenceByCity?.[id]!==true),ownCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),stock=GOODS_1300.map(g=>({g,n:Number(d.tradeStockpile[g.id])||0})).filter(x=>x.n>.005).sort((a,b)=>b.n-a.n),needs=GOODS_1300.map(g=>({g,b:model.balances[g.id]||0})).filter(x=>x.b<-.5).sort((a,b)=>a.b-b.b).slice(0,6),surplus=GOODS_1300.map(g=>({g,b:model.balances[g.id]||0})).filter(x=>x.b>.5).sort((a,b)=>b.b-a.b).slice(0,6),history=d.history.filter(x=>x.country===country).slice(-7).reverse();
- const relationClass=rel>=35?'positive':rel<=-35?'negative':'neutral',status=war?'AT WAR':ally?'ALLIANCE':d.recognitions[country]?'RECOGNISES YOUR INDEPENDENCE':'NO TREATY',defaultTradeRequest=needs[0]?.g.id||surplus[0]?.g.id||'grain',allianceA=allianceAssessment1300(game,country),moneyA=moneyRequestAssessment1300(game,country,5),independenceA=independenceAssessment1300(game,country),saleA=citySaleAssessment1300(game,country,ownCities[0]?.id,10),tradeA=tradeAssessment1300(game,country,'florins',5,defaultTradeRequest,5);
- return `<div class="dip-panel-head"><button class="country-panel-close" data-action="game-diplomacy-close">×</button><div class="dip-realm-seal">${icon('crown')}</div><div><span>${esc(polityType(country).toUpperCase())}</span><h2>${esc(country)}</h2><small class="${war?'negative':ally?'positive':''}">${status}</small></div></div>
+ const {d,stats}=ensureDiplomacyCountry1300(game,country),r=relation(game,PLAYER_REALM,country),theirOpinion=opinion(r.theirs),ourOpinion=opinion(r.ours),war=!!r.pair.war,ally=!!r.pair.alliance,cities=diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory),history=d.history.filter(x=>x.country===country).slice(-7).reverse();
+ const status=war?'AT WAR':ally?'ALLIANCE':d.recognitions[country]?'RECOGNISES YOUR INDEPENDENCE':'NO TREATY';
+ return `<div class="dip-panel-head"><button class="country-panel-close" data-action="game-diplomacy-close">×</button><div class="dip-realm-seal">${icon('crown')}</div><div class="dip-panel-title"><span>${esc(polityType(country).toUpperCase())}</span><h2>${esc(country)}</h2><small class="${war?'negative':ally?'positive':''}">${status}</small></div><div class="dip-header-opinion"><small>THEIR / YOUR OPINION</small><strong><b class="${diplomacyOpinionClass1300(theirOpinion)}">${theirOpinion>0?'+':''}${theirOpinion.toFixed(1)}</b><i>/</i><b class="${diplomacyOpinionClass1300(ourOpinion)}">${ourOpinion>0?'+':''}${ourOpinion.toFixed(1)}</b></strong></div></div>
  <div class="dip-scroll">
-  <section class="dip-relation-card"><div><span>RELATIONSHIP</span><strong class="${relationClass}">${rel>0?'+':''}${rel}</strong><small>${diplomacyRelationLabel1300(rel)}</small></div><i><b style="width:${(rel+200)/4}%"></b></i></section>
-  <section class="dip-stat-grid"><div><span>Provinces</span><strong>${stats.cityCount||cities.length||'—'}</strong></div><div><span>Population</span><strong>${strengthNumber(stats.population||0)}</strong></div><div><span>Army</span><strong>${strengthNumber(stats.army||0)}</strong></div><div><span>Navy</span><strong>${strengthNumber(stats.navy||0)}</strong></div><div><span>Economy</span><strong>${stats.economyAvg??'—'}/100</strong></div><div><span>Stability</span><strong>${stats.stabilityAvg??'—'}/100</strong></div></section>
+  <section class="dip-compact-stats">
+   <div><span>Provinces</span><strong>${stats.cityCount||cities.length||'—'}</strong></div>
+   <div><span>Population</span><strong>${strengthNumber(stats.population||0)}</strong></div>
+   <div><span>Army</span><strong>${strengthNumber(stats.army||0)}</strong></div>
+   <div><span>Navy</span><strong>${strengthNumber(stats.navy||0)}</strong></div>
+   <div><span>Trust</span><strong>${r.theirs.trust.toFixed(1)} / ${r.ours.trust.toFixed(1)}</strong></div>
+   <div><span>Favors</span><strong>${r.ours.favors.toFixed(1)}</strong></div>
+   <div><span>Aggressive expansion</span><strong>${r.theirs.ae.toFixed(1)}</strong></div>
+  </section>
   ${advancedDiplomacyHTML1300(game,country)}
-
-  <section class="dip-request-row"><div><strong>Ask for Florins</strong><small>Their available diplomatic treasury: ƒ${money1300(d.aiTreasuries[country])}</small></div><input id="dip-money-amount" type="number" min="0.01" step="0.01" value="5"><button data-action="dip-money" ${war?'disabled':''}>REQUEST</button></section>
-  <div id="dip-money-acceptance" class="dip-acceptance-wrap compact">${acceptanceMeterHTML1300(moneyA.score,moneyA.note)}</div>
-
-  <section class="dip-request-row independence"><div><strong>Ask for independence</strong><small>${pending.length?pending.length+' rebel province'+(pending.length===1?'':'s')+' still need recognition':'No pending provinces from this country'}</small></div><button data-action="dip-independence" ${!pending.length||war?'disabled':''}>ASK RECOGNITION</button></section>
-  <div id="dip-independence-acceptance" class="dip-acceptance-wrap compact">${acceptanceMeterHTML1300(independenceA.score,independenceA.note)}</div>
-
-  <div class="dip-section-title"><span>SELL A CITY</span><small>Price, historical ownership and relations affect their valuation</small></div>
-  <section class="dip-sell-row"><select id="dip-sell-city">${ownCities.map(c=>`<option value="${c.id}">${esc(displayCityName1300(c))}</option>`).join('')}</select><label>Price ƒ<input id="dip-sell-price" type="number" min="0" step="0.01" value="10"></label><button data-action="dip-sell-city" ${ownCities.length<=1||war?'disabled':''}>MAKE OFFER</button></section>
-  <div id="dip-sell-acceptance" class="dip-acceptance-wrap compact">${acceptanceMeterHTML1300(saleA.score,saleA.note)}</div>
-
-  <div class="dip-section-title"><span>TRADE</span><small>Countries want scarce goods and prefer exporting their surpluses</small></div>
-  <section class="dip-market-signals"><div><span>THEY NEED MOST</span>${needs.length?needs.map(x=>`<b>${esc(x.g.name)} <small>shortage ${money1300(Math.abs(x.b))}</small></b>`).join(''):'<small>No major shortages detected</small>'}</div><div><span>EASIEST FOR THEM TO EXPORT</span>${surplus.length?surplus.map(x=>`<b>${esc(x.g.name)} <small>surplus +${money1300(x.b)}</small></b>`).join(''):'<small>No major surplus detected</small>'}</div></section>
-  <section class="dip-your-stock"><span>YOUR TRADE STOCK</span><div>${stock.length?stock.map(x=>`<b>${esc(x.g.name)} <small>${money1300(x.n)}</small></b>`).join(''):'<small>Your economy has not accumulated a tradable surplus yet.</small>'}</div></section>
-  <section class="dip-trade-builder"><div><span>YOU OFFER</span><select id="dip-offer-asset">${diplomacyAssetOptions1300('florins')}</select><input id="dip-offer-amount" type="number" min="0.01" step="0.01" value="5"></div><em>⇄</em><div><span>YOU REQUEST</span><select id="dip-request-asset">${diplomacyAssetOptions1300(defaultTradeRequest)}</select><input id="dip-request-amount" type="number" min="0.01" step="0.01" value="5"></div><button data-action="dip-trade" ${war?'disabled':''}>PROPOSE TRADE</button></section>
-  <div id="dip-trade-acceptance" class="dip-acceptance-wrap trade">${acceptanceMeterHTML1300(tradeA.score,tradeA.note)}</div>
-
   <div class="dip-section-title"><span>KNOWN PROVINCES</span><small>${cities.length} playable city territories</small></div>
   <section class="dip-city-list">${cities.length?cities.slice(0,16).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join(''):'<small>No playable city cards are currently attached to this realm.</small>'}</section>
   <div class="dip-section-title"><span>DIPLOMATIC HISTORY</span><small>Most recent actions with this country</small></div>
