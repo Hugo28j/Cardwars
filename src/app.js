@@ -1,4 +1,4 @@
-import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260923-diplomacy-ui-v2';
+import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260923-diplomacy-ui-v3';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
@@ -300,26 +300,25 @@ function runAdvancedDiplomacy1300(action,options={}){
 }
 function advancedDiplomacyHTML1300(game,country){
  const {pair,ours,theirs}=relation(game,PLAYER_REALM,country),slots=relationSlots(game,PLAYER_REALM);
- const active={improve:ours.mission==='improve',curry:ours.mission==='curry',alliance:pair.alliance,rival:ours.rival,guarantee:ours.guarantee,access:ours.access,offerAccess:theirs.access,trade:pair.trade,embargo:ours.embargo,subsidy:!!ours.subsidy};
- const note=id=>{
-  const cooldown=Math.max(0,(ours.cooldowns[id]||0)-game.day);
-  if(cooldown)return `${cooldown} days cooldown`;
-  if(active[id])return ['improve','curry'].includes(id)?'Active · click to change or recall':'Active';
-  return id==='improve'?'+3 opinion/month · maximum +100':id==='curry'?'+0.8 extra favors/month':id==='gift'?'Choose the gift amount':id==='trust'?'+5 trust for 10 favors':id==='peace'?'Five-year truce; requires 180 days of war':id==='guarantee'?'Pledge to defend their independence':id==='access'||id==='offerAccess'?'Directional military access':id==='trade'?'Create a trade agreement':id==='subsidy'?'Choose a monthly subsidy':id==='war'?'Review the consequences first':'Open options';
+ const labels={
+  improve:'Improve relations',curry:'Curry favors',gift:'Gift',alliance:'Alliance',breakAlliance:'Break alliance',
+  trust:'Spend favors for trust',rival:'Rival',insult:'Insult',guarantee:'Guarantee independence',
+  access:'Ask military access',offerAccess:'Offer military access',trade:'Trade agreement',embargo:'Embargo',
+  subsidy:'Subsidy',peace:'White peace',war:'Declare war'
  };
  const blocked=id=>pair.war&&!['peace','insult'].includes(id)||Math.max(0,(ours.cooldowns[id]||0)-game.day)>0||id==='breakAlliance'&&!pair.alliance||id==='alliance'&&pair.alliance;
- const standard=Object.entries(DIP_ACTIONS).filter(([id])=>id!=='peace'||pair.war).map(([id,label])=>({id,label,note:note(id),disabled:blocked(id)}));
+ const standard=Object.keys(DIP_ACTIONS).filter(id=>id!=='peace'||pair.war).map(id=>({id,label:labels[id]||DIP_ACTIONS[id],disabled:blocked(id)}));
  const extra=[
-  {id:'money',label:'Ask for Florins',note:'Choose how many Florins to request',disabled:pair.war},
-  {id:'recognition',label:'Ask for independence recognition',note:'Ask the original realm to recognise your rebel provinces',disabled:pair.war},
-  {id:'sellCity',label:'Sell a city',note:'Choose a city and price',disabled:pair.war||game.ownedCities?.length<=1},
-  {id:'deal',label:'Negotiate an exchange',note:'Trade Florins, goods or a city — including for independence support',disabled:pair.war},
-  {id:'supportIndependence',label:'Ask for support independence',note:'They may promise to help if an original owner tries to reclaim your city',disabled:pair.war}
+  {id:'money',label:'Ask Florins',disabled:pair.war},
+  {id:'recognition',label:'Independence recognition',disabled:pair.war},
+  {id:'sellCity',label:'Sell city',disabled:pair.war||game.ownedCities?.length<=1},
+  {id:'deal',label:'Exchange',disabled:pair.war},
+  {id:'supportIndependence',label:'Support independence',disabled:pair.war}
  ];
  const rows=[...standard,...extra];
  return `<p class="dip-detail-note">Commitments: ${slots}/4 · Diplomats: ${Object.values(diplomacyState(game).pairs).filter(p=>p.directions[PLAYER_REALM]?.mission).length}/2${pair.truceUntil>game.day?` · Truce: ${pair.truceUntil-game.day} days`:''}</p>
- <div class="dip-section-title compact"><span>DIPLOMATIC ACTIONS</span><small>Click an action to open its options.</small></div>
- <section class="dip-action-list">${rows.map(x=>`<button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}><span>${esc(x.label)}</span><small>${esc(x.note)}</small></button>`).join('')}</section>
+ <div class="dip-section-title compact"><span>DIPLOMATIC ACTIONS</span></div>
+ <ul class="dip-action-list">${rows.map(x=>`<li><button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}>${esc(x.label)}</button></li>`).join('')}</ul>
  <details class="dip-memory"><summary>Their diplomatic memories (${theirs.modifiers.length})</summary>${theirs.modifiers.map(m=>`<p>${esc(m.type)} <b class="${m.value>=0?'positive':'negative'}">${m.value>0?'+':''}${m.value.toFixed(1)}</b></p>`).join('')||'<p>No memories yet.</p>'}</details>`;
 }
 function diplomacyRelationLabel1300(v){return v>=70?'Trusted':v>=35?'Friendly':v>=10?'Cordial':v>-10?'Neutral':v>-35?'Tense':v>-70?'Hostile':'Bitter enemies';}
@@ -1615,9 +1614,9 @@ function openDiplomacyAction1300(action){
  const title={money:'Ask for Florins',recognition:'Ask for independence recognition',sellCity:'Sell a city',deal:'Negotiate an exchange',supportIndependence:'Ask for support independence'}[action]||DIP_ACTIONS[action]||'Diplomatic action';
  let body='',confirm='';
  if(action==='gift'){
-  const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),value=Math.min(5,max);
-  body=`<p>Choose how many Florins to send. Larger gifts create a stronger positive diplomatic memory, with the same 90-day gift cooldown.</p>${diplomacySliderHTML1300({id:'dip-modal-gift-range',label:'Gift amount',min:0,max,step:.5,value,prefix:'ƒ'})}`;
-  confirm=`<button data-action="dip-modal-gift" ${max<=0?'disabled':''}>SEND GIFT</button>`;
+  const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),sliderMax=Math.max(1,max),value=max>=1?Math.min(5,max):1;
+  body=`<p>Choose how many Florins to send. Gifts start at ƒ1.00; larger gifts create a stronger positive diplomatic memory, with the same 90-day gift cooldown.</p>${diplomacySliderHTML1300({id:'dip-modal-gift-range',label:'Gift amount',min:1,max:sliderMax,step:.5,value,prefix:'ƒ'})}`;
+  confirm=`<button data-action="dip-modal-gift" ${max<1?'disabled':''}>SEND GIFT</button>`;
  }else if(action==='subsidy'){
   const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),value=clamp1300(Number(ours.subsidy)||1,0,max);
   body=`<p>Choose the monthly subsidy. It is paid every month until stopped, war begins, or your treasury can no longer pay it.</p>${diplomacySliderHTML1300({id:'dip-modal-subsidy-range',label:'Monthly subsidy',min:0,max,step:.5,value,prefix:'ƒ',suffix:'/month'})}`;
@@ -1687,7 +1686,7 @@ function diplomacyCountryPanelHTML1300(country){
  const game=profile.activeGame;if(!game||!country)return '';
  const {d,stats}=ensureDiplomacyCountry1300(game,country),r=relation(game,PLAYER_REALM,country),theirOpinion=opinion(r.theirs),ourOpinion=opinion(r.ours),war=!!r.pair.war,ally=!!r.pair.alliance,cities=diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory),history=d.history.filter(x=>x.country===country).slice(-7).reverse();
  const status=war?'AT WAR':ally?'ALLIANCE':d.recognitions[country]?'RECOGNISES YOUR INDEPENDENCE':'NO TREATY';
- return `<div class="dip-panel-head"><button class="country-panel-close" data-action="game-diplomacy-close">×</button><div class="dip-realm-seal">${icon('crown')}</div><div class="dip-panel-title"><span>${esc(polityType(country).toUpperCase())}</span><h2>${esc(country)}</h2><small class="${war?'negative':ally?'positive':''}">${status}</small></div><div class="dip-header-opinion"><small>THEIR / YOUR OPINION</small><strong><b class="${diplomacyOpinionClass1300(theirOpinion)}">${theirOpinion>0?'+':''}${theirOpinion.toFixed(1)}</b><i>/</i><b class="${diplomacyOpinionClass1300(ourOpinion)}">${ourOpinion>0?'+':''}${ourOpinion.toFixed(1)}</b></strong></div></div>
+ return `<div class="dip-panel-head"><button class="country-panel-close" data-action="game-diplomacy-close">×</button><div class="dip-realm-seal">${icon('crown')}</div><div class="dip-panel-title"><span>${esc(polityType(country).toUpperCase())}</span><h2>${esc(country)}</h2><small class="${war?'negative':ally?'positive':''}">${status}</small></div><div class="dip-header-opinion" title="Your opinion / their opinion" aria-label="Your opinion ${ourOpinion.toFixed(1)}; their opinion ${theirOpinion.toFixed(1)}"><strong><b class="${diplomacyOpinionClass1300(ourOpinion)}">${ourOpinion>0?'+':''}${ourOpinion.toFixed(1)}</b><i>/</i><b class="${diplomacyOpinionClass1300(theirOpinion)}">${theirOpinion>0?'+':''}${theirOpinion.toFixed(1)}</b></strong></div></div>
  <div class="dip-scroll">
   <section class="dip-compact-stats">
    <div><span>Provinces</span><strong>${stats.cityCount||cities.length||'—'}</strong></div>
