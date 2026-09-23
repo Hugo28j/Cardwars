@@ -81,3 +81,18 @@ Other small coastal scraps touching a larger neighbour are merged into that
 neighbour, retaining islands, complete small states and fragments with city
 markers. This removes the visible old-map fringe rather than covering it with
 another layer.
+
+
+## Continuous atlas v2 integration (2026-09-23)
+
+The live replacement is generated as `assets/atlas-1300-v2.json`. It layers the
+hand-generalized geographic outlines from `regions.py` onto the current map
+source, then runs the newer `gameplay.py` consolidation pass. This ordering is
+intentional: later Cardwars ownership decisions remain authoritative even when
+the checkpoint contained older polity names.
+
+`expected-realms.json` freezes the current playable realm set. Both the builder
+and topology regression fail if the new geometry accidentally adds or removes a
+realm. The existing renderer, city subdivisions, army/navy markers, right-click
+country inspection and current game systems remain unchanged apart from loading
+the v2 historical atlas.
