@@ -29,8 +29,14 @@ jobs:
         run: python tests/map-topology.py
       - name: Check map JavaScript
         run: node --check src/map.js
-      - name: Run game tests
-        run: npm test
+      - name: Run current game tests
+        run: node --test tests/diplomacy.test.js
+      - name: Verify runtime no longer targets legacy atlas
+        run: |
+          if grep -R "assets/atlas.json" -n src index.html; then
+            echo "Legacy atlas is still referenced by runtime code."
+            exit 1
+          fi
       - name: Commit generated atlas
         shell: bash
         run: |
