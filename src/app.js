@@ -1583,16 +1583,102 @@ function countryRebellionsHTML1300(game){
  return `<section class="rebellion-summary"><span>NATIONAL UNREST</span><strong>${avg}<small>/100</small></strong><p>Risk rises with low stability, high taxes and weak wages. Actual rebel armies will be added later.</p></section><section class="rebellion-list">${rows.map(r=>`<article><div><strong>${esc(displayCityName1300(r.c))}</strong><small>${r.risk>=60?'High risk':r.risk>=30?'Moderate risk':'Low risk'}</small></div><i><b style="width:${r.risk}%"></b></i><span>${r.risk}%</span></article>`).join('')}</section>`;
 }
 
+
 function diplomacyAssetOptions1300(selected='florins'){return [{id:'florins',name:'Florins'},...GOODS_1300].map(g=>`<option value="${g.id}" ${selected===g.id?'selected':''}>${esc(g.name)}</option>`).join('');}
-function updateDiplomacyAcceptancePreview1300(){
- const game=profile.activeGame,country=gameDiplomacyCountry;if(!game||!country)return;
- const put=(selector,a)=>{const el=$(selector);if(el)el.innerHTML=acceptanceMeterHTML1300(a.score,a.note);};
- put('#dip-alliance-acceptance',allianceAssessment1300(game,country));
- put('#dip-money-acceptance',moneyRequestAssessment1300(game,country,$('#dip-money-amount')?.value));
- put('#dip-independence-acceptance',independenceAssessment1300(game,country));
- put('#dip-sell-acceptance',citySaleAssessment1300(game,country,$('#dip-sell-city')?.value,$('#dip-sell-price')?.value));
- put('#dip-trade-acceptance',tradeAssessment1300(game,country,$('#dip-offer-asset')?.value,$('#dip-offer-amount')?.value,$('#dip-request-asset')?.value,$('#dip-request-amount')?.value));
+function diplomacyOpinionClass1300(n){return Number(n)>0?'positive':Number(n)<0?'negative':'neutral';}
+function proposalAssessment1300(game,country,action){
+ const r=acceptance(game,PLAYER_REALM,country,action,diplomacyPowers1300(game,country));
+ return {score:r.blocked?0:clamp1300(50+r.score,0,100),note:r.blocked||`Diplomatic score ${r.score}; acceptance requires 0.`};
 }
+function diplomacyDealOfferOptions1300(game,country){
+ const {d}=ensureDiplomacyCountry1300(game,country),out=[`<option value="florins">Florins · ƒ${money1300(game.florins)}</option>`];
+ for(const g of GOODS_1300){const n=Number(d.tradeStockpile[g.id])||0;if(n>.005)out.push(`<option value="good:${g.id}">${esc(g.name)} · ${money1300(n)} available</option>`);}
+ for(const id of game.ownedCities||[]){const c=CITY_1300[id];if(c&&game.ownedCities.length>1)out.push(`<option value="city:${c.id}">City · ${esc(displayCityName1300(c))}</option>`);}
+ return out.join('');
+}
+function diplomacyDealRequestOptions1300(game,country){
+ const {d}=ensureDiplomacyCountry1300(game,country),out=[`<option value="florins">Florins · ƒ${money1300(d.aiTreasuries[country])}</option>`];
+ for(const g of GOODS_1300){const n=Number(d.aiGoods[country]?.[g.id])||0;if(n>.005)out.push(`<option value="good:${g.id}">${esc(g.name)} · ${money1300(n)} available</option>`);}
+ for(const c of independenceSupportCandidates1300(game,country))out.push(`<option value="support:${c.id}">Support independence · ${esc(displayCityName1300(c))}</option>`);
+ return out.join('');
+}
+function diplomacySliderHTML1300({id,label,min=0,max=100,step=1,value=0,prefix='',suffix=''}) {
+ const safeMax=Math.max(Number(min)||0,Number(max)||0),safeValue=clamp1300(Number(value)||0,Number(min)||0,safeMax);
+ return `<label class="dip-modal-slider"><span>${esc(label)}</span><strong><span id="${id}-value">${esc(prefix)}${money1300(safeValue)}${esc(suffix)}</span></strong><input id="${id}" type="range" min="${Number(min)||0}" max="${safeMax}" step="${Number(step)||1}" value="${safeValue}"></label>`;
+}
+function openDiplomacyAction1300(action){
+ const game=profile.activeGame,country=gameDiplomacyCountry;if(!game||!country)return;
+ const {d}=ensureDiplomacyCountry1300(game,country),{pair,ours}=relation(game,PLAYER_REALM,country),ownCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),pending=ownCities.filter(c=>(game.originCountryByCity?.[c.id]||c.country)===country&&game.independenceByCity?.[c.id]!==true),supportCities=independenceSupportCandidates1300(game,country);
+ const title={money:'Ask for Florins',recognition:'Ask for independence recognition',sellCity:'Sell a city',deal:'Negotiate an exchange',supportIndependence:'Ask for support independence'}[action]||DIP_ACTIONS[action]||'Diplomatic action';
+ let body='',confirm='';
+ if(action==='gift'){
+  const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),value=Math.min(5,max);
+  body=`<p>Choose how many Florins to send. Larger gifts create a stronger positive diplomatic memory, with the same 90-day gift cooldown.</p>${diplomacySliderHTML1300({id:'dip-modal-gift-range',label:'Gift amount',min:0,max,step:.5,value,prefix:'ƒ'})}`;
+  confirm=`<button data-action="dip-modal-gift" ${max<=0?'disabled':''}>SEND GIFT</button>`;
+ }else if(action==='subsidy'){
+  const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),value=clamp1300(Number(ours.subsidy)||1,0,max);
+  body=`<p>Choose the monthly subsidy. It is paid every month until stopped, war begins, or your treasury can no longer pay it.</p>${diplomacySliderHTML1300({id:'dip-modal-subsidy-range',label:'Monthly subsidy',min:0,max,step:.5,value,prefix:'ƒ',suffix:'/month'})}`;
+  confirm=`<button data-action="dip-modal-subsidy-set" ${max<=0?'disabled':''}>SET SUBSIDY</button>${ours.subsidy?'<button class="secondary" data-action="dip-modal-subsidy-stop">STOP SUBSIDY</button>':''}`;
+ }else if(action==='money'){
+  const max=Math.max(0,Math.floor((Number(d.aiTreasuries[country])||0)*100)/100),value=Math.min(5,max),a=moneyRequestAssessment1300(game,country,value);
+  body=`<p>Their available diplomatic treasury is <strong>ƒ${money1300(max)}</strong>. Relations and the share of their treasury you ask for affect acceptance.</p>${diplomacySliderHTML1300({id:'dip-modal-money-range',label:'Florins requested',min:0,max,step:.5,value,prefix:'ƒ'})}<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
+  confirm=`<button data-action="dip-modal-money" ${max<=0?'disabled':''}>SEND REQUEST</button>`;
+ }else if(action==='recognition'){
+  const a=independenceAssessment1300(game,country);
+  body=`<p>${pending.length?`${country} still has to recognise ${pending.length} rebel province${pending.length===1?'':'s'} that you control.`:'You have no unrecognised rebel provinces from this country.'}</p><div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
+  confirm=`<button data-action="dip-modal-recognition" ${!pending.length?'disabled':''}>ASK RECOGNITION</button>`;
+ }else if(action==='sellCity'){
+  const first=ownCities[0],max=Math.max(0,Math.floor((Number(d.aiTreasuries[country])||0)*100)/100),value=Math.min(10,max),a=citySaleAssessment1300(game,country,first?.id,value);
+  body=`<p>Choose one of your cities and the Florin price. Historical ownership and relations affect how highly they value it.</p><label class="dip-modal-field"><span>City</span><select id="dip-modal-sell-city">${ownCities.map(c=>`<option value="${c.id}">${esc(displayCityName1300(c))}</option>`).join('')}</select></label>${diplomacySliderHTML1300({id:'dip-modal-sell-price',label:'Price',min:0,max,step:.5,value,prefix:'ƒ'})}<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
+  confirm=`<button data-action="dip-modal-sell" ${ownCities.length<=1?'disabled':''}>MAKE OFFER</button>`;
+ }else if(action==='supportIndependence'){
+  const first=supportCities[0],a=first?supportIndependenceAssessment1300(game,country,first.id):{score:0,note:'No eligible city needs a new promise from this country.'};
+  body=`<p>Ask ${country} to promise military support if the original owner later starts a war to reclaim one of your cities. The promise is stored per city and activates in a defensive war against that original owner.</p><label class="dip-modal-field"><span>City to support</span><select id="dip-modal-support-city">${supportCities.map(c=>`<option value="${c.id}">${esc(displayCityName1300(c))} · vs ${esc(game.originCountryByCity?.[c.id]||c.country)}</option>`).join('')||'<option value="">No eligible city</option>'}</select></label><div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
+  confirm=`<button data-action="dip-modal-support" ${!supportCities.length?'disabled':''}>ASK FOR SUPPORT</button>`;
+ }else if(action==='deal'){
+  const requestDefault=independenceSupportCandidates1300(game,country)[0]?.id?`support:${independenceSupportCandidates1300(game,country)[0].id}`:'florins',offerDefault='florins',a=diplomacyDealAssessment1300(game,country,offerDefault,5,requestDefault,5);
+  body=`<p>Build one exchange. You can offer Florins, trade goods or a city, and request Florins, goods or an independence-support promise in return.</p><div class="dip-deal-grid"><label class="dip-modal-field"><span>You offer</span><select id="dip-modal-deal-offer">${diplomacyDealOfferOptions1300(game,country)}</select><input id="dip-modal-deal-offer-amount" type="number" min="0.01" step="0.01" value="5"></label><span class="dip-deal-arrow">⇄</span><label class="dip-modal-field"><span>You request</span><select id="dip-modal-deal-request">${diplomacyDealRequestOptions1300(game,country)}</select><input id="dip-modal-deal-request-amount" type="number" min="0.01" step="0.01" value="5"></label></div><div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
+  confirm=`<button data-action="dip-modal-deal">PROPOSE EXCHANGE</button>`;
+ }else{
+  const active=action==='improve'&&ours.mission==='improve'||action==='curry'&&ours.mission==='curry'||action==='alliance'&&pair.alliance||action==='rival'&&ours.rival||action==='guarantee'&&ours.guarantee||action==='access'&&ours.access||action==='offerAccess'&&relation(game,PLAYER_REALM,country).theirs.access||action==='trade'&&pair.trade||action==='embargo'&&ours.embargo;
+  const descriptions={
+   improve:active?'Recall the diplomat currently improving relations.':'Assign a diplomat to improve their opinion by +3 each month, up to +100 from the mission.',
+   curry:active?'Recall the diplomat currently currying favors.':'Assign a diplomat to curry extra favors. This requires an alliance.',
+   alliance:'Propose a formal alliance.',
+   breakAlliance:'End the current alliance. This reduces their trust and creates a truce.',
+   trust:'Spend 10 favors to increase their trust by 5.',
+   rival:active?'Remove this country as your rival.':'Declare this country a rival.',
+   insult:'Send an insult. Their opinion and trust will fall and a 90-day cooldown applies.',
+   guarantee:active?'Revoke your guarantee of their independence.':'Guarantee their independence.',
+   access:'Ask for military access.',
+   offerAccess:active?'Revoke the military access you offered them.':'Offer them military access.',
+   trade:'Propose a trade agreement. This improves the acceptance of negotiated exchanges.',
+   embargo:active?'Lift your embargo against them.':'Start an embargo. Existing trade agreement ends.',
+   peace:'Offer a white peace and a five-year truce.',
+   war:'Declare war without a casus belli. This gives +15 aggressive expansion, −1 diplomatic reputation and −30 trust with the defender. Trade, access and subsidies end.'
+  };
+  body=`<p>${esc(descriptions[action]||'Confirm this diplomatic action.')}</p>`;
+  if(['alliance','access','trade'].includes(action)){const a=proposalAssessment1300(game,country,action);body+=`<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;}
+  confirm=`<button class="${action==='war'?'danger':''}" data-action="dip-modal-standard" data-id="${action}">${action==='war'?'DECLARE WAR':active&&['improve','curry'].includes(action)?'RECALL':'CONFIRM'}</button>`;
+ }
+ showDialog(`<div class="diplomacy-action-dialog" data-dip-modal-action="${esc(action)}"><span class="eyebrow">DIPLOMATIC ACTION · ${esc(country.toUpperCase())}</span><h2>${esc(title)}</h2>${body}<div class="dip-modal-actions">${confirm}<button class="secondary" data-action="close">CANCEL</button></div></div>`,'diplomacy-action-modal');
+ updateDiplomacyActionModalPreview1300();
+}
+function updateDiplomacyActionModalPreview1300(){
+ const game=profile.activeGame,country=gameDiplomacyCountry,root=modal.querySelector('.diplomacy-action-dialog');if(!game||!country||!root)return;
+ const action=root.dataset.dipModalAction,put=a=>{const el=modal.querySelector('#dip-modal-acceptance');if(el)el.innerHTML=acceptanceMeterHTML1300(a.score,a.note);},setValue=(id,prefix='',suffix='')=>{const input=modal.querySelector(`#${id}`),out=modal.querySelector(`#${id}-value`);if(input&&out)out.textContent=`${prefix}${money1300(input.value)}${suffix}`;};
+ if(action==='gift')setValue('dip-modal-gift-range','ƒ');
+ if(action==='subsidy')setValue('dip-modal-subsidy-range','ƒ','/month');
+ if(action==='money'){setValue('dip-modal-money-range','ƒ');put(moneyRequestAssessment1300(game,country,modal.querySelector('#dip-modal-money-range')?.value));}
+ if(action==='sellCity'){setValue('dip-modal-sell-price','ƒ');put(citySaleAssessment1300(game,country,modal.querySelector('#dip-modal-sell-city')?.value,modal.querySelector('#dip-modal-sell-price')?.value));}
+ if(action==='supportIndependence')put(supportIndependenceAssessment1300(game,country,modal.querySelector('#dip-modal-support-city')?.value));
+ if(action==='deal'){
+  const offer=modal.querySelector('#dip-modal-deal-offer')?.value||'',request=modal.querySelector('#dip-modal-deal-request')?.value||'',oa=modal.querySelector('#dip-modal-deal-offer-amount'),ra=modal.querySelector('#dip-modal-deal-request-amount');
+  const offerFixed=offer.startsWith('city:'),requestFixed=request.startsWith('support:');if(oa){oa.disabled=offerFixed;if(offerFixed)oa.value='1';}if(ra){ra.disabled=requestFixed;if(requestFixed)ra.value='1';}
+  put(diplomacyDealAssessment1300(game,country,offer,oa?.value,request,ra?.value));
+ }
+}
+function updateDiplomacyAcceptancePreview1300(){updateDiplomacyActionModalPreview1300();}
 function diplomacyCountryPanelHTML1300(country){
  const game=profile.activeGame;if(!game||!country)return '';
  const {d,stats,model}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country),war=!!d.wars[country],ally=!!d.alliances[country],cities=diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory),pending=(game.ownedCities||[]).filter(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country&&game.independenceByCity?.[id]!==true),ownCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),stock=GOODS_1300.map(g=>({g,n:Number(d.tradeStockpile[g.id])||0})).filter(x=>x.n>.005).sort((a,b)=>b.n-a.n),needs=GOODS_1300.map(g=>({g,b:model.balances[g.id]||0})).filter(x=>x.b<-.5).sort((a,b)=>a.b-b.b).slice(0,6),surplus=GOODS_1300.map(g=>({g,b:model.balances[g.id]||0})).filter(x=>x.b>.5).sort((a,b)=>b.b-a.b).slice(0,6),history=d.history.filter(x=>x.country===country).slice(-7).reverse();
