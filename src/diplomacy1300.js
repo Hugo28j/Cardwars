@@ -65,7 +65,7 @@ export function performAction(game,a,b,action,powers={},options={}){
   else {if(!ours.mission&&missions>=2)return fail('Both diplomats are busy. Recall one first.');ours.mission=mission;customMessage=`${DIP_ACTIONS[action]}: envoy assigned.`;}
  }
  if(action==='gift'){
-  const amount=round(clamp(Number(options.amount)||5,.01,100000));
+  const amount=round(clamp(Number(options.amount)||5,1,100000));
   const balance=a===PLAYER_REALM?game.florins:game.diplomacy.aiTreasuries?.[a];
   if(!Number.isFinite(balance)||balance<amount)return fail('Not enough Florins.');
   if(a===PLAYER_REALM)game.florins=round(balance-amount);else game.diplomacy.aiTreasuries[a]=round(balance-amount);
