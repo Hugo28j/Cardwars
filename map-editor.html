@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cardwars Map Editor</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#101b1d;color:#e7eadf;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+.editor-app{height:100vh;display:grid;grid-template-rows:auto 1fr;min-width:0}
+.editor-topbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#162426;border-bottom:1px solid #344448;z-index:20}
+.editor-brand{min-width:180px}
+.editor-brand strong{display:block;font-size:15px;letter-spacing:.04em}
+.editor-brand span{display:block;color:#9fb0ad;font-size:12px;margin-top:2px}
+.editor-status{flex:1;min-width:0;color:#cbd6d2;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.editor-layout{min-height:0;display:grid;grid-template-columns:330px minmax(0,1fr)}
+.editor-panel{min-height:0;overflow:auto;padding:14px;background:#132022;border-right:1px solid #344448}
+.editor-map-wrap{min-width:0;min-height:0;position:relative;background:#192c32}
+#editor-map{position:absolute;inset:0}
+#editor-map.map-surface{min-height:0}
+#editor-map #world-map{width:100%;height:100%;display:block}
+.editor-section{padding:12px 0;border-bottom:1px solid #2d3d40}
+.editor-section:first-child{padding-top:0}
+.editor-section:last-child{border-bottom:0}
+.editor-section h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#96aaa6;margin:0 0 10px}
+.editor-field{display:grid;gap:5px;margin:0 0 10px}
+.editor-field label{font-size:12px;color:#b7c5c1}
+.editor-field select,.editor-file-label{width:100%;min-height:40px;border-radius:7px;border:1px solid #46585b;background:#19292c;color:#eef1e8;padding:8px 10px;font-size:14px}
+.editor-row{display:flex;gap:8px;flex-wrap:wrap}
+.editor-btn{border:1px solid #506265;background:#203236;color:#edf2e9;border-radius:7px;min-height:38px;padding:7px 10px;font:inherit;font-size:13px;cursor:pointer}
+.editor-btn:hover{background:#294044}
+.editor-btn:disabled{opacity:.45;cursor:not-allowed}
+.editor-btn.primary{background:#4e6f68;border-color:#6d9289}
+.editor-btn.warn{background:#573a35;border-color:#82544b}
+.editor-btn.active{outline:2px solid #d3b97a;outline-offset:1px}
+.editor-help{font-size:12px;line-height:1.45;color:#aebdb9;margin:8px 0 0}
+.editor-callout{padding:9px 10px;border-radius:7px;background:#1c2d30;border:1px solid #3d5154;color:#cbd8d4;font-size:12px;line-height:1.45}
+.editor-list{display:grid;gap:7px;margin-top:8px}
+.editor-change{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:8px;border:1px solid #34494c;border-radius:7px;background:#18272a}
+.editor-change strong{font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.editor-change span{font-size:11px;color:#9fb2ae}
+.editor-mini{border:0;background:transparent;color:#d9b1a7;cursor:pointer;font-size:16px;padding:5px 7px}
+.editor-count{font-variant-numeric:tabular-nums;color:#dbc68f}
+.editor-footer-note{font-size:11px;color:#8ea09d;line-height:1.45;margin-top:8px}
+#editor-map .city-territory-cell.editor-selected-a{fill:rgba(224,196,118,.18)!important;stroke:#e0c476!important;stroke-width:1.2!important}
+#editor-map .city-territory-cell.editor-selected-b{fill:rgba(130,188,185,.16)!important;stroke:#82bcb9!important;stroke-width:1.1!important}
+#editor-map.editor-drawing #world-map{cursor:crosshair}
+.editor-draw-banner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:12;display:none;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:8px 10px;border-radius:8px;background:rgba(17,29,31,.94);border:1px solid #6a7f7b;color:#eef2e9;font-size:12px}
+.editor-draw-banner.visible{display:flex}
+.editor-draw-banner button{min-height:32px}
+@media(max-width:800px){
+ body{overflow:auto}
+ .editor-app{height:auto;min-height:100vh}
+ .editor-layout{grid-template-columns:1fr;grid-template-rows:auto minmax(520px,70vh)}
+ .editor-panel{overflow:visible;border-right:0;border-bottom:1px solid #344448}
+ .editor-map-wrap{min-height:520px}
+ .editor-status{display:none}
+}
+</style>
+</head>
+<body>
+<div class="editor-app" id="map-editor-root">
+  <header class="editor-topbar">
+    <div class="editor-brand"><strong>CARDWARS MAP EDITOR</strong><span>Veilige aparte editor · live game wordt niet gewijzigd</span></div>
+    <div class="editor-status" id="editor-status">Kaart laden…</div>
+    <button class="editor-btn" id="undo-btn" type="button" disabled>↶ Undo</button>
+    <button class="editor-btn" id="redo-btn" type="button" disabled>↷ Redo</button>
+    <button class="editor-btn primary" id="export-btn" type="button" disabled>Export JSON</button>
+  </header>
+
+  <div class="editor-layout">
+    <aside class="editor-panel">
+      <section class="editor-section">
+        <h2>1 · Selecteer gebied</h2>
+        <div class="editor-field">
+          <label for="realm-select">Land / realm</label>
+          <select id="realm-select" disabled><option>Kaart laden…</option></select>
+        </div>
+        <div class="editor-field">
+          <label for="city-a-select">Provincie / stad A</label>
+          <select id="city-a-select" disabled></select>
+        </div>
+        <div class="editor-field">
+          <label for="city-b-select">Aangrenzende provincie B</label>
+          <select id="city-b-select" disabled></select>
+        </div>
+        <div class="editor-row">
+          <button class="editor-btn" id="focus-a-btn" type="button" disabled>Focus A</button>
+          <button class="editor-btn" id="focus-b-btn" type="button" disabled>Focus B</button>
+        </div>
+        <p class="editor-help">Je kunt ook rechtstreeks op een provincie klikken om die als provincie A te selecteren.</p>
+      </section>
+
+      <section class="editor-section">
+        <h2>2 · Pas grens aan</h2>
+        <div class="editor-callout" id="pair-info">Selecteer twee provincies die een grens delen.</div>
+        <div class="editor-row" style="margin-top:10px">
+          <button class="editor-btn warn" id="remove-pair-btn" type="button" disabled>Verwijder A ↔ B</button>
+          <button class="editor-btn primary" id="draw-pair-btn" type="button" disabled>Teken nieuwe A ↔ B</button>
+        </div>
+        <div class="editor-row" style="margin-top:8px">
+          <button class="editor-btn" id="draw-free-btn" type="button" disabled>Vrije grens tekenen</button>
+          <button class="editor-btn" id="erase-stroke-btn" type="button" disabled>Gum over lijn</button>
+        </div>
+        <p class="editor-help">Bij tekenen: klik punt voor punt op de kaart. Gebruik daarna <b>Lijn afronden</b>. De gum markeert een lijnstuk dat bij import verwijderd moet worden.</p>
+      </section>
+
+      <section class="editor-section">
+        <h2>3 · Wijzigingen</h2>
+        <div class="editor-row">
+          <label class="editor-file-label" style="cursor:pointer;flex:1;text-align:center">
+            Import JSON
+            <input id="import-file" type="file" accept=".json,application/json" hidden>
+          </label>
+          <button class="editor-btn warn" id="clear-btn" type="button" disabled>Alles wissen</button>
+        </div>
+        <div class="editor-list" id="changes-list"></div>
+        <p class="editor-footer-note">De editor bewaart je wijzigingen automatisch in deze browser. Export JSON wanneer je een versie veilig wilt bewaren of aan ChatGPT wilt geven.</p>
+      </section>
+    </aside>
+
+    <main class="editor-map-wrap">
+      <div class="editor-draw-banner" id="draw-banner">
+        <span id="draw-banner-text">Klik punten op de kaart.</span>
+        <button class="editor-btn primary" id="finish-line-btn" type="button">Lijn afronden</button>
+        <button class="editor-btn" id="drop-point-btn" type="button">Laatste punt weg</button>
+        <button class="editor-btn warn" id="cancel-line-btn" type="button">Annuleren</button>
+      </div>
+      <div id="editor-map" class="map-surface"></div>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+import {WorldMap} from './src/map.js?v=20260923-map-editor-v1';
+import {CITIES_1300} from './src/data1300.js?v=20260922-army-five-percent-v5';
+
+const root=document.getElementById('map-editor-root');
+const host=document.getElementById('editor-map');
+const statusEl=document.getElementById('editor-status');
+const realmSelect=document.getElementById('realm-select');
+const cityASelect=document.getElementById('city-a-select');
+const cityBSelect=document.getElementById('city-b-select');
+const focusABtn=document.getElementById('focus-a-btn');
+const focusBBtn=document.getElementById('focus-b-btn');
+const removePairBtn=document.getElementById('remove-pair-btn');
+const drawPairBtn=document.getElementById('draw-pair-btn');
+const drawFreeBtn=document.getElementById('draw-free-btn');
+const eraseStrokeBtn=document.getElementById('erase-stroke-btn');
+const finishLineBtn=document.getElementById('finish-line-btn');
+const dropPointBtn=document.getElementById('drop-point-btn');
+const cancelLineBtn=document.getElementById('cancel-line-btn');
+const drawBanner=document.getElementById('draw-banner');
+const drawBannerText=document.getElementById('draw-banner-text');
+const changesList=document.getElementById('changes-list');
+const undoBtn=document.getElementById('undo-btn');
+const redoBtn=document.getElementById('redo-btn');
+const exportBtn=document.getElementById('export-btn');
+const importFile=document.getElementById('import-file');
+const clearBtn=document.getElementById('clear-btn');
+const pairInfo=document.getElementById('pair-info');
+
+const citiesById=new Map(CITIES_1300.map(function(c){return [c.id,c];}));
+const mapState={game:null,profile:null};
+const STORAGE_KEY='cardwars-map-editor-v1';
+let map=null;
+let realmCities=new Map();
+let cityRealm=new Map();
+let ready=false;
+let selectedA='';
+let selectedB='';
+let edits={version:'cardwars-map-editor-v1',removedBorders:[],drawnBorders:[],eraseStrokes:[]};
+let undoStack=[];
+let redoStack=[];
+let draft=null;
+let hoverPoint=null;
+let overlay={covers:null,lines:null,draft:null};
+
+function cityName(id){
+  const c=citiesById.get(id);
+  return c ? String(c.name||id).split('/')[0].trim() : id;
+}
+function pairKey(a,b){
+  const ra=cityRealm.get(a)||'', rb=cityRealm.get(b)||'';
+  const ids=[a,b].sort();
+  return (ra===rb ? ra : [ra,rb].sort().join(' ↔ '))+'|'+ids.join('|');
+}
+function cloneEdits(){return JSON.parse(JSON.stringify(edits));}
+function snapshot(){
+  undoStack.push(cloneEdits());
+  if(undoStack.length>80)undoStack.shift();
+  redoStack=[];
+}
+function save(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(edits));}catch(e){}
+  updateButtons();
+}
+function loadSaved(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return;
+    const parsed=JSON.parse(raw);
+    if(parsed&&parsed.version==='cardwars-map-editor-v1'){
+      edits.removedBorders=Array.isArray(parsed.removedBorders)?parsed.removedBorders:[];
+      edits.drawnBorders=Array.isArray(parsed.drawnBorders)?parsed.drawnBorders:[];
+      edits.eraseStrokes=Array.isArray(parsed.eraseStrokes)?parsed.eraseStrokes:[];
+    }
+  }catch(e){}
+}
+function setStatus(text){statusEl.textContent=text;}
+function updateButtons(){
+  undoBtn.disabled=!undoStack.length;
+  redoBtn.disabled=!redoStack.length;
+  exportBtn.disabled=!ready;
+  clearBtn.disabled=!ready||(!edits.removedBorders.length&&!edits.drawnBorders.length&&!edits.eraseStrokes.length);
+}
+function setDrawing(on,text){
+  host.classList.toggle('editor-drawing',on);
+  drawBanner.classList.toggle('visible',on);
+  drawBannerText.textContent=text||'Klik punten op de kaart.';
+}
+function makeSvg(tag,attrs){
+  const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  Object.keys(attrs||{}).forEach(function(k){el.setAttribute(k,String(attrs[k]));});
+  return el;
+}
+function ensureOverlay(){
+  if(!map||!map.svg)return;
+  let covers=map.svg.querySelector('#map-editor-covers');
+  let lines=map.svg.querySelector('#map-editor-lines');
+  let d=map.svg.querySelector('#map-editor-draft');
+  if(!covers){covers=makeSvg('g',{id:'map-editor-covers','pointer-events':'none'});map.svg.appendChild(covers);}
+  if(!lines){lines=makeSvg('g',{id:'map-editor-lines','pointer-events':'none'});map.svg.appendChild(lines);}
+  if(!d){d=makeSvg('g',{id:'map-editor-draft','pointer-events':'none'});map.svg.appendChild(d);}
+  overlay={covers:covers,lines:lines,draft:d};
+}
+function pathFromPoints(points){
+  if(!points||points.length<2)return '';
+  return 'M'+points.map(function(p){return Number(p[0]).toFixed(3)+','+Number(p[1]).toFixed(3);}).join('L');
+}
+function parseCellPoints(d){
+  const nums=(String(d||'').match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
+  const out=[];
+  for(let i=0;i+1<nums.length;i+=2)out.push([nums[i],nums[i+1]]);
+  return out;
+}
+function segmentKey(a,b){
+  const ak=a[0].toFixed(3)+','+a[1].toFixed(3);
+  const bk=b[0].toFixed(3)+','+b[1].toFixed(3);
+  return ak<bk?ak+'|'+bk:bk+'|'+ak;
+}
+function sharedSegments(aId,bId){
+  if(!map||!map.svg)return [];
+  const a=map.svg.querySelector('.city-territory-cell[data-city="'+aId+'"]');
+  const b=map.svg.querySelector('.city-territory-cell[data-city="'+bId+'"]');
+  if(!a||!b)return [];
+  const pa=parseCellPoints(a.getAttribute('d'));
+  const pb=parseCellPoints(b.getAttribute('d'));
+  const ma=new Map();
+  for(let i=0;i<pa.length;i++){
+    const p=pa[i],q=pa[(i+1)%pa.length];
+    ma.set(segmentKey(p,q),[p,q]);
+  }
+  const result=[];
+  for(let i=0;i<pb.length;i++){
+    const p=pb[i],q=pb[(i+1)%pb.length];
+    const hit=ma.get(segmentKey(p,q));
+    if(hit)result.push(hit);
+  }
+  return result;
+}
+function realmFill(realm){
+  if(!map||!map.svg)return '#34443f';
+  const nodes=map.svg.querySelectorAll('.territory[data-realm]');
+  for(const n of nodes)if(n.dataset.realm===realm)return n.getAttribute('fill')||'#34443f';
+  return '#34443f';
+}
+function renderCovers(){
+  ensureOverlay();
+  overlay.covers.innerHTML='';
+  edits.removedBorders.forEach(function(item){
+    if(item.realmA!==item.realmB)return;
+    const segs=sharedSegments(item.a,item.b);
+    const fill=realmFill(item.realmA);
+    segs.forEach(function(seg){
+      const p=makeSvg('path',{
+        d:'M'+seg[0][0].toFixed(3)+','+seg[0][1].toFixed(3)+'L'+seg[1][0].toFixed(3)+','+seg[1][1].toFixed(3),
+        fill:'none',stroke:fill,'stroke-width':'3.4','stroke-linecap':'round','vector-effect':'non-scaling-stroke'
+      });
+      overlay.covers.appendChild(p);
+    });
+  });
+}
+function renderLines(){
+  ensureOverlay();
+  overlay.lines.innerHTML='';
+  edits.drawnBorders.forEach(function(item){
+    const p=makeSvg('path',{
+      d:pathFromPoints(item.points),fill:'none',stroke:'#f1d27f','stroke-width':'1.55',
+      'stroke-linejoin':'round','stroke-linecap':'round','vector-effect':'non-scaling-stroke'
+    });
+    overlay.lines.appendChild(p);
+  });
+  edits.eraseStrokes.forEach(function(item){
+    const p=makeSvg('path',{
+      d:pathFromPoints(item.points),fill:'none',stroke:'#df7869','stroke-width':'2.2',
+      'stroke-dasharray':'4 2','stroke-linejoin':'round','stroke-linecap':'round','vector-effect':'non-scaling-stroke'
+    });
+    overlay.lines.appendChild(p);
+  });
+}
+function renderDraft(){
+  ensureOverlay();
+  overlay.draft.innerHTML='';
+  if(!draft||!draft.points.length)return;
+  const pts=draft.points.slice();
+  if(hoverPoint)pts.push(hoverPoint);
+  if(pts.length<2)return;
+  overlay.draft.appendChild(makeSvg('path',{
+    d:pathFromPoints(pts),fill:'none',
+    stroke:draft.kind==='erase'?'#ff8f7e':'#fff0a8',
+    'stroke-width':draft.kind==='erase'?'2.5':'1.7',
+    'stroke-dasharray':draft.kind==='erase'?'4 2':'',
+    'stroke-linejoin':'round','stroke-linecap':'round','vector-effect':'non-scaling-stroke'
+  }));
+}
+function renderHighlights(){
+  if(!map||!map.svg)return;
+  map.svg.querySelectorAll('.city-territory-cell.editor-selected-a,.city-territory-cell.editor-selected-b').forEach(function(n){
+    n.classList.remove('editor-selected-a','editor-selected-b');
+  });
+  if(selectedA){
+    const a=map.svg.querySelector('.city-territory-cell[data-city="'+selectedA+'"]');
+    if(a)a.classList.add('editor-selected-a');
+  }
+  if(selectedB){
+    const b=map.svg.querySelector('.city-territory-cell[data-city="'+selectedB+'"]');
+    if(b)b.classList.add('editor-selected-b');
+  }
+}
+function labelForChange(item,type){
+  if(type==='remove')return 'Verwijderd: '+cityName(item.a)+' ↔ '+cityName(item.b);
+  if(type==='erase')return 'Gum: '+cityName(item.a||'')+(item.b?' ↔ '+cityName(item.b):'');
+  if(item.b)return 'Getekend: '+cityName(item.a)+' ↔ '+cityName(item.b);
+  return 'Vrije grens bij '+cityName(item.a||'gebied');
+}
+function renderChanges(){
+  changesList.innerHTML='';
+  const rows=[];
+  edits.removedBorders.forEach(function(item,i){rows.push({type:'remove',item:item,index:i});});
+  edits.drawnBorders.forEach(function(item,i){rows.push({type:'draw',item:item,index:i});});
+  edits.eraseStrokes.forEach(function(item,i){rows.push({type:'erase',item:item,index:i});});
+  if(!rows.length){
+    const p=document.createElement('p');
+    p.className='editor-help';
+    p.textContent='Nog geen wijzigingen.';
+    changesList.appendChild(p);
+  }else{
+    rows.forEach(function(row){
+      const div=document.createElement('div');div.className='editor-change';
+      const text=document.createElement('div');
+      const strong=document.createElement('strong');strong.textContent=labelForChange(row.item,row.type);
+      const small=document.createElement('span');
+      small.textContent=(row.item.realmA||'')+(row.item.realmB&&row.item.realmB!==row.item.realmA?' ↔ '+row.item.realmB:'');
+      text.append(strong,small);
+      const btn=document.createElement('button');btn.type='button';btn.className='editor-mini';btn.textContent='×';btn.title='Wijziging verwijderen';
+      btn.dataset.type=row.type;btn.dataset.index=String(row.index);
+      div.append(text,btn);changesList.appendChild(div);
+    });
+  }
+  renderCovers();renderLines();renderDraft();renderHighlights();updateButtons();
+  const total=edits.removedBorders.length+edits.drawnBorders.length+edits.eraseStrokes.length;
+  setStatus('Klaar · '+total+' wijziging'+(total===1?'':'en')+' · automatisch lokaal opgeslagen');
+}
+function populateRealms(){
+  realmCities=new Map();cityRealm=new Map();
+  map.svg.querySelectorAll('.city-territory-cell[data-city][data-realm]').forEach(function(n){
+    const id=n.dataset.city,realm=n.dataset.realm;
+    if(!realmCities.has(realm))realmCities.set(realm,[]);
+    if(!realmCities.get(realm).includes(id))realmCities.get(realm).push(id);
+    cityRealm.set(id,realm);
+  });
+  const realms=[...realmCities.keys()].sort(function(a,b){return a.localeCompare(b,'nl');});
+  realmSelect.innerHTML='';
+  realms.forEach(function(realm){
+    const o=document.createElement('option');o.value=realm;o.textContent=realm;realmSelect.appendChild(o);
+  });
+  const preferred=realms.includes('Crown of Castile')?'Crown of Castile':realms[0];
+  realmSelect.value=preferred||'';
+  realmSelect.disabled=!realms.length;
+  refreshCityA();
+}
+function refreshCityA(preferred){
+  const realm=realmSelect.value;
+  const ids=(realmCities.get(realm)||[]).slice().sort(function(a,b){return cityName(a).localeCompare(cityName(b),'nl');});
+  cityASelect.innerHTML='';
+  ids.forEach(function(id){
+    const o=document.createElement('option');o.value=id;o.textContent=cityName(id);cityASelect.appendChild(o);
+  });
+  if(preferred&&ids.includes(preferred))cityASelect.value=preferred;
+  selectedA=cityASelect.value||'';
+  cityASelect.disabled=!ids.length;
+  refreshCityB();
+}
+function refreshCityB(preferred){
+  selectedA=cityASelect.value||selectedA||'';
+  const neighbors=selectedA&&map.neighboursOf?map.neighboursOf(selectedA):[];
+  const ids=neighbors.filter(function(id){return citiesById.has(id);}).sort(function(a,b){
+    const sameA=(cityRealm.get(a)===cityRealm.get(selectedA))?0:1;
+    const sameB=(cityRealm.get(b)===cityRealm.get(selectedA))?0:1;
+    return sameA-sameB||cityName(a).localeCompare(cityName(b),'nl');
+  });
+  cityBSelect.innerHTML='';
+  const empty=document.createElement('option');empty.value='';empty.textContent=ids.length?'— kies buur —':'— geen buur gevonden —';cityBSelect.appendChild(empty);
+  ids.forEach(function(id){
+    const realm=cityRealm.get(id)||'';
+    const o=document.createElement('option');o.value=id;
+    o.textContent=cityName(id)+(realm!==cityRealm.get(selectedA)?' · LANDGRENS · '+realm:'');
+    cityBSelect.appendChild(o);
+  });
+  if(preferred&&ids.includes(preferred))cityBSelect.value=preferred;
+  selectedB=cityBSelect.value||'';
+  updatePairInfo();
+  renderHighlights();
+}
+function updatePairInfo(){
+  selectedA=cityASelect.value||'';
+  selectedB=cityBSelect.value||'';
+  const hasA=!!selectedA,hasB=!!selectedB;
+  focusABtn.disabled=!hasA;focusBBtn.disabled=!hasB;
+  drawFreeBtn.disabled=!hasA;eraseStrokeBtn.disabled=!hasA;
+  removePairBtn.disabled=!(hasA&&hasB);drawPairBtn.disabled=!(hasA&&hasB);
+  if(!hasA){pairInfo.textContent='Selecteer eerst een provincie.';return;}
+  if(!hasB){pairInfo.textContent=cityName(selectedA)+' geselecteerd. Kies een buur voor een gedeelde grens.';return;}
+  const ra=cityRealm.get(selectedA)||'',rb=cityRealm.get(selectedB)||'';
+  pairInfo.textContent=cityName(selectedA)+' ↔ '+cityName(selectedB)+(ra===rb?' · interne provinciegrens':' · landsgrens tussen '+ra+' en '+rb);
+}
+function selectCityA(id,focus){
+  if(!id||!cityRealm.has(id))return;
+  const realm=cityRealm.get(id);
+  realmSelect.value=realm;
+  refreshCityA(id);
+  selectedA=id;cityASelect.value=id;refreshCityB();
+  if(focus&&map.focus)map.focus(id);
+  renderHighlights();
+}
+function addRemovedPair(){
+  if(!selectedA||!selectedB)return;
+  const key=pairKey(selectedA,selectedB);
+  if(edits.removedBorders.some(function(x){return x.key===key;}))return;
+  snapshot();
+  edits.removedBorders.push({
+    key:key,a:selectedA,b:selectedB,
+    realmA:cityRealm.get(selectedA)||'',realmB:cityRealm.get(selectedB)||'',
+    cityA:cityName(selectedA),cityB:cityName(selectedB)
+  });
+  save();renderChanges();
+}
+function startDraft(kind){
+  if(!selectedA)return;
+  if(kind==='pair'&&!selectedB)return;
+  draft={
+    kind:kind,points:[],
+    a:selectedA,b:kind==='pair'?selectedB:'',
+    realmA:cityRealm.get(selectedA)||'',
+    realmB:kind==='pair'?(cityRealm.get(selectedB)||''):(cityRealm.get(selectedA)||'')
+  };
+  hoverPoint=null;
+  setDrawing(true,kind==='erase'?'Teken met de gum over de lijn die weg moet.':'Klik punt voor punt langs de nieuwe grens.');
+  renderDraft();
+}
+function cancelDraft(){
+  draft=null;hoverPoint=null;setDrawing(false);renderDraft();
+}
+function finishDraft(){
+  if(!draft||draft.points.length<2){setStatus('Minstens twee punten nodig voor een lijn.');return;}
+  snapshot();
+  if(draft.kind==='pair'){
+    const key=pairKey(draft.a,draft.b);
+    if(!edits.removedBorders.some(function(x){return x.key===key;})){
+      edits.removedBorders.push({
+        key:key,a:draft.a,b:draft.b,realmA:draft.realmA,realmB:draft.realmB,
+        cityA:cityName(draft.a),cityB:cityName(draft.b)
+      });
+    }
+    edits.drawnBorders.push({
+      id:'line-'+Date.now(),type:draft.realmA===draft.realmB?'province-border':'country-border',
+      key:key,a:draft.a,b:draft.b,realmA:draft.realmA,realmB:draft.realmB,
+      cityA:cityName(draft.a),cityB:cityName(draft.b),points:draft.points
+    });
+  }else if(draft.kind==='free'){
+    edits.drawnBorders.push({
+      id:'line-'+Date.now(),type:'free-border',a:draft.a,b:'',
+      realmA:draft.realmA,realmB:draft.realmA,cityA:cityName(draft.a),points:draft.points
+    });
+  }else if(draft.kind==='erase'){
+    edits.eraseStrokes.push({
+      id:'erase-'+Date.now(),type:'erase-stroke',a:draft.a,b:selectedB||'',
+      realmA:draft.realmA,realmB:selectedB?(cityRealm.get(selectedB)||''):draft.realmA,
+      cityA:cityName(draft.a),cityB:selectedB?cityName(selectedB):'',points:draft.points
+    });
+  }
+  draft=null;hoverPoint=null;setDrawing(false);save();renderChanges();
+}
+function mapPointFromEvent(e){return map.mapPoint(e.clientX,e.clientY);}
+function exportJson(){
+  const payload={
+    version:'cardwars-map-editor-v1',
+    createdAt:new Date().toISOString(),
+    baseMap:'assets/atlas.json',
+    coordinateSystem:'Cardwars SVG map coordinates; lon=(x/12)-22, lat=72-(y/15)',
+    note:'Import this file through the Cardwars map editing workflow. Drawn lines are source instructions; country-border changes require topology rebuild.',
+    removedBorders:edits.removedBorders,
+    drawnBorders:edits.drawnBorders,
+    eraseStrokes:edits.eraseStrokes
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)+'\n'],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='cardwars-map-edits.json';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  setStatus('JSON geëxporteerd. Bewaar dit bestand en upload het later in de chat om te importeren.');
+}
+function importJson(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(){
+    try{
+      const x=JSON.parse(String(reader.result||''));
+      if(!x||x.version!=='cardwars-map-editor-v1')throw new Error('Onbekend formaat');
+      snapshot();
+      edits={
+        version:'cardwars-map-editor-v1',
+        removedBorders:Array.isArray(x.removedBorders)?x.removedBorders:[],
+        drawnBorders:Array.isArray(x.drawnBorders)?x.drawnBorders:[],
+        eraseStrokes:Array.isArray(x.eraseStrokes)?x.eraseStrokes:[]
+      };
+      save();renderChanges();setStatus('JSON geïmporteerd.');
+    }catch(err){setStatus('Import mislukt: '+err.message);}
+    importFile.value='';
+  };
+  reader.readAsText(file);
+}
+
+map=new WorldMap(host,mapState,function(id){if(!draft)selectCityA(id,false);},function(info){
+  if(!draft&&info&&info.realm&&realmCities.has(info.realm)){realmSelect.value=info.realm;refreshCityA();}
+});
+
+async function waitUntilReady(){
+  const started=Date.now();
+  while(Date.now()-started<15000){
+    if(map.svg&&map.svg.querySelectorAll('.city-territory-cell[data-city]').length){
+      ready=true;ensureOverlay();populateRealms();loadSaved();renderChanges();
+      [realmSelect,cityASelect,cityBSelect,drawFreeBtn,eraseStrokeBtn].forEach(function(el){el.disabled=false;});
+      updatePairInfo();setStatus('Klaar · selecteer een provincie en begin te tekenen.');
+      return;
+    }
+    await new Promise(function(resolve){setTimeout(resolve,120);});
+  }
+  setStatus('De kaarteditor kon de provinciegrenzen niet laden. Herlaad de pagina.');
+}
+waitUntilReady();
+
+realmSelect.addEventListener('change',function(){refreshCityA();});
+cityASelect.addEventListener('change',function(){selectedA=cityASelect.value;refreshCityB();});
+cityBSelect.addEventListener('change',function(){selectedB=cityBSelect.value;updatePairInfo();renderHighlights();});
+focusABtn.addEventListener('click',function(){if(selectedA&&map.focus)map.focus(selectedA);});
+focusBBtn.addEventListener('click',function(){if(selectedB&&map.focus)map.focus(selectedB);});
+removePairBtn.addEventListener('click',addRemovedPair);
+drawPairBtn.addEventListener('click',function(){startDraft('pair');});
+drawFreeBtn.addEventListener('click',function(){startDraft('free');});
+eraseStrokeBtn.addEventListener('click',function(){startDraft('erase');});
+finishLineBtn.addEventListener('click',finishDraft);
+cancelLineBtn.addEventListener('click',cancelDraft);
+dropPointBtn.addEventListener('click',function(){
+  if(!draft||!draft.points.length)return;
+  draft.points.pop();renderDraft();
+});
+undoBtn.addEventListener('click',function(){
+  if(!undoStack.length)return;
+  redoStack.push(cloneEdits());edits=undoStack.pop();save();renderChanges();
+});
+redoBtn.addEventListener('click',function(){
+  if(!redoStack.length)return;
+  undoStack.push(cloneEdits());edits=redoStack.pop();save();renderChanges();
+});
+clearBtn.addEventListener('click',function(){
+  if(!confirm('Alle editorwijzigingen wissen? De live gamekaart verandert niet.'))return;
+  snapshot();edits={version:'cardwars-map-editor-v1',removedBorders:[],drawnBorders:[],eraseStrokes:[]};save();renderChanges();
+});
+exportBtn.addEventListener('click',exportJson);
+importFile.addEventListener('change',function(){importJson(importFile.files&&importFile.files[0]);});
+changesList.addEventListener('click',function(e){
+  const btn=e.target.closest('button[data-type]');if(!btn)return;
+  const index=Number(btn.dataset.index),type=btn.dataset.type;snapshot();
+  if(type==='remove')edits.removedBorders.splice(index,1);
+  else if(type==='draw')edits.drawnBorders.splice(index,1);
+  else if(type==='erase')edits.eraseStrokes.splice(index,1);
+  save();renderChanges();
+});
+
+host.addEventListener('pointerdown',function(e){
+  if(!draft||e.button!==0)return;
+  if(e.target.closest('.map-controls,.map-top,.map-bottom'))return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  draft.points.push(mapPointFromEvent(e));hoverPoint=null;renderDraft();
+},true);
+host.addEventListener('pointermove',function(e){
+  if(!draft||!draft.points.length)return;
+  hoverPoint=mapPointFromEvent(e);renderDraft();
+},true);
+host.addEventListener('dblclick',function(e){
+  if(!draft)return;
+  e.preventDefault();e.stopPropagation();finishDraft();
+},true);
+root.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&draft){e.preventDefault();cancelDraft();}
+  if(e.key==='Enter'&&draft){e.preventDefault();finishDraft();}
+});
+</script>
+</body>
+</html>
