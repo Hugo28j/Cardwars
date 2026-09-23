@@ -40,7 +40,7 @@ jobs:
       - name: Commit generated atlas
         shell: bash
         run: |
-          if git diff --quiet -- assets/atlas-1300-v2.json assets/map-land.json; then
+          if [ -z "$(git status --porcelain -- assets/atlas-1300-v2.json assets/map-land.json)" ]; then
             echo "Generated atlas already up to date."
             exit 0
           fi
