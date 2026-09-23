@@ -15,7 +15,7 @@ def parse(d):
         if len(pts)>=3: result=result.symmetric_difference(Polygon(pts))
     return result
 
-atlas=json.loads((ROOT/'assets/atlas.json').read_text())
+atlas=json.loads((ROOT/'assets/atlas-1300-v2.json').read_text())
 land=parse(json.loads((ROOT/'assets/map-land.json').read_text())['d'])
 states=[f for f in atlas if not f.get('outline')]
 geoms=[parse(f['d']) for f in states]
