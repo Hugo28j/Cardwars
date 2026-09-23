@@ -38,10 +38,11 @@ export function acceptance(game,a,b,action,powers={}){
  const blocked=pair.war?'At war':ours.rival||theirs.rival?'Rivalry prevents cooperation':action==='alliance'&&pair.truceUntil>(game.day||0)?'Truce still active':null;
  const score=Math.round(reasons.reduce((s,[,v])=>s+v,0));return {score,reasons:reasons.map(([label,v])=>({label,value:round(v)})),accepted:!blocked&&score>=0,blocked};
 }
+
 export const DIP_ACTIONS={
- improve:'Improve relations',curry:'Curry favors',gift:'Send gift (ƒ5)',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',embargo:'Start / lift embargo',subsidy:'Start / stop subsidy (ƒ1/month)',peace:'Offer white peace',war:'Declare war (no casus belli)'
+ improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',embargo:'Start / lift embargo',subsidy:'Start / change subsidy',peace:'Offer white peace',war:'Declare war (no casus belli)'
 };
-export function performAction(game,a,b,action,powers={}){
+export function performAction(game,a,b,action,powers={},options={}){
  if(!DIP_ACTIONS[action])return {ok:false,message:'Unknown action.'};
  const {pair,ours,theirs}=relation(game,a,b),day=Number(game.day)||0;
  const fail=message=>({ok:false,message});
@@ -51,6 +52,7 @@ export function performAction(game,a,b,action,powers={}){
   if(action==='alliance'&&pair.alliance||action==='access'&&ours.access||action==='trade'&&pair.trade)return fail('This treaty is already active.');
   const result=acceptance(game,a,b,action,powers);if(!result.accepted)return fail(result.blocked||`Proposal refused (score ${result.score}; requires 0).`);
  }
+ let customMessage='';
  if(action==='alliance'){pair.alliance=true;memory(theirs,'Alliance signed',15,day,.25);}
  if(action==='breakAlliance'){
   if(!pair.alliance)return fail('No alliance to end.');pair.alliance=false;theirs.trust=clamp(theirs.trust-15,0,100);memory(theirs,'Broke alliance',-40,day,.5);pair.truceUntil=Math.max(pair.truceUntil,day+365);
@@ -59,15 +61,16 @@ export function performAction(game,a,b,action,powers={}){
   if(action==='curry'&&!pair.alliance)return fail('An alliance is required to curry favors.');
   const missions=Object.values(diplomacyState(game).pairs).filter(p=>p.directions[a]?.mission).length;
   const mission=action==='improve'?'improve':'curry';
-  if(ours.mission===mission)ours.mission=null;
-  else {if(!ours.mission&&missions>=2)return fail('Both diplomats are busy. Recall one first.');ours.mission=mission;}
+  if(ours.mission===mission){ours.mission=null;customMessage=`${DIP_ACTIONS[action]}: envoy recalled.`;}
+  else {if(!ours.mission&&missions>=2)return fail('Both diplomats are busy. Recall one first.');ours.mission=mission;customMessage=`${DIP_ACTIONS[action]}: envoy assigned.`;}
  }
  if(action==='gift'){
+  const amount=round(clamp(Number(options.amount)||5,.01,100000));
   const balance=a===PLAYER_REALM?game.florins:game.diplomacy.aiTreasuries?.[a];
-  if(!Number.isFinite(balance)||balance<5)return fail('Not enough Florins.');
-  if(a===PLAYER_REALM)game.florins=round(balance-5);else game.diplomacy.aiTreasuries[a]=round(balance-5);
-  game.diplomacy.aiTreasuries??={};if(b===PLAYER_REALM)game.florins=round(game.florins+5);else game.diplomacy.aiTreasuries[b]=round((game.diplomacy.aiTreasuries[b]||0)+5);
-  memory(theirs,'Received gifts',15,day,1);ours.cooldowns.gift=day+90;
+  if(!Number.isFinite(balance)||balance<amount)return fail('Not enough Florins.');
+  if(a===PLAYER_REALM)game.florins=round(balance-amount);else game.diplomacy.aiTreasuries[a]=round(balance-amount);
+  game.diplomacy.aiTreasuries??={};if(b===PLAYER_REALM)game.florins=round(game.florins+amount);else game.diplomacy.aiTreasuries[b]=round((game.diplomacy.aiTreasuries[b]||0)+amount);
+  const opinionGain=clamp(Math.round(amount*3),1,60);memory(theirs,'Received gifts',opinionGain,day,1);ours.cooldowns.gift=day+90;customMessage=`Sent a gift of ƒ${amount.toFixed(2)}.`;
  }
  if(action==='trust'){if(!pair.alliance||ours.favors<10)return fail('Requires an alliance and 10 favors.');if(theirs.trust>=100)return fail('Trust is already at its maximum.');ours.favors=round(ours.favors-10);theirs.trust=clamp(theirs.trust+5,0,100);}
  if(action==='rival'){
@@ -80,7 +83,14 @@ export function performAction(game,a,b,action,powers={}){
  if(action==='offerAccess')theirs.access=!theirs.access;
  if(action==='trade'){if(ours.embargo||theirs.embargo)return fail('Lift embargoes first.');pair.trade=true;}
  if(action==='embargo'){ours.embargo=!ours.embargo;if(ours.embargo){pair.trade=false;memory(theirs,'Embargo',-20,day,.5);}}
- if(action==='subsidy'){if(!ours.subsidy&&(a===PLAYER_REALM?game.florins:game.diplomacy.aiTreasuries?.[a])<1)return fail('At least ƒ1 is needed.');ours.subsidy=ours.subsidy?0:1;}
+ if(action==='subsidy'){
+  if(options.stop===true){ours.subsidy=0;customMessage='Subsidy stopped.';}
+  else{
+   const amount=round(clamp(Number(options.amount)||Number(ours.subsidy)||1,.01,100000)),balance=a===PLAYER_REALM?game.florins:game.diplomacy.aiTreasuries?.[a];
+   if(!Number.isFinite(balance)||balance<amount)return fail(`At least ƒ${amount.toFixed(2)} is needed.`);
+   ours.subsidy=amount;customMessage=`Subsidy set to ƒ${amount.toFixed(2)}/month.`;
+  }
+ }
  if(action==='war'){
   if(pair.truceUntil>day)return fail(`Truce: ${pair.truceUntil-day} days remaining.`);
   if(pair.alliance)return fail('End the alliance first.');
@@ -94,7 +104,7 @@ export function performAction(game,a,b,action,powers={}){
   if(day-pair.war.started<180)return fail('White peace becomes available after 180 days of war.');
   pair.war=null;pair.truceUntil=day+365*5;memory(theirs,'Peace agreed',10,day,.25);
  }
- syncLegacy(game);return {ok:true,message:`${DIP_ACTIONS[action]}: completed.`};
+ syncLegacy(game);return {ok:true,message:customMessage||`${DIP_ACTIONS[action]}: completed.`};
 }
 export function syncLegacy(game){
  const d=game.diplomacy;d.relations??={};d.alliances??={};d.wars??={};
