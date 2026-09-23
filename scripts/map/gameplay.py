@@ -59,6 +59,10 @@ def apply_gameplay(resolved, geometries, land, geo, polygons):
     note('Kingdom of Bohemia','Gameplay: the tiny user-marked wedge on the south-west Bohemian border is incorporated into Bohemia.')
 
 
+    # Preserve the later Cardwars repartition: Frankfurt is part of Mainz on the gameplay map.
+    merge('Free Imperial City of Frankfurt','Archbishopric of Mainz')
+    note('Archbishopric of Mainz','Gameplay: Frankfurt is incorporated into Mainz for the current Cardwars map repartition.')
+
     # Gameplay consolidation requested for northern Lombardy / Swiss edge.
     # Waldstatte and Como cease to be separate map states and are absorbed by Milan.
     merge('Waldstatte','Lordship of Milan')
