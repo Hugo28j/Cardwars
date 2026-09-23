@@ -290,22 +290,37 @@ function initializeDiplomacyWorld1300(game){
  for(const name of countries){relation(game,PLAYER_REALM,name);const near=countries.filter(c=>c!==name).sort((a,b)=>Math.hypot(centers[a].lat-centers[name].lat,centers[a].lon-centers[name].lon)-Math.hypot(centers[b].lat-centers[name].lat,centers[b].lon-centers[name].lon)).slice(0,2);for(const other of near){const r=relation(game,name,other);r.ours.mission='improve';}}
  n.worldInitialized=true;
 }
-function runAdvancedDiplomacy1300(action){
- const g=profile.activeGame,c=gameDiplomacyCountry;if(!g||!c)return;ensureDiplomacyCountry1300(g,c);initializeDiplomacyWorld1300(g);
- if(action==='war'){showDialog(`<div class="simple-dialog"><h2>Declare war on ${esc(c)}?</h2><p>No casus belli: +15 aggressive expansion with known countries, −1 diplomatic reputation and −30 trust with the defender. Trade, access and subsidies end.</p><p>This version tracks diplomatic war status; battles and territorial peace demands are not available yet.</p><button data-action="dip-confirm-war" data-country="${esc(c)}">DECLARE WAR</button></div>`);return;}
- const result=performAction(g,PLAYER_REALM,c,action,diplomacyPowers1300(g,c));
- if(result.ok){diplomacyLog1300(g,c,result.message);save();}renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(result.message);
+function runAdvancedDiplomacy1300(action,options={}){
+ const g=profile.activeGame,c=gameDiplomacyCountry;if(!g||!c)return null;ensureDiplomacyCountry1300(g,c);initializeDiplomacyWorld1300(g);
+ const result=performAction(g,PLAYER_REALM,c,action,diplomacyPowers1300(g,c),options);
+ if(result.ok){
+  diplomacyLog1300(g,c,result.message);save();
+ }
+ renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(result.message);return result;
 }
 function advancedDiplomacyHTML1300(game,country){
- const {pair,ours,theirs}=relation(game,PLAYER_REALM,country),assessment=acceptance(game,PLAYER_REALM,country,'alliance',diplomacyPowers1300(game,country)),signed=n=>(n>0?'+':'')+n.toFixed(1),slots=relationSlots(game,PLAYER_REALM),world=Object.values(diplomacyState(game).pairs).filter(p=>!p.countries.includes(PLAYER_REALM)&&p.alliance);
+ const {pair,ours,theirs}=relation(game,PLAYER_REALM,country),slots=relationSlots(game,PLAYER_REALM);
  const active={improve:ours.mission==='improve',curry:ours.mission==='curry',alliance:pair.alliance,rival:ours.rival,guarantee:ours.guarantee,access:ours.access,offerAccess:theirs.access,trade:pair.trade,embargo:ours.embargo,subsidy:!!ours.subsidy};
- return `<section class="dip-stat-grid"><div><span>Their opinion of you</span><strong>${signed(opinion(theirs))}</strong></div><div><span>Your opinion of them</span><strong>${signed(opinion(ours))}</strong></div><div><span>Their trust / your trust</span><strong>${theirs.trust.toFixed(1)} / ${ours.trust.toFixed(1)}</strong></div><div><span>Your favors</span><strong>${ours.favors.toFixed(1)}</strong></div><div><span>Their aggressive expansion</span><strong>${theirs.ae.toFixed(1)}</strong></div><div><span>Their attitude</span><strong>${attitude(theirs,diplomacyPlayerStrength1300(game)/Math.max(1,diplomacyCountryStats1300(country).strength))}</strong></div></section>
- <p class="dip-detail-note">Commitments: ${slots}/4 (extra commitments reduce acceptance). Diplomats: ${Object.values(diplomacyState(game).pairs).filter(p=>p.directions[PLAYER_REALM]?.mission).length}/2. ${pair.truceUntil>game.day?'Truce: '+(pair.truceUntil-game.day)+' days remaining.':''}</p>
- <div class="dip-section-title"><span>DIPLOMATIC ACTIONS</span><small>Envoys work monthly; gifts and insults have cooldowns.</small></div>
- <section class="dip-action-grid">${Object.entries(DIP_ACTIONS).filter(([id])=>id!=='peace'||pair.war).map(([id,label])=>{const cooldown=Math.max(0,(ours.cooldowns[id]||0)-game.day),blocked=pair.war&&!['peace','insult'].includes(id)||cooldown>0||id==='breakAlliance'&&!pair.alliance||id==='alliance'&&pair.alliance;return `<button data-action="dip-advanced" data-id="${id}" ${blocked?'disabled':''}><strong>${esc(label)}</strong><small>${cooldown?cooldown+' days cooldown':active[id]?'Active'+(['improve','curry'].includes(id)?' · click to recall':''):id==='improve'?'+3 opinion/month · maximum +100':id==='curry'?'+0.8 extra favors/month':id==='trust'?'+5 trust':id==='peace'?'Five-year truce; requires 180 days of war':id==='guarantee'?'Diplomatic pledge; military intervention comes later':id==='access'||id==='offerAccess'?'Directional permission; army movement comes later':id==='trade'?'Improves acceptance of trade offers':id==='war'?'Review consequences before declaring':''}</small></button>`;}).join('')}</section>
- <section class="dip-score-breakdown"><strong>Alliance score: ${assessment.score>0?'+':''}${assessment.score} · ${assessment.accepted?'WILL ACCEPT':'WILL REFUSE'}</strong><small>Acceptance requires a score of 0 or higher. ${esc(assessment.blocked||'')}</small>${assessment.reasons.map(r=>`<div><span>${esc(r.label)}</span><b class="${r.value>=0?'positive':'negative'}">${signed(r.value)}</b></div>`).join('')}</section>
- <details class="dip-memory"><summary>Their diplomatic memories (${theirs.modifiers.length})</summary>${theirs.modifiers.map(m=>`<p>${esc(m.type)} <b>${signed(m.value)}</b></p>`).join('')||'<p>No memories yet.</p>'}</details>
- <details class="dip-memory"><summary>World alliances (${world.length})</summary>${world.map(p=>`<p>${p.countries.map(esc).join(' ↔ ')}</p>`).join('')||'<p>Neighboring countries send envoys monthly and assess alliances quarterly.</p>'}</details>`;
+ const note=id=>{
+  const cooldown=Math.max(0,(ours.cooldowns[id]||0)-game.day);
+  if(cooldown)return `${cooldown} days cooldown`;
+  if(active[id])return ['improve','curry'].includes(id)?'Active · click to change or recall':'Active';
+  return id==='improve'?'+3 opinion/month · maximum +100':id==='curry'?'+0.8 extra favors/month':id==='gift'?'Choose the gift amount':id==='trust'?'+5 trust for 10 favors':id==='peace'?'Five-year truce; requires 180 days of war':id==='guarantee'?'Pledge to defend their independence':id==='access'||id==='offerAccess'?'Directional military access':id==='trade'?'Create a trade agreement':id==='subsidy'?'Choose a monthly subsidy':id==='war'?'Review the consequences first':'Open options';
+ };
+ const blocked=id=>pair.war&&!['peace','insult'].includes(id)||Math.max(0,(ours.cooldowns[id]||0)-game.day)>0||id==='breakAlliance'&&!pair.alliance||id==='alliance'&&pair.alliance;
+ const standard=Object.entries(DIP_ACTIONS).filter(([id])=>id!=='peace'||pair.war).map(([id,label])=>({id,label,note:note(id),disabled:blocked(id)}));
+ const extra=[
+  {id:'money',label:'Ask for Florins',note:'Choose how many Florins to request',disabled:pair.war},
+  {id:'recognition',label:'Ask for independence recognition',note:'Ask the original realm to recognise your rebel provinces',disabled:pair.war},
+  {id:'sellCity',label:'Sell a city',note:'Choose a city and price',disabled:pair.war||game.ownedCities?.length<=1},
+  {id:'deal',label:'Negotiate an exchange',note:'Trade Florins, goods or a city — including for independence support',disabled:pair.war},
+  {id:'supportIndependence',label:'Ask for support independence',note:'They may promise to help if an original owner tries to reclaim your city',disabled:pair.war}
+ ];
+ const rows=[...standard,...extra];
+ return `<p class="dip-detail-note">Commitments: ${slots}/4 · Diplomats: ${Object.values(diplomacyState(game).pairs).filter(p=>p.directions[PLAYER_REALM]?.mission).length}/2${pair.truceUntil>game.day?` · Truce: ${pair.truceUntil-game.day} days`:''}</p>
+ <div class="dip-section-title compact"><span>DIPLOMATIC ACTIONS</span><small>Click an action to open its options.</small></div>
+ <section class="dip-action-list">${rows.map(x=>`<button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}><span>${esc(x.label)}</span><small>${esc(x.note)}</small></button>`).join('')}</section>
+ <details class="dip-memory"><summary>Their diplomatic memories (${theirs.modifiers.length})</summary>${theirs.modifiers.map(m=>`<p>${esc(m.type)} <b class="${m.value>=0?'positive':'negative'}">${m.value>0?'+':''}${m.value.toFixed(1)}</b></p>`).join('')||'<p>No memories yet.</p>'}</details>`;
 }
 function diplomacyRelationLabel1300(v){return v>=70?'Trusted':v>=35?'Friendly':v>=10?'Cordial':v>-10?'Neutral':v>-35?'Tense':v>-70?'Hostile':'Bitter enemies';}
 function diplomacyLog1300(game,country,text){const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),date=gameDate1300(game.day);d.history.push({country,text,date:`${date.day} ${date.month} ${date.year}`});d.history=d.history.slice(-40);}
