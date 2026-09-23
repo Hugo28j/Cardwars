@@ -1,0 +1,36 @@
+name: Validate map editor
+
+on:
+  push:
+    branches:
+      - tools/map-editor-20260923
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Extract and syntax-check editor module
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('map-editor.html').read_text()
+          m=re.search(r'<script type="module">(.*?)</script>',html,re.S)
+          assert m, 'module script missing'
+          Path('/tmp/map-editor.mjs').write_text(m.group(1))
+          PY
+          node --check /tmp/map-editor.mjs
+      - name: Verify editor dependencies
+        run: |
+          test -f src/map.js
+          test -f src/data1300.js
+          test -f assets/atlas.json
+          grep -q "export class WorldMap" src/map.js
+          grep -q "export const CITIES_1300" src/data1300.js
+      - name: Ensure editor stays standalone
+        run: |
+          ! grep -q "map-editor.html" index.html
