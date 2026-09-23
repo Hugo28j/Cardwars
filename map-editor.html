@@ -74,11 +74,11 @@ body{overflow:hidden}
           <button class="editor-btn editor-mode" id="erase-btn" type="button">⌫ Gum</button>
         </div>
         <div class="editor-field" style="margin-top:12px">
-          <label for="brush-size">Penseelgrootte</label>
+          <label for="brush-size">Gumgrootte</label>
           <div class="editor-brush-row"><input id="brush-size" type="range" min="3" max="18" step="1" value="8"><span class="editor-brush-value" id="brush-value">8 px</span></div>
         </div>
         <div class="editor-callout" id="tool-help"><b>Selecteer / pan:</b> normale kaartbediening. Kies Teken of Gum om echt te schilderen.</div>
-        <p class="editor-help"><b>Teken:</b> linkermuisknop ingedrukt houden en slepen. <b>Gum:</b> hetzelfde in gummodus. <b>Rechtermuisknop + slepen</b> is altijd gum, zelfs vanuit panmodus. De zwarte lijn én glow worden samen weggegumd.</p>
+        <p class="editor-help"><b>Teken:</b> linkermuisknop ingedrukt houden en slepen; de tekendikte staat vast op dezelfde 0.90 px als de game-provinciegrens. <b>Gum:</b> gebruik de schuifregelaar voor de gumgrootte. <b>Rechtermuisknop + slepen</b> is altijd gum.</p>
       </section>
       <section class="editor-section">
         <h2>3 · Wijzigingen</h2>
@@ -99,7 +99,7 @@ body{overflow:hidden}
 </div>
 
 <script type="module">
-import {WorldMap} from './src/map.js?v=20260923-map-paint-v3';
+import {WorldMap} from './src/map.js?v=20260923-editor-game-line-v1';
 import {CITIES_1300} from './src/data1300.js?v=20260922-army-five-percent-v5';
 
 const host=document.getElementById('editor-map');
@@ -145,7 +145,7 @@ function setMode(next){
   [panBtn,drawBtn,eraseBtn].forEach(b=>b.classList.remove('active'));
   host.classList.remove('paint-draw','paint-erase');
   toolPill.classList.remove('draw','erase');
-  if(mode==='draw'){drawBtn.classList.add('active');host.classList.add('paint-draw');toolPill.classList.add('draw');toolPill.textContent='✏️ Teken grens';toolHelp.innerHTML='<b>Teken:</b> houd links ingedrukt en sleep. Je krijgt onmiddellijk een zwarte grens met glow.';}
+  if(mode==='draw'){drawBtn.classList.add('active');host.classList.add('paint-draw');toolPill.classList.add('draw');toolPill.textContent='✏️ Teken grens';toolHelp.innerHTML='<b>Teken:</b> houd links ingedrukt en sleep. De lijn gebruikt exact dezelfde stijl als de provinciegrenzen in de game: #7a8781, 30% opacity en 0.90 px.';}
   else if(mode==='erase'){eraseBtn.classList.add('active');host.classList.add('paint-erase');toolPill.classList.add('erase');toolPill.textContent='⌫ Gum';toolHelp.innerHTML='<b>Gum:</b> houd links ingedrukt en sleep over zwarte lijnen. De lijn én glow verdwijnen echt.';}
   else{panBtn.classList.add('active');toolPill.textContent='✋ Selecteer / pan';toolHelp.innerHTML='<b>Selecteer / pan:</b> klik een provincie of sleep de kaart. Rechtermuisknop + slepen blijft altijd gum.';}
 }
@@ -218,11 +218,13 @@ function applyOperation(op){
     ctx.strokeStyle='#000';ctx.stroke(path);
     ctx.globalCompositeOperation='source-over';
   }else{
+    // Match the real in-game province border exactly.
     ctx.globalCompositeOperation='source-over';
-    ctx.strokeStyle='rgba(0,7,5,.42)';
-    ctx.lineWidth=((Number(op.sizePx)||8)+4)*unit;ctx.stroke(path);
-    ctx.strokeStyle='#111b18';
-    ctx.lineWidth=Math.max(1.15,(Number(op.sizePx)||8)*.24)*unit;ctx.stroke(path);
+    ctx.strokeStyle='#7a8781';
+    ctx.globalAlpha=.30;
+    ctx.lineWidth=.90*unit;
+    ctx.stroke(path);
+    ctx.globalAlpha=1;
   }
 }
 function renderPaint(){
@@ -315,7 +317,7 @@ function endStroke(){
 }
 function pointArray(e){const p=mapPoint(e);return [p.x,p.y];}
 function exportJson(){
-  const payload={version:'cardwars-map-paint-v3',createdAt:new Date().toISOString(),baseMap:'assets/atlas.json',coordinateSystem:'Cardwars SVG coordinates; lon=(x/12)-22, lat=72-(y/15)',instructions:'Replay operations in order. draw = new black border+glow; erase = paint-style removal of both source and previously drawn borders.',operations:edits.operations};
+  const payload={version:'cardwars-map-paint-v3',createdAt:new Date().toISOString(),baseMap:'assets/atlas.json',coordinateSystem:'Cardwars SVG coordinates; lon=(x/12)-22, lat=72-(y/15)',instructions:'Replay operations in order. draw = in-game province border style (#7a8781, opacity 0.30, width 0.90 px); erase = paint-style removal of source and drawn borders.',operations:edits.operations};
   const blob=new Blob([JSON.stringify(payload,null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='cardwars-map-paint.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   setStatus('JSON geëxporteerd. Upload cardwars-map-paint.json later in de chat om dit in de game te verwerken.');
