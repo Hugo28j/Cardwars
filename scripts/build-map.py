@@ -141,16 +141,24 @@ if not missing.is_empty:
 print('Coastline gaps repaired',flush=True)
 apply_gameplay=runpy.run_path(str(ROOT/'scripts/map/gameplay.py'))['apply_gameplay']
 resolved,geometries=apply_gameplay(resolved,geometries,land,geo,polygons)
-# Node every junction before simplifying: adjacent source shapes can encode
-# the same edge with different intermediate vertices.
-faces=[set_precision(g,.001) for g in polygonize(unary_union([g.boundary for g in geometries]))]
-faces=[g for g in faces if not g.is_empty]
+# Node every junction as one shared network before simplifying. Do not snap
+# polygonized faces independently: dense hand-authored regions can otherwise
+# acquire microscopic mismatches along an otherwise identical shared edge.
+network=unary_union([g.boundary for g in geometries])
+faces=[g for g in polygonize(network) if not g.is_empty]
 tree=STRtree(geometries); owners=[]; kept=[]
 for face in faces:
     p=face.representative_point()
-    candidates=[int(i) for i in tree.query(p) if geometries[i].covers(p)]
-    if candidates: kept.append(face);owners.append(max(candidates))
-assert coverage_is_valid(kept), 'Invalid noded coverage'
+    candidates=[int(i) for i in tree.query(p) if geometries[int(i)].covers(p)]
+    if candidates:
+        owner=max(candidates,key=lambda i:geometries[i].intersection(face).area)
+    else:
+        candidates=[int(i) for i in tree.query(face) if geometries[int(i)].intersection(face).area>1e-9]
+        if not candidates:
+            continue
+        owner=max(candidates,key=lambda i:geometries[i].intersection(face).area)
+    kept.append(face);owners.append(owner)
+assert coverage_is_valid(kept), 'Invalid shared boundary network before simplification'
 smooth=coverage_simplify(kept,2.2,simplify_boundary=False)
 groups=[[] for _ in geometries]
 for owner,g in zip(owners,smooth): groups[owner].append(g)
