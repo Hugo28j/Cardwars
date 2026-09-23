@@ -60,6 +60,39 @@ for name,label,x,y,level,points in additions:
 features=[(f,g) for f,g in features if f['name']!='Waldstatte']
 features.append((dict(name='Republic of Genoa',realm='Republic of Genoa',detail=True,label='GENOA',lx=8.9,ly=44.35,labelLevel=2),geo([(7.45,43.72),(7.8,44.1),(8.35,44.5),(8.8,44.65),(9.25,44.6),(9.8,44.3),(10.1,44.05),(9.7,43.8),(8.7,43.6)]).intersection(land)))
 features.append((dict(name='Waldstatte',realm='Waldstatte',detail=True,label='WALDSTÄTTE',lx=8.55,ly=46.9,labelLevel=2),geo([(8.05,46.8),(8.3,47.1),(8.75,47.15),(8.95,46.95),(8.65,46.55),(8.35,46.6)]).intersection(land)))
+
+# Overlay the newer hand-generalized geographic regions from the continuous-map
+# checkpoint. The current live realm set remains authoritative: checkpoint-only
+# states are ignored unless gameplay.py deliberately merges/removes them later.
+REGIONS=runpy.run_path(str(ROOT/'scripts/map/regions.py'))['REGIONS']
+allowed_realms=set(json.loads((ROOT/'scripts/map/expected-realms.json').read_text()))
+region_renames={
+    'Emirate of Granada':'Granada',
+    'Lordship of Ferrara':'Marquisate of Ferrara',
+    'Beylik of Alaiye':'Alaiye',
+    'Beylik of Eshref':'Eshrefids',
+    'Beylik of Hamid':'Hamidids',
+    'Beylik of Ladik':'Ladik',
+    'Pervane Beylik':'Pervane',
+    'Empire of Trebizond':'Trebizond',
+}
+gameplay_intermediate={'Waldstatte','Commune of Como','County of Burgundy','Duchy of Lorraine'}
+accepted=skipped=0
+for region in REGIONS:
+    source_realm=region.get('realm') or region.get('name')
+    realm=region_renames.get(source_realm,source_realm)
+    if realm not in allowed_realms and source_realm not in gameplay_intermediate:
+        skipped+=1
+        continue
+    meta={k:v for k,v in region.items() if k!='points'}
+    if realm!=source_realm:
+        meta['name']=meta['realm']=realm
+    geometry=set_precision(geo(region['points']).intersection(land),.001)
+    if geometry.is_empty:
+        continue
+    features.append((meta,geometry));accepted+=1
+print(f'Continuous geographic overlays: {accepted} accepted, {skipped} checkpoint-only regions skipped.',flush=True)
+
 # Correct anachronistic rank (the duchy title is later than this snapshot).
 for f,g in features:
     if f['name']=='Republic of Genoa' and g.bounds[3]>450 and g.bounds[1]>430: f.update(label='GENOESE CORSICA',labelLevel=3)
@@ -133,11 +166,14 @@ for (f,_),g in zip(resolved,geometries):
     result.append(dict(f,d=path(g)))
 # The imperial envelope supplies one umbrella label, not a second border map.
 for f,g in outlines: result.append(dict(f,d=''))
-(ROOT/'assets/atlas.json').write_text(json.dumps(result,separators=(',',':'),ensure_ascii=False)+'\n')
+(ROOT/'assets/atlas-1300-v2.json').write_text(json.dumps(result,separators=(',',':'),ensure_ascii=False)+'\n')
 assert all(g.is_valid for g in geometries)
 assert coverage_is_valid(geometries), 'Overlapping territories or mismatched borders'
 assert land.symmetric_difference(unary_union(geometries)).area<.05, 'Missing land after topology repair'
 assert len([f['realm'] for f in result if not f.get('outline')])==len(set(f['realm'] for f in result if not f.get('outline'))), 'Duplicate polity layer'
+expected_realms=set(json.loads((ROOT/'scripts/map/expected-realms.json').read_text()))
+built_realms={f['realm'] for f in result if not f.get('outline')}
+assert built_realms==expected_realms, f'Realm set changed: missing={sorted(expected_realms-built_realms)}, added={sorted(built_realms-expected_realms)}'
 # Persist canonical land alongside the paths for an independent coverage test.
 (ROOT/'assets/map-land.json').write_text(json.dumps({'d':path(land)},separators=(',',':'))+'\n')
 print(f'{len(result)} features; continuous polygons; coverage valid: {coverage_is_valid(geometries)}')
