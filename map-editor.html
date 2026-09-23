@@ -47,6 +47,8 @@ body{margin:0;background:#101b1d;color:#e7eadf;font-family:Inter,system-ui,-appl
 #editor-map .city-territory-cell.editor-selected-a{fill:rgba(224,196,118,.18)!important;stroke:#e0c476!important;stroke-width:1.2!important}
 #editor-map .city-territory-cell.editor-selected-b{fill:rgba(130,188,185,.16)!important;stroke:#82bcb9!important;stroke-width:1.1!important}
 #editor-map.editor-drawing #world-map{cursor:crosshair}
+#editor-map.editor-erasing #world-map{cursor:crosshair}
+#editor-map .city-territory-border.editor-erased-border{opacity:0!important;pointer-events:none!important}
 .editor-draw-banner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:12;display:none;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:8px 10px;border-radius:8px;background:rgba(17,29,31,.94);border:1px solid #6a7f7b;color:#eef2e9;font-size:12px}
 .editor-draw-banner.visible{display:flex}
 .editor-draw-banner button{min-height:32px}
@@ -102,9 +104,9 @@ body{margin:0;background:#101b1d;color:#e7eadf;font-family:Inter,system-ui,-appl
         </div>
         <div class="editor-row" style="margin-top:8px">
           <button class="editor-btn" id="draw-free-btn" type="button" disabled>Vrije grens tekenen</button>
-          <button class="editor-btn" id="erase-stroke-btn" type="button" disabled>Gum over lijn</button>
+          <button class="editor-btn" id="erase-stroke-btn" type="button" disabled>Gum: aan/uit</button>
         </div>
-        <p class="editor-help">Bij tekenen: klik punt voor punt op de kaart. Gebruik daarna <b>Lijn afronden</b>. De gum markeert een lijnstuk dat bij import verwijderd moet worden.</p>
+        <p class="editor-help">Bij tekenen: klik punt voor punt op de kaart en rond af. <b>Gummen:</b> houd altijd de rechtermuisknop ingedrukt en sleep over een provinciegrens, of zet <b>Gum: aan/uit</b> aan en gum met de linkermuisknop. De echte lijn verdwijnt meteen.</p>
       </section>
 
       <section class="editor-section">
@@ -176,6 +178,9 @@ let undoStack=[];
 let redoStack=[];
 let draft=null;
 let hoverPoint=null;
+let eraserMode=false;
+let eraseDragging=false;
+let eraseGestureSnapshot=false;
 let overlay={covers:null,lines:null,draft:null};
 
 function cityName(id){
@@ -293,6 +298,23 @@ function renderCovers(){
     });
   });
 }
+function borderRealm(path){
+  const group=path&&path.parentElement;
+  const cell=group&&group.querySelector?group.querySelector('.city-territory-cell[data-realm]'):null;
+  return cell&&cell.dataset?cell.dataset.realm||'':'';
+}
+function applyErasedBorders(){
+  if(!map||!map.svg)return;
+  const borders=[...map.svg.querySelectorAll('.city-territory-border')];
+  borders.forEach(function(p){p.classList.remove('editor-erased-border');});
+  edits.eraseStrokes.forEach(function(item){
+    if(!item.targetD)return;
+    const match=borders.find(function(p){
+      return p.getAttribute('d')===item.targetD && (!item.realmA||borderRealm(p)===item.realmA);
+    });
+    if(match)match.classList.add('editor-erased-border');
+  });
+}
 function renderLines(){
   ensureOverlay();
   overlay.lines.innerHTML='';
@@ -304,12 +326,14 @@ function renderLines(){
     overlay.lines.appendChild(p);
   });
   edits.eraseStrokes.forEach(function(item){
+    if(item.targetD)return;
     const p=makeSvg('path',{
       d:pathFromPoints(item.points),fill:'none',stroke:'#df7869','stroke-width':'2.2',
       'stroke-dasharray':'4 2','stroke-linejoin':'round','stroke-linecap':'round','vector-effect':'non-scaling-stroke'
     });
     overlay.lines.appendChild(p);
   });
+  applyErasedBorders();
 }
 function renderDraft(){
   ensureOverlay();
@@ -342,6 +366,7 @@ function renderHighlights(){
 }
 function labelForChange(item,type){
   if(type==='remove')return 'Verwijderd: '+cityName(item.a)+' ↔ '+cityName(item.b);
+  if(type==='erase'&&item.targetD)return 'Uitgegumde provinciegrens';
   if(type==='erase')return 'Gum: '+cityName(item.a||'')+(item.b?' ↔ '+cityName(item.b):'');
   if(item.b)return 'Getekend: '+cityName(item.a)+' ↔ '+cityName(item.b);
   return 'Vrije grens bij '+cityName(item.a||'gebied');
@@ -460,6 +485,7 @@ function addRemovedPair(){
 }
 function startDraft(kind){
   if(!selectedA)return;
+  if(eraserMode)setEraserMode(false);
   if(kind==='pair'&&!selectedB)return;
   draft={
     kind:kind,points:[],
@@ -495,23 +521,81 @@ function finishDraft(){
       id:'line-'+Date.now(),type:'free-border',a:draft.a,b:'',
       realmA:draft.realmA,realmB:draft.realmA,cityA:cityName(draft.a),points:draft.points
     });
-  }else if(draft.kind==='erase'){
-    edits.eraseStrokes.push({
-      id:'erase-'+Date.now(),type:'erase-stroke',a:draft.a,b:selectedB||'',
-      realmA:draft.realmA,realmB:selectedB?(cityRealm.get(selectedB)||''):draft.realmA,
-      cityA:cityName(draft.a),cityB:selectedB?cityName(selectedB):'',points:draft.points
-    });
   }
   draft=null;hoverPoint=null;setDrawing(false);save();renderChanges();
 }
 function mapPointFromEvent(e){return map.mapPoint(e.clientX,e.clientY);}
+function distancePointSegment(p,a,b){
+  const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy;
+  if(l2<1e-12)return Math.hypot(p[0]-a[0],p[1]-a[1]);
+  const t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/l2));
+  return Math.hypot(p[0]-(a[0]+dx*t),p[1]-(a[1]+dy*t));
+}
+function distanceToPath(point,path){
+  const nums=(String(path.getAttribute('d')||'').match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
+  if(nums.length<4)return Infinity;
+  const pts=[];
+  for(let i=0;i+1<nums.length;i+=2)pts.push([nums[i],nums[i+1]]);
+  let best=Infinity;
+  for(let i=0;i+1<pts.length;i++)best=Math.min(best,distancePointSegment(point,pts[i],pts[i+1]));
+  return best;
+}
+function eraseAtEvent(e){
+  if(!map||!map.svg)return false;
+  const point=mapPointFromEvent(e);
+  const rect=map.svg.getBoundingClientRect();
+  const tolerance=Math.max(.9,(map.view&&map.view.w?map.view.w:750)/Math.max(1,rect.width)*10);
+  const selectedRealm=selectedA?(cityRealm.get(selectedA)||''):'';
+  let best=null,bestD=Infinity;
+  map.svg.querySelectorAll('.city-territory-border:not(.editor-erased-border)').forEach(function(path){
+    const realm=borderRealm(path);
+    if(selectedRealm&&realm&&realm!==selectedRealm)return;
+    const d=distanceToPath(point,path);
+    if(d<bestD){bestD=d;best=path;}
+  });
+  if(!best||bestD>tolerance)return false;
+  const targetD=best.getAttribute('d')||'';
+  const realm=borderRealm(best)||selectedRealm;
+  if(!eraseGestureSnapshot){snapshot();eraseGestureSnapshot=true;}
+  if(!edits.eraseStrokes.some(function(x){return x.targetD===targetD&&x.realmA===realm;})){
+    edits.eraseStrokes.push({
+      id:'erase-border-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
+      type:'erase-border',
+      targetD:targetD,
+      realmA:realm,
+      a:selectedA||'',
+      cityA:selectedA?cityName(selectedA):''
+    });
+  }
+  best.classList.add('editor-erased-border');
+  setStatus('Grens uitgegumd · blijf slepen om meer lijnstukken weg te halen.');
+  updateButtons();
+  return true;
+}
+function setEraserMode(on){
+  eraserMode=!!on;
+  eraseStrokeBtn.classList.toggle('active',eraserMode);
+  host.classList.toggle('editor-erasing',eraserMode);
+  if(eraserMode){
+    cancelDraft();
+    setStatus('Gum actief · sleep met links over een provinciegrens. Rechtermuisknop werkt altijd als gum.');
+  }else{
+    setStatus('Gum uit · rechtermuisknop ingedrukt houden blijft snelgummen.');
+  }
+}
+function finishEraseGesture(){
+  if(!eraseDragging)return;
+  eraseDragging=false;
+  if(eraseGestureSnapshot){save();renderChanges();}
+  eraseGestureSnapshot=false;
+}
 function exportJson(){
   const payload={
     version:'cardwars-map-editor-v1',
     createdAt:new Date().toISOString(),
     baseMap:'assets/atlas.json',
     coordinateSystem:'Cardwars SVG map coordinates; lon=(x/12)-22, lat=72-(y/15)',
-    note:'Import this file through the Cardwars map editing workflow. Drawn lines are source instructions; country-border changes require topology rebuild.',
+    note:'Import this file through the Cardwars map editing workflow. Erased province-border paths are recorded exactly by SVG path; drawn lines remain source instructions. Country-border changes require topology rebuild.',
     removedBorders:edits.removedBorders,
     drawnBorders:edits.drawnBorders,
     eraseStrokes:edits.eraseStrokes
@@ -571,7 +655,7 @@ focusBBtn.addEventListener('click',function(){if(selectedB&&map.focus)map.focus(
 removePairBtn.addEventListener('click',addRemovedPair);
 drawPairBtn.addEventListener('click',function(){startDraft('pair');});
 drawFreeBtn.addEventListener('click',function(){startDraft('free');});
-eraseStrokeBtn.addEventListener('click',function(){startDraft('erase');});
+eraseStrokeBtn.addEventListener('click',function(){setEraserMode(!eraserMode);});
 finishLineBtn.addEventListener('click',finishDraft);
 cancelLineBtn.addEventListener('click',cancelDraft);
 dropPointBtn.addEventListener('click',function(){
@@ -601,17 +685,42 @@ changesList.addEventListener('click',function(e){
   save();renderChanges();
 });
 
-host.addEventListener('pointerdown',function(e){
-  if(!draft||e.button!==0)return;
+host.addEventListener('contextmenu',function(e){
   if(e.target.closest('.map-controls,.map-top,.map-bottom'))return;
+  e.preventDefault();
+},true);
+host.addEventListener('pointerdown',function(e){
+  if(e.target.closest('.map-controls,.map-top,.map-bottom'))return;
+  const wantsErase=e.button===2||(eraserMode&&e.button===0);
+  if(wantsErase){
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    eraseDragging=true;eraseGestureSnapshot=false;
+    try{host.setPointerCapture(e.pointerId);}catch(err){}
+    eraseAtEvent(e);
+    return;
+  }
+  if(!draft||e.button!==0)return;
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
   draft.points.push(mapPointFromEvent(e));hoverPoint=null;renderDraft();
 },true);
 host.addEventListener('pointermove',function(e){
+  if(eraseDragging){
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    eraseAtEvent(e);
+    return;
+  }
   if(!draft||!draft.points.length)return;
   hoverPoint=mapPointFromEvent(e);renderDraft();
 },true);
+host.addEventListener('pointerup',function(e){
+  if(eraseDragging){
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    finishEraseGesture();
+  }
+},true);
+host.addEventListener('pointercancel',function(){finishEraseGesture();},true);
 host.addEventListener('dblclick',function(e){
+  if(eraserMode)return;
   if(!draft)return;
   e.preventDefault();e.stopPropagation();finishDraft();
 },true);
