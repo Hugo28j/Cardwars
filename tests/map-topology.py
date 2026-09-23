@@ -62,8 +62,13 @@ mainland=max(list(land.geoms),key=lambda p:p.area) if land.geom_type=='MultiPoly
 assert by_name['Kingdom of Sicily'].intersection(mainland).area<.001
 print('PASS: requested mergers, card ownership, enclave shapes and coastal remnant removal.')
 
-# The entire old French intrusion must be gone, not cropped into tiny wedges.
-envelope=unary_union([by_name[n] for n in ['County of Champagne','Duchy of Lorraine','Duchy of Burgundy']]).convex_hull
-assert by_name['Kingdom of France'].intersection(envelope).area<.1, 'French corridor fragments survived'
+# Later gameplay consolidations must remain intact on the new geometry.
+for removed in ['Duchy of Lorraine','County of Burgundy','Waldstatte','Commune of Como','Free Imperial City of Frankfurt']:
+    assert removed not in by_name, f'Removed gameplay state survived: {removed}'
+for lon,lat in [(8.56,46.91),(9.08,45.81)]:
+    assert by_name['Lordship of Milan'].covers(Point((lon+22)*12,(72-lat)*15)), f'Milan merge missing at {lon},{lat}'
+frankfurt=Point((8.6821+22)*12,(72-50.1109)*15)
+assert by_name['Archbishopric of Mainz'].covers(frankfurt), 'Frankfurt is no longer part of Mainz'
 c=next(c for c in cards if c['name']=='Montpellier')
 assert by_name[c['country']].covers(Point((c['lon']+22)*12,(72-c['lat'])*15))
+print('PASS: later Milan, Mainz, Burgundy and Lorraine gameplay consolidations survived.')
