@@ -650,7 +650,7 @@ function gameDate1300(dayIndex=0){
  const index=Math.max(0,Math.floor(Number(dayIndex)||0)),d=new Date(Date.UTC(1300,0,1+index));
  return {day:d.getUTCDate(),month:GAME_MONTHS_1300[d.getUTCMonth()],year:d.getUTCFullYear(),weekday:GAME_WEEKDAYS_1300[index%7]};
 }
-const GAME_ARMY_UPKEEP_PER_UNIT=.005,GAME_NAVY_UPKEEP_PER_UNIT=.02;
+const GAME_ARMY_UPKEEP_PER_UNIT=.001,GAME_UNPROF_ARMY_UPKEEP_PER_UNIT=.0001,GAME_NAVY_UPKEEP_PER_UNIT=.003;
 const roundStat1300=n=>Math.round((Number(n)||0)*100)/100;
 function completedCampaignMonths1300(game){
  const d=new Date(Date.UTC(1300,0,1+Math.max(0,Math.floor(Number(game?.day)||0))));
@@ -716,12 +716,12 @@ function syncCampaignMilitaryOverlay1300(game=profile.activeGame){
  world.refresh();
 }
 function militaryTotals1300(game){
- const prof=professionalArmyState1300(game);let navy=0;
+ const prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game);let navy=0;
  for(const cityId of game?.ownedCities||[]){
   const c=CITY_1300[cityId];if(!c)continue;const b=gameProvinceBuildingState(c).bonuses;
   navy+=(Number(c.navy)||0)+(Number(b.navy)||0);
  }
- return {army:prof.army,navy,professionalArmyLimit:prof.limit,professionalArmyPercent:prof.percent,professionalArmyBonusPercent:prof.bonusPercent};
+ return {army:prof.army,unprofessionalArmy:unprof.army,navy,professionalArmyLimit:prof.limit,professionalArmyPercent:prof.percent,professionalArmyBonusPercent:prof.bonusPercent};
 }
 function stabilityBudgetMax1300(game){
  const population=(game?.ownedCities||[]).reduce((n,id)=>n+(Number(CITY_1300[id]?.people)||0),0),lerp=(a,b,t)=>a+(b-a)*clamp1300(t,0,1);
@@ -746,28 +746,32 @@ function provinceTechnologyBudgetMax1300(c){
 function technologyBudgetNeed1300(c){return roundStat1300(Math.max(.06,provinceTechnologyBudgetMax1300(c)*.45));}
 function weeklyStateExpenses1300(game){
  const e=normaliseGameEconomy1300(game.economy),mil=militaryTotals1300(game),tech=(game.ownedCities||[]).reduce((n,id)=>n+(Number(e.technologyBudgets[id])||0),0);
- const army=roundStat1300(mil.army*(GAME_ARMY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH)),navy=roundStat1300(mil.navy*(GAME_NAVY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH)),stability=roundStat1300(Math.min(e.stabilityBudget,stabilityBudgetMax1300(game))),technology=roundStat1300(tech);
- return {army,navy,stability,technology,total:roundStat1300(army+navy+stability+technology),armyUnits:mil.army,navyUnits:mil.navy,stabilityNeed:stabilityBudgetNeed1300(game),stabilityMax:stabilityBudgetMax1300(game)};
+ const army=roundStat1300(mil.army*GAME_ARMY_UPKEEP_PER_UNIT),unprofessionalArmy=roundStat1300((mil.unprofessionalArmy||0)*GAME_UNPROF_ARMY_UPKEEP_PER_UNIT),navy=roundStat1300(mil.navy*GAME_NAVY_UPKEEP_PER_UNIT),stability=roundStat1300(Math.min(e.stabilityBudget,stabilityBudgetMax1300(game))),technology=roundStat1300(tech);
+ return {army,unprofessionalArmy,navy,stability,technology,total:roundStat1300(army+unprofessionalArmy+navy+stability+technology),armyUnits:mil.army,unprofessionalArmyUnits:mil.unprofessionalArmy||0,navyUnits:mil.navy,stabilityNeed:stabilityBudgetNeed1300(game),stabilityMax:stabilityBudgetMax1300(game)};
+}
+function stabilityPolicyPressure1300(game){
+ const e=normaliseGameEconomy1300(game.economy),wageRatio=e.nationalWage/.12,tariffCost=tariffCostOfLivingImpact1300(game);
+ const taxEffect=clamp1300(-(e.taxRate-10)*.03,-.60,.30),wageEffect=clamp1300((wageRatio-1)*.35,-.40,.30),tariffEffect=clamp1300(-tariffCost*.04,-1.00,0);
+ return {taxEffect,wageEffect,tariffEffect,total:clamp1300(taxEffect+wageEffect+tariffEffect,-1.25,.55)};
 }
 function applyWeeklyStabilityPolicy1300(game){
  const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1;
- let stabilityDelta=0,corruptionDelta=0;
- if(ratio<.20){stabilityDelta=-.35;corruptionDelta=1.5;}
- else if(ratio<.60){stabilityDelta=-.18;corruptionDelta=.7;}
- else if(ratio<.95){stabilityDelta=-.06;corruptionDelta=.2;}
- else if(ratio<=1.15){stabilityDelta=.01;corruptionDelta=-.1;}
- else if(ratio<=1.60){stabilityDelta=.14;corruptionDelta=-.6;}
- else{stabilityDelta=.27;corruptionDelta=-1.2;}
- stabilityDelta-=Math.max(0,e.corruption-35)*.002;
+ let corruptionDelta=0;
+ if(ratio<.20)corruptionDelta=1.5;
+ else if(ratio<.60)corruptionDelta=.7;
+ else if(ratio<.95)corruptionDelta=.2;
+ else if(ratio<=1.15)corruptionDelta=-.1;
+ else if(ratio<=1.60)corruptionDelta=-.6;
+ else corruptionDelta=-1.2;
  e.corruption=roundStat1300(clamp1300(e.corruption+corruptionDelta/WEEKS_PER_MONTH,0,100));
- e.lastStabilityChange=roundStat1300(stabilityDelta/WEEKS_PER_MONTH);
+ e.lastStabilityChange=roundStat1300(stabilityPolicyMonthlyDelta1300(game)/WEEKS_PER_MONTH);
 }
 function technologyTreeUnlockedCount1300(game){
  const tech=countryTotals1300(game).technology,thresholds=[50,60,68,76,84,92];
  return thresholds.filter(x=>tech>=x).length;
 }
 function stabilityPolicyMonthlyDelta1300(game){
- const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1;
+ const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1,policy=stabilityPolicyPressure1300(game);
  let delta=0;
  if(ratio<.20)delta=-.35;
  else if(ratio<.60)delta=-.18;
@@ -776,6 +780,7 @@ function stabilityPolicyMonthlyDelta1300(game){
  else if(ratio<=1.60)delta=.14;
  else delta=.27;
  delta-=Math.max(0,e.corruption-35)*.002;
+ delta+=policy.total;
  return round(delta,4);
 }
 function applyLiveDynamicStats1300(game,factor=1/30){
@@ -871,7 +876,7 @@ function weeklyBudgetProjection1300(game,{refresh=false}={}){
 function invalidateWeeklyBudgetProjection1300(game){if(game?.economy)game.economy.weeklyBudgetProjection=null;}
 function refreshWeeklyBudgetDOM1300(game,{refresh=true}={}){
  if(!game)return;const b=weeklyBudgetProjection1300(game,{refresh}),money=(id,value,prefix='')=>{const el=$(id);if(el)el.textContent=prefix+'ƒ'+money1300(Math.abs(value));},signed=(id,value)=>{const el=$(id);if(!el)return;el.textContent=(value<0?'-':'+')+'ƒ'+money1300(Math.abs(value));el.classList.toggle('negative',value<0);el.classList.toggle('positive',value>0);};
- money('#budget-sector-taxes',b.sectorTaxes,'+');money('#budget-import-tariffs',b.importTariffs,'+');money('#budget-army-expense',b.expenses.army,'-');money('#budget-navy-expense',b.expenses.navy,'-');money('#budget-stability-expense',b.expenses.stability,'-');money('#budget-tech-expense',b.expenses.technology,'-');money('#budget-total-expenses',b.expenses.total,'-');signed('#budget-current-balance',b.balance);signed('#country-current-week-balance',b.balance);
+ money('#budget-sector-taxes',b.sectorTaxes,'+');money('#budget-import-tariffs',b.importTariffs,'+');money('#budget-army-expense',b.expenses.army,'-');money('#budget-unprof-army-expense',b.expenses.unprofessionalArmy,'-');money('#budget-navy-expense',b.expenses.navy,'-');money('#budget-stability-expense',b.expenses.stability,'-');money('#budget-tech-expense',b.expenses.technology,'-');money('#budget-total-expenses',b.expenses.total,'-');signed('#budget-current-balance',b.balance);signed('#country-current-week-balance',b.balance);
  const top=$('#game-daily-tax');if(top)top.textContent='Week balance: '+(b.balance<0?'-':'')+'ƒ'+money1300(Math.abs(b.balance));
 }
 function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}={}){
@@ -1595,15 +1600,15 @@ function countrySectorRows1300(game){
  return [...rows.values()].map(r=>({...r,avgWage:r.workers?r.wageWeighted/r.workers:BUILDING_1300[r.id]?.normalWage||0})).sort((a,b)=>b.workers-a.workers||b.levels-a.levels);
 }
 function countryPeople1300(game){
- const t=countryTotals1300(game),e=game.economy=normaliseGameEconomy1300(game.economy),simCities=(game.ownedCities||[]).map(id=>e.pops?.[id]).filter(Boolean);
+ const t=countryTotals1300(game),e=game.economy=normaliseGameEconomy1300(game.economy),simCities=(game.ownedCities||[]).map(id=>e.pops?.[id]).filter(Boolean),wageRatio=e.nationalWage/.12,tariffCost=tariffCostOfLivingImpact1300(game),wageEffect=clamp1300((wageRatio-1)*16,-18,16),taxEffect=clamp1300(-(e.taxRate-10)*.70,-18,7),tariffEffect=clamp1300(-tariffCost*1.60,-30,0);
  if(simCities.length){
   const grouped=new Map();let population=0,wealthTotal=0,solTotal=0;
   for(const city of simCities)for(const g of city.groups||[]){const row=grouped.get(g.name)||{name:g.name,count:0,wealthTotal:0,solTotal:0};row.count+=g.size;row.wealthTotal+=g.wealth*g.size;row.solTotal+=g.standardOfLiving*g.size;grouped.set(g.name,row);population+=g.size;wealthTotal+=g.wealth*g.size;solTotal+=g.standardOfLiving*g.size;}
-  const groups=[...grouped.values()].map(g=>({name:g.name,count:g.count,pct:population?Math.round(g.count/population*1000)/10:0,wealth:g.count?g.wealthTotal/g.count:0,sol:g.count?g.solTotal/g.count:0})),avgWealth=population?wealthTotal/population:0,avgSol=population?solTotal/population:0,wageRatio=e.nationalWage/.12,happiness=Math.round(clamp1300(t.stability+(avgSol-10)*1.3+(wageRatio-1)*7-(e.taxRate-10)*.25,0,100));
-  return {...t,population,happiness,groups,avgWealth,avgSol};
+  const groups=[...grouped.values()].map(g=>({name:g.name,count:g.count,pct:population?Math.round(g.count/population*1000)/10:0,wealth:g.count?g.wealthTotal/g.count:0,sol:g.count?g.solTotal/g.count:0})),avgWealth=population?wealthTotal/population:0,avgSol=population?solTotal/population:0,happiness=Math.round(clamp1300(t.stability+(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect,0,100));
+  return {...t,population,happiness,groups,avgWealth,avgSol,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost}};
  }
- const wageRatio=e.nationalWage/.12,happiness=Math.round(clamp1300(t.stability+(wageRatio-1)*11-(e.taxRate-10)*.25,0,100)),burghers=clamp1300(10+t.economy*.13,12,24),clergy=6,nobles=4,soldiers=5,peasants=Math.max(0,100-burghers-clergy-nobles-soldiers),groups=[['Peasants',peasants],['Burghers',burghers],['Clergy',clergy],['Nobles',nobles],['Soldiers',soldiers]].map(([name,pct])=>({name,pct:Math.round(pct*10)/10,count:Math.round(t.population*pct/100),wealth:0,sol:0}));
- return {...t,happiness,groups,avgWealth:0,avgSol:0};
+ const happiness=Math.round(clamp1300(t.stability+wageEffect+taxEffect+tariffEffect,0,100)),burghers=clamp1300(10+t.economy*.13,12,24),clergy=6,nobles=4,soldiers=5,peasants=Math.max(0,100-burghers-clergy-nobles-soldiers),groups=[['Peasants',peasants],['Burghers',burghers],['Clergy',clergy],['Nobles',nobles],['Soldiers',soldiers]].map(([name,pct])=>({name,pct:Math.round(pct*10)/10,count:Math.round(t.population*pct/100),wealth:0,sol:0}));
+ return {...t,happiness,groups,avgWealth:0,avgSol:0,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost}};
 }
 function countryRebellionRows1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy);
@@ -1648,8 +1653,9 @@ function countryEconomyHTML1300(game){
  <section class="country-budget-table"><div class="country-budget-title"><span>WEEKLY BUDGET</span><small>Live forecast · recalculates every day · paid Monday</small></div>
   <div><span>Sector taxes</span><strong id="budget-sector-taxes">+ƒ${money1300(budget.sectorTaxes)}</strong></div>
   <div><span>Import tariffs</span><strong id="budget-import-tariffs" class="${budget.importTariffs>0?'positive':''}">+ƒ${money1300(budget.importTariffs)}</strong></div>
-  <div><span>Professional army upkeep · ${strengthNumber(expenses.armyUnits)} × ƒ${(GAME_ARMY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH).toFixed(4)}/week</span><strong id="budget-army-expense">-ƒ${money1300(expenses.army)}</strong></div>
-  <div><span>Navy upkeep · ${strengthNumber(expenses.navyUnits)} × ƒ${(GAME_NAVY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH).toFixed(4)}/week</span><strong id="budget-navy-expense">-ƒ${money1300(expenses.navy)}</strong></div>
+  <div><span>Professional army upkeep</span><strong id="budget-army-expense">-ƒ${money1300(expenses.army)}</strong></div>
+  <div><span>Unprofessional army upkeep</span><strong id="budget-unprof-army-expense">-ƒ${money1300(expenses.unprofessionalArmy)}</strong></div>
+  <div><span>Navy upkeep</span><strong id="budget-navy-expense">-ƒ${money1300(expenses.navy)}</strong></div>
   <div><span>Stability administration</span><strong id="budget-stability-expense">-ƒ${money1300(expenses.stability)}</strong></div>
   <div><span>Provincial technology investment</span><strong id="budget-tech-expense">-ƒ${money1300(expenses.technology)}</strong></div>
   <div><span>Total state expenses</span><strong id="budget-total-expenses">-ƒ${money1300(expenses.total)}</strong></div>
@@ -1666,7 +1672,8 @@ function countryEconomyHTML1300(game){
 }
 function countryPeopleHTML1300(game){
  const p=countryPeople1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),population=Math.max(1,Number(p.population)||0),profPct=prof.army/population*100,unprofPct=unprof.army/population*100;
- return `<section class="people-happiness"><div><span>POPULATION HAPPINESS</span><strong>${p.happiness}<small>/100</small></strong></div><i><b style="width:${p.happiness}%"></b></i><p>Happiness reacts to stability, taxation, wages and the cost of living. Import tariffs can lower purchasing power by making imported goods more expensive.</p></section>
+ const hp=p.happinessPolicy||{wageEffect:0,taxEffect:0,tariffEffect:0};
+ return `<section class="people-happiness"><div><span>POPULATION HAPPINESS</span><strong>${p.happiness}<small>/100</small></strong></div><i><b style="width:${p.happiness}%"></b></i><p>Policy effect now matters strongly: wages ${hp.wageEffect>=0?'+':''}${hp.wageEffect.toFixed(1)} · taxes ${hp.taxEffect>=0?'+':''}${hp.taxEffect.toFixed(1)} · tariffs ${hp.tariffEffect>=0?'+':''}${hp.tariffEffect.toFixed(1)} happiness.</p></section>
  <section class="country-stat-grid people"><div><span>Total population</span><strong>${strengthNumber(p.population)}</strong></div><div><span>Average stability</span><strong>${Number(p.stability).toFixed(2)} / ${p.cap.toFixed(2)}</strong></div><div><span>Average wealth</span><strong>${p.avgWealth?p.avgWealth.toFixed(1):'—'}</strong></div><div><span>Standard of living</span><strong>${p.avgSol?p.avgSol.toFixed(1):'—'}</strong></div></section>
  <div class="country-section-title"><span>MILITARY MANPOWER</span><small>Share of your total population serving in the army</small></div>
  <section class="population-army-summary">
