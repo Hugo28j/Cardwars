@@ -588,6 +588,16 @@
 .building-finance-grid strong.positive{color:#7fc38d}.building-finance-grid strong.negative{color:#d37c72}.building-finance-grid strong.neutral{color:#d8d9c7}
 .building-detail-wage{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .building-detail-wage>div>span{display:block;font-size:9px;color:#cbd3c8}.building-detail-wage>div>small{display:block;font-size:7px;color:#728078;margin-top:2px}
+.company-control-section{background:#0e1814}
+.company-control-slider{display:block;padding:9px 0 11px;border-bottom:1px solid #344139}
+.company-control-slider>div{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}
+.company-control-slider span,.company-control-priority>span{font-size:9px;color:#cbd3c8}
+.company-control-slider strong{font-family:var(--serif);font-size:14px;color:#d9c37e;white-space:nowrap}
+.company-control-slider input{width:100%;accent-color:#aa9158}
+.company-control-slider>small,.company-control-priority>small{display:block;margin-top:5px;font-size:7px;line-height:1.45;color:#718078}
+.company-control-priority{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:6px 12px;align-items:center;padding-top:11px}
+.company-control-priority select{min-height:34px;border:1px solid #536158;border-radius:3px;background:#14201b;color:#dce1d5;padding:5px 8px;font-size:9px}
+.company-control-priority>small{grid-column:1/-1;margin-top:0}
 .building-detail-upgrade{display:grid;grid-template-columns:1fr 1.3fr;gap:10px;align-items:center;padding:16px 14px;background:#111c18}
 .building-detail-upgrade>div span{display:block;font-size:7px;color:#76847b;text-transform:uppercase}.building-detail-upgrade>div strong{display:block;font-family:var(--serif);font-size:19px;color:#dfca8a;margin-top:3px}
 .building-detail-upgrade>button{min-height:54px;border:1px solid #a28a54;background:#1b261f;color:#ead69a;border-radius:4px;cursor:pointer}
