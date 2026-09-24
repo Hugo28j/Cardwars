@@ -273,10 +273,10 @@ const GAME_MONTHS_1300=['January','February','March','April','May','June','July'
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
 function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,monthlyTax:0,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed month yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0};}
-function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},history:[]};}
+function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},opinionBaselineV2:{},history:[]};}
 function normaliseGameDiplomacy1300(raw){
  const d=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameDiplomacy1300();
- for(const key of ['relations','alliances','wars','recognitions','tradeStockpile','aiTreasuries','aiGoods','lastImproveDay','independenceSupportByCity','activeIndependenceSupportWars'])if(!d[key]||typeof d[key]!=='object'||Array.isArray(d[key]))d[key]={};
+ for(const key of ['relations','alliances','wars','recognitions','tradeStockpile','aiTreasuries','aiGoods','lastImproveDay','independenceSupportByCity','activeIndependenceSupportWars','opinionBaselineV2'])if(!d[key]||typeof d[key]!=='object'||Array.isArray(d[key]))d[key]={};
  for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(d.tradeStockpile[g.id])||0)*100)/100);
  d.history=Array.isArray(d.history)?d.history.slice(-40):[];
  return d;
@@ -359,9 +359,24 @@ function diplomacyCountryStats1300(country){
  const cities=diplomacyCountryCities1300(country),count=Math.max(1,cities.length),sum=k=>cities.reduce((n,c)=>n+(Number(c[k])||0),0);
  return {country,cityCount:cities.length,population:sum('people'),army:sum('army'),navy:sum('navy'),foodAvg:Math.round(sum('food')/count),economyAvg:Math.round(sum('economyScore')/count),technologyAvg:Math.round(sum('technology')/count),stabilityAvg:Math.round(sum('stability')/count),strength:Math.round((sum('army')*2+sum('navy')*10+sum('people')/50+sum('economyScore')*50/count)*1.1)};
 }
+function openingVictimCountry1300(game,country){
+ return (game?.ownedCities||[]).some(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country);
+}
+function ensureDiplomacyOpinionBaseline1300(game,country){
+ const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy);if(d.opinionBaselineV2[country])return;
+ const victim=openingVictimCountry1300(game,country),r=relation(game,PLAYER_REALM,country),clean=x=>!x.modifiers?.length&&!x.ae;
+ if(clean(r.ours)&&Number(r.ours.opinion)===0)r.ours.opinion=10;
+ if(clean(r.theirs)){
+  const current=Number(r.theirs.opinion)||0;
+  if(victim&&(current===0||current===-200))r.theirs.opinion=-100;
+  else if(!victim&&current===0)r.theirs.opinion=10;
+ }
+ d.relations[country]=opinion(r.theirs);d.opinionBaselineV2[country]=true;
+}
 function ensureDiplomacyCountry1300(game,country){
  const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),stats=diplomacyCountryStats1300(country),model=diplomacyCountryGoodsModel1300(country);
- if(!Number.isFinite(Number(d.relations[country])))d.relations[country]=0;
+ if(!Number.isFinite(Number(d.relations[country])))d.relations[country]=openingVictimCountry1300(game,country)?-100:10;
+ ensureDiplomacyOpinionBaseline1300(game,country);
  if(!Number.isFinite(Number(d.aiTreasuries[country])))d.aiTreasuries[country]=Math.round(Math.max(25,45+(stats.economyAvg||50)*1.8+(stats.cityCount||1)*12+(stats.population||0)/22000)*100)/100;
  if(!d.aiGoods[country]||typeof d.aiGoods[country]!=='object'||Array.isArray(d.aiGoods[country]))d.aiGoods[country]={};
  for(const g of GOODS_1300)if(!Number.isFinite(Number(d.aiGoods[country][g.id])))d.aiGoods[country][g.id]=Math.round(Math.max(0,(model.balances[g.id]||0)*3+Math.max(2,model.popK*.05))*100)/100;
@@ -947,8 +962,9 @@ function startGame1300(){
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
  profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,economy:freshGameEconomy1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
- // The realms you rebelled against begin at the minimum possible opinion because your opening cities were taken from them.
- for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-200;
+ // Normal starting opinion is +10. Countries that lost one of your opening cities start at -100 toward you.
+ for(const country of new Set(CITIES_1300.map(c=>c.country)))profile.activeGame.diplomacy.relations[country]=10;
+ for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-100;
  ensureGameDynamicStats1300(profile.activeGame);seedGameEmployment1300(profile.activeGame);simulateGameEconomyDay1300(profile.activeGame,{forceMarket:true,collectRevenue:false});updateCampaignRankingSnapshot1300(profile.activeGame);
  selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
 }
