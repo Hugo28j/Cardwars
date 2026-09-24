@@ -621,7 +621,13 @@
 .company-control-priority{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:6px 12px;align-items:center;padding-top:11px}
 .company-control-priority select{min-height:34px;border:1px solid #536158;border-radius:3px;background:#14201b;color:#dce1d5;padding:5px 8px;font-size:9px}
 .company-control-priority>small{grid-column:1/-1;margin-top:0}
-.building-detail-upgrade{display:grid;grid-template-columns:1fr 1.3fr;gap:10px;align-items:center;padding:16px 14px;background:#111c18}
+.building-construction-status{display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:center;padding:12px 14px;background:#151d18;border-bottom:1px solid #6f6447}
+.building-construction-status span{display:block;font-size:7px;letter-spacing:.9px;color:#c2a967}.building-construction-status strong{display:block;margin-top:2px;font-family:var(--serif);font-size:15px;color:#e0d6b8}.building-construction-status small{display:block;margin-top:2px;font-size:7px;color:#87958b}
+.building-construction-status>b{font-family:var(--serif);font-size:20px;color:#d7bf78}.building-construction-status>i{grid-column:1/-1;display:block;height:5px;background:#28342e;overflow:hidden}.building-construction-status>i>em{display:block;height:100%;background:#9d8955}
+.building-detail-upgrade{display:grid;grid-template-columns:minmax(100px,.8fr) minmax(130px,1.2fr);gap:10px;align-items:center;padding:16px 14px;background:#111c18}
+.building-detail-upgrade>div small{display:block;margin-top:3px;font-size:7px;color:#7f8d84}.building-detail-upgrade>button{min-height:44px}
+.building-demolish-button{grid-column:1/-1;border:1px solid #80554f!important;background:#2b1c1a!important;color:#dfaaa1!important}.building-demolish-button:hover{border-color:#b66f64!important;background:#38211e!important}.building-demolish-button span{font-size:8px;letter-spacing:.7px}.building-demolish-button small{display:block;margin-top:2px;font-size:6.5px;color:#af817a}
+.owned-building-card.constructing,.building-catalog-card.constructing{border-color:#8f7b4e}.compact-upgrade button small,.building-catalog-buy small{display:block;margin-top:2px;font-size:6px;color:#88958c}
 .building-detail-upgrade>div span{display:block;font-size:7px;color:#76847b;text-transform:uppercase}.building-detail-upgrade>div strong{display:block;font-family:var(--serif);font-size:19px;color:#dfca8a;margin-top:3px}
 .building-detail-upgrade>button{min-height:54px;border:1px solid #a28a54;background:#1b261f;color:#ead69a;border-radius:4px;cursor:pointer}
 .building-detail-upgrade>button:disabled{border-color:#465349;color:#69766d;background:#121a17;cursor:default}
