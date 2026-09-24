@@ -1,4 +1,4 @@
-import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260924-alliance-context-v4';
+import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260924-weekly-cadence-v5';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
@@ -100,7 +100,7 @@ function settleMarketFlows1300(market){
   const productionUsed=Math.min(produced,need),remainingNeed=Math.max(0,need-productionUsed),stockUsed=Math.min(oldStock,remainingNeed),shortage=Math.max(0,remainingNeed-stockUsed);
   const bought=shortage*access,surplus=Math.max(0,produced-productionUsed),exportShare=clamp(.45+access*.45,.60,.90),sold=surplus*exportShare;
   const carried=Math.max(0,oldStock-stockUsed+surplus-sold),decay=g.category==='food'?.90:g.category==='service'?0:.97,stock=carried*decay,fulfilled=productionUsed+stockUsed+bought;
-  row.need=round(need,3);row.bought=round(bought,3);row.sold=round(sold,3);row.stock=round(stock,3);row.fulfilled=round(fulfilled,3);row.tradeProfit=round((sold-bought)*row.price*FLORINS_PER_MARKET_VALUE*WEEKS_PER_MONTH,4);
+  row.need=round(need,3);row.bought=round(bought,3);row.sold=round(sold,3);row.stock=round(stock,3);row.fulfilled=round(fulfilled,3);row.tradeProfit=round((sold-bought)*row.price*FLORINS_PER_MARKET_VALUE,4);
  }
 }
 function sectorPotential(sector,city){const def=BUILDING_PRODUCTION_1300[sector.id]||{inputs:{},outputs:{services:1}},level=Math.max(0,Number(sector.level)||0),capacity=Math.max(1,Number(sector.capacity)||1),workers=clamp(Number(sector.workers)||0,0,capacity),employmentRatio=workers/capacity,technologyFactor=.86+clamp(Number(city.technology)||50,0,100)/500,economyOfScale=1+Math.min(level*.01,.30);return {def,level,capacity,workers,employmentRatio,potential:level*employmentRatio*technologyFactor*economyOfScale};}
@@ -126,11 +126,11 @@ function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={}
    for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale;outputs[id]=round(q,3);revenueValue+=q*market.goods[id].price;}
    for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale;inputs[id]=round(q,3);inputValue+=q*market.goods[id].price;}
    const weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,weeklyWageCost=(p.workers/1000)*Math.max(.01,Number(sector.wage)||.01),weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
-   const monthly=x=>round(x*WEEKS_PER_MONTH,4);rows[sector.id]={workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,gross:monthly(weeklyRevenue),inputCost:monthly(weeklyInputCost),wageBill:monthly(weeklyWageCost),profit:monthly(weeklyProfit),tax:monthly(weeklySectorTax)};
+   const weekly=x=>round(x,4);rows[sector.id]={workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
   }
   pops[city.id]=updatePops(city,market,previousPops?.[city.id],Object.values(rows));
  }
- return {markets,pops,sectorsByCity,weeklyTax:round(weeklyTax,4),monthlyTaxEstimate:round(weeklyTax*WEEKS_PER_MONTH,2)};
+ return {markets,pops,sectorsByCity,weeklyTax:round(weeklyTax,4),weeklyTaxEstimate:round(weeklyTax,2)};
 }
 function aggregateMarkets1300(markets={}){
  const rows={};for(const g of GOODS_1300)rows[g.id]={id:g.id,name:g.name,basePrice:g.basePrice,supply:0,demand:0,priceWeighted:0,weight:0};
@@ -272,7 +272,7 @@ const GAME_WAGE_MIN=.02,GAME_WAGE_MAX=.50,GAME_WAGE_STEP=.02,GAME_TAX_MIN=0,GAME
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
-function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,monthlyTax:0,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed month yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0};}
+function freshGameEconomy1300(){return {taxRate:10,nationalWage:.12,cityWages:{},buildingWages:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,weeklyTax:0,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed week yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0,weeklyCadenceV1:true};}
 function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},opinionBaselineV2:{},history:[]};}
 function normaliseGameDiplomacy1300(raw){
  const d=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameDiplomacy1300();
@@ -609,23 +609,32 @@ function executeDiplomaticTrade1300(country,offerAsset,offerAmount,requestAsset,
  setDiplomacyRelation1300(game,country,rel+1);diplomacyLog1300(game,country,`Trade completed (${assessment.score}% acceptance): offered ${on} ${oa==='florins'?'Florins':GOOD_1300[oa]?.name||oa}, received ${rn} ${ra==='florins'?'Florins':GOOD_1300[ra]?.name||ra}.`);save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`Trade with ${country} completed.`);
 }
 function normaliseGameEconomy1300(raw){
- const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300(),hadDynamic=!!(e.dynamicStats&&typeof e.dynamicStats==='object'&&!Array.isArray(e.dynamicStats));
+ const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300(),hadDynamic=!!(e.dynamicStats&&typeof e.dynamicStats==='object'&&!Array.isArray(e.dynamicStats)),wasWeekly=!!e.weeklyCadenceV1;
  e.taxRate=clamp1300(Math.round(Number.isFinite(Number(e.taxRate))?Number(e.taxRate):10),GAME_TAX_MIN,GAME_TAX_MAX);
  e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.12)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);
  for(const key of ['cityWages','buildingWages','employment','lastEconomy','markets','pops','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
  e.lastMarketTickDay=Number.isFinite(Number(e.lastMarketTickDay))?Number(e.lastMarketTickDay):null;
- e.monthlyTax=Math.max(0,Number.isFinite(Number(e.monthlyTax))?Number(e.monthlyTax):(Number(e.dailyTax)||0));
+ e.weeklyTax=Math.max(0,Number.isFinite(Number(e.weeklyTax))?Number(e.weeklyTax):0);
  for(const key of ['monthRevenue','monthExpenses','lastMonthRevenue','lastMonthExpenses','lastMonthBalance'])e[key]=Number.isFinite(Number(e[key]))?Number(e[key]):0;
  e.stabilityBudget=clamp1300(Math.round((hadDynamic&&Number.isFinite(Number(e.stabilityBudget))?Number(e.stabilityBudget):0)*100)/100,0,10000);
  e.stabilityModifier=0;
  e.corruption=clamp1300(Number.isFinite(Number(e.corruption))?Number(e.corruption):20,0,100);
  e.lastStabilityChange=Number.isFinite(Number(e.lastStabilityChange))?Number(e.lastStabilityChange):0;
- if(typeof e.lastMonthLabel!=='string')e.lastMonthLabel='No completed month yet';
+ if(!wasWeekly){
+  e.stabilityBudget=roundStat1300(e.stabilityBudget/WEEKS_PER_MONTH);
+  for(const id of Object.keys(e.technologyBudgets))e.technologyBudgets[id]=roundStat1300((Number(e.technologyBudgets[id])||0)/WEEKS_PER_MONTH);
+  for(const city of Object.values(e.lastEconomy))for(const row of Object.values(city||{}))for(const key of ['gross','inputCost','wageBill','profit','tax'])if(Number.isFinite(Number(row?.[key])))row[key]=round(Number(row[key])/WEEKS_PER_MONTH,4);
+  for(const market of Object.values(e.markets))for(const row of Object.values(market?.goods||{}))if(Number.isFinite(Number(row?.tradeProfit)))row.tradeProfit=round(Number(row.tradeProfit)/WEEKS_PER_MONTH,4);
+  e.monthRevenue=0;e.monthExpenses=0;e.lastMonthRevenue=0;e.lastMonthExpenses=0;e.lastMonthBalance=0;e.lastMonthLabel='No completed week yet';
+ }
+ e.weeklyCadenceV1=true;
+ if(typeof e.lastMonthLabel!=='string')e.lastMonthLabel='No completed week yet';
  return e;
 }
+const GAME_WEEKDAYS_1300=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 function gameDate1300(dayIndex=0){
- const d=new Date(Date.UTC(1300,0,1+Math.max(0,Math.floor(Number(dayIndex)||0))));
- return {day:d.getUTCDate(),month:GAME_MONTHS_1300[d.getUTCMonth()],year:d.getUTCFullYear()};
+ const index=Math.max(0,Math.floor(Number(dayIndex)||0)),d=new Date(Date.UTC(1300,0,1+index));
+ return {day:d.getUTCDate(),month:GAME_MONTHS_1300[d.getUTCMonth()],year:d.getUTCFullYear(),weekday:GAME_WEEKDAYS_1300[index%7]};
 }
 const GAME_ARMY_UPKEEP_PER_UNIT=.005,GAME_NAVY_UPKEEP_PER_UNIT=.02;
 const roundStat1300=n=>Math.round((Number(n)||0)*100)/100;
@@ -633,7 +642,10 @@ function completedCampaignMonths1300(game){
  const d=new Date(Date.UTC(1300,0,1+Math.max(0,Math.floor(Number(game?.day)||0))));
  return Math.max(0,(d.getUTCFullYear()-1300)*12+d.getUTCMonth());
 }
-function gameStatCap1300(game){return roundStat1300(100+completedCampaignMonths1300(game)*.10);}
+function completedCampaignWeeks1300(game){return Math.max(0,Math.floor((Number(game?.day)||0)/7));}
+function isCampaignMonday1300(game){return Math.max(0,Math.floor(Number(game?.day)||0))%7===0;}
+function daysUntilCampaignMonday1300(game){const n=Math.max(0,Math.floor(Number(game?.day)||0))%7;return (7-n)%7;}
+function gameStatCap1300(game){return roundStat1300(100+completedCampaignWeeks1300(game)*(.10/WEEKS_PER_MONTH));}
 function ensureGameDynamicStats1300(game){
  if(!game)return;const e=game.economy=normaliseGameEconomy1300(game.economy);
  for(const id of game.ownedCities||[]){
@@ -705,24 +717,25 @@ function stabilityBudgetMax1300(game){
  else if(population<=250000)max=lerp(40,75,(population-100000)/150000);
  else if(population<=500000)max=lerp(75,120,(population-250000)/250000);
  else max=120+Math.sqrt((population-500000)/1000)*2;
- return roundStat1300(max);
+ return roundStat1300(max/WEEKS_PER_MONTH);
 }
-function stabilityBudgetNeed1300(game){return roundStat1300(Math.max(.35,stabilityBudgetMax1300(game)*.45));}
+function stabilityBudgetNeed1300(game){return roundStat1300(Math.max(.08,stabilityBudgetMax1300(game)*.45));}
 function provinceTechnologyBudgetMax1300(c){
- const p=Number(c?.people)||0,lerp=(a,b,t)=>a+(b-a)*clamp1300(t,0,1);
- if(p<=20000)return 3;
- if(p<=50000)return roundStat1300(lerp(3,8,(p-20000)/30000));
- if(p<=100000)return roundStat1300(lerp(8,15,(p-50000)/50000));
- if(p<=250000)return roundStat1300(lerp(15,30,(p-100000)/150000));
- return roundStat1300(Math.min(60,30+(p-250000)/25000));
+ const p=Number(c?.people)||0,lerp=(a,b,t)=>a+(b-a)*clamp1300(t,0,1);let max;
+ if(p<=20000)max=3;
+ else if(p<=50000)max=lerp(3,8,(p-20000)/30000);
+ else if(p<=100000)max=lerp(8,15,(p-50000)/50000);
+ else if(p<=250000)max=lerp(15,30,(p-100000)/150000);
+ else max=Math.min(60,30+(p-250000)/25000);
+ return roundStat1300(max/WEEKS_PER_MONTH);
 }
-function technologyBudgetNeed1300(c){return roundStat1300(Math.max(.25,provinceTechnologyBudgetMax1300(c)*.45));}
-function monthlyStateExpenses1300(game){
+function technologyBudgetNeed1300(c){return roundStat1300(Math.max(.06,provinceTechnologyBudgetMax1300(c)*.45));}
+function weeklyStateExpenses1300(game){
  const e=normaliseGameEconomy1300(game.economy),mil=militaryTotals1300(game),tech=(game.ownedCities||[]).reduce((n,id)=>n+(Number(e.technologyBudgets[id])||0),0);
- const army=roundStat1300(mil.army*GAME_ARMY_UPKEEP_PER_UNIT),navy=roundStat1300(mil.navy*GAME_NAVY_UPKEEP_PER_UNIT),stability=roundStat1300(Math.min(e.stabilityBudget,stabilityBudgetMax1300(game))),technology=roundStat1300(tech);
+ const army=roundStat1300(mil.army*(GAME_ARMY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH)),navy=roundStat1300(mil.navy*(GAME_NAVY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH)),stability=roundStat1300(Math.min(e.stabilityBudget,stabilityBudgetMax1300(game))),technology=roundStat1300(tech);
  return {army,navy,stability,technology,total:roundStat1300(army+navy+stability+technology),armyUnits:mil.army,navyUnits:mil.navy,stabilityNeed:stabilityBudgetNeed1300(game),stabilityMax:stabilityBudgetMax1300(game)};
 }
-function applyMonthlyStabilityPolicy1300(game){
+function applyWeeklyStabilityPolicy1300(game){
  const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1;
  let stabilityDelta=0,corruptionDelta=0;
  if(ratio<.20){stabilityDelta=-.35;corruptionDelta=1.5;}
@@ -732,8 +745,8 @@ function applyMonthlyStabilityPolicy1300(game){
  else if(ratio<=1.60){stabilityDelta=.14;corruptionDelta=-.6;}
  else{stabilityDelta=.27;corruptionDelta=-1.2;}
  stabilityDelta-=Math.max(0,e.corruption-35)*.002;
- e.corruption=roundStat1300(clamp1300(e.corruption+corruptionDelta,0,100));
- e.lastStabilityChange=roundStat1300(stabilityDelta);
+ e.corruption=roundStat1300(clamp1300(e.corruption+corruptionDelta/WEEKS_PER_MONTH,0,100));
+ e.lastStabilityChange=roundStat1300(stabilityDelta/WEEKS_PER_MONTH);
 }
 function technologyTreeUnlockedCount1300(game){
  const tech=countryTotals1300(game).technology,thresholds=[50,60,68,76,84,92];
@@ -839,24 +852,25 @@ function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}
   let remaining=labour;for(const sec of sectors){const target=Math.min(sec.desired,remaining);remaining-=target;const current=Math.max(0,Number(e.employment[cityId][sec.row.id])||0),move=Math.max(5,Math.round(sec.capacity*.08));e.employment[cityId][sec.row.id]=Math.round(current+clamp1300(target-current,-move,move));}
  }
  const last=Number(e.lastMarketTickDay),due=forceMarket||!Number.isFinite(last)||(Number(game.day)||0)-last>=7;
- if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR});e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.monthlyTax=result.monthlyTaxEstimate;e.lastMarketTickDay=Number(game.day)||0;accrueTradeSurplus1300(game,result.markets);if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue)e.monthRevenue=Math.round((Number(e.monthRevenue||0)+result.weeklyTax)*100)/100;}
- e.monthExpenses=monthlyStateExpenses1300(game).total;
+ if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR});e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.weeklyTax=result.weeklyTaxEstimate;e.lastMarketTickDay=Number(game.day)||0;accrueTradeSurplus1300(game,result.markets);if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue)e.monthRevenue=Math.round((Number(e.monthRevenue||0)+result.weeklyTax)*100)/100;}
+ e.monthExpenses=weeklyStateExpenses1300(game).total;
 }
 function refreshGameClockUI1300(){
- const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);game.economy.monthExpenses=monthlyStateExpenses1300(game).total;const d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status'),treasury=$('#game-treasury-amount'),tax=$('#game-daily-tax');
- if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(treasury)treasury.textContent='ƒ'+money1300(game.florins);if(tax)tax.textContent='Month balance: ƒ'+money1300((game.economy?.monthRevenue||0)-(game.economy?.monthExpenses||0));
- if(status){const remain=Math.max(0,60000-(Date.now()-game.clockStartedAt));status.textContent=remain>0?`Economy starts in ${Math.ceil(remain/1000)}s`:'1 day every 5 seconds';}
+ const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);game.economy.monthExpenses=weeklyStateExpenses1300(game).total;const d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status'),treasury=$('#game-treasury-amount'),tax=$('#game-daily-tax');
+ if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(treasury)treasury.textContent='ƒ'+money1300(game.florins);if(tax)tax.textContent='Week balance: ƒ'+money1300((game.economy?.monthRevenue||0)-(game.economy?.monthExpenses||0));
+ if(status){const remain=Math.max(0,60000-(Date.now()-game.clockStartedAt)),until=daysUntilCampaignMonday1300(game);status.textContent=remain>0?`${d.weekday} · starts in ${Math.ceil(remain/1000)}s`:until===0?`${d.weekday} · weekly update day`:`${d.weekday} · next Monday in ${until} day${until===1?'':'s'}`;}
 }
-function settleGameMonth1300(game,finishedDate){
- const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=monthlyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100;
- e.lastMonthRevenue=revenue;e.lastMonthExpenses=expenses;e.lastMonthBalance=balance;e.lastMonthLabel=`${finishedDate.month} ${finishedDate.year}`;
- game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyMonthlyStabilityPolicy1300(game);initializeDiplomacyWorld1300(game);for(const event of monthlyDiplomacy(game,completedCampaignMonths1300(game),Object.fromEntries(countryRankings1300().map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.monthRevenue=0;e.monthExpenses=monthlyStateExpenses1300(game).total;
+function settleGameWeek1300(game){
+ const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
+ e.lastMonthRevenue=revenue;e.lastMonthExpenses=expenses;e.lastMonthBalance=balance;e.lastMonthLabel=`${d.day} ${d.month} ${d.year}`;
+ game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyWeeklyStabilityPolicy1300(game);initializeDiplomacyWorld1300(game);for(const event of weeklyDiplomacy(game,completedCampaignWeeks1300(game),Object.fromEntries(buildCampaignRankings1300(game).map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.monthRevenue=0;e.monthExpenses=weeklyStateExpenses1300(game).total;
 }
 function advanceGameDay1300(){
  const game=profile.activeGame;if(!game)return;
- const before=gameDate1300(game.day);game.day=(Number(game.day)||0)+1;const after=gameDate1300(game.day);
- if(before.month!==after.month||before.year!==after.year)settleGameMonth1300(game,before);
- simulateGameEconomyDay1300(game);refreshIndependenceSupportWars1300(game);save();refreshGameClockUI1300();if(gameProvincePanel)renderGameProvincePanel();if(gameCountryPanel)renderGameCountryPanel1300();if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
+ game.day=(Number(game.day)||0)+1;
+ simulateGameEconomyDay1300(game);
+ if(isCampaignMonday1300(game))settleGameWeek1300(game);
+ refreshIndependenceSupportWars1300(game);save();refreshGameClockUI1300();if(gameProvincePanel)renderGameProvincePanel();if(gameCountryPanel)renderGameCountryPanel1300();if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
 }
 function setupGameClock1300(){
  if(gameClockTimer)clearInterval(gameClockTimer);refreshGameClockUI1300();
@@ -1130,8 +1144,8 @@ function gameProvincePanelHTML(cityId){
   <section class="province-side-stats dynamic">${stats.map(([label,value,key])=>{const change=Number(changes[key])||0,pct=cap?clamp1300(value/cap*100,0,100):0;return `<div><span>${label}</span><strong>${Number(value).toFixed(2)} <small>/ ${cap.toFixed(2)}</small></strong><em class="${change>0?'positive':change<0?'negative':'neutral'}">${change>0?'+':''}${change.toFixed(2)} this week</em><i><b style="width:${pct}%"></b></i></div>`;}).join('')}</section>
   ${owned?`<section class="province-economic-policy"><div class="policy-heading"><span>PROVINCE POLICY</span><small>National tax and realm wage are set in the country Economy tab</small></div>
    <div class="policy-row"><div><strong>Province minimum wage</strong><small>${cityOverride?'Custom rule':'Inherits realm wage'}</small></div>${wageStepper1300('city',cityId,null,cityWage,cityOverride)}</div>
-   <div class="policy-row technology-investment-row"><div><strong>Technology investment</strong><small>Recommended ƒ${money1300(techNeed)}/month · directly affects this province</small></div><div class="province-tech-slider"><strong data-tech-budget-value="${c.id}">ƒ${money1300(techBudget)}</strong><input data-tech-budget-city="${c.id}" type="range" min="0" max="${techMax}" step="0.01" value="${techBudget}" aria-label="Technology investment in ${esc(displayCityName1300(c))}"><small>ƒ0.00 — ƒ${money1300(techMax)}</small></div></div>
-   <div class="workforce-summary"><span><strong>${strengthNumber(summary.workers)}</strong><small>EMPLOYED</small></span><span><strong>${strengthNumber(summary.labour)}</strong><small>WORKER POOL</small></span><span><strong class="${summary.profit<0?'negative':''}">${summary.profit>=0?'+':'-'}ƒ${money1300(Math.abs(summary.profit))}</strong><small>PROFIT / MONTH</small></span></div>
+   <div class="policy-row technology-investment-row"><div><strong>Technology investment</strong><small>Recommended ƒ${money1300(techNeed)}/week · directly affects this province</small></div><div class="province-tech-slider"><strong data-tech-budget-value="${c.id}">ƒ${money1300(techBudget)}</strong><input data-tech-budget-city="${c.id}" type="range" min="0" max="${techMax}" step="0.01" value="${techBudget}" aria-label="Technology investment in ${esc(displayCityName1300(c))}"><small>ƒ0.00 — ƒ${money1300(techMax)}</small></div></div>
+   <div class="workforce-summary"><span><strong>${strengthNumber(summary.workers)}</strong><small>EMPLOYED</small></span><span><strong>${strengthNumber(summary.labour)}</strong><small>WORKER POOL</small></span><span><strong class="${summary.profit<0?'negative':''}">${summary.profit>=0?'+':'-'}ƒ${money1300(Math.abs(summary.profit))}</strong><small>PROFIT / WEEK</small></span></div>
   </section>`:''}
   ${owned?provinceMarketHTML1300(game,c.id):''}
   <div class="province-building-header"><div><span>BUILDINGS IN THIS PROVINCE</span><strong>${existing.length} building type${existing.length===1?'':'s'}</strong></div><small>${owned?`Treasury <b>ƒ${money1300(game.florins)}</b>`:'Foreign province'}</small></div>
@@ -1140,7 +1154,7 @@ function gameProvincePanelHTML(cityId){
    return `<article class="province-building-card owned-building-card ${maxed?'maxed':''}">
     <div class="owned-building-title"><strong>${esc(row.name)}</strong><span>LV ${row.level}/${ECONOMY_1300.maxBuildingLevel}</span></div>
     <button class="province-building-picture building-detail-trigger" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details" aria-label="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>DETAILS</span></button>
-    <div class="owned-building-main">${owned?`<div class="owned-building-metrics"><div><span>HIRED</span><strong>${compactBuildingWorkers1300(m.workers)} <small>/ ${compactBuildingWorkers1300(m.capacity)}</small></strong></div><div><span>MONTHLY PROFIT</span><strong class="${profit<0?'negative':'positive'}">${profit>=0?'+':'-'}ƒ${money1300(Math.abs(profit))}</strong></div></div>`:`<div class="owned-building-metrics foreign"><div><span>STATUS</span><strong>FOREIGN BUILDING</strong></div></div>`}</div>
+    <div class="owned-building-main">${owned?`<div class="owned-building-metrics"><div><span>HIRED</span><strong>${compactBuildingWorkers1300(m.workers)} <small>/ ${compactBuildingWorkers1300(m.capacity)}</small></strong></div><div><span>WEEKLY PROFIT</span><strong class="${profit<0?'negative':'positive'}">${profit>=0?'+':'-'}ƒ${money1300(Math.abs(profit))}</strong></div></div>`:`<div class="owned-building-metrics foreign"><div><span>STATUS</span><strong>FOREIGN BUILDING</strong></div></div>`}</div>
     <div class="province-building-buy compact-upgrade"><button ${canUpgrade?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${maxed?'MAX LEVEL':owned?'UPGRADE':'FOREIGN'}</span>${row.cost!==null&&owned&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button></div>
    </article>`;
   }).join(''):'<div class="owned-building-empty"><strong>No buildings yet</strong><p>Create the first building for this province below.</p></div>'}</section>
@@ -1162,9 +1176,9 @@ function buyGameProvinceBuilding(cityId,buildingId){
 }
 function changeGameTax1300(delta){const g=profile.activeGame;if(!g)return;g.economy.taxRate=clamp1300(g.economy.taxRate+Number(delta),GAME_TAX_MIN,GAME_TAX_MAX);save();renderGameProvincePanel();renderGameCountryPanel1300();}
 function changeNationalWage1300(delta){const g=profile.activeGame;if(!g)return;g.economy.nationalWage=clamp1300(Math.round((g.economy.nationalWage+Number(delta))*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);save();renderGameProvincePanel();renderGameCountryPanel1300();}
-function setStabilityBudget1300(value){const g=profile.activeGame;if(!g)return;const max=stabilityBudgetMax1300(g);g.economy.stabilityBudget=clamp1300(roundStat1300(value),0,max);g.economy.monthExpenses=monthlyStateExpenses1300(g).total;save();refreshGameClockUI1300();const out=$('#stability-budget-value');if(out)out.textContent='ƒ'+money1300(g.economy.stabilityBudget);}
+function setStabilityBudget1300(value){const g=profile.activeGame;if(!g)return;const max=stabilityBudgetMax1300(g);g.economy.stabilityBudget=clamp1300(roundStat1300(value),0,max);g.economy.monthExpenses=weeklyStateExpenses1300(g).total;save();refreshGameClockUI1300();const out=$('#stability-budget-value');if(out)out.textContent='ƒ'+money1300(g.economy.stabilityBudget);}
 function setProvinceTechnologyBudget1300(cityId,value){
- const g=profile.activeGame,c=CITY_1300[cityId];if(!g||!c||!g.ownedCities?.includes(cityId))return;const max=provinceTechnologyBudgetMax1300(c),v=clamp1300(roundStat1300(value),0,max);g.economy.technologyBudgets[cityId]=v;g.economy.monthExpenses=monthlyStateExpenses1300(g).total;save();refreshGameClockUI1300();document.querySelectorAll('[data-tech-budget-value="'+cityId+'"]').forEach(el=>el.textContent='ƒ'+money1300(v));
+ const g=profile.activeGame,c=CITY_1300[cityId];if(!g||!c||!g.ownedCities?.includes(cityId))return;const max=provinceTechnologyBudgetMax1300(c),v=clamp1300(roundStat1300(value),0,max);g.economy.technologyBudgets[cityId]=v;g.economy.monthExpenses=weeklyStateExpenses1300(g).total;save();refreshGameClockUI1300();document.querySelectorAll('[data-tech-budget-value="'+cityId+'"]').forEach(el=>el.textContent='ƒ'+money1300(v));
 }
 function changeCityWage1300(cityId,delta){const g=profile.activeGame;if(!g)return;const current=effectiveCityWage1300(g,cityId);g.economy.cityWages[cityId]=clamp1300(Math.round((current+Number(delta))*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);save();renderGameProvincePanel();}
 function resetCityWage1300(cityId){const g=profile.activeGame;if(!g)return;delete g.economy.cityWages[cityId];save();renderGameProvincePanel();}
@@ -1529,7 +1543,7 @@ function campaignRankingRows1300(game){
 }
 function countryRankingsHTML1300(game){
  const board=campaignRankingRows1300(game),cap=gameStatCap1300(game),value=(r,key)=>key==='strength'?strengthNumber(r.strength):['foodAvg','economyAvg','technologyAvg','stabilityAvg'].includes(key)?Number(r[key]).toFixed(2)+'/'+cap.toFixed(2):strengthNumber(r[key]);
- return `<section class="campaign-ranking-head"><div><span>CAMPAIGN RANKINGS</span><strong>${board.rows.length} active countries</strong></div><small>Snapshot: ${esc(game.rankingSnapshot?.label||'1 January 1300')} · updates every month</small></section>
+ return `<section class="campaign-ranking-head"><div><span>CAMPAIGN RANKINGS</span><strong>${board.rows.length} active countries</strong></div><small>Snapshot: ${esc(game.rankingSnapshot?.label||'1 January 1300')} · updates every Monday</small></section>
  <div class="campaign-ranking-tabs">${RANKING_CATEGORIES_1300.map(([id,label])=>`<button class="${gameRankingCategory===id?'active':''}" data-action="game-ranking-category" data-id="${id}">${label}</button>`).join('')}</div>
  <section class="campaign-ranking-list">${board.rows.map(r=>`<details class="${r.player?'player':''}"><summary><span>#${String(r.categoryRank).padStart(2,'0')}</span><strong>${r.player?'★ ':''}${esc(r.country)}</strong><small>${r.playableCityCount} cities · ${r.powerModifier<1?esc(powerModifierLabel1300(r.powerModifier,r,game)):'full power'}</small><b>${value(r,board.key)}</b></summary><div class="campaign-ranking-breakdown"><span>Food <b>${Number(r.foodAvg).toFixed(2)}</b></span><span>Economy <b>${Number(r.economyAvg).toFixed(2)}</b></span><span>Technology <b>${Number(r.technologyAvg).toFixed(2)}</b></span><span>Stability <b>${Number(r.stabilityAvg).toFixed(2)}</b></span><span>Population <b>${strengthNumber(r.population)}</b></span><span>Army <b>${strengthNumber(r.army)}</b></span><span>Navy <b>${strengthNumber(r.navy)}</b></span><span>Raw power <b>${strengthNumber(r.rawStrength??r.strength)}</b></span><span>Status modifier <b>×${Number(r.powerModifier??1).toFixed(2)}</b></span><span>Overall <b>${strengthNumber(r.strength)}</b></span></div></details>`).join('')}</section>`;
 }
@@ -1573,28 +1587,28 @@ function countryPoliticsHTML1300(game){
  return `<section class="country-overview-hero"><div class="country-flag-large">${flagShieldHTML1300(game.flag,'country-panel-flag')}</div><div><span>${esc(campaignStageLabel1300(game).toUpperCase())}</span><h2>${esc(gameCountryName1300(game))}</h2><p>Capital: <strong>${esc(capital?displayCityName1300(capital):'—')}</strong></p></div></section>
  <section class="campaign-path"><div class="${game.campaignStage==='rebellion'?'active done':''}"><span>1</span><strong>Rebellion</strong><small>${independent}/${game.ownedCities.length} cities independent</small></div><div class="${['free_cities','nation'].includes(game.campaignStage)?'active done':''}"><span>2</span><strong>Free Cities</strong><small>All cities recognised as independent</small></div><div class="${game.campaignStage==='nation'?'active done':''}"><span>3</span><strong>Nation</strong><small>Form a country in Decisions</small></div><div class="${game.won?'active done':''}"><span>4</span><strong>Great Power</strong><small>Reach the Overall Top 5 to win</small></div></section>
  <section class="country-stat-grid"><div><span>Provinces</span><strong>${t.cities.length}</strong></div><div><span>Population</span><strong>${strengthNumber(t.population)}</strong></div><div><span>Professional army</span><strong>${strengthNumber(t.army)} / ${strengthNumber(t.armyLimit)}</strong><small>${Number(t.armyLimitPercent).toFixed(0)}% population cap</small></div><div><span>Navy</span><strong>${strengthNumber(t.navy)}</strong></div></section>
- <section class="country-policy-card"><span>DYNAMIC REALM STATS</span><h3>Current limit: ${t.cap.toFixed(2)}</h3><p>The maximum starts at 100.00 and rises by 0.10 after every completed campaign month. All four values are stored to two decimal places.</p></section>
+ <section class="country-policy-card"><span>DYNAMIC REALM STATS</span><h3>Current limit: ${t.cap.toFixed(2)}</h3><p>The maximum starts at 100.00 and rises every Monday at the same long-term pace as +0.10 per month. All four values are stored to two decimal places.</p></section>
  <section class="country-national-stats">${[['Food',t.food],['Economy',t.economy],['Technology',t.technology],['Stability',t.stability]].map(([n,v])=>`<div><span>${n}</span><strong>${Number(v).toFixed(2)} / ${t.cap.toFixed(2)}</strong><i><b style="width:${clamp1300(v/t.cap*100,0,100)}%"></b></i></div>`).join('')}</section>`;
 }
 function countryEconomyHTML1300(game){
- const e=game.economy=normaliseGameEconomy1300(game.economy),expenses=monthlyStateExpenses1300(game);e.monthExpenses=expenses.total;const balance=e.monthRevenue-e.monthExpenses,sectors=countrySectorRows1300(game),stabilityMax=expenses.stabilityMax;
- return `<section class="country-money-hero"><div><span>TREASURY</span><strong>ƒ${money1300(game.florins)}</strong></div><div><span>CURRENT MONTH BALANCE</span><strong class="${balance<0?'negative':''}">${balance<0?'-':'+'}ƒ${money1300(Math.abs(balance))}</strong></div></section>
- <section class="country-budget-table"><div class="country-budget-title"><span>MONTHLY BUDGET</span><small>Money is paid when the month closes</small></div>
+ const e=game.economy=normaliseGameEconomy1300(game.economy),expenses=weeklyStateExpenses1300(game);e.monthExpenses=expenses.total;const balance=e.monthRevenue-e.monthExpenses,sectors=countrySectorRows1300(game),stabilityMax=expenses.stabilityMax;
+ return `<section class="country-money-hero"><div><span>TREASURY</span><strong>ƒ${money1300(game.florins)}</strong></div><div><span>CURRENT WEEK BALANCE</span><strong class="${balance<0?'negative':''}">${balance<0?'-':'+'}ƒ${money1300(Math.abs(balance))}</strong></div></section>
+ <section class="country-budget-table"><div class="country-budget-title"><span>WEEKLY BUDGET</span><small>Money is paid every Monday</small></div>
   <div><span>Sector taxes</span><strong>+ƒ${money1300(e.monthRevenue)}</strong></div>
-  <div><span>Professional army upkeep · ${strengthNumber(expenses.armyUnits)} × ƒ0.005</span><strong>-ƒ${money1300(expenses.army)}</strong></div>
-  <div><span>Navy upkeep · ${strengthNumber(expenses.navyUnits)} × ƒ0.02</span><strong>-ƒ${money1300(expenses.navy)}</strong></div>
+  <div><span>Professional army upkeep · ${strengthNumber(expenses.armyUnits)} × ƒ${(GAME_ARMY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH).toFixed(4)}/week</span><strong>-ƒ${money1300(expenses.army)}</strong></div>
+  <div><span>Navy upkeep · ${strengthNumber(expenses.navyUnits)} × ƒ${(GAME_NAVY_UPKEEP_PER_UNIT/WEEKS_PER_MONTH).toFixed(4)}/week</span><strong>-ƒ${money1300(expenses.navy)}</strong></div>
   <div><span>Stability administration</span><strong>-ƒ${money1300(expenses.stability)}</strong></div>
   <div><span>Provincial technology investment</span><strong>-ƒ${money1300(expenses.technology)}</strong></div>
   <div><span>Total state expenses</span><strong>-ƒ${money1300(e.monthExpenses)}</strong></div>
   <div class="balance"><span>Current balance</span><strong>${balance<0?'-':'+'}ƒ${money1300(Math.abs(balance))}</strong></div>
-  <div class="last-month"><span>Last month · ${esc(e.lastMonthLabel)}</span><strong>${e.lastMonthBalance<0?'-':'+'}ƒ${money1300(Math.abs(e.lastMonthBalance))}</strong></div>
+  <div class="last-month"><span>Last week · ${esc(e.lastMonthLabel)}</span><strong>${e.lastMonthBalance<0?'-':'+'}ƒ${money1300(Math.abs(e.lastMonthBalance))}</strong></div>
  </section>
  <section class="country-econ-policy"><div><span>National tax rate</span><small>Applied to profitable sectors</small></div><div class="tax-stepper"><button data-action="game-tax-adjust" data-delta="-1">−</button><strong>${e.taxRate}%</strong><button data-action="game-tax-adjust" data-delta="1">+</button></div></section>
  <section class="country-econ-policy"><div><span>National minimum wage</span><small>Higher wages can improve food affordability but reduce company profit</small></div>${wageStepper1300('national','',null,e.nationalWage,false)}</section>
- <section class="country-econ-policy stability-spending"><div><span>Stability administration</span><small>Starts at ƒ0.00. Recommended: ƒ${money1300(expenses.stabilityNeed)}/month · Population-scaled maximum ƒ${money1300(stabilityMax)} · Corruption ${money1300(e.corruption)}% · Last stability change ${e.lastStabilityChange>0?'+':''}${money1300(e.lastStabilityChange)}</small></div><div class="stability-budget-slider"><strong id="stability-budget-value">ƒ${money1300(Math.min(e.stabilityBudget,stabilityMax))}</strong><input id="stability-budget-range" type="range" min="0" max="${stabilityMax}" step="0.01" value="${Math.min(e.stabilityBudget,stabilityMax)}" aria-label="Stability administration monthly budget"><div><span>ƒ0.00</span><span>ƒ${money1300(stabilityMax)}</span></div></div></section>
+ <section class="country-econ-policy stability-spending"><div><span>Stability administration</span><small>Starts at ƒ0.00. Recommended: ƒ${money1300(expenses.stabilityNeed)}/week · Population-scaled maximum ƒ${money1300(stabilityMax)} · Corruption ${money1300(e.corruption)}% · Last stability change ${e.lastStabilityChange>0?'+':''}${money1300(e.lastStabilityChange)}</small></div><div class="stability-budget-slider"><strong id="stability-budget-value">ƒ${money1300(Math.min(e.stabilityBudget,stabilityMax))}</strong><input id="stability-budget-range" type="range" min="0" max="${stabilityMax}" step="0.01" value="${Math.min(e.stabilityBudget,stabilityMax)}" aria-label="Stability administration weekly budget"><div><span>ƒ0.00</span><span>ƒ${money1300(stabilityMax)}</span></div></div></section>
  ${countryMarketHTML1300(game)}
- <div class="country-section-title"><span>COMPANIES & SECTORS</span><small>Profitability feeds the Economy stat each month</small></div>
- <section class="country-company-list">${sectors.length?sectors.map(r=>`<article><div class="company-icon">${buildingPicture1300(r.id)}</div><div class="company-main"><div><strong>${esc(r.name)}</strong><span>${r.levels} levels</span></div><small>${esc(r.category)}</small><p>Workers <b>${strengthNumber(r.workers)} / ${strengthNumber(r.capacity)}</b> · Avg. wage <b>ƒ${money1300(r.avgWage)}</b></p></div><div class="company-money"><span>Profit/month</span><strong class="${r.profit<0?'negative':''}">ƒ${money1300(r.profit)}</strong><small>Inputs ƒ${money1300(r.inputCost||0)} · Tax ƒ${money1300(r.tax)}</small></div></article>`).join(''):'<p class="country-empty">No active sectors yet.</p>'}</section>`;
+ <div class="country-section-title"><span>COMPANIES & SECTORS</span><small>Profitability feeds the Economy stat every Monday</small></div>
+ <section class="country-company-list">${sectors.length?sectors.map(r=>`<article><div class="company-icon">${buildingPicture1300(r.id)}</div><div class="company-main"><div><strong>${esc(r.name)}</strong><span>${r.levels} levels</span></div><small>${esc(r.category)}</small><p>Workers <b>${strengthNumber(r.workers)} / ${strengthNumber(r.capacity)}</b> · Avg. wage <b>ƒ${money1300(r.avgWage)}</b></p></div><div class="company-money"><span>Profit/week</span><strong class="${r.profit<0?'negative':''}">ƒ${money1300(r.profit)}</strong><small>Inputs ƒ${money1300(r.inputCost||0)} · Tax ƒ${money1300(r.tax)}</small></div></article>`).join(''):'<p class="country-empty">No active sectors yet.</p>'}</section>`;
 }
 function countryPeopleHTML1300(game){
  const p=countryPeople1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),population=Math.max(1,Number(p.population)||0),profPct=prof.army/population*100,unprofPct=unprof.army/population*100;
@@ -1619,10 +1633,10 @@ function countryDecisionsHTML1300(game){
 }
 function countryTechnologyHTML1300(game){
  const t=countryTotals1300(game),e=game.economy=normaliseGameEconomy1300(game.economy),nodes=[['Crop Administration',50,'Improves the research base of every province.'],['Guild Organisation',60,'Organised crafts spread techniques faster.'],['Improved Metallurgy',68,'Advanced metalworking strengthens technical learning.'],['Scholastic Networks',76,'Schools and scholars accelerate knowledge transfer.'],['Advanced Fortification',84,'Engineering knowledge becomes more systematic.'],['Financial Institutions',92,'Administrative mathematics and finance support further research.']],unlocked=nodes.filter(([,need])=>t.technology>=need).length;
- return `<section class="tech-summary"><span>NATIONAL TECHNOLOGY</span><strong>${t.technology.toFixed(2)}<small>/${t.cap.toFixed(2)}</small></strong><p>Technology changes monthly. Provincial investment is the main driver; every unlocked technology-tree milestone also gives every province a small research-efficiency bonus.</p><div class="tech-tree-bonus"><span>Unlocked milestones</span><strong>${unlocked}/${nodes.length}</strong><small>+${(unlocked*.008).toFixed(3)} technology/month before local investment effects</small></div></section>
+ return `<section class="tech-summary"><span>NATIONAL TECHNOLOGY</span><strong>${t.technology.toFixed(2)}<small>/${t.cap.toFixed(2)}</small></strong><p>Technology changes every Monday. Provincial investment is the main driver; every unlocked technology-tree milestone also gives every province a small research-efficiency bonus.</p><div class="tech-tree-bonus"><span>Unlocked milestones</span><strong>${unlocked}/${nodes.length}</strong><small>+${(unlocked*.008).toFixed(3)} technology/month equivalent before local investment effects</small></div></section>
  <section class="tech-tree">${nodes.map(([name,need,desc],i)=>`<article class="${t.technology>=need?'unlocked':'locked'}"><span>Tier ${i+1} · requires ${need.toFixed(2)}</span><strong>${name}</strong><p>${desc}</p><small>${t.technology>=need?'RESEARCH BONUS ACTIVE':'LOCKED'}</small></article>`).join('')}</section>
- <div class="country-section-title"><span>PROVINCIAL RESEARCH</span><small>Set each province separately · paid monthly</small></div>
- <section class="province-tech-investments">${t.cities.map(c=>{const max=provinceTechnologyBudgetMax1300(c),need=technologyBudgetNeed1300(c),budget=Math.min(Number(e.technologyBudgets[c.id])||0,max),stats=provinceDynamicStats1300(game,c),change=Number(e.lastStatChanges?.[c.id]?.technology)||0;return `<article><div><strong>${esc(displayCityName1300(c))}</strong><small>Technology ${stats.technology.toFixed(2)} / ${t.cap.toFixed(2)} · last month <b class="${change>0?'positive':change<0?'negative':'neutral'}">${change>0?'+':''}${change.toFixed(2)}</b></small></div><div class="province-tech-slider"><strong data-tech-budget-value="${c.id}">ƒ${money1300(budget)}</strong><input data-tech-budget-city="${c.id}" type="range" min="0" max="${max}" step="0.01" value="${budget}" aria-label="Technology investment in ${esc(displayCityName1300(c))}"><small>Recommended ƒ${money1300(need)} · max ƒ${money1300(max)}</small></div></article>`;}).join('')}</section>`;
+ <div class="country-section-title"><span>PROVINCIAL RESEARCH</span><small>Set each province separately · paid every Monday</small></div>
+ <section class="province-tech-investments">${t.cities.map(c=>{const max=provinceTechnologyBudgetMax1300(c),need=technologyBudgetNeed1300(c),budget=Math.min(Number(e.technologyBudgets[c.id])||0,max),stats=provinceDynamicStats1300(game,c),change=Number(e.lastStatChanges?.[c.id]?.technology)||0;return `<article><div><strong>${esc(displayCityName1300(c))}</strong><small>Technology ${stats.technology.toFixed(2)} / ${t.cap.toFixed(2)} · last week <b class="${change>0?'positive':change<0?'negative':'neutral'}">${change>0?'+':''}${change.toFixed(2)}</b></small></div><div class="province-tech-slider"><strong data-tech-budget-value="${c.id}">ƒ${money1300(budget)}</strong><input data-tech-budget-city="${c.id}" type="range" min="0" max="${max}" step="0.01" value="${budget}" aria-label="Technology investment in ${esc(displayCityName1300(c))}"><small>Recommended ƒ${money1300(need)} · max ƒ${money1300(max)}</small></div></article>`;}).join('')}</section>`;
 }
 function countryRebellionsHTML1300(game){
  const rows=countryRebellionRows1300(game),avg=rows.length?Math.round(rows.reduce((n,r)=>n+r.risk,0)/rows.length):0;
@@ -1682,7 +1696,7 @@ function openDiplomacyAction1300(action){
   confirm=`<button data-action="dip-modal-gift" ${max<1?'disabled':''}>SEND GIFT</button>`;
  }else if(action==='subsidy'){
   const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),value=clamp1300(Number(ours.subsidy)||1,0,max);
-  body=`<p>Choose the monthly subsidy. It is paid every month until stopped, war begins, or your treasury can no longer pay it.</p>${diplomacySliderHTML1300({id:'dip-modal-subsidy-range',label:'Monthly subsidy',min:0,max,step:.5,value,prefix:'ƒ',suffix:'/month'})}`;
+  body=`<p>Choose the weekly subsidy. It is paid every Monday until stopped, war begins, or your treasury can no longer pay it.</p>${diplomacySliderHTML1300({id:'dip-modal-subsidy-range',label:'Weekly subsidy',min:0,max,step:.5,value,prefix:'ƒ',suffix:'/week'})}`;
   confirm=`<button data-action="dip-modal-subsidy-set" ${max<=0?'disabled':''}>SET SUBSIDY</button>${ours.subsidy?'<button class="secondary" data-action="dip-modal-subsidy-stop">STOP SUBSIDY</button>':''}`;
  }else if(action==='money'){
   const max=Math.max(0,Math.floor((Number(d.aiTreasuries[country])||0)*100)/100),value=Math.min(5,max),a=moneyRequestAssessment1300(game,country,value);
@@ -1707,7 +1721,7 @@ function openDiplomacyAction1300(action){
  }else{
   const active=action==='improve'&&ours.mission==='improve'||action==='curry'&&ours.mission==='curry'||action==='alliance'&&pair.alliance||action==='rival'&&ours.rival||action==='guarantee'&&ours.guarantee||action==='access'&&ours.access||action==='offerAccess'&&relation(game,PLAYER_REALM,country).theirs.access||action==='trade'&&pair.trade||action==='embargo'&&ours.embargo;
   const descriptions={
-   improve:active?'Recall the diplomat currently improving relations.':'Assign a diplomat to improve their opinion by +3 each month, up to +100 from the mission.',
+   improve:active?'Recall the diplomat currently improving relations.':'Assign a diplomat to improve their opinion by +3 every Monday, up to +100 from the mission.',
    curry:active?'Recall the diplomat currently currying favors.':'Assign a diplomat to curry extra favors. This requires an alliance.',
    alliance:'Propose a formal alliance.',
    breakAlliance:'End the current alliance. This reduces their trust and creates a truce.',
@@ -1733,7 +1747,7 @@ function updateDiplomacyActionModalPreview1300(){
  const game=profile.activeGame,country=gameDiplomacyCountry,root=modal.querySelector('.diplomacy-action-dialog');if(!game||!country||!root)return;
  const action=root.dataset.dipModalAction,put=a=>{const el=modal.querySelector('#dip-modal-acceptance');if(el)el.innerHTML=acceptanceMeterHTML1300(a.score,a.note)+(action==='alliance'?allianceAcceptanceTableHTML1300(a):'');},setValue=(id,prefix='',suffix='')=>{const input=modal.querySelector(`#${id}`),out=modal.querySelector(`#${id}-value`);if(input&&out)out.textContent=`${prefix}${money1300(input.value)}${suffix}`;};
  if(action==='gift')setValue('dip-modal-gift-range','ƒ');
- if(action==='subsidy')setValue('dip-modal-subsidy-range','ƒ','/month');
+ if(action==='subsidy')setValue('dip-modal-subsidy-range','ƒ','/week');
  if(action==='money'){setValue('dip-modal-money-range','ƒ');put(moneyRequestAssessment1300(game,country,modal.querySelector('#dip-modal-money-range')?.value));}
  if(action==='sellCity'){setValue('dip-modal-sell-price','ƒ');put(citySaleAssessment1300(game,country,modal.querySelector('#dip-modal-sell-city')?.value,modal.querySelector('#dip-modal-sell-price')?.value));}
  if(action==='supportIndependence')put(supportIndependenceAssessment1300(game,country,modal.querySelector('#dip-modal-support-city')?.value));
@@ -1795,7 +1809,7 @@ function gamePage(){
  if(gameScreen==='development')return developmentPage();
  const gameDate=gameDate1300(profile.activeGame.day);
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
-  <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong id="game-treasury-amount">ƒ${money1300(profile.activeGame.florins)}</strong><small id="game-daily-tax">Month balance: ƒ${money1300((profile.activeGame.economy?.monthRevenue||0)-(profile.activeGame.economy?.monthExpenses||0))}</small></div>
+  <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong id="game-treasury-amount">ƒ${money1300(profile.activeGame.florins)}</strong><small id="game-daily-tax">Week balance: ƒ${money1300((profile.activeGame.economy?.monthRevenue||0)-(profile.activeGame.economy?.monthExpenses||0))}</small></div>
   <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
   <div class="game-map-actions"><span class="player-realm-chip" style="--player-realm:${profile.activeGame.playerColor}"><i></i>Your Realm · ${profile.activeGame.ownedCities.length} provinces</span></div><button class="game-quit-button" data-action="quit-game">Quit</button>
   <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>

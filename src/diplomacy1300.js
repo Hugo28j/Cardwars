@@ -4,8 +4,10 @@ const clamp = (n,a,b)=>Math.max(a,Math.min(b,Number(n)||0));
 const round = n=>Math.round(n*100)/100;
 const key = (a,b)=>JSON.stringify([a,b].sort());
 export function diplomacyState(game){
- const d=game.diplomacy??={};d.network??={pairs:{},reputation:{},lastMonth:null};
- d.network.pairs??={};d.network.reputation??={};return d.network;
+ const d=game.diplomacy??={};d.network??={pairs:{},reputation:{},lastMonth:null,lastWeek:null};
+ d.network.pairs??={};d.network.reputation??={};
+ if(!Object.hasOwn(d.network,'lastWeek'))d.network.lastWeek=null;
+ return d.network;
 }
 const direction=()=>({opinion:0,trust:50,favors:0,ae:0,rival:false,guarantee:false,access:false,embargo:false,subsidy:0,mission:null,modifiers:[],cooldowns:{}});
 export function relation(game,a,b){
@@ -116,9 +118,9 @@ export function syncLegacy(game){
  const d=game.diplomacy;d.relations??={};d.alliances??={};d.wars??={};
  for(const p of Object.values(diplomacyState(game).pairs)){if(!p.countries.includes(PLAYER_REALM))continue;const b=p.countries.find(c=>c!==PLAYER_REALM);d.relations[b]=opinion(p.directions[b]);d.alliances[b]=p.alliance;d.wars[b]=!!p.war;}
 }
-export function monthlyDiplomacy(game,month,powers={}){
- const n=diplomacyState(game);if(n.lastMonth!==null&&month<=n.lastMonth)return [];
- n.lastMonth=month;const events=[];
+export function weeklyDiplomacy(game,week,powers={}){
+ const n=diplomacyState(game);if(n.lastWeek!==null&&week<=n.lastWeek)return [];
+ n.lastWeek=week;const events=[];
  for(const p of Object.values(n.pairs))for(const a of p.countries){
   const b=p.countries.find(c=>c!==a),r=p.directions[a],other=p.directions[b];
   r.ae=round(Math.max(0,r.ae-.2));
@@ -130,10 +132,12 @@ export function monthlyDiplomacy(game,month,powers={}){
    else {if(a===PLAYER_REALM)game.florins=round(bal-r.subsidy);else d.aiTreasuries[a]=round(bal-r.subsidy);d.aiTreasuries??={};if(b===PLAYER_REALM)game.florins=round(game.florins+r.subsidy);else d.aiTreasuries[b]=round((d.aiTreasuries[b]||0)+r.subsidy);memory(other,'Subsidies',1,game.day,.1);}
   }
  }
- // AI agreements between countries are evaluated quarterly, never on each frame.
- if(month%3===0)for(const p of Object.values(n.pairs)){
+ // AI agreements between countries are evaluated every 13 weeks, always on a Monday tick.
+ if(week%13===0)for(const p of Object.values(n.pairs)){
   const [a,b]=p.countries;if(a===PLAYER_REALM||b===PLAYER_REALM||p.war)continue;
   if(!p.alliance&&acceptance(game,a,b,'alliance',powers).accepted&&acceptance(game,b,a,'alliance',powers).accepted){p.alliance=true;events.push(`${a} and ${b} formed an alliance.`);}
  }
  syncLegacy(game);return events;
 }
+// Backward-compatible alias for older imports/tests; cadence is weekly.
+export const monthlyDiplomacy=weeklyDiplomacy;
