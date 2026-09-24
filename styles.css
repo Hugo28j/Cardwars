@@ -1179,7 +1179,7 @@
 
 /* Compact seven-column market + military manpower in Population tab */
 .province-market-columns,.province-market-row{
- grid-template-columns:54px 48px 38px 42px 38px 58px 60px;
+ grid-template-columns:54px 47px 37px 44px 44px 42px 62px;
  gap:2px;
  padding-left:7px;
  padding-right:7px;
