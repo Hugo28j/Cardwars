@@ -631,7 +631,7 @@ function normaliseGameEconomy1300(raw){
  if(typeof e.lastMonthLabel!=='string')e.lastMonthLabel='No completed week yet';
  return e;
 }
-const GAME_WEEKDAYS_1300=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const GAME_WEEKDAYS_1300=['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
 function gameDate1300(dayIndex=0){
  const index=Math.max(0,Math.floor(Number(dayIndex)||0)),d=new Date(Date.UTC(1300,0,1+index));
  return {day:d.getUTCDate(),month:GAME_MONTHS_1300[d.getUTCMonth()],year:d.getUTCFullYear(),weekday:GAME_WEEKDAYS_1300[index%7]};
@@ -858,7 +858,7 @@ function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}
 function refreshGameClockUI1300(){
  const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);game.economy.monthExpenses=weeklyStateExpenses1300(game).total;const d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status'),treasury=$('#game-treasury-amount'),tax=$('#game-daily-tax');
  if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(treasury)treasury.textContent='ƒ'+money1300(game.florins);if(tax)tax.textContent='Week balance: ƒ'+money1300((game.economy?.monthRevenue||0)-(game.economy?.monthExpenses||0));
- if(status){const remain=Math.max(0,60000-(Date.now()-game.clockStartedAt)),until=daysUntilCampaignMonday1300(game);status.textContent=remain>0?`${d.weekday} · starts in ${Math.ceil(remain/1000)}s`:until===0?`${d.weekday} · weekly update day`:`${d.weekday} · next Monday in ${until} day${until===1?'':'s'}`;}
+ if(status)status.textContent=d.weekday;
 }
 function settleGameWeek1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
