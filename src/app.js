@@ -1631,11 +1631,26 @@ function diplomacyAssetOptions1300(selected='florins'){return [{id:'florins',nam
 function diplomacyOpinionClass1300(n){return Number(n)>0?'positive':Number(n)<0?'negative':'neutral';}
 function proposalAssessment1300(game,country,action){
  const powers=diplomacyPowers1300(game,country),r=acceptance(game,PLAYER_REALM,country,action,powers),score=r.blocked?0:clamp1300(50+r.score,0,100);
- if(action==='alliance'&&!r.blocked){
-  const ranking=r.reasons.find(x=>x.label==='Ranking power difference')?.value||0,distance=r.reasons.find(x=>x.label==='Distance')?.value||0,rankText=powers.__playerRank&&powers.__targetRank?`#${powers.__playerRank} vs #${powers.__targetRank}`:'current overall strength';
-  return {score,note:`Ranking ${rankText}: ${ranking>=0?'+':''}${ranking.toFixed(1)} · Distance ${Math.round(powers.__allianceDistanceKm)} km: ${distance>=0?'+':''}${distance.toFixed(1)} · total diplomatic score ${r.score}.`};
- }
- return {score,note:r.blocked||`Diplomatic score ${r.score}; acceptance requires 0.`};
+ if(action==='alliance'&&!r.blocked)return {score,note:'A diplomatic score of 0 or higher is accepted.',rawScore:r.score,reasons:r.reasons,powers};
+ return {score,note:r.blocked||`Diplomatic score ${r.score}; acceptance requires 0.`,rawScore:r.score,reasons:r.reasons,powers};
+}
+function diplomacyFactorValueHTML1300(value){
+ const n=Number(value)||0,cls=n>0?'positive':n<0?'negative':'neutral';
+ return `<strong class="${cls}">${n>0?'+':''}${n.toFixed(1)}</strong>`;
+}
+function allianceAcceptanceTableHTML1300(assessment){
+ const reasons=Array.isArray(assessment?.reasons)?assessment.reasons:[],byLabel=Object.fromEntries(reasons.map(r=>[r.label,Number(r.value)||0]));
+ const core=[
+  ['Base reluctance','Base reluctance'],
+  ['Opinion','Their opinion'],
+  ['Trust','Their trust'],
+  ['Ranking power','Ranking power difference'],
+  ['Distance','Distance']
+ ];
+ const coreLabels=new Set(core.map(([,source])=>source));
+ const rows=core.map(([label,source])=>`<div><span>${label}</span>${diplomacyFactorValueHTML1300(byLabel[source]||0)}</div>`);
+ for(const r of reasons)if(!coreLabels.has(r.label)&&Math.abs(Number(r.value)||0)>.004)rows.push(`<div><span>${esc(r.label)}</span>${diplomacyFactorValueHTML1300(r.value)}</div>`);
+ return `<div class="dip-alliance-breakdown">${rows.join('')}<div class="total"><span>Diplomatic score</span>${diplomacyFactorValueHTML1300(assessment?.rawScore||0)}</div></div>`;
 }
 function diplomacyDealOfferOptions1300(game,country){
  const {d}=ensureDiplomacyCountry1300(game,country),out=[`<option value="florins">Florins · ƒ${money1300(game.florins)}</option>`];
@@ -1705,7 +1720,7 @@ function openDiplomacyAction1300(action){
    war:'Declare war without a casus belli. This gives +15 aggressive expansion, −1 diplomatic reputation and −30 trust with the defender. Trade, access and subsidies end.'
   };
   body=`<p>${esc(descriptions[action]||'Confirm this diplomatic action.')}</p>`;
-  if(['alliance','access','trade'].includes(action)){const a=proposalAssessment1300(game,country,action);body+=`<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;}
+  if(['alliance','access','trade'].includes(action)){const a=proposalAssessment1300(game,country,action);body+=`<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}${action==='alliance'?allianceAcceptanceTableHTML1300(a):''}</div>`;}
   confirm=`<button class="${action==='war'?'danger':''}" data-action="dip-modal-standard" data-id="${action}">${action==='war'?'DECLARE WAR':active&&['improve','curry'].includes(action)?'RECALL':'CONFIRM'}</button>`;
  }
  showDialog(`<div class="diplomacy-action-dialog" data-dip-modal-action="${esc(action)}"><span class="eyebrow">DIPLOMATIC ACTION · ${esc(country.toUpperCase())}</span><h2>${esc(title)}</h2>${body}<div class="dip-modal-actions">${confirm}<button class="secondary" data-action="close">CANCEL</button></div></div>`,'diplomacy-action-modal');
@@ -1713,7 +1728,7 @@ function openDiplomacyAction1300(action){
 }
 function updateDiplomacyActionModalPreview1300(){
  const game=profile.activeGame,country=gameDiplomacyCountry,root=modal.querySelector('.diplomacy-action-dialog');if(!game||!country||!root)return;
- const action=root.dataset.dipModalAction,put=a=>{const el=modal.querySelector('#dip-modal-acceptance');if(el)el.innerHTML=acceptanceMeterHTML1300(a.score,a.note);},setValue=(id,prefix='',suffix='')=>{const input=modal.querySelector(`#${id}`),out=modal.querySelector(`#${id}-value`);if(input&&out)out.textContent=`${prefix}${money1300(input.value)}${suffix}`;};
+ const action=root.dataset.dipModalAction,put=a=>{const el=modal.querySelector('#dip-modal-acceptance');if(el)el.innerHTML=acceptanceMeterHTML1300(a.score,a.note)+(action==='alliance'?allianceAcceptanceTableHTML1300(a):'');},setValue=(id,prefix='',suffix='')=>{const input=modal.querySelector(`#${id}`),out=modal.querySelector(`#${id}-value`);if(input&&out)out.textContent=`${prefix}${money1300(input.value)}${suffix}`;};
  if(action==='gift')setValue('dip-modal-gift-range','ƒ');
  if(action==='subsidy')setValue('dip-modal-subsidy-range','ƒ','/month');
  if(action==='money'){setValue('dip-modal-money-range','ƒ');put(moneyRequestAssessment1300(game,country,modal.querySelector('#dip-modal-money-range')?.value));}

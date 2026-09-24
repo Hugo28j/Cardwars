@@ -693,6 +693,16 @@
 .dip-acceptance-meter.reject>i b{background:#a4544e}
 .dip-acceptance-meter>i em{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#f0e0b0;opacity:.9}
 .dip-acceptance-meter>small{display:block;margin-top:7px;font-size:9px;line-height:1.4;color:#a5b0a8}
+.dip-alliance-breakdown{margin-top:13px;padding-top:9px;border-top:1px solid #39463f}
+.dip-alliance-breakdown>div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;min-height:27px;font-size:10px}
+.dip-alliance-breakdown>div span{color:#aeb9b1}
+.dip-alliance-breakdown>div strong{font-size:10px;font-variant-numeric:tabular-nums}
+.dip-alliance-breakdown strong.positive{color:#79c58a}
+.dip-alliance-breakdown strong.negative{color:#df776f}
+.dip-alliance-breakdown strong.neutral{color:#d8ded2}
+.dip-alliance-breakdown>div.total{margin-top:5px;padding-top:9px;border-top:1px solid #4a574f}
+.dip-alliance-breakdown>div.total span{color:#e1e5da;font-weight:700}
+.dip-alliance-breakdown>div.total strong{font-size:12px}
 
 .ranking-category-tabs button{font-size:10px;font-weight:700;letter-spacing:.45px}
 .atlas-panel-switch button{font-size:9.5px;font-weight:700}
