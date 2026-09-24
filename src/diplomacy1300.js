@@ -26,7 +26,12 @@ function memory(r,type,value,day,decay=1){const old=r.modifiers.find(m=>m.type==
 export function relationSlots(game,a){return Object.values(diplomacyState(game).pairs).filter(p=>p.countries.includes(a)&&(p.alliance||p.marriage||p.directions[a].guarantee)).length;}
 export function acceptance(game,a,b,action,powers={}){
  const {pair,ours,theirs}=relation(game,a,b),ratio=Math.max(1,powers[a]||1)/Math.max(1,powers[b]||1);
- const reasons=[['Base reluctance',-35],['Their opinion',opinion(theirs)*.25],['Their trust',(theirs.trust-50)*.6],['Relative strength',clamp(Math.log2(ratio)*10,-25,20)],['Your reputation',(diplomacyState(game).reputation[a]||0)*5]];
+ const reasons=[['Base reluctance',-35],['Their opinion',opinion(theirs)*.25],['Their trust',(theirs.trust-50)*.6]];
+ const rankingModifier=Number(powers.__allianceRankingModifier),distanceModifier=Number(powers.__allianceDistanceModifier);
+ if(action==='alliance'&&Number.isFinite(rankingModifier))reasons.push(['Ranking power difference',clamp(rankingModifier,-35,35)]);
+ else reasons.push(['Relative strength',clamp(Math.log2(ratio)*10,-25,20)]);
+ if(action==='alliance'&&Number.isFinite(distanceModifier))reasons.push(['Distance',clamp(distanceModifier,-35,20)]);
+ reasons.push(['Your reputation',(diplomacyState(game).reputation[a]||0)*5]);
  if(action==='alliance'){
   reasons.push(['Diplomatic commitments',-Math.max(0,relationSlots(game,b)-3)*20],['Your commitments',-Math.max(0,relationSlots(game,a)-3)*20]);
   const rivals=x=>Object.values(diplomacyState(game).pairs).filter(p=>p.directions[x]?.rival).map(p=>p.countries.find(c=>c!==x));

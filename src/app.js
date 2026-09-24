@@ -1,4 +1,4 @@
-import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260923-diplomacy-ui-v3';
+import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, monthlyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260924-alliance-context-v4';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
@@ -283,7 +283,30 @@ function normaliseGameDiplomacy1300(raw){
 }
 function diplomacyRelation1300(game,country){return opinion(relation(game,PLAYER_REALM,country).theirs);}
 function setDiplomacyRelation1300(game,country,value){const r=relation(game,PLAYER_REALM,country).theirs,current=opinion(r);r.opinion=clamp1300(r.opinion+value-current,-200,200);game.diplomacy.relations[country]=opinion(r);return opinion(r);}
-function diplomacyPowers1300(game,country){return {[PLAYER_REALM]:diplomacyPlayerStrength1300(game),[country]:diplomacyCountryStats1300(country).strength||1};}
+function diplomacyCurrentCountryCities1300(game,country){return CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country);}
+function greatCircleDistanceKm1300(a,b){
+ const rad=Math.PI/180,lat1=Number(a?.lat)*rad,lat2=Number(b?.lat)*rad,dLat=(Number(b?.lat)-Number(a?.lat))*rad,dLon=(Number(b?.lon)-Number(a?.lon))*rad;
+ if(!Number.isFinite(lat1)||!Number.isFinite(lat2)||!Number.isFinite(dLat)||!Number.isFinite(dLon))return Infinity;
+ const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+ return 6371*2*Math.atan2(Math.sqrt(h),Math.sqrt(Math.max(0,1-h)));
+}
+function diplomacyAllianceContext1300(game,country){
+ const rows=buildCampaignRankings1300(game),player=rows.find(r=>r.player),target=rows.find(r=>r.country===country);
+ const playerStrength=Math.max(1,Number(player?.strength)||diplomacyPlayerStrength1300(game)),targetStrength=Math.max(1,Number(target?.strength)||Number(diplomacyCountryStats1300(country).strength)||1),strengthDifference=playerStrength-targetStrength;
+ // Continuous version of +5 acceptance per 1,000 ranking-strength advantage, capped so one factor cannot decide everything alone.
+ const rankingModifier=clamp1300(strengthDifference/200,-35,35);
+ const playerCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),currentTarget=diplomacyCurrentCountryCities1300(game,country),targetCities=currentTarget.length?currentTarget:diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory);
+ let distanceKm=Infinity;
+ for(const a of playerCities)for(const b of targetCities)distanceKm=Math.min(distanceKm,greatCircleDistanceKm1300(a,b));
+ if(!Number.isFinite(distanceKm))distanceKm=1800;
+ // Neighbours get a bonus; about every 150 km shifts acceptance by 5 points. Neutral is roughly 600 km.
+ const distanceModifier=clamp1300((600-distanceKm)/30,-35,20);
+ return {playerStrength,targetStrength,strengthDifference,rankingModifier,distanceKm,distanceModifier,playerRank:player?.rank??null,targetRank:target?.rank??null};
+}
+function diplomacyPowers1300(game,country){
+ const c=diplomacyAllianceContext1300(game,country);
+ return {[PLAYER_REALM]:c.playerStrength,[country]:c.targetStrength,__allianceRankingModifier:c.rankingModifier,__allianceDistanceModifier:c.distanceModifier,__allianceDistanceKm:c.distanceKm,__playerRank:c.playerRank,__targetRank:c.targetRank,__strengthDifference:c.strengthDifference};
+}
 function initializeDiplomacyWorld1300(game){
  const n=diplomacyState(game);if(n.worldInitialized)return;
  const countries=[...new Set(CITIES_1300.map(c=>c.country))],centers=Object.fromEntries(countries.map(name=>{const cs=CITIES_1300.filter(c=>c.country===name);return [name,{lat:cs.reduce((v,c)=>v+c.lat,0)/cs.length,lon:cs.reduce((v,c)=>v+c.lon,0)/cs.length}];}));
@@ -367,7 +390,7 @@ function diplomacyGoodInterest1300(model,goodId){
  const balance=Number(model?.balances?.[goodId])||0,scale=Math.max(3,(Number(model?.popK)||1)*.08),pressure=clamp1300(balance/scale,-1.4,1.4);
  return clamp1300(1-pressure*.48,.34,1.75);
 }
-function allianceAssessment1300(game,country){const r=acceptance(game,PLAYER_REALM,country,'alliance',diplomacyPowers1300(game,country));return {score:r.blocked?0:clamp1300(50+r.score,0,100),note:r.blocked||`Diplomatic score ${r.score}; acceptance requires 0.`};}
+function allianceAssessment1300(game,country){return proposalAssessment1300(game,country,'alliance');}
 
 function moneyRequestAssessment1300(game,country,amount){
  const {d}=ensureDiplomacyCountry1300(game,country),rel=diplomacyRelation1300(game,country),n=Math.max(0,Number(amount)||0);
@@ -924,6 +947,8 @@ function startGame1300(){
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
  profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,economy:freshGameEconomy1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
+ // The realms you rebelled against begin at the minimum possible opinion because your opening cities were taken from them.
+ for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-200;
  ensureGameDynamicStats1300(profile.activeGame);seedGameEmployment1300(profile.activeGame);simulateGameEconomyDay1300(profile.activeGame,{forceMarket:true,collectRevenue:false});updateCampaignRankingSnapshot1300(profile.activeGame);
  selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
 }
@@ -1589,8 +1614,12 @@ function countryRebellionsHTML1300(game){
 function diplomacyAssetOptions1300(selected='florins'){return [{id:'florins',name:'Florins'},...GOODS_1300].map(g=>`<option value="${g.id}" ${selected===g.id?'selected':''}>${esc(g.name)}</option>`).join('');}
 function diplomacyOpinionClass1300(n){return Number(n)>0?'positive':Number(n)<0?'negative':'neutral';}
 function proposalAssessment1300(game,country,action){
- const r=acceptance(game,PLAYER_REALM,country,action,diplomacyPowers1300(game,country));
- return {score:r.blocked?0:clamp1300(50+r.score,0,100),note:r.blocked||`Diplomatic score ${r.score}; acceptance requires 0.`};
+ const powers=diplomacyPowers1300(game,country),r=acceptance(game,PLAYER_REALM,country,action,powers),score=r.blocked?0:clamp1300(50+r.score,0,100);
+ if(action==='alliance'&&!r.blocked){
+  const ranking=r.reasons.find(x=>x.label==='Ranking power difference')?.value||0,distance=r.reasons.find(x=>x.label==='Distance')?.value||0,rankText=powers.__playerRank&&powers.__targetRank?`#${powers.__playerRank} vs #${powers.__targetRank}`:'current overall strength';
+  return {score,note:`Ranking ${rankText}: ${ranking>=0?'+':''}${ranking.toFixed(1)} · Distance ${Math.round(powers.__allianceDistanceKm)} km: ${distance>=0?'+':''}${distance.toFixed(1)} · total diplomatic score ${r.score}.`};
+ }
+ return {score,note:r.blocked||`Diplomatic score ${r.score}; acceptance requires 0.`};
 }
 function diplomacyDealOfferOptions1300(game,country){
  const {d}=ensureDiplomacyCountry1300(game,country),out=[`<option value="florins">Florins · ƒ${money1300(game.florins)}</option>`];
