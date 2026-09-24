@@ -303,9 +303,12 @@ function diplomacyAllianceContext1300(game,country){
  const distanceModifier=clamp1300((600-distanceKm)/30,-35,20);
  return {playerStrength,targetStrength,strengthDifference,rankingModifier,distanceKm,distanceModifier,playerRank:player?.rank??null,targetRank:target?.rank??null};
 }
+function allianceBaseReluctance1300(game){
+ return game?.campaignStage==='nation'?10:game?.campaignStage==='free_cities'?0:-10;
+}
 function diplomacyPowers1300(game,country){
  const c=diplomacyAllianceContext1300(game,country);
- return {[PLAYER_REALM]:c.playerStrength,[country]:c.targetStrength,__allianceRankingModifier:c.rankingModifier,__allianceDistanceModifier:c.distanceModifier,__allianceDistanceKm:c.distanceKm,__playerRank:c.playerRank,__targetRank:c.targetRank,__strengthDifference:c.strengthDifference};
+ return {[PLAYER_REALM]:c.playerStrength,[country]:c.targetStrength,__baseReluctance:allianceBaseReluctance1300(game),__allianceRankingModifier:c.rankingModifier,__allianceDistanceModifier:c.distanceModifier,__allianceDistanceKm:c.distanceKm,__playerRank:c.playerRank,__targetRank:c.targetRank,__strengthDifference:c.strengthDifference};
 }
 function initializeDiplomacyWorld1300(game){
  const n=diplomacyState(game);if(n.worldInitialized)return;
