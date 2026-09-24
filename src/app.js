@@ -1599,16 +1599,23 @@ function countrySectorRows1300(game){
  }
  return [...rows.values()].map(r=>({...r,avgWage:r.workers?r.wageWeighted/r.workers:BUILDING_1300[r.id]?.normalWage||0})).sort((a,b)=>b.workers-a.workers||b.levels-a.levels);
 }
+function happinessDiminishingReturns1300(base,modifier){
+ const b=clamp1300(Number(base)||0,0,100),m=Number(modifier)||0;
+ // Good policy is much more effective when people are unhappy, while very high happiness is deliberately hard to push higher.
+ // Negative shocks bite harder near the top but are softer when happiness is already low, creating a natural recovery effect.
+ const positiveScale=clamp1300(1.22-b*.0092,.32,1.12),negativeScale=clamp1300(.58+b*.0085,.62,1.42),scale=m>=0?positiveScale:negativeScale;
+ return {value:clamp1300(b+m*scale,0,100),scale};
+}
 function countryPeople1300(game){
  const t=countryTotals1300(game),e=game.economy=normaliseGameEconomy1300(game.economy),simCities=(game.ownedCities||[]).map(id=>e.pops?.[id]).filter(Boolean),wageRatio=e.nationalWage/.12,tariffCost=tariffCostOfLivingImpact1300(game),wageEffect=clamp1300((wageRatio-1)*16,-18,16),taxEffect=clamp1300(-(e.taxRate-10)*.70,-18,7),tariffEffect=clamp1300(-tariffCost*1.60,-30,0);
  if(simCities.length){
   const grouped=new Map();let population=0,wealthTotal=0,solTotal=0;
   for(const city of simCities)for(const g of city.groups||[]){const row=grouped.get(g.name)||{name:g.name,count:0,wealthTotal:0,solTotal:0};row.count+=g.size;row.wealthTotal+=g.wealth*g.size;row.solTotal+=g.standardOfLiving*g.size;grouped.set(g.name,row);population+=g.size;wealthTotal+=g.wealth*g.size;solTotal+=g.standardOfLiving*g.size;}
-  const groups=[...grouped.values()].map(g=>({name:g.name,count:g.count,pct:population?Math.round(g.count/population*1000)/10:0,wealth:g.count?g.wealthTotal/g.count:0,sol:g.count?g.solTotal/g.count:0})),avgWealth=population?wealthTotal/population:0,avgSol=population?solTotal/population:0,happiness=Math.round(clamp1300(t.stability+(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect,0,100));
-  return {...t,population,happiness,groups,avgWealth,avgSol,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost}};
+  const groups=[...grouped.values()].map(g=>({name:g.name,count:g.count,pct:population?Math.round(g.count/population*1000)/10:0,wealth:g.count?g.wealthTotal/g.count:0,sol:g.count?g.solTotal/g.count:0})),avgWealth=population?wealthTotal/population:0,avgSol=population?solTotal/population:0,modifier=(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect,curve=happinessDiminishingReturns1300(t.stability,modifier),happiness=Math.round(curve.value);
+  return {...t,population,happiness,groups,avgWealth,avgSol,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost,modifier,curveScale:curve.scale}};
  }
- const happiness=Math.round(clamp1300(t.stability+wageEffect+taxEffect+tariffEffect,0,100)),burghers=clamp1300(10+t.economy*.13,12,24),clergy=6,nobles=4,soldiers=5,peasants=Math.max(0,100-burghers-clergy-nobles-soldiers),groups=[['Peasants',peasants],['Burghers',burghers],['Clergy',clergy],['Nobles',nobles],['Soldiers',soldiers]].map(([name,pct])=>({name,pct:Math.round(pct*10)/10,count:Math.round(t.population*pct/100),wealth:0,sol:0}));
- return {...t,happiness,groups,avgWealth:0,avgSol:0,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost}};
+ const modifier=wageEffect+taxEffect+tariffEffect,curve=happinessDiminishingReturns1300(t.stability,modifier),happiness=Math.round(curve.value),burghers=clamp1300(10+t.economy*.13,12,24),clergy=6,nobles=4,soldiers=5,peasants=Math.max(0,100-burghers-clergy-nobles-soldiers),groups=[['Peasants',peasants],['Burghers',burghers],['Clergy',clergy],['Nobles',nobles],['Soldiers',soldiers]].map(([name,pct])=>({name,pct:Math.round(pct*10)/10,count:Math.round(t.population*pct/100),wealth:0,sol:0}));
+ return {...t,happiness,groups,avgWealth:0,avgSol:0,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost,modifier,curveScale:curve.scale}};
 }
 function countryRebellionRows1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy);
@@ -1672,8 +1679,8 @@ function countryEconomyHTML1300(game){
 }
 function countryPeopleHTML1300(game){
  const p=countryPeople1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),population=Math.max(1,Number(p.population)||0),profPct=prof.army/population*100,unprofPct=unprof.army/population*100;
- const hp=p.happinessPolicy||{wageEffect:0,taxEffect:0,tariffEffect:0};
- return `<section class="people-happiness"><div><span>POPULATION HAPPINESS</span><strong>${p.happiness}<small>/100</small></strong></div><i><b style="width:${p.happiness}%"></b></i><p>Policy effect now matters strongly: wages ${hp.wageEffect>=0?'+':''}${hp.wageEffect.toFixed(1)} · taxes ${hp.taxEffect>=0?'+':''}${hp.taxEffect.toFixed(1)} · tariffs ${hp.tariffEffect>=0?'+':''}${hp.tariffEffect.toFixed(1)} happiness.</p></section>
+ const hp=p.happinessPolicy||{wageEffect:0,taxEffect:0,tariffEffect:0,curveScale:1};
+ return `<section class="people-happiness"><div><span>POPULATION HAPPINESS</span><strong>${p.happiness}<small>/100</small></strong></div><i><b style="width:${p.happiness}%"></b></i><p>Wages ${hp.wageEffect>=0?'+':''}${hp.wageEffect.toFixed(1)} · taxes ${hp.taxEffect>=0?'+':''}${hp.taxEffect.toFixed(1)} · tariffs ${hp.tariffEffect>=0?'+':''}${hp.tariffEffect.toFixed(1)}. Happiness gains have ${Math.round(hp.curveScale*100)}% effectiveness at the current level, so low happiness recovers faster and high happiness is harder to increase.</p></section>
  <section class="country-stat-grid people"><div><span>Total population</span><strong>${strengthNumber(p.population)}</strong></div><div><span>Average stability</span><strong>${Number(p.stability).toFixed(2)} / ${p.cap.toFixed(2)}</strong></div><div><span>Average wealth</span><strong>${p.avgWealth?p.avgWealth.toFixed(1):'—'}</strong></div><div><span>Standard of living</span><strong>${p.avgSol?p.avgSol.toFixed(1):'—'}</strong></div></section>
  <div class="country-section-title"><span>MILITARY MANPOWER</span><small>Share of your total population serving in the army</small></div>
  <section class="population-army-summary">
