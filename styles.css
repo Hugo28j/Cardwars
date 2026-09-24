@@ -355,6 +355,18 @@
 /* People */
 .people-happiness{padding:18px;border-bottom:1px solid #465249}.people-happiness>div{display:flex;justify-content:space-between;align-items:end}.people-happiness strong{font-family:var(--serif);font-size:30px}.people-happiness strong small{font-size:12px;color:#849188}.people-happiness>i{display:block;height:7px;background:#29362f;margin:9px 0}.people-happiness>i b{display:block;height:100%;background:#ad955a}.people-happiness p{font-size:8px;color:#829087;line-height:1.45}
 .population-groups{padding:10px 16px}.population-groups article{padding:10px 0;border-bottom:1px solid #35423b}.population-groups article>div{display:flex;justify-content:space-between}.population-groups strong{font-family:var(--serif);font-size:14px}.population-groups span{font-size:8px;color:#c3a964}.population-groups i{display:block;height:4px;background:#27342e;margin:6px 0}.population-groups i b{display:block;height:100%;background:#738b78}.population-groups small{font-size:7px;color:#7d8a82}
+.population-demography{display:grid;grid-template-columns:repeat(2,1fr);border-bottom:1px solid #465249}
+.population-demography article{padding:13px 15px;border-right:1px solid #3d4a42;border-bottom:1px solid #3d4a42;background:#101a16}
+.population-demography article:nth-child(2n){border-right:0}
+.population-demography span{display:block;font-size:7px;letter-spacing:.7px;color:#819087}
+.population-demography strong{display:block;margin-top:4px;font-family:var(--serif);font-size:19px;color:#e0dfcf}
+.population-demography strong small{font-size:10px;color:#89978e}
+.population-demography strong.positive{color:#7fc38d}.population-demography strong.negative{color:#d37c72}.population-demography strong.neutral{color:#d8d9c7}
+.population-demography article>small{display:block;margin-top:4px;font-size:7px;line-height:1.4;color:#748279}
+.population-demography-note{padding:10px 16px 13px;border-bottom:1px solid #465249;font-size:7.5px;line-height:1.5;color:#87958b}
+.province-population-fact small{display:block;margin-top:2px;font-size:6.5px;color:#849289}.province-population-fact small.positive{color:#7fc38d}.province-population-fact small.negative{color:#d37c72}
+@media(max-width:700px){.population-demography{grid-template-columns:1fr}.population-demography article{border-right:0}}
+
 
 /* Decisions / technology / rebellions */
 .decision-list{padding:10px}.decision-list article{position:relative;padding:14px 110px 14px 14px;border:1px solid #465249;background:#131e1a;margin-bottom:8px}.decision-list strong{font-family:var(--serif);font-size:16px}.decision-list p{font-size:8px;color:#89968d;line-height:1.45;margin-top:4px}.decision-list button{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:1px solid #59665d;background:#101815;color:#6f7c74;padding:8px;font-size:7px}
