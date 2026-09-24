@@ -66,7 +66,7 @@ const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.0025;
 
 function blankGood(g,previous){
  const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0),consumer=Number(previous?.consumerPrice);
- return {goodId:g.id,supply:0,demand:0,need:0,bought:0,sold:0,stock,fulfilled:0,tradeProfit:0,tariffRate:0,tariffRevenue:0,importShare:0,price:start,consumerPrice:Number.isFinite(consumer)&&consumer>0?consumer:start,previousPrice:start,targetPrice:g.basePrice,basePrice:g.basePrice};
+ return {goodId:g.id,supply:0,demand:0,need:0,bought:0,domesticBought:0,domesticSold:0,stockpileBought:0,sold:0,reserve:0,stock,fulfilled:0,tradeProfit:0,tariffRate:0,tariffRevenue:0,importShare:0,priorityImportBoost:0,price:start,consumerPrice:Number.isFinite(consumer)&&consumer>0?consumer:start,inputUnitPrice:Number.isFinite(consumer)&&consumer>0?consumer:start,previousPrice:start,targetPrice:g.basePrice,basePrice:g.basePrice};
 }
 function ensureMarket(previous={}){const goods={};for(const g of GOODS_1300)goods[g.id]=blankGood(g,previous?.goods?.[g.id]);return {goods,marketAccess:Number.isFinite(Number(previous?.marketAccess))?Number(previous.marketAccess):1,priceIndex:Number.isFinite(Number(previous?.priceIndex))?Number(previous.priceIndex):1,basePriceIndex:Number.isFinite(Number(previous?.basePriceIndex))?Number(previous.basePriceIndex):1};}
 function addOrder(row,key,amount){if(row&&Number(amount)>0)row[key]+=Number(amount);}
@@ -95,21 +95,29 @@ function updatePrices(market){
  market.basePriceIndex=round(basket.reduce((n,[id,w])=>{const g=GOOD_1300[id],p=Number(market.goods[id]?.price)||g.basePrice;return n+(p/g.basePrice)*w;},0),4);
  market.priceIndex=market.basePriceIndex;
 }
-function settleMarketFlows1300(market){
- const access=clamp(Number(market?.marketAccess)||1,.35,1);
+function settleRealmMarketFlows1300(markets,tradeStockpile={}){
+ const marketList=Object.values(markets||{}),remainingStockpile=Object.fromEntries(GOODS_1300.map(g=>[g.id,Math.max(0,Number(tradeStockpile?.[g.id])||0)])),stockpileUsed={};
  for(const g of GOODS_1300){
-  const row=market.goods[g.id],need=Math.max(0,Number(row.demand)||0),produced=Math.max(0,Number(row.supply)||0),oldStock=Math.max(0,Number(row.stock)||0);
-  const productionUsed=Math.min(produced,need),remainingNeed=Math.max(0,need-productionUsed),stockUsed=Math.min(oldStock,remainingNeed),shortage=Math.max(0,remainingNeed-stockUsed);
-  const bought=shortage*access,surplus=Math.max(0,produced-productionUsed),exportShare=clamp(.45+access*.45,.60,.90),sold=surplus*exportShare;
-  const carried=Math.max(0,oldStock-stockUsed+surplus-sold),decay=g.category==='food'?.90:g.category==='service'?0:.97,stock=carried*decay,fulfilled=productionUsed+stockUsed+bought;
-  row.need=round(need,3);row.bought=round(bought,3);row.sold=round(sold,3);row.stock=round(stock,3);row.fulfilled=round(fulfilled,3);row.tradeProfit=round((sold-bought)*row.price*FLORINS_PER_MARKET_VALUE,4);
+  const entries=marketList.map(m=>{const row=m.goods[g.id],need=Math.max(0,Number(row.demand)||0),produced=Math.max(0,Number(row.supply)||0),oldStock=Math.max(0,Number(row.stock)||0),productionUsed=Math.min(produced,need),afterProduction=Math.max(0,need-productionUsed),stockUsed=Math.min(oldStock,afterProduction),shortage=Math.max(0,afterProduction-stockUsed),surplus=Math.max(0,produced-productionUsed);return {m,row,need,produced,oldStock,productionUsed,stockUsed,shortage,surplus};});
+  const totalShortage=entries.reduce((n,x)=>n+x.shortage,0),totalSurplus=entries.reduce((n,x)=>n+x.surplus,0),internalPool=Math.min(totalShortage,totalSurplus);
+  for(const x of entries)x.domesticBought=totalShortage>0?Math.min(x.shortage,internalPool*(x.shortage/totalShortage)):0;
+  const internalUsed=entries.reduce((n,x)=>n+x.domesticBought,0);
+  for(const x of entries)x.domesticSold=totalSurplus>0?Math.min(x.surplus,internalUsed*(x.surplus/totalSurplus)):0;
+  const afterInternalTotal=entries.reduce((n,x)=>n+Math.max(0,x.shortage-x.domesticBought),0),stockPool=Math.min(remainingStockpile[g.id]||0,afterInternalTotal);
+  for(const x of entries)x.stockpileBought=afterInternalTotal>0?Math.min(Math.max(0,x.shortage-x.domesticBought),stockPool*(Math.max(0,x.shortage-x.domesticBought)/afterInternalTotal)):0;
+  stockpileUsed[g.id]=round(entries.reduce((n,x)=>n+x.stockpileBought,0),4);remainingStockpile[g.id]=round(Math.max(0,(remainingStockpile[g.id]||0)-stockpileUsed[g.id]),4);
+  for(const x of entries){
+   const remainingNeed=Math.max(0,x.shortage-x.domesticBought-x.stockpileBought),access=clamp((Number(x.m.marketAccess)||1)+(Number(x.row.priorityImportBoost)||0),.2,1),bought=remainingNeed*access,remainingSurplus=Math.max(0,x.surplus-x.domesticSold),reserve=remainingSurplus*.18,exportable=Math.max(0,remainingSurplus-reserve),exportShare=clamp(.45+access*.45,.60,.90),sold=exportable*exportShare,carried=Math.max(0,x.oldStock-x.stockUsed+exportable-sold),decay=g.category==='food'?.90:g.category==='service'?0:.97,stock=carried*decay,fulfilled=x.productionUsed+x.stockUsed+x.domesticBought+x.stockpileBought+bought;
+   x.row.need=round(x.need,3);x.row.domesticBought=round(x.domesticBought,3);x.row.domesticSold=round(x.domesticSold,3);x.row.stockpileBought=round(x.stockpileBought,3);x.row.bought=round(bought,3);x.row.sold=round(sold,3);x.row.reserve=round(reserve,3);x.row.stock=round(stock,3);x.row.fulfilled=round(fulfilled,3);x.row.tradeProfit=round((sold*x.row.price-bought*x.row.price*1.12)*FLORINS_PER_MARKET_VALUE,4);
+  }
  }
+ return {remainingStockpile,stockpileUsed};
 }
 function applyTariffsToMarket1300(market,tariffs={}){
  const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];let revenue=0;
  for(const g of GOODS_1300){
-  const row=market.goods[g.id],rate=g.category==='service'?0:clamp(Number(tariffs?.[g.id])||0,0,50),fulfilled=Math.max(0,Number(row.fulfilled)||0),bought=Math.max(0,Number(row.bought)||0),share=fulfilled>0?clamp(bought/fulfilled,0,1):0;
-  row.tariffRate=rate;row.importShare=round(share,4);row.consumerPrice=round(row.price*(1+(rate/100)*share),4);row.tariffRevenue=round(bought*row.price*FLORINS_PER_MARKET_VALUE*(rate/100),4);revenue+=row.tariffRevenue;
+  const row=market.goods[g.id],rate=g.category==='service'?0:clamp(Number(tariffs?.[g.id])||0,0,50),fulfilled=Math.max(0,Number(row.fulfilled)||0),foreign=Math.max(0,Number(row.bought)||0),domestic=Math.max(0,Number(row.domesticBought)||0),stockpile=Math.max(0,Number(row.stockpileBought)||0),local=Math.max(0,fulfilled-foreign-domestic-stockpile),share=fulfilled>0?clamp(foreign/fulfilled,0,1):0,localPrice=Number(row.price)||g.basePrice,domesticPrice=localPrice*.94,stockpilePrice=localPrice*.98,foreignPrice=localPrice*1.12*(1+rate/100),blended=fulfilled>0?(local*localPrice+domestic*domesticPrice+stockpile*stockpilePrice+foreign*foreignPrice)/fulfilled:localPrice;
+  row.tariffRate=rate;row.importShare=round(share,4);row.consumerPrice=round(blended,4);row.inputUnitPrice=round(blended,4);row.tariffRevenue=round(foreign*localPrice*FLORINS_PER_MARKET_VALUE*(rate/100),4);revenue+=row.tariffRevenue;
  }
  market.priceIndex=round(basket.reduce((n,[id,w])=>n+normalizedPrice(market,id)*w,0),4);
  market.tariffCostOfLivingPct=round((market.priceIndex/Math.max(.0001,market.basePriceIndex)-1)*100,2);
@@ -117,39 +125,53 @@ function applyTariffsToMarket1300(market,tariffs={}){
 }
 function sectorPotential(sector,city){const def=BUILDING_PRODUCTION_1300[sector.id]||{inputs:{},outputs:{services:1}},level=Math.max(0,Number(sector.level)||0),capacity=Math.max(1,Number(sector.capacity)||1),workers=clamp(Number(sector.workers)||0,0,capacity),employmentRatio=workers/capacity,technologyFactor=.86+clamp(Number(city.technology)||50,0,100)/500,economyOfScale=1+Math.min(level*.01,.30);return {def,level,capacity,workers,employmentRatio,potential:level*employmentRatio*technologyFactor*economyOfScale};}
 function updatePops(city,market,previous,sectors){
- const groups=createPopGroups(city,previous),population=groups.reduce((n,g)=>n+g.size,0)||1,totalWorkers=sectors.reduce((n,s)=>n+s.workers,0),employmentRate=clamp(totalWorkers/Math.max(1,Number(city.labourPool)||population*.34),0,1),weightedWage=sectors.reduce((n,s)=>n+s.wage*s.workers,0)/Math.max(1,totalWorkers),realWage=(weightedWage||.08)/.12/Math.max(.45,market.priceIndex),employedTotal=Math.min(totalWorkers,Math.round(population*.34));
- let remaining=employedTotal;for(const id of ['craftsmen','laborers','burghers','peasants','clergy','nobles']){const g=groups.find(x=>x.id===id);if(!g)continue;const cap=Math.round(g.size*(id==='peasants'?.45:.72)),take=Math.min(cap,remaining);g.employed=take;remaining-=take;}
- for(const g of groups){const employment=g.size?g.employed/g.size:0,base=POP_ARCHETYPES.find(x=>x.id===g.id)?.wealth||10,target=base+(realWage-1)*2.4+(employment-.45)*1.6;g.wealth=round(clamp(g.wealth+(target-g.wealth)*.08,3,35),2);g.standardOfLiving=round(clamp(g.wealth+(1-market.priceIndex)*1.2,2,40),2);}
+ const groups=createPopGroups(city,previous),population=groups.reduce((n,g)=>n+g.size,0)||1,totalWorkers=sectors.reduce((n,s)=>n+(Number(s.workers)||0),0),employmentRate=clamp(totalWorkers/Math.max(1,Number(city.labourPool)||population*.34),0,1),weightedWage=sectors.reduce((n,s)=>n+(Number(s.wage)||0)*(Number(s.workers)||0),0)/Math.max(1,totalWorkers),realWage=(weightedWage||.08)/.12/Math.max(.45,market.priceIndex),professionGroup={farmers:'peasants',laborers:'laborers',craftsmen:'craftsmen',merchants:'burghers',clerks:'burghers',clergy:'clergy',scholars:'clergy',officers:'nobles',soldiers:'peasants'},desired={};
+ for(const s of sectors){
+  const def=BUILDING_PRODUCTION_1300[s.id]||{},prof=def.professions||{laborers:1},wageRatio=(Number(s.wage)||.08)/.12;
+  for(const [profession,share] of Object.entries(prof)){const id=professionGroup[profession]||'laborers',willing=id==='peasants'?clamp(.62+wageRatio*.34,.55,1.12):clamp(.72+wageRatio*.25,.62,1.08);desired[id]=(desired[id]||0)+(Number(s.workers)||0)*(Number(share)||0)*willing;}
+ }
+ const agri=sectors.filter(s=>['fields','pastures','watermill','monastery'].includes(s.id)),agriWorkers=agri.reduce((n,s)=>n+(Number(s.workers)||0),0),agriWage=agri.reduce((n,s)=>n+(Number(s.wage)||0)*(Number(s.workers)||0),0)/Math.max(1,agriWorkers),ruralWageRatio=(agriWage||weightedWage||.08)/.12;
+ for(const g of groups){
+  const cap=g.id==='peasants'?.92:g.id==='nobles'?.55:.78,formal=Math.min(g.size*cap,desired[g.id]||0);
+  if(g.id==='peasants'){const ruralBase=g.size*clamp(.72+(ruralWageRatio-1)*.18,.58,.90);g.employed=Math.round(Math.min(g.size*cap,Math.max(ruralBase,formal)));}else g.employed=Math.round(formal);
+  const employment=g.size?g.employed/g.size:0,base=POP_ARCHETYPES.find(x=>x.id===g.id)?.wealth||10,target=base+(realWage-1)*2.4+(employment-.45)*1.6;g.wealth=round(clamp(g.wealth+(target-g.wealth)*.08,3,35),2);g.standardOfLiving=round(clamp(g.wealth+(1-market.priceIndex)*1.2,2,40),2);
+ }
  return {groups,employmentRate:round(employmentRate,4),averageWealth:round(groups.reduce((n,g)=>n+g.wealth*g.size,0)/population,2),averageStandardOfLiving:round(groups.reduce((n,g)=>n+g.standardOfLiving*g.size,0)/population,2)};
 }
-
-function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35,tariffs={}}={}){
+function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35,tariffs={},tradeStockpile={}}={}){
  const markets={},pops={},sectorsByCity={};let weeklyTax=0,weeklyTariffRevenue=0;
  for(const city of cities){
   const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};market.marketAccess=round(infrastructure(city).access,4);ambientSupply(city,market);popOrders(city,market,popState);
-  for(const sector of city.sectors||[]){if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city);for(const [id,n] of Object.entries(p.def.inputs||{}))addOrder(market.goods[id],'demand',n*p.potential);for(const [id,n] of Object.entries(p.def.outputs||{}))addOrder(market.goods[id],'supply',n*p.potential);}
+  for(const sector of city.sectors||[]){
+   if((Number(sector.level)||0)<=0)continue;
+   const p=sectorPotential(sector,city),priority=sector.priority||'employment',inputIds=Object.keys(p.def.inputs||{}),inputIndex=inputIds.length?inputIds.reduce((n,id)=>n+normalizedPrice(market,id),0)/inputIds.length:1,profitInputFactor=clamp(.38+p.employmentRatio*.32+.22/Math.max(.7,inputIndex),.38,.92),inputDemandFactor=priority==='output'?1.22:priority==='profit'?profitInputFactor:1,outputEstimateFactor=priority==='output'?1.10:priority==='profit'?profitInputFactor:1;
+   for(const [id,n] of Object.entries(p.def.inputs||{})){addOrder(market.goods[id],'demand',n*p.potential*inputDemandFactor);market.goods[id].priorityImportBoost=clamp((Number(market.goods[id].priorityImportBoost)||0)+(priority==='output'?.16:priority==='profit'?-.12:0),-.18,.22);}
+   for(const [id,n] of Object.entries(p.def.outputs||{}))addOrder(market.goods[id],'supply',n*p.potential*outputEstimateFactor);
+  }
  }
- for(const market of Object.values(markets)){updatePrices(market);settleMarketFlows1300(market);weeklyTariffRevenue+=applyTariffsToMarket1300(market,tariffs);}
+ for(const market of Object.values(markets))updatePrices(market);
+ const tradeFlow=settleRealmMarketFlows1300(markets,tradeStockpile);
+ for(const market of Object.values(markets))weeklyTariffRevenue+=applyTariffsToMarket1300(market,tariffs);
  for(const city of cities){
   const market=markets[city.id],infra=infrastructure(city),rows=sectorsByCity[city.id]={};market.marketAccess=round(infra.access,4);
   for(const sector of city.sectors||[]){
-   if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp((Number(market.goods[id].fulfilled)||0)/Math.max(market.goods[id].demand,1e-6),.15,1))):1,priority=sector.priority||'employment',priorityThroughput=priority==='output'?1.10:priority==='profit'?.94:1,throughput=clamp(p.employmentRatio*availability*infra.access*priorityThroughput,0,1.2),scale=p.level*throughput*(.86+clamp(Number(city.technology)||50,0,100)/500)*(1+Math.min(p.level*.01,.30));
+   if((Number(sector.level)||0)<=0)continue;
+   const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp((Number(market.goods[id].fulfilled)||0)/Math.max(market.goods[id].demand,1e-6),.12,1))):1,priority=sector.priority||'employment',inputPriceIndex=inputIds.length?inputIds.reduce((n,id)=>n+(Number(market.goods[id].inputUnitPrice)||GOOD_1300[id].basePrice)/GOOD_1300[id].basePrice,0)/inputIds.length:1,cheapness=clamp(1/Math.max(.65,inputPriceIndex),.55,1.25),profitScale=clamp(.40+p.employmentRatio*.32+cheapness*.24,.38,.94),priorityThroughput=priority==='output'?1.16:priority==='profit'?profitScale:1,throughput=clamp(p.employmentRatio*availability*infra.access*priorityThroughput,0,priority==='output'?1.28:1.12),scale=p.level*throughput*(.86+clamp(Number(city.technology)||50,0,100)/500)*(1+Math.min(p.level*.01,.30));
    let revenueValue=0,inputValue=0;const outputs={},inputs={};
    for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale;outputs[id]=round(q,3);revenueValue+=q*market.goods[id].price;}
-   for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale;inputs[id]=round(q,3);inputValue+=q*(Number(market.goods[id].consumerPrice)||market.goods[id].price);}
+   for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale;inputs[id]=round(q,3);inputValue+=q*(Number(market.goods[id].inputUnitPrice)||Number(market.goods[id].consumerPrice)||market.goods[id].price);}
    const weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,weeklyWageCost=(p.workers/1000)*Math.max(.01,Number(sector.wage)||.01),weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
-   const weekly=x=>round(x,4);rows[sector.id]={workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
+   const weekly=x=>round(x,4);rows[sector.id]={id:sector.id,mode:priority,workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),inputPriceIndex:round(inputPriceIndex,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
   }
   pops[city.id]=updatePops(city,market,previousPops?.[city.id],Object.values(rows));
  }
- return {markets,pops,sectorsByCity,weeklyTax:round(weeklyTax,4),weeklyTaxEstimate:round(weeklyTax,2),weeklyTariffRevenue:round(weeklyTariffRevenue,4)};
+ return {markets,pops,sectorsByCity,weeklyTax:round(weeklyTax,4),weeklyTaxEstimate:round(weeklyTax,2),weeklyTariffRevenue:round(weeklyTariffRevenue,4),tradeStockpileRemaining:tradeFlow.remainingStockpile,tradeStockpileUsed:tradeFlow.stockpileUsed};
 }
 function aggregateMarkets1300(markets={}){
- const rows={};for(const g of GOODS_1300)rows[g.id]={id:g.id,name:g.name,basePrice:g.basePrice,supply:0,demand:0,fulfilled:0,bought:0,tariffRevenue:0,priceWeighted:0,consumerPriceWeighted:0,weight:0};
- for(const market of Object.values(markets||{}))for(const g of GOODS_1300){const m=market?.goods?.[g.id];if(!m)continue;const weight=Math.max(1,(Number(m.supply)||0)+(Number(m.demand)||0));rows[g.id].supply+=Number(m.supply)||0;rows[g.id].demand+=Number(m.demand)||0;rows[g.id].fulfilled+=Number(m.fulfilled)||0;rows[g.id].bought+=Number(m.bought)||0;rows[g.id].tariffRevenue+=Number(m.tariffRevenue)||0;rows[g.id].priceWeighted+=(Number(m.price)||g.basePrice)*weight;rows[g.id].consumerPriceWeighted+=(Number(m.consumerPrice)||Number(m.price)||g.basePrice)*weight;rows[g.id].weight+=weight;}
- return Object.values(rows).map(r=>{const price=r.weight?r.priceWeighted/r.weight:r.basePrice,consumerPrice=r.weight?r.consumerPriceWeighted/r.weight:price;return {...r,supply:round(r.supply,2),demand:round(r.demand,2),fulfilled:round(r.fulfilled,2),bought:round(r.bought,2),tariffRevenue:round(r.tariffRevenue,4),price:round(price,2),consumerPrice:round(consumerPrice,2),changePct:round((consumerPrice/r.basePrice-1)*100,1)};});
+ const rows={};for(const g of GOODS_1300)rows[g.id]={id:g.id,name:g.name,basePrice:g.basePrice,supply:0,demand:0,fulfilled:0,bought:0,domesticBought:0,stockpileBought:0,sold:0,reserve:0,tariffRevenue:0,priceWeighted:0,consumerPriceWeighted:0,weight:0};
+ for(const market of Object.values(markets||{}))for(const g of GOODS_1300){const m=market?.goods?.[g.id];if(!m)continue;const weight=Math.max(1,(Number(m.supply)||0)+(Number(m.demand)||0));rows[g.id].supply+=Number(m.supply)||0;rows[g.id].demand+=Number(m.demand)||0;rows[g.id].fulfilled+=Number(m.fulfilled)||0;rows[g.id].bought+=Number(m.bought)||0;rows[g.id].domesticBought+=Number(m.domesticBought)||0;rows[g.id].stockpileBought+=Number(m.stockpileBought)||0;rows[g.id].sold+=Number(m.sold)||0;rows[g.id].reserve+=Number(m.reserve)||0;rows[g.id].tariffRevenue+=Number(m.tariffRevenue)||0;rows[g.id].priceWeighted+=(Number(m.price)||g.basePrice)*weight;rows[g.id].consumerPriceWeighted+=(Number(m.consumerPrice)||Number(m.price)||g.basePrice)*weight;rows[g.id].weight+=weight;}
+ return Object.values(rows).map(r=>{const price=r.weight?r.priceWeighted/r.weight:r.basePrice,consumerPrice=r.weight?r.consumerPriceWeighted/r.weight:price;return {...r,supply:round(r.supply,2),demand:round(r.demand,2),fulfilled:round(r.fulfilled,2),bought:round(r.bought,2),domesticBought:round(r.domesticBought,2),stockpileBought:round(r.stockpileBought,2),sold:round(r.sold,2),reserve:round(r.reserve,2),tariffRevenue:round(r.tariffRevenue,4),price:round(price,2),consumerPrice:round(consumerPrice,2),changePct:round((consumerPrice/r.basePrice-1)*100,1)};});
 }
-
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal'),
  LEGACY_KEY='cardwars.collection.v2',ACCOUNTS_KEY='cardwars.accounts.v1',SESSION_KEY='cardwars.session.v1',PROFILE_PREFIX='cardwars.profile.';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
