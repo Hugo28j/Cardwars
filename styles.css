@@ -1157,7 +1157,7 @@
 .dip-action-list{list-style:none;margin:0;padding:0 18px 8px}
 .dip-action-list li{min-height:29px;display:flex;align-items:center;border-bottom:1px solid #2f3c35}
 .dip-action-list li:last-child{border-bottom:0}
-.dip-action-list button{width:auto;min-height:29px;padding:5px 0;background:transparent;border:0;color:#dbe1d4;text-align:left;font-size:10px;font-weight:700;cursor:pointer}
+.dip-action-list button{width:100%;min-height:29px;align-self:stretch;padding:5px 0;background:transparent;border:0;color:#dbe1d4;text-align:left;font-size:10px;font-weight:700;cursor:pointer}
 .dip-action-list button:hover:not(:disabled){color:#e1c77f;text-decoration:underline;text-underline-offset:3px}
 .dip-action-list button:focus-visible{outline:1px solid #c7a966;outline-offset:3px}
 .dip-action-list button:disabled{opacity:.36;cursor:not-allowed;text-decoration:none}
