@@ -945,9 +945,8 @@ function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}
  e.monthExpenses=weeklyStateExpenses1300(game).total;invalidateWeeklyBudgetProjection1300(game);
 }
 function refreshGameClockUI1300(){
- const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);const budget=weeklyBudgetProjection1300(game),d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status'),treasury=$('#game-treasury-amount'),tax=$('#game-daily-tax');
- if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(treasury)treasury.textContent='ƒ'+money1300(game.florins);if(tax)tax.textContent='Week balance: '+(budget.balance<0?'-':'')+'ƒ'+money1300(Math.abs(budget.balance));
- if(status)status.textContent=d.weekday;
+ const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);const d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status');
+ if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(status)status.textContent=d.weekday;refreshCampaignResourceBar1300(game);
 }
 function settleGameWeek1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
@@ -1938,6 +1937,23 @@ function renderGameCountryPanel1300(){
 function openGameCountryPanel1300(){
  if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
 }
+function campaignResourceBarHTML1300(game){
+ const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0;
+ return `<section class="campaign-resource-bar" aria-label="Realm resources">
+  <article class="campaign-resource-box treasury"><span>TREASURY</span><strong id="campaign-resource-treasury">ƒ${money1300(game.florins)}</strong><small id="campaign-resource-week" class="${balance>0?'positive':balance<0?'negative':'neutral'}">${balance>0?'+':balance<0?'-':''}ƒ${money1300(Math.abs(balance))}/week</small></article>
+  <article class="campaign-resource-box"><span>POPULATION</span><strong id="campaign-resource-population">${strengthNumber(totals.population)}</strong></article>
+  <article class="campaign-resource-box"><span>DIPLO POINTS</span><strong id="campaign-resource-diplo">0</strong></article>
+  <article class="campaign-resource-box"><span>PRO ARMY</span><strong id="campaign-resource-pro-army">${strengthNumber(prof.army)}</strong></article>
+  <article class="campaign-resource-box"><span>UNPRO ARMY</span><strong id="campaign-resource-unpro-army">${strengthNumber(unprof.army)}</strong></article>
+  <article class="campaign-resource-box"><span>NAVY</span><strong id="campaign-resource-navy">${strengthNumber(mil.navy)}</strong></article>
+ </section>`;
+}
+function refreshCampaignResourceBar1300(game){
+ if(!game)return;const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0;
+ const set=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
+ set('#campaign-resource-treasury','ƒ'+money1300(game.florins));set('#campaign-resource-population',strengthNumber(totals.population));set('#campaign-resource-diplo','0');set('#campaign-resource-pro-army',strengthNumber(prof.army));set('#campaign-resource-unpro-army',strengthNumber(unprof.army));set('#campaign-resource-navy',strengthNumber(mil.navy));
+ const weekly=$('#campaign-resource-week');if(weekly){weekly.textContent=(balance>0?'+':balance<0?'-':'')+'ƒ'+money1300(Math.abs(balance))+'/week';weekly.classList.remove('positive','negative','neutral');weekly.classList.add(balance>0?'positive':balance<0?'negative':'neutral');}
+}
 function gamePage(){
  if(!profile.activeGame){
   const selected=profile.deck.map(id=>CITY_1300[id]).filter(Boolean);
@@ -1946,9 +1962,9 @@ function gamePage(){
  if(gameScreen==='development')return developmentPage();
  const gameDate=gameDate1300(profile.activeGame.day);
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
-  <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div><div class="game-treasury-panel"><span>IN-GAME TREASURY</span><strong id="game-treasury-amount">ƒ${money1300(profile.activeGame.florins)}</strong><small id="game-daily-tax">Week balance: ${weeklyBudgetProjection1300(profile.activeGame).balance<0?'-':''}ƒ${money1300(Math.abs(weeklyBudgetProjection1300(profile.activeGame).balance))}</small></div>
+  <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div>
   <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
-  <div class="game-map-actions"><span class="player-realm-chip" style="--player-realm:${profile.activeGame.playerColor}"><i></i>Your Realm · ${profile.activeGame.ownedCities.length} provinces</span></div><button class="game-quit-button" data-action="quit-game">Quit</button>
+  ${campaignResourceBarHTML1300(profile.activeGame)}<button class="game-quit-button" data-action="quit-game">Quit</button>
   <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>
   <aside id="game-country-panel" class="game-country-panel ${gameCountryPanel?'open':''}">${gameCountryPanel?gameCountryPanelHTML1300():''}</aside>
   <aside id="game-diplomacy-panel" class="game-diplomacy-panel ${gameDiplomacyCountry?'open':''}">${gameDiplomacyCountry?diplomacyCountryPanelHTML1300(gameDiplomacyCountry):''}</aside>
