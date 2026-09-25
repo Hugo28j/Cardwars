@@ -33,17 +33,17 @@ export const BUILDINGS_1300=[
  },
  {
   id:'barracks',name:'Professional Barracks',category:'Army',cost:165,maxWorkers:380,normalWage:0.16,monthlyRevenue:1.0,
-  description:'Permanent quarters and training grounds support a larger professional military core.',
+  description:'Permanent quarters and training grounds improve professional recruitment and reduce army upkeep at higher levels.',
   effects:{stability:1}
  },
  {
   id:'dockyard',name:'Royal Dockyard',category:'Navy',cost:200,requiresCoast:true,maxWorkers:560,normalWage:0.16,monthlyRevenue:4.0,
-  description:'Slipways, stores and naval craftsmen expand dedicated military shipping capacity.',
+  description:'Slipways, stores and naval craftsmen reduce ship construction time and naval upkeep while producing ships, fish and services.',
   effects:{navy:3,economy:1}
  },
  {
-  id:'walls',name:'Stone Fortifications',category:'Defence',cost:230,maxWorkers:260,normalWage:0.13,monthlyRevenue:0.8,
-  description:'Improved walls, towers and gates make the province harder to capture and easier to control.',
+  id:'walls',name:'Stone Fortifications',category:'Defence',cost:230,maxLevel:4,maxWorkers:260,normalWage:0.13,monthlyRevenue:0,
+  description:'Improved walls, towers and gates increase siege difficulty. Fortifications produce no goods and require direct weekly state upkeep.',
   effects:{stability:4}
  },
  {
@@ -53,7 +53,7 @@ export const BUILDINGS_1300=[
  },
  {
   id:'university',name:'University & Scriptorium',category:'Knowledge',cost:300,maxWorkers:220,normalWage:0.18,monthlyRevenue:2.5,
-  description:'Schools, scholars and manuscript production accelerate administration and technical knowledge.',
+  description:'Schools, scholars and larger scriptoria produce manuscripts and make provincial technology investment more effective.',
   effects:{economy:1}
  }
  ,
@@ -93,19 +93,9 @@ export const BUILDINGS_1300=[
   effects:{economy:2}
  },
  {
-  id:'warehouse',name:'Merchant Warehouse',category:'Trade',cost:145,maxWorkers:320,normalWage:0.13,monthlyRevenue:7.2,
-  description:'Large storage houses let merchants hold grain, cloth, wine and imported goods between fairs and voyages.',
-  effects:{economy:4,stability:1}
- },
- {
-  id:'merchantquarter',name:'Merchant Quarter',category:'Trade / Urban',cost:180,maxWorkers:600,normalWage:0.14,monthlyRevenue:8.2,
-  description:'Foreign and local merchants cluster around counting houses, inns, brokers and wholesale markets.',
-  effects:{economy:5}
- },
- {
-  id:'customshouse',name:'Customs House',category:'Trade / Administration',cost:155,maxWorkers:180,normalWage:0.15,monthlyRevenue:6.8,
-  description:'Officials record cargoes, levy tolls and standardise duties at ports and major trade gates.',
-  effects:{economy:3,stability:2}
+  id:'ironworks',name:'Ironworks',category:'Resource / Production',cost:135,maxWorkers:620,normalWage:0.14,monthlyRevenue:5.4,
+  description:'Tool-equipped iron workers expand extraction, smelting and processing to supply usable iron.',
+  effects:{economy:2}
  },
  {
   id:'mint',name:'Royal Mint',category:'Finance / Administration',cost:220,maxWorkers:160,normalWage:0.18,monthlyRevenue:7.0,
@@ -113,23 +103,18 @@ export const BUILDINGS_1300=[
   effects:{economy:4,stability:1}
  },
  {
-  id:'bridge',name:'Bridge & River Toll',category:'Infrastructure / Trade',cost:130,maxWorkers:180,normalWage:0.12,monthlyRevenue:5.6,
-  description:'Maintained crossings and toll stations concentrate road and river traffic through the city.',
-  effects:{economy:3,stability:1}
- },
- {
   id:'monastery',name:'Monastery',category:'Clergy / Knowledge',cost:160,maxWorkers:280,normalWage:0.11,monthlyRevenue:2.4,
-  description:'Monastic houses organise estates, charity, manuscript copying and local education.',
+  description:'Monastic houses organise estates, education and expanded manuscript copying while improving technology investment.',
   effects:{stability:3}
  },
  {
   id:'cathedral',name:'Cathedral Chapter',category:'Clergy / Civic',cost:240,maxWorkers:240,normalWage:0.15,monthlyRevenue:2.8,
-  description:'A major cathedral chapter concentrates clergy, patronage, schools and civic prestige.',
+  description:'A major cathedral chapter concentrates clergy, schools, manuscript work and stronger technology investment.',
   effects:{stability:4,economy:1}
  },
  {
   id:'hospital',name:'Hospital & Hospice',category:'Civic / Welfare',cost:150,maxWorkers:220,normalWage:0.12,monthlyRevenue:1.6,
-  description:'Religious and civic hospitals provide lodging, poor relief and basic care to travellers and residents.',
+  description:'Religious and civic hospitals improve public happiness and raise average life expectancy through basic care and relief.',
   effects:{stability:4}
  }
 ];
@@ -166,11 +151,8 @@ export function startingBuildingLevel1300(c,id){
   case 'saltworks': return salt?2:coastal&&econ>=78?1:0;
   case 'quarry': return stone?2:people>=12000&&stab>=62?1:0;
   case 'lumberyard': return timber?2:food>=72&&people<20000?1:0;
-  case 'warehouse': return trade&&econ>=78?2:trade&&econ>=62?1:0;
-  case 'merchantquarter': return trade&&econ>=86?2:trade&&econ>=72&&people>=10000?1:0;
-  case 'customshouse': return (coastal||river)&&trade&&econ>=68?1:0;
+  case 'ironworks': return 0;
   case 'mint': return finance&&econ>=78?2:(econ>=88&&people>=18000)?1:0;
-  case 'bridge': return river&&econ>=58?1:0;
   case 'monastery': return religious&&tech>=58?2:religious||tech>=72?1:0;
   case 'cathedral': return religious&&people>=18000?2:religious&&people>=7000?1:0;
   case 'hospital': return people>=25000&&stab>=62?2:people>=9000&&stab>=55?1:0;
