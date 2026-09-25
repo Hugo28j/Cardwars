@@ -54,7 +54,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=3.6,BUILDING_MAINTENANCE_INPUT_SHARE=.35;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=3.6,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
 
 function blankGood(g,previous){const price=Number(previous?.price);return {goodId:g.id,supply:0,demand:0,price:Number.isFinite(price)&&price>0?price:g.basePrice,targetPrice:g.basePrice,basePrice:g.basePrice};}
 function ensureMarket(previous={}){const goods={};for(const g of GOODS_1300)goods[g.id]=blankGood(g,previous?.goods?.[g.id]);return {goods,marketAccess:Number.isFinite(Number(previous?.marketAccess))?Number(previous.marketAccess):1,priceIndex:Number.isFinite(Number(previous?.priceIndex))?Number(previous.priceIndex):1};}
@@ -99,6 +99,16 @@ function updatePrices(market){
  for(const g of GOODS_1300){const row=market.goods[g.id],s=row.supply,d=row.demand,imbalance=(d-s)/Math.max(s,d,1),modifier=clamp(imbalance*.75,-.75,.75);row.targetPrice=round(g.basePrice*(1+modifier),4);row.price=round(row.price+(row.targetPrice-row.price)*.15,4);}
  const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];market.priceIndex=round(basket.reduce((n,[id,w])=>n+normalizedPrice(market,id)*w,0),4);
 }
+function integrateRealmPrices1300(markets){
+ const marketList=Object.values(markets||{});if(marketList.length<2)return;
+ for(const g of GOODS_1300){
+  const entries=marketList.map(m=>{const row=m.goods[g.id],s=Math.max(0,Number(row.supply)||0),d=Math.max(0,Number(row.demand)||0),price=Math.max(.01,Number(row.price)||g.basePrice);return {m,row,s,d,price,surplus:Math.max(0,s-d)};});
+  const totalSupply=entries.reduce((n,x)=>n+x.s,0),totalDemand=entries.reduce((n,x)=>n+x.d,0),totalWeight=entries.reduce((n,x)=>n+Math.max(1,x.s+x.d),0),weightedLocal=entries.reduce((n,x)=>n+x.price*Math.max(1,x.s+x.d),0)/Math.max(1,totalWeight),imbalance=(totalDemand-totalSupply)/Math.max(totalSupply,totalDemand,1),realmTarget=g.basePrice*(1+clamp(imbalance*.65,-.62,.62)),surplusWeight=entries.reduce((n,x)=>n+x.surplus,0),surplusPrice=surplusWeight>0?entries.reduce((n,x)=>n+x.price*x.surplus,0)/surplusWeight:weightedLocal,oversupplied=totalSupply>totalDemand,realmReference=clamp((weightedLocal*.45+realmTarget*.55)*(oversupplied?.72:1)+(oversupplied?surplusPrice*.28:0),g.basePrice*.28,g.basePrice*1.75);
+  for(const x of entries){const access=clamp(Number(x.m.marketAccess)||1,.25,1),baseIntegration=(g.category==='food'||g.category==='service')?REALM_PRICE_FOOD_SERVICE_INTEGRATION:REALM_PRICE_OTHER_INTEGRATION,integration=clamp(baseIntegration*(.55+.45*access),.18,.72);x.row.realmPrice=round(realmReference,4);x.row.price=round(x.price+(realmReference-x.price)*integration,4);}
+ }
+ const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];
+ for(const market of marketList)market.priceIndex=round(basket.reduce((n,[id,w])=>n+normalizedPrice(market,id)*w,0),4);
+}
 function sectorPotential(sector,city){const def=sector.production||BUILDING_PRODUCTION_1300[sector.id]||{inputs:{},outputs:{services:1}},level=Math.max(0,Number(sector.level)||0),capacity=Math.max(1,Number(sector.capacity)||1),workers=clamp(Number(sector.workers)||0,0,capacity),employmentRatio=workers/capacity,technologyFactor=.86+clamp(Number(city.technology)||50,0,100)/500,economyOfScale=1+Math.min(level*.01,.30);return {def,level,capacity,workers,employmentRatio,potential:level*employmentRatio*technologyFactor*economyOfScale};}
 function updatePops(city,market,previous,sectors){
  const wageBenchmark=Math.max(.01,Number(city.expectedWage)||.08),groups=createPopGroups(city,previous),population=groups.reduce((n,g)=>n+g.size,0)||1,totalWorkers=sectors.reduce((n,s)=>n+s.workers,0),employmentRate=clamp(totalWorkers/Math.max(1,Number(city.labourPool)||population*.34),0,1),weightedWage=sectors.reduce((n,s)=>n+s.wage*s.workers,0)/Math.max(1,totalWorkers),realWage=(weightedWage||.08)/wageBenchmark/Math.max(.45,market.priceIndex),employedTotal=Math.min(totalWorkers,Math.round(population*.34));
@@ -114,6 +124,7 @@ export function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previous
   for(const sector of city.sectors||[]){if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city);for(const [id,n] of Object.entries(p.def.inputs||{}))addOrder(market.goods[id],'demand',n*p.potential);for(const [id,n] of Object.entries(p.def.outputs||{}))addOrder(market.goods[id],'supply',n*p.potential);}
  }
  for(const market of Object.values(markets))updatePrices(market);
+ integrateRealmPrices1300(markets);
  for(const city of cities){
   const market=markets[city.id],infra=infrastructure(city),rows=sectorsByCity[city.id]={};market.marketAccess=round(infra.access,4);
   for(const sector of city.sectors||[]){
