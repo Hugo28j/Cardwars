@@ -142,9 +142,9 @@ function ambientSupply(city,market){
  addOrder(market.goods.grain,'supply',k*(.55+food*.65)*(1+(Number(city.grainBonusPct)||0)/100));addOrder(market.goods.meat,'supply',k*(.07+food*.10));addOrder(market.goods.wool,'supply',k*(.09+food*.10));addOrder(market.goods.wood,'supply',k*(.14+food*.14));addOrder(market.goods.stone,'supply',k*(.04+econ*.04));addOrder(market.goods.iron,'supply',k*(.012+econ*.018));addOrder(market.goods.salt,'supply',k*.025);addOrder(market.goods.services,'supply',k*(.12+econ*.18));if(city.coastal)addOrder(market.goods.fish,'supply',k*.18);
 }
 function popOrders(city,market,popState){
- const k=Math.max(.1,Number(city.population||0)/1000),groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],k*.78,{grain:1.25,fish:city.coastal?1.1:.55,meat:.7});
+ const k=Math.max(.1,Number(city.population||0)/1000),groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],k*.936,{grain:1.50,fish:city.coastal?1.1:.55,meat:.7});
  for(const [id,n] of Object.entries(food))addOrder(market.goods[id],'demand',n);
- addOrder(market.goods.cloth,'demand',k*.09*wealthFactor);addOrder(market.goods.wood,'demand',k*.035);addOrder(market.goods.salt,'demand',k*.04);addOrder(market.goods.ale,'demand',k*.065*wealthFactor);addOrder(market.goods.leather,'demand',k*.025*wealthFactor);addOrder(market.goods.services,'demand',k*(.10+.07*wealthFactor));if(avgWealth>15){addOrder(market.goods.manuscripts,'demand',k*.006*(avgWealth-14));addOrder(market.goods.cloth,'demand',k*.025);}
+ addOrder(market.goods.cloth,'demand',k*.09*wealthFactor);addOrder(market.goods.wood,'demand',k*.035);addOrder(market.goods.salt,'demand',k*.04);addOrder(market.goods.ale,'demand',k*.065*wealthFactor);addOrder(market.goods.leather,'demand',k*.025*wealthFactor);addOrder(market.goods.services,'demand',k*(.10+.07*wealthFactor)*1.10);if(avgWealth>15){addOrder(market.goods.manuscripts,'demand',k*.006*(avgWealth-14));addOrder(market.goods.cloth,'demand',k*.025);}
 }
 function infrastructure(city){const levels=(city.sectors||[]).reduce((n,s)=>n+(Number(s.level)||0),0),support=(city.sectors||[]).reduce((n,s)=>n+(['market','warehouse','merchantquarter','customshouse','bridge','dockyard'].includes(s.id)?Number(s.level)||0:0),0),capacity=10+(Number(city.economy)||50)/5+support*4,usage=Math.max(1,levels*1.7);return {capacity,usage,access:clamp(capacity/usage,.35,1)};}
 function updatePrices(market){
@@ -795,15 +795,31 @@ function effectivePopulation1300(game,c){
  if(!c)return 0;if(game?.ownedCities?.includes(c.id)){ensureGamePopulation1300(game);return Math.max(1,Math.round(Number(game.economy.populationByCity[c.id])||Number(c.people)||1));}
  return Math.max(0,Math.round(Number(c.people)||0));
 }
+function foodAvailabilityFromMarket1300(market,fallback=1){
+ const rows=['grain','fish','meat'].map(id=>market?.goods?.[id]).filter(Boolean),need=rows.reduce((n,r)=>n+(Number(r.need)||Number(r.demand)||0),0),fulfilled=rows.reduce((n,r)=>n+(Number(r.fulfilled)||0),0);
+ return need>0?clamp1300(fulfilled/need,.15,1.15):clamp1300(Number(fallback)||1,.15,1.15);
+}
+function foodHappinessEffect1300(availability){
+ const a=clamp1300(Number(availability)||1,.15,1.15);
+ return a>=1?clamp1300((a-1)*30,0,5):clamp1300((a-1)*18,-12,0);
+}
+function costOfLivingHappinessEffect1300(costPct){
+ const cost=Math.max(0,Number(costPct)||0);
+ return cost<=5?clamp1300((5-cost)*.8,0,4):clamp1300(-(cost-5)*1.2,-24,0);
+}
+function countryFoodAvailability1300(game){
+ let need=0,fulfilled=0;for(const id of game?.ownedCities||[]){const market=game.economy?.markets?.[id];for(const gid of ['grain','fish','meat']){const row=market?.goods?.[gid];if(!row)continue;need+=Number(row.need)||Number(row.demand)||0;fulfilled+=Number(row.fulfilled)||0;}}
+ return need>0?clamp1300(fulfilled/need,.15,1.15):1;
+}
 function rescalePopulationGroups1300(game,cityId,newPopulation){
  const groups=game?.economy?.pops?.[cityId]?.groups;if(!Array.isArray(groups)||!groups.length)return;const current=groups.reduce((n,g)=>n+(Number(g.size)||0),0);if(current<=0)return;
  let used=0;for(let i=0;i<groups.length;i++){const next=i===groups.length-1?Math.max(0,newPopulation-used):Math.max(0,Math.round(newPopulation*(Number(groups[i].size)||0)/current));groups[i].size=next;groups[i].employed=Math.min(Number(groups[i].employed)||0,next);used+=next;}
 }
 function provinceDemographyProjection1300(game,c){
  ensureGamePopulation1300(game);const e=game.economy,population=effectivePopulation1300(game,c),market=e.markets?.[c.id],pop=e.pops?.[c.id],stats=provinceDynamicStats1300(game,c),buildingBonuses=gameProvinceBuildingState(c).bonuses;
- const foodRows=['grain','fish','meat'].map(id=>market?.goods?.[id]).filter(Boolean),foodNeed=foodRows.reduce((n,r)=>n+(Number(r.need)||Number(r.demand)||0),0),foodFulfilled=foodRows.reduce((n,r)=>n+(Number(r.fulfilled)||0),0),foodAvailability=foodNeed>0?clamp1300(foodFulfilled/foodNeed,.15,1.15):clamp1300((Number(stats.food)||50)/70,.45,1.08);
+ const foodAvailability=foodAvailabilityFromMarket1300(market,clamp1300((Number(stats.food)||50)/70,.45,1.08));
  const groups=pop?.groups||[],groupPop=groups.reduce((n,g)=>n+(Number(g.size)||0),0),avgWealth=Number(pop?.averageWealth)||(groupPop?groups.reduce((n,g)=>n+(Number(g.wealth)||0)*(Number(g.size)||0),0)/groupPop:10),avgSol=Number(pop?.averageStandardOfLiving)||(groupPop?groups.reduce((n,g)=>n+(Number(g.standardOfLiving)||0)*(Number(g.size)||0),0)/groupPop:10);
- const wageRatio=effectiveCityWage1300(game,c.id)/expectedMonthlyWage1300(game),tariffCost=Math.max(0,Number(market?.tariffCostOfLivingPct)||0),wageEffect=clamp1300((wageRatio-1)*16,-18,16),taxEffect=clamp1300(-(e.taxRate-10)*.70,-18,7),tariffEffect=clamp1300(-tariffCost*1.60,-30,0),happiness=Math.round(happinessDiminishingReturns1300(stats.stability,(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect+(Number(buildingBonuses.happinessBonus)||0)).value),technology=Number(stats.technology)||0;
+ const wageRatio=effectiveCityWage1300(game,c.id)/expectedMonthlyWage1300(game),tariffCost=Math.max(0,Number(market?.tariffCostOfLivingPct)||0),wageEffect=clamp1300((wageRatio-1)*16,-18,16),taxEffect=clamp1300(-(e.taxRate-10)*.70,-18,7),tariffEffect=costOfLivingHappinessEffect1300(tariffCost),foodEffect=foodHappinessEffect1300(foodAvailability),happiness=Math.round(happinessDiminishingReturns1300(stats.stability,(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect+foodEffect+(Number(buildingBonuses.happinessBonus)||0)).value),technology=Number(stats.technology)||0;
  const foodFertility=clamp1300(.30+foodAvailability*.72,.15,1.08),happinessFertility=clamp1300(.72+happiness*.0038,.64,1.10),wealthFertility=clamp1300(.78+(avgWealth-6)*.04,.58,1.14),birthRate=clamp1300(39*foodFertility*happinessFertility*wealthFertility,7,46);
  const techMortality=clamp1300(1.22-(technology/100)*.44,.78,1.22),foodMortality=foodAvailability>=.95?1:1+(.95-foodAvailability)*8,wealthMortality=clamp1300(1.12-(avgSol-6)*.025,.78,1.35),happinessMortality=happiness<40?1+(40-happiness)/100:1,deathRate=clamp1300(38*techMortality*foodMortality*wealthMortality*happinessMortality,27,230);
  const growthBonus=technologyBonuses1300(game.technology).populationGrowthPct/100,rawAnnualPct=(birthRate-deathRate)/10,annualGrowthPct=clamp1300(rawAnnualPct*(1+growthBonus),-18,1.2),weeklyRate=annualGrowthPct/100/52.1429,expectedBirths=population*(birthRate/1000)/52.1429,expectedDeaths=population*(deathRate/1000)/52.1429,lifeExpectancy=clamp1300((28+(technology-50)*.08+(foodAvailability-.95)*18+(avgSol-10)*.40+(happiness-60)*.03)*(1+(Number(buildingBonuses.lifeExpectancyPct)||0)/100),14,50);
@@ -894,8 +910,8 @@ function weeklyStateExpenses1300(game){
 }
 function stabilityPolicyPressure1300(game){
  const e=normaliseGameEconomy1300(game.economy),wageRatio=e.nationalWage/expectedMonthlyWage1300(game),tariffCost=tariffCostOfLivingImpact1300(game);
- const taxEffect=clamp1300(-(e.taxRate-10)*.03,-.60,.30),wageEffect=clamp1300((wageRatio-1)*.35,-.40,.30),tariffEffect=clamp1300(-tariffCost*.04,-1.00,0);
- return {taxEffect,wageEffect,tariffEffect,total:clamp1300(taxEffect+wageEffect+tariffEffect,-1.25,.55)};
+ const taxEffect=clamp1300(-(e.taxRate-10)*.03,-.60,.30),wageEffect=clamp1300((wageRatio-1)*.35,-.40,.30),tariffEffect=tariffCost<=5?clamp1300((5-tariffCost)*.008,0,.04):clamp1300(-(tariffCost-5)*.04,-.80,0);
+ return {taxEffect,wageEffect,tariffEffect,total:clamp1300(taxEffect+wageEffect+tariffEffect,-.95,.60)};
 }
 function applyWeeklyStabilityPolicy1300(game){
  const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1;
@@ -915,12 +931,13 @@ function technologyTreeUnlockedCount1300(game){
 function stabilityPolicyMonthlyDelta1300(game){
  const e=normaliseGameEconomy1300(game.economy),need=stabilityBudgetNeed1300(game),budget=Math.min(e.stabilityBudget,stabilityBudgetMax1300(game)),ratio=need>0?budget/need:1,policy=stabilityPolicyPressure1300(game);
  let delta=0;
- if(ratio<.20)delta=-.35;
- else if(ratio<.60)delta=-.18;
- else if(ratio<.95)delta=-.06;
- else if(ratio<=1.15)delta=.01;
- else if(ratio<=1.60)delta=.14;
- else delta=.27;
+ if(ratio<.20)delta=-.30;
+ else if(ratio<.60)delta=-.12;
+ else if(ratio<.95)delta=-.03;
+ else if(ratio<=1.15)delta=.08;
+ else if(ratio<=1.60)delta=.30;
+ else if(ratio<=2.00)delta=.60;
+ else delta=.90;
  delta-=Math.max(0,e.corruption-35)*.002;
  delta+=policy.total;
  return round(delta,4);
@@ -1882,15 +1899,15 @@ function happinessDiminishingReturns1300(base,modifier){
  return {value:clamp1300(b+m*scale,0,100),scale};
 }
 function countryPeople1300(game){
- const t=countryTotals1300(game),e=game.economy=normaliseGameEconomy1300(game.economy),simCities=(game.ownedCities||[]).map(id=>e.pops?.[id]).filter(Boolean),wageRatio=e.nationalWage/expectedMonthlyWage1300(game),tariffCost=tariffCostOfLivingImpact1300(game),wageEffect=clamp1300((wageRatio-1)*16,-18,16),taxEffect=clamp1300(-(e.taxRate-10)*.70,-18,7),tariffEffect=clamp1300(-tariffCost*1.60,-30,0);
+ const t=countryTotals1300(game),e=game.economy=normaliseGameEconomy1300(game.economy),simCities=(game.ownedCities||[]).map(id=>e.pops?.[id]).filter(Boolean),wageRatio=e.nationalWage/expectedMonthlyWage1300(game),tariffCost=tariffCostOfLivingImpact1300(game),foodAvailability=countryFoodAvailability1300(game),wageEffect=clamp1300((wageRatio-1)*16,-18,16),taxEffect=clamp1300(-(e.taxRate-10)*.70,-18,7),tariffEffect=costOfLivingHappinessEffect1300(tariffCost),foodEffect=foodHappinessEffect1300(foodAvailability);
  if(simCities.length){
   const grouped=new Map();let population=0,wealthTotal=0,solTotal=0;
   for(const city of simCities)for(const g of city.groups||[]){const row=grouped.get(g.name)||{name:g.name,count:0,employed:0,wealthTotal:0,solTotal:0};row.count+=g.size;row.employed+=Number(g.employed)||0;row.wealthTotal+=g.wealth*g.size;row.solTotal+=g.standardOfLiving*g.size;grouped.set(g.name,row);population+=g.size;wealthTotal+=g.wealth*g.size;solTotal+=g.standardOfLiving*g.size;}
-  const groups=[...grouped.values()].map(g=>({name:g.name,count:g.count,employed:g.employed,pct:population?Math.round(g.count/population*1000)/10:0,wealth:g.count?g.wealthTotal/g.count:0,sol:g.count?g.solTotal/g.count:0})),avgWealth=population?wealthTotal/population:0,avgSol=population?solTotal/population:0,modifier=(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect,curve=happinessDiminishingReturns1300(t.stability,modifier),happiness=Math.round(curve.value);
-  return {...t,population:t.population,happiness,groups,avgWealth,avgSol,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost,modifier,curveScale:curve.scale}};
+  const groups=[...grouped.values()].map(g=>({name:g.name,count:g.count,employed:g.employed,pct:population?Math.round(g.count/population*1000)/10:0,wealth:g.count?g.wealthTotal/g.count:0,sol:g.count?g.solTotal/g.count:0})),avgWealth=population?wealthTotal/population:0,avgSol=population?solTotal/population:0,modifier=(avgSol-10)*1.6+wageEffect+taxEffect+tariffEffect+foodEffect,curve=happinessDiminishingReturns1300(t.stability,modifier),happiness=Math.round(curve.value);
+  return {...t,population:t.population,happiness,groups,avgWealth,avgSol,happinessPolicy:{wageEffect,taxEffect,tariffEffect,foodEffect,foodAvailability,tariffCost,modifier,curveScale:curve.scale}};
  }
- const modifier=wageEffect+taxEffect+tariffEffect,curve=happinessDiminishingReturns1300(t.stability,modifier),happiness=Math.round(curve.value),burghers=clamp1300(10+t.economy*.13,12,24),clergy=6,nobles=4,soldiers=5,peasants=Math.max(0,100-burghers-clergy-nobles-soldiers),groups=[['Peasants',peasants],['Burghers',burghers],['Clergy',clergy],['Nobles',nobles],['Soldiers',soldiers]].map(([name,pct])=>({name,pct:Math.round(pct*10)/10,count:Math.round(t.population*pct/100),wealth:0,sol:0}));
- return {...t,happiness,groups,avgWealth:0,avgSol:0,happinessPolicy:{wageEffect,taxEffect,tariffEffect,tariffCost,modifier,curveScale:curve.scale}};
+ const modifier=wageEffect+taxEffect+tariffEffect+foodEffect,curve=happinessDiminishingReturns1300(t.stability,modifier),happiness=Math.round(curve.value),burghers=clamp1300(10+t.economy*.13,12,24),clergy=6,nobles=4,soldiers=5,peasants=Math.max(0,100-burghers-clergy-nobles-soldiers),groups=[['Peasants',peasants],['Burghers',burghers],['Clergy',clergy],['Nobles',nobles],['Soldiers',soldiers]].map(([name,pct])=>({name,pct:Math.round(pct*10)/10,count:Math.round(t.population*pct/100),wealth:0,sol:0}));
+ return {...t,happiness,groups,avgWealth:0,avgSol:0,happinessPolicy:{wageEffect,taxEffect,tariffEffect,foodEffect,foodAvailability,tariffCost,modifier,curveScale:curve.scale}};
 }
 function countryRebellionRows1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy);
@@ -1956,8 +1973,8 @@ function countryEconomyHTML1300(game){
 }
 function countryPeopleHTML1300(game){
  const p=countryPeople1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),population=Math.max(1,Number(p.population)||0),profPct=prof.army/population*100,unprofPct=unprof.army/population*100,dem=countryDemography1300(game);
- const hp=p.happinessPolicy||{wageEffect:0,taxEffect:0,tariffEffect:0,curveScale:1},growthTone=dem.annualGrowthPct>0?'positive':dem.annualGrowthPct<0?'negative':'neutral';
- return `<section class="people-happiness"><div><span>POPULATION HAPPINESS</span><strong>${p.happiness}<small>/100</small></strong></div><i><b style="width:${p.happiness}%"></b></i><p>Wages ${hp.wageEffect>=0?'+':''}${hp.wageEffect.toFixed(1)} · taxes ${hp.taxEffect>=0?'+':''}${hp.taxEffect.toFixed(1)} · tariffs ${hp.tariffEffect>=0?'+':''}${hp.tariffEffect.toFixed(1)}. Happiness gains have ${Math.round(hp.curveScale*100)}% effectiveness at the current level, so low happiness recovers faster and high happiness is harder to increase.</p></section>
+ const hp=p.happinessPolicy||{wageEffect:0,taxEffect:0,tariffEffect:0,foodEffect:0,curveScale:1},growthTone=dem.annualGrowthPct>0?'positive':dem.annualGrowthPct<0?'negative':'neutral';
+ return `<section class="people-happiness"><div><span>POPULATION HAPPINESS</span><strong>${p.happiness}<small>/100</small></strong></div><i><b style="width:${p.happiness}%"></b></i><p>Wages ${hp.wageEffect>=0?'+':''}${hp.wageEffect.toFixed(1)} · taxes ${hp.taxEffect>=0?'+':''}${hp.taxEffect.toFixed(1)} · cost of living ${hp.tariffEffect>=0?'+':''}${hp.tariffEffect.toFixed(1)} · food ${hp.foodEffect>=0?'+':''}${hp.foodEffect.toFixed(1)}. A 10% tax rate is neutral; cost-of-living pressure is tolerated up to 5%, and food surpluses raise happiness.</p></section>
  <section class="country-stat-grid people"><div><span>Total population</span><strong>${strengthNumber(p.population)}</strong></div><div><span>Average stability</span><strong>${Number(p.stability).toFixed(2)} / ${p.cap.toFixed(2)}</strong></div><div><span>Average wealth</span><strong>${p.avgWealth?p.avgWealth.toFixed(1):'—'}</strong></div><div><span>Standard of living</span><strong>${p.avgSol?p.avgSol.toFixed(1):'—'}</strong></div></section>
  <div class="country-section-title"><span>POPULATION DYNAMICS</span><small>Updated every Monday</small></div>
  <section class="population-demography">
