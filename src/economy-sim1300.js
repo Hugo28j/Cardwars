@@ -23,12 +23,12 @@ export const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
 export const COMPANY_OUTPUT_MULTIPLIER_1300=1.5;
 
 export const BUILDING_PRODUCTION_1300={
- fields:{professions:{farmers:.78,laborers:.22},inputs:{},outputs:{grain:45}},
- pastures:{professions:{farmers:.72,laborers:.28},inputs:{},outputs:{meat:9.75,wool:15.75}},
- textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:10},outputs:{cloth:18}},
+ fields:{professions:{farmers:.78,laborers:.22},inputs:{},outputs:{grain:48}},
+ pastures:{professions:{farmers:.72,laborers:.28},inputs:{},outputs:{meat:10.5,wool:16.5}},
+ textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:10},outputs:{cloth:19.5}},
  forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:12,arms:6}},
  market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:27}},
- barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:15}},
+ barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:16.5}},
  dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:9,fish:12,services:6}},
  walls:{professions:{laborers:.75,craftsmen:.25},inputs:{},outputs:{}},
  guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:21}},
@@ -38,7 +38,7 @@ export const BUILDING_PRODUCTION_1300={
  tannery:{professions:{craftsmen:.55,laborers:.40,merchants:.05},inputs:{meat:4,salt:1},outputs:{leather:12}},
  fishery:{professions:{laborers:.78,merchants:.12,craftsmen:.10},inputs:{},outputs:{fish:21}},
  saltworks:{professions:{laborers:.80,merchants:.12,craftsmen:.08},inputs:{wood:.5},outputs:{salt:22.5}},
- quarry:{professions:{laborers:.84,craftsmen:.16},inputs:{},outputs:{stone:18}},
+ quarry:{professions:{laborers:.84,craftsmen:.16},inputs:{},outputs:{stone:19.5}},
  lumberyard:{professions:{laborers:.82,craftsmen:.18},inputs:{},outputs:{wood:21}},
  ironworks:{professions:{craftsmen:.42,laborers:.50,merchants:.08},inputs:{tools:2},outputs:{iron:15}},
  mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:10.5},directFlorins:15},
