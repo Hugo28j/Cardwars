@@ -217,8 +217,15 @@ function startingBuildingLevels1300(c){
   const fallback=(Number(c.food)||0)>=(Number(c.economyScore)||0)?'fields':'market';
   candidates.push({id:fallback,level:1,fit:0});
  }
- const selected=new Set(candidates.slice(0,slots).map(x=>x.id)),levels={};
+ const selectedRows=candidates.slice(0,slots),selected=new Set(selectedRows.map(x=>x.id)),levels={};
+ if(!selectedRows.some(x=>x.id!=='walls')){
+  const companyCandidate=candidates.find(x=>x.id!=='walls');
+  selected.clear();
+  if(companyCandidate)selected.add(companyCandidate.id);
+  else selected.add((Number(c.food)||0)>=(Number(c.economyScore)||0)?'fields':'market');
+ }
  for(const row of candidates)if(selected.has(row.id))levels[row.id]=row.level;
+ for(const id of selected)if(!levels[id])levels[id]=1;
  if(c&&typeof c==='object')STARTING_BUILDING_CACHE_1300.set(c,levels);
  return levels;
 }
