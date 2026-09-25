@@ -166,13 +166,13 @@ function buildingMaintenanceOrders1300(city,market){
  for(const sector of city.sectors||[]){
   const level=Math.max(0,Number(sector.level)||0);if(level<=0)continue;
   const p=sectorPotential(sector,city),inputs=p.def.inputs||{},maintenanceScale=level*BUILDING_MAINTENANCE_INPUT_SHARE;
-  for(const [id,n] of Object.entries(inputs))addOrder(market.goods[id],'demand',Math.max(0,Number(n)||0)*maintenanceScale);
-  addOrder(market.goods.tools,'demand',level*.12);
-  addOrder(market.goods.wood,'demand',level*.08);
-  addOrder(market.goods.stone,'demand',level*.04);
-  if(['forge','ironworks','mint','dockyard'].includes(sector.id))addOrder(market.goods.iron,'demand',level*.08);
-  if(['university','monastery','cathedral'].includes(sector.id))addOrder(market.goods.manuscripts,'demand',level*.10);
-  if(['barracks','dockyard'].includes(sector.id))addOrder(market.goods.arms,'demand',level*.08);
+  for(const [id,n] of Object.entries(inputs))addOrder(market.goods[id],'demand',Math.max(0,Number(n)||0)*maintenanceScale*priceDemandMultiplier1300(market,id,.45,.80,1.60));
+  addOrder(market.goods.tools,'demand',level*.12*priceDemandMultiplier1300(market,'tools',.45,.80,1.60));
+  addOrder(market.goods.wood,'demand',level*.08*priceDemandMultiplier1300(market,'wood',.40,.82,1.50));
+  addOrder(market.goods.stone,'demand',level*.04*priceDemandMultiplier1300(market,'stone',.40,.82,1.50));
+  if(['forge','ironworks','mint','dockyard'].includes(sector.id))addOrder(market.goods.iron,'demand',level*.08*priceDemandMultiplier1300(market,'iron',.45,.80,1.60));
+  if(['university','monastery','cathedral'].includes(sector.id))addOrder(market.goods.manuscripts,'demand',level*.10*priceDemandMultiplier1300(market,'manuscripts',.50,.78,1.70));
+  if(['barracks','dockyard'].includes(sector.id))addOrder(market.goods.arms,'demand',level*.08*priceDemandMultiplier1300(market,'arms',.45,.80,1.60));
  }
 }
 function infrastructure(city){const levels=(city.sectors||[]).reduce((n,s)=>n+(Number(s.level)||0),0),support=(city.sectors||[]).reduce((n,s)=>n+(['market','warehouse','merchantquarter','customshouse','bridge','dockyard'].includes(s.id)?Number(s.level)||0:0),0),capacity=10+(Number(city.economy)||50)/5+support*4,usage=Math.max(1,levels*1.7);return {capacity,usage,access:clamp(capacity/usage,.35,1)};}
