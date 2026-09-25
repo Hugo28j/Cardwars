@@ -4,7 +4,7 @@ import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=2026092
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20260923-restored-old-map-v1';
+import {WorldMap} from './map.js?v=20260925-weekly-performance-v1';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260925-full-screen-tree-v2';
 
 /* Bundled market core: kept inline so GitHub Pages boot does not depend on a second new JS module. */
@@ -304,6 +304,7 @@ function ensureEconomyProfile(p){
 }
 ensureEconomyProfile(profile);
 const GAME_WAGE_MIN=.02,GAME_WAGE_MAX=.50,GAME_WAGE_STEP=.02,GAME_TAX_MIN=0,GAME_TAX_MAX=30,GAME_TAX_COLLECTION_FACTOR=.35;
+const GAME_WEEK_REAL_MS=35000,GAME_AUTOSAVE_DAYS=182;
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
@@ -981,20 +982,35 @@ function settleGameWeek1300(game){
  e.lastMonthRevenue=revenue;e.lastMonthExpenses=expenses;e.lastMonthBalance=balance;e.lastMonthLabel=`${d.day} ${d.month} ${d.year}`;e.lastWeekSectorRevenue=e.weekSectorRevenue;e.lastWeekTariffRevenue=e.weekTariffRevenue;
  game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyWeeklyStabilityPolicy1300(game);applyWeeklyPopulationChange1300(game);settleWeeklyResearch1300(game);initializeDiplomacyWorld1300(game);for(const event of weeklyDiplomacy(game,completedCampaignWeeks1300(game),Object.fromEntries(buildCampaignRankings1300(game).map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.weekSectorRevenue=0;e.weekTariffRevenue=0;e.monthRevenue=0;e.monthExpenses=weeklyStateExpenses1300(game).total;
 }
-function advanceGameDay1300(){
+function maybeAutosaveCampaign1300(game){
+ if(!game)return false;
+ const day=Math.max(0,Math.floor(Number(game.day)||0)),last=Math.max(0,Math.floor(Number(game.lastAutosaveDay)||0));
+ if(day-last<GAME_AUTOSAVE_DAYS)return false;
+ game.lastAutosaveDay=day;save();return true;
+}
+function advanceGameWeek1300(){
  const game=profile.activeGame;if(!game)return;
- game.day=(Number(game.day)||0)+1;
- processBuildingConstruction1300(game);simulateGameEconomyDay1300(game);
- if(isCampaignMonday1300(game))settleGameWeek1300(game);
- refreshIndependenceSupportWars1300(game);save();refreshGameClockUI1300();if(gameProvincePanel)renderGameProvincePanel();if(gameCountryPanel)renderGameCountryPanel1300();if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
+ game.day=(Number(game.day)||0)+7;
+ processBuildingConstruction1300(game);
+ simulateGameEconomyDay1300(game);
+ settleGameWeek1300(game);
+ refreshIndependenceSupportWars1300(game);
+ maybeAutosaveCampaign1300(game);
+ refreshGameClockUI1300();
+ if(gameProvincePanel)renderGameProvincePanel();
+ if(gameCountryPanel)renderGameCountryPanel1300();
+ if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
 }
 function setupGameClock1300(){
- if(gameClockTimer)clearInterval(gameClockTimer);refreshGameClockUI1300();
- gameClockTimer=setInterval(()=>{const game=profile.activeGame;if(!game)return;const now=Date.now(),remain=60000-(now-game.clockStartedAt);
-  if(remain>0){refreshGameClockUI1300();return;}
-  if(!Number.isFinite(Number(game.lastTickAt))){game.lastTickAt=now;save();refreshGameClockUI1300();return;}
-  if(now-game.lastTickAt>=5000){game.lastTickAt=now;advanceGameDay1300();}else refreshGameClockUI1300();
- },1000);
+ if(gameClockTimer)clearInterval(gameClockTimer);
+ refreshGameClockUI1300();
+ const game=profile.activeGame;if(!game)return;
+ game.lastTickAt=Date.now();
+ gameClockTimer=setInterval(()=>{
+  const game=profile.activeGame;if(!game)return;
+  game.lastTickAt=Date.now();
+  advanceGameWeek1300();
+ },GAME_WEEK_REAL_MS);
 }
 function ensureGameProfile(p){
  p.collection1300=p.collection1300&&typeof p.collection1300==='object'&&!Array.isArray(p.collection1300)?p.collection1300:{};
@@ -1018,8 +1034,8 @@ function ensureGameProfile(p){
    const playerColor=validRealmColor(g.playerColor)?g.playerColor:p.playerColor;
    const savedOwned=Array.isArray(g.ownedCities)?[...new Set(g.ownedCities)].filter(id=>Object.hasOwn(CITY_1300,id)):[],ownedCities=savedOwned.length?savedOwned:[...validHand],oldOwners=g.cityOwners&&typeof g.cityOwners==='object'&&!Array.isArray(g.cityOwners)?g.cityOwners:{},cityOwners={...oldOwners};for(const id of ownedCities)cityOwners[id]='player';
    const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{},construction=g.construction&&typeof g.construction==='object'&&!Array.isArray(g.construction)?g.construction:{};
-   const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,economy=normaliseGameEconomy1300(g.economy);
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,construction,day,clockStartedAt,lastTickAt,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id]));refreshCampaignStage1300(p.activeGame);
+   const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,lastAutosaveDay=Number.isFinite(Number(g.lastAutosaveDay))?Math.max(0,Math.floor(Number(g.lastAutosaveDay))):0,economy=normaliseGameEconomy1300(g.economy);
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,construction,day,clockStartedAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id]));refreshCampaignStage1300(p.activeGame);
   }
  }
 }
@@ -1094,7 +1110,7 @@ function startGame1300(){
  const shuffled=shuffle1300(profile.deck),hand=shuffled.slice(0,4);
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
- profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},construction:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,economy:freshGameEconomy1300(),technology:freshTechnologyState1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
+ profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},construction:{},day:0,clockStartedAt:Date.now(),lastTickAt:null,lastAutosaveDay:0,economy:freshGameEconomy1300(),technology:freshTechnologyState1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
  // Normal starting opinion is +10. Countries that lost one of your opening cities start at -100 toward you.
  for(const country of new Set(CITIES_1300.map(c=>c.country)))profile.activeGame.diplomacy.relations[country]=10;
  for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-100;
@@ -2184,7 +2200,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-city-wage-reset'){resetCityWage1300(b.dataset.city);return;}
  if(a==='game-building-wage-adjust'){changeBuildingWage1300(b.dataset.city,id,b.dataset.delta);return;}
  if(a==='game-building-wage-reset'){resetBuildingWage1300(b.dataset.city,id);return;}
- if(a==='quit-game'){profile.activeGame=null;gameScreen='map';gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;save();render();toast('You left the campaign. Your deck was kept.');return;}
+ if(a==='quit-game'){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;profile.activeGame=null;for(const key of ['previousGame','previousGames','pastGame','pastGames','gameHistory','campaignHistory','savedGame','savedGames','lastGame'])delete profile[key];mapState.game=null;gameScreen='map';gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;save();render();toast('Campaign deleted from this device. Your deck and collection were kept.');return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();
  if(a==='country1300'){country1300=id;render();}
