@@ -1,7 +1,7 @@
 import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260924-weekly-cadence-v5';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-company-treasuries-v1';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260925-city-labels-army-spacing-v3';
@@ -20,7 +20,7 @@ const GOODS_1300=[
  {id:'tools',name:'Tools',basePrice:42,category:'industrial'},
  {id:'leather',name:'Leather',basePrice:36,category:'consumer'},
  {id:'salt',name:'Salt',basePrice:28,category:'food'},
- {id:'ale',name:'Ale',basePrice:30,category:'consumer'},
+ {id:'ale',name:'Beer',basePrice:30,category:'consumer'},
  {id:'services',name:'Services',basePrice:26,category:'service'},
  {id:'manuscripts',name:'Manuscripts',basePrice:55,category:'knowledge'},
  {id:'arms',name:'Arms',basePrice:58,category:'military'},
@@ -32,11 +32,11 @@ const BUILDING_PRODUCTION_1300={
  fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:30}},
  pastures:{professions:{farmers:.72,laborers:.28},inputs:{tools:.25},outputs:{meat:9,wool:15}},
  textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:12,tools:.7},outputs:{cloth:15}},
- forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:9,wood:3},outputs:{tools:7,arms:4}},
+ forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:8,arms:4}},
  market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:18}},
- barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:4}},
- dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:3}},
- walls:{professions:{laborers:.75,craftsmen:.25},inputs:{stone:5,wood:1},outputs:{services:2}},
+ barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:6}},
+ dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:8}},
+ walls:{professions:{laborers:.75,craftsmen:.25},inputs:{stone:5,wood:1},outputs:{services:6}},
  guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:14}},
  university:{professions:{scholars:.50,clergy:.25,clerks:.25},inputs:{manuscripts:2},outputs:{services:9,manuscripts:1}},
  watermill:{professions:{laborers:.48,craftsmen:.32,farmers:.20},inputs:{wood:.8,tools:.8},outputs:{grain:18}},
@@ -80,6 +80,10 @@ const PRODUCTION_METHODS_1300={
  fishery:[
   {id:'shore-fishing',name:'Shore Fishing',inputs:{},outputs:{fish:14},description:'Small boats, nets and shore crews with no purchased industrial input.'},
   {id:'equipped-fishing',name:'Equipped Fishing',requiresTech:'improved-shipwrights',inputs:{wood:.6,salt:.5},outputs:{fish:22},description:'Improved boats and preservation supplies allow larger catches.'}
+ ],
+ forge:[
+  {id:'iron-forging',name:'Iron Forging',inputs:{iron:8,wood:2},outputs:{tools:8,arms:4},description:'Iron and timber produce efficient Tools as well as military Arms.'},
+  {id:'stone-toolmaking',name:'Stone Toolmaking',inputs:{stone:5,wood:1},outputs:{tools:6},description:'Uses Stone and timber to make basic Tools. Cheaper and immediately available, but produces fewer Tools and no Arms.'}
  ]
 };
 function productionMethodsForBuilding1300(buildingId){
@@ -202,12 +206,12 @@ function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={}
   const market=markets[city.id],infra=infrastructure(city),rows=sectorsByCity[city.id]={};market.marketAccess=round(infra.access,4);
   for(const sector of city.sectors||[]){
    if((Number(sector.level)||0)<=0)continue;
-   const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp((Number(market.goods[id].fulfilled)||0)/Math.max(market.goods[id].demand,1e-6),.12,1))):1,priority=sector.priority||'employment',inputPriceIndex=inputIds.length?inputIds.reduce((n,id)=>n+(Number(market.goods[id].inputUnitPrice)||GOOD_1300[id].basePrice)/GOOD_1300[id].basePrice,0)/inputIds.length:1,cheapness=clamp(1/Math.max(.65,inputPriceIndex),.55,1.25),profitScale=clamp(.25+p.employmentRatio*.40+cheapness*.25,.30,.95),priorityThroughput=priority==='output'?1.16:priority==='profit'?profitScale:1,throughput=clamp(p.employmentRatio*availability*infra.access*priorityThroughput,0,priority==='output'?1.28:1.12),scale=p.potential*throughput/Math.max(.01,p.employmentRatio);
+   const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp((Number(market.goods[id].fulfilled)||0)/Math.max(market.goods[id].demand,1e-6),.12,1))):1,priority=sector.priority||'employment',treasury=Number.isFinite(Number(sector.treasury))?Number(sector.treasury):100,cashFactor=treasury<=0?.15:treasury<50?.55+.45*(treasury/50):1,inputPriceIndex=inputIds.length?inputIds.reduce((n,id)=>n+(Number(market.goods[id].inputUnitPrice)||GOOD_1300[id].basePrice)/GOOD_1300[id].basePrice,0)/inputIds.length:1,cheapness=clamp(1/Math.max(.65,inputPriceIndex),.55,1.25),profitScale=clamp(.25+p.employmentRatio*.40+cheapness*.25,.30,.95),priorityThroughput=priority==='output'?1.16:priority==='profit'?profitScale:1,throughput=clamp(p.employmentRatio*availability*infra.access*priorityThroughput*cashFactor,0,priority==='output'?1.28:1.12),scale=p.potential*throughput/Math.max(.01,p.employmentRatio);
    let revenueValue=0,inputValue=0;const outputs={},soldOutputs={},inputs={};
    for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale,row=market.goods[id],marketSupply=Math.max(0,Number(row?.supply)||0),marketSold=Math.max(0,Number(row?.totalSold)||0),soldShare=marketSupply>0?clamp(marketSold/marketSupply,0,1):0,soldQ=q*soldShare;outputs[id]=round(q,3);soldOutputs[id]=round(soldQ,3);revenueValue+=soldQ*(Number(row?.price)||GOOD_1300[id].basePrice);}
    for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale*(p.inputMultiplier||1);inputs[id]=round(q,3);inputValue+=q*(Number(market.goods[id].inputUnitPrice)||Number(market.goods[id].consumerPrice)||market.goods[id].price);}
-   const weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,annualWage=Math.max(.01,Number(sector.wage)||.01),weeklyWageCost=p.workers*(annualWage/365)*7,weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
-   const weekly=x=>round(x,4);rows[sector.id]={id:sector.id,mode:priority,workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),inputPriceIndex:round(inputPriceIndex,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,soldOutputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
+   const weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,annualWage=Math.max(.01,Number(sector.wage)||.01),fullWeeklyWageCost=p.workers*(annualWage/365)*7,weeklyWageCost=treasury<=0?0:fullWeeklyWageCost,unpaidWages=Math.max(0,fullWeeklyWageCost-weeklyWageCost),weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
+   const weekly=x=>round(x,4);rows[sector.id]={id:sector.id,mode:priority,workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,treasury:weekly(treasury),employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),inputPriceIndex:round(inputPriceIndex,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,soldOutputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),unpaidWages:weekly(unpaidWages),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
   }
   pops[city.id]=updatePops(city,market,previousPops?.[city.id],Object.values(rows));
  }
@@ -353,7 +357,7 @@ const GAME_DAY_REAL_MS=2000,GAME_INITIAL_CLOCK_DELAY_MS=60000,GAME_AUTOSAVE_DAYS
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
-function freshGameEconomy1300(){return {taxRate:10,nationalWage:.20,tariffs:{},cityWages:{},buildingWages:{},companyPolicies:{},populationByCity:{},populationDemography:{},populationRemainders:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,weeklyTax:0,weeklyTariffRevenue:0,weekSectorRevenue:0,weekTariffRevenue:0,lastWeekSectorRevenue:0,lastWeekTariffRevenue:0,weeklyBudgetProjection:null,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed week yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0,weeklyCadenceV1:true,startingWage020V1:true};}
+function freshGameEconomy1300(){return {taxRate:10,nationalWage:.20,tariffs:{},cityWages:{},buildingWages:{},companyPolicies:{},companyTreasuries:{},populationByCity:{},populationDemography:{},populationRemainders:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,weeklyTax:0,weeklyTariffRevenue:0,weekSectorRevenue:0,weekTariffRevenue:0,lastWeekSectorRevenue:0,lastWeekTariffRevenue:0,weeklyBudgetProjection:null,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed week yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0,weeklyCadenceV1:true,startingWage020V1:true};}
 function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},opinionBaselineV2:{},history:[]};}
 function normaliseGameDiplomacy1300(raw){
  const d=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameDiplomacy1300();
@@ -695,7 +699,7 @@ function normaliseGameEconomy1300(raw){
  e.taxRate=clamp1300(Math.round(Number.isFinite(Number(e.taxRate))?Number(e.taxRate):10),GAME_TAX_MIN,GAME_TAX_MAX);
  if(!e.startingWage020V1&&Math.abs((Number(e.nationalWage)||.12)-.12)<.001)e.nationalWage=.20;
  e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.20)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);e.startingWage020V1=true;
- for(const key of ['tariffs','cityWages','buildingWages','companyPolicies','populationByCity','populationDemography','populationRemainders','employment','lastEconomy','markets','pops','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
+ for(const key of ['tariffs','cityWages','buildingWages','companyPolicies','companyTreasuries','populationByCity','populationDemography','populationRemainders','employment','lastEconomy','markets','pops','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
  for(const [cityId,policies] of Object.entries({...e.companyPolicies})){
   if(!policies||typeof policies!=='object'||Array.isArray(policies)){delete e.companyPolicies[cityId];continue;}
   for(const [buildingId,raw] of Object.entries({...policies})){
@@ -928,6 +932,23 @@ function effectiveBuildingWage1300(game,cityId,buildingId){
  const row=game.economy.buildingWages?.[cityId];
  return row&&Number.isFinite(Number(row[buildingId]))?Number(row[buildingId]):effectiveCityWage1300(game,cityId);
 }
+function companyTreasury1300(game,cityId,buildingId){
+ const e=game.economy=normaliseGameEconomy1300(game.economy);e.companyTreasuries[cityId]??={};
+ const current=Number(e.companyTreasuries[cityId][buildingId]);
+ if(!Number.isFinite(current))e.companyTreasuries[cityId][buildingId]=100;
+ return Number(e.companyTreasuries[cityId][buildingId]);
+}
+function setCompanyTreasury1300(game,cityId,buildingId,value){
+ const e=game.economy=normaliseGameEconomy1300(game.economy);e.companyTreasuries[cityId]??={};
+ e.companyTreasuries[cityId][buildingId]=Math.round((Number(value)||0)*100)/100;
+ return e.companyTreasuries[cityId][buildingId];
+}
+function applyCompanyTreasuryResults1300(game,sectorsByCity={}){
+ for(const [cityId,rows] of Object.entries(sectorsByCity||{}))for(const [buildingId,row] of Object.entries(rows||{})){
+  const before=companyTreasury1300(game,cityId,buildingId),tax=Math.max(0,Number(row.tax)||0),net=(Number(row.profit)||0)-tax,after=setCompanyTreasury1300(game,cityId,buildingId,before+net);
+  row.treasuryBefore=before;row.netCash=roundStat1300(net);row.treasury=after;row.financialState=after<0?'bankrupt':after<50?'distressed':'stable';
+ }
+}
 function cityLabourPool1300(c,game=profile.activeGame){return Math.max(50,Math.round(effectivePopulation1300(game,c)*.34));}
 function buildingAvailability1300(c,b){
  if(startingBuildingLevel1300(c,b.id)>0)return {ok:true,reason:'Historical sector already present'};
@@ -992,7 +1013,7 @@ function companyRecruitmentSupportTotal1300(game){
  return roundStat1300(total);
 }
 function economyCitySnapshot1300(game,c){
- const state=gameProvinceBuildingState(c),e=game.economy,sectors=state.buildings.filter(row=>row.level>0).map(row=>{const policy=companyPolicy1300(game,c.id,row.id),method=resolvedProductionMethod1300(game,row.id,policy.productionMethod);return {id:row.id,level:row.level,workers:Math.max(0,Number(e.employment?.[c.id]?.[row.id])||0),capacity:Math.max(1,row.maxWorkers*row.level),wage:companyOperatingWage1300(game,c,row),employmentTarget:policy.employmentTarget,recruitmentSupport:policy.recruitmentSupport,priority:policy.priority,productionMethod:method.id,production:productionDefinition1300(game,row.id,method.id)};}),stats=provinceDynamicStats1300(game,c);
+ const state=gameProvinceBuildingState(c),e=game.economy,sectors=state.buildings.filter(row=>row.level>0).map(row=>{const policy=companyPolicy1300(game,c.id,row.id),method=resolvedProductionMethod1300(game,row.id,policy.productionMethod);return {id:row.id,level:row.level,workers:Math.max(0,Number(e.employment?.[c.id]?.[row.id])||0),capacity:Math.max(1,row.maxWorkers*row.level),wage:companyOperatingWage1300(game,c,row),treasury:companyTreasury1300(game,c.id,row.id),employmentTarget:policy.employmentTarget,recruitmentSupport:policy.recruitmentSupport,priority:policy.priority,productionMethod:method.id,production:productionDefinition1300(game,row.id,method.id)};}),stats=provinceDynamicStats1300(game,c);
  return {id:c.id,population:effectivePopulation1300(game,c),food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,coastal:isCoastalCity1300(c),labourPool:cityLabourPool1300(c,game),expectedWage:expectedAnnualWage1300(game),techEffects:technologyBonuses1300(game.technology),sectors};
 }
 function calculateWeeklyBudgetProjection1300(game){
@@ -1015,11 +1036,11 @@ function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}
  const e=game.economy=normaliseGameEconomy1300(game.economy);
  for(const cityId of game.ownedCities||[]){
   const c=CITY_1300[cityId];if(!c)continue;const state=gameProvinceBuildingState(c),labour=cityLabourPool1300(c,game);e.employment[cityId]??={};
-  const liveStats=provinceDynamicStats1300(game,c),sectors=state.buildings.filter(row=>row.level>0).map(row=>{const capacity=Math.max(1,row.maxWorkers*row.level),wage=companyOperatingWage1300(game,c,row),wageRatio=wage/expectedAnnualWage1300(game),last=e.lastEconomy?.[cityId]?.[row.id],policy=companyPolicy1300(game,cityId,row.id),profitSignal=clamp1300((Number(last?.profit)||0)/8,-.35,.55),supportBoost=policy.recruitmentSupport*.14,priorityAttract=policy.priority==='employment'?.14:policy.priority==='output'?.06:Math.min(0,profitSignal*.12),attract=clamp1300(.18+.72*wageRatio+profitSignal+supportBoost+priorityAttract,.04,1.2),local=clamp1300(.80+(liveStats.stability-50)/300+(liveStats.economy-50)/500,.65,1.08),taxDrag=clamp1300(1-Math.max(0,e.taxRate-10)*.004,.80,1.03),targetCap=capacity*(policy.employmentTarget/100),profitRestraint=policy.priority==='profit'&&profitSignal<0?clamp1300(1+profitSignal,.55,1):1,desired=Math.round(Math.min(targetCap,capacity*clamp1300(attract*local*taxDrag*profitRestraint,.02,1)));return {row,capacity,wage,policy,desired,score:wageRatio+profitSignal+supportBoost+(policy.priority==='employment'?.12:policy.priority==='output'?.05:0)};}).sort((a,b)=>b.score-a.score);
-  let remaining=labour;for(const sec of sectors){const target=Math.min(sec.desired,remaining);remaining-=target;const current=Math.max(0,Number(e.employment[cityId][sec.row.id])||0),speed=1+sec.policy.recruitmentSupport*.60+(sec.policy.priority==='employment'?.35:sec.policy.priority==='output'?.15:0),move=Math.max(5,Math.round(sec.capacity*.08*speed));e.employment[cityId][sec.row.id]=Math.round(current+clamp1300(target-current,-move,move));}
+  const liveStats=provinceDynamicStats1300(game,c),sectors=state.buildings.filter(row=>row.level>0).map(row=>{const capacity=Math.max(1,row.maxWorkers*row.level),treasury=companyTreasury1300(game,cityId,row.id),wage=companyOperatingWage1300(game,c,row),wageRatio=wage/expectedAnnualWage1300(game),last=e.lastEconomy?.[cityId]?.[row.id],policy=companyPolicy1300(game,cityId,row.id),profitSignal=clamp1300((Number(last?.profit)||0)/8,-.35,.55),supportBoost=policy.recruitmentSupport*.14,priorityAttract=policy.priority==='employment'?.14:policy.priority==='output'?.06:Math.min(0,profitSignal*.12),attract=clamp1300(.18+.72*wageRatio+profitSignal+supportBoost+priorityAttract,.04,1.2),local=clamp1300(.80+(liveStats.stability-50)/300+(liveStats.economy-50)/500,.65,1.08),taxDrag=clamp1300(1-Math.max(0,e.taxRate-10)*.004,.80,1.03),targetCap=capacity*(policy.employmentTarget/100),profitRestraint=policy.priority==='profit'&&profitSignal<0?clamp1300(1+profitSignal,.55,1):1,treasuryCap=treasury<=0?.05:treasury<50?.20+.45*(treasury/50):1,desired=Math.round(Math.min(targetCap,capacity*clamp1300(attract*local*taxDrag*profitRestraint,.02,1)*treasuryCap));return {row,capacity,treasury,wage,policy,desired,score:wageRatio+profitSignal+supportBoost+(policy.priority==='employment'?.12:policy.priority==='output'?.05:0)};}).sort((a,b)=>b.score-a.score);
+  let remaining=labour;for(const sec of sectors){const target=Math.min(sec.desired,remaining);remaining-=target;const current=Math.max(0,Number(e.employment[cityId][sec.row.id])||0),speed=1+sec.policy.recruitmentSupport*.60+(sec.policy.priority==='employment'?.35:sec.policy.priority==='output'?.15:0),distressExit=sec.treasury<=0?.45:sec.treasury<50?.25:0,move=Math.max(5,Math.round(sec.capacity*Math.max(.08*speed,distressExit)));e.employment[cityId][sec.row.id]=Math.round(current+clamp1300(target-current,-move,move));}
  }
  const last=Number(e.lastMarketTickDay),due=forceMarket||!Number.isFinite(last)||(Number(game.day)||0)-last>=7;
- if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...d.tradeStockpile}}),techBonuses=technologyBonuses1300(game.technology);e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.weeklyTax=roundStat1300(result.weeklyTaxEstimate*(1+techBonuses.taxIncomePct/100));e.weeklyTariffRevenue=roundStat1300(result.weeklyTariffRevenue*(1+techBonuses.tradeIncomePct/100));if(!forceMarket)e.lastMarketTickDay=Number(game.day)||0;if(collectRevenue&&isCampaignMonday1300(game)){for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(result.tradeStockpileRemaining?.[g.id])||0)*100)/100);accrueTradeSurplus1300(game,result.markets);}if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue){e.weekSectorRevenue=Math.round((Number(e.weekSectorRevenue||0)+e.weeklyTax)*100)/100;e.weekTariffRevenue=Math.round((Number(e.weekTariffRevenue||0)+e.weeklyTariffRevenue)*100)/100;e.monthRevenue=Math.round((e.weekSectorRevenue+e.weekTariffRevenue)*100)/100;}}
+ if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...d.tradeStockpile}}),techBonuses=technologyBonuses1300(game.technology);if(collectRevenue&&isCampaignMonday1300(game))applyCompanyTreasuryResults1300(game,result.sectorsByCity);e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.weeklyTax=roundStat1300(result.weeklyTaxEstimate*(1+techBonuses.taxIncomePct/100));e.weeklyTariffRevenue=roundStat1300(result.weeklyTariffRevenue*(1+techBonuses.tradeIncomePct/100));if(!forceMarket)e.lastMarketTickDay=Number(game.day)||0;if(collectRevenue&&isCampaignMonday1300(game)){for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(result.tradeStockpileRemaining?.[g.id])||0)*100)/100);accrueTradeSurplus1300(game,result.markets);}if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue){e.weekSectorRevenue=Math.round((Number(e.weekSectorRevenue||0)+e.weeklyTax)*100)/100;e.weekTariffRevenue=Math.round((Number(e.weekTariffRevenue||0)+e.weeklyTariffRevenue)*100)/100;e.monthRevenue=Math.round((e.weekSectorRevenue+e.weekTariffRevenue)*100)/100;}}
  e.monthExpenses=weeklyStateExpenses1300(game).total;invalidateWeeklyBudgetProjection1300(game);
 }
 function refreshGameDateUI1300(){
@@ -1225,7 +1246,7 @@ function constructionFinishText1300(job){if(!job)return '';const d=gameDate1300(
 function completeBuildingConstruction1300(game,cityId,buildingId){
  const c=CITY_1300[cityId],building=BUILDING_1300[buildingId];if(!c||!building)return;
  game.buildings??={};game.buildings[cityId]??={};game.buildings[cityId][buildingId]=(Number(game.buildings[cityId][buildingId])||0)+1;
- game.economy.employment[cityId]??={};game.economy.employment[cityId][buildingId]??=0;game.economy.companyPolicies[cityId]??={};game.economy.companyPolicies[cityId][buildingId]??={employmentTarget:100,recruitmentSupport:0,priority:'employment',productionMethod:productionMethodsForBuilding1300(buildingId)[0]?.id||'standard'};
+ game.economy.employment[cityId]??={};game.economy.employment[cityId][buildingId]??=0;game.economy.companyPolicies[cityId]??={};game.economy.companyPolicies[cityId][buildingId]??={employmentTarget:100,recruitmentSupport:0,priority:'employment',productionMethod:productionMethodsForBuilding1300(buildingId)[0]?.id||'standard'};game.economy.companyTreasuries[cityId]??={};if(!Number.isFinite(Number(game.economy.companyTreasuries[cityId][buildingId])))game.economy.companyTreasuries[cityId][buildingId]=100;
  delete game.construction?.[cityId]?.[buildingId];if(game.construction?.[cityId]&&!Object.keys(game.construction[cityId]).length)delete game.construction[cityId];
  toast(building.name+' construction finished in '+displayCityName1300(c)+'.');
 }
@@ -1298,7 +1319,7 @@ function countryMarketHTML1300(game){
 function gameSectorMetrics1300(game,cityId,buildingId){
  const m=game.economy?.lastEconomy?.[cityId]?.[buildingId];if(m)return m;
  const c=CITY_1300[cityId],row=c?gameProvinceBuildingState(c).buildings.find(x=>x.id===buildingId):null,workers=Math.max(0,Number(game.economy?.employment?.[cityId]?.[buildingId])||0),capacity=row?row.maxWorkers*row.level:0;
- return {workers,capacity,wage:effectiveBuildingWage1300(game,cityId,buildingId),gross:0,inputCost:0,wageBill:0,profit:0,tax:0,throughput:0,inputs:{},outputs:{}};
+ return {workers,capacity,wage:effectiveBuildingWage1300(game,cityId,buildingId),treasury:companyTreasury1300(game,cityId,buildingId),gross:0,inputCost:0,wageBill:0,unpaidWages:0,profit:0,tax:0,throughput:0,inputs:{},outputs:{}};
 }
 function gameCityEconomySummary1300(game,cityId){
  const c=CITY_1300[cityId];if(!c)return {workers:0,labour:0,tax:0,profit:0,gross:0};
@@ -1343,13 +1364,14 @@ function gameBuildingDetailHTML1300(cityId,buildingId){
   <div class="building-detail-section"><div class="building-detail-section-title"><span>FINANCES</span><small>Per week</small></div>
    <div class="building-workers-card"><span>WORKERS</span><strong>${compactBuildingWorkers1300(m.workers)} <small>/ ${compactBuildingWorkers1300(m.capacity)}</small></strong></div>
    <div class="building-finance-list">
+    <div><span>Company treasury</span><strong class="${buildingMoneyTone1300(m.treasury??companyTreasury1300(game,c.id,row.id))}">${(m.treasury??companyTreasury1300(game,c.id,row.id))<0?'-':''}ƒ${money1300(Math.abs(m.treasury??companyTreasury1300(game,c.id,row.id)))}</strong><small>${(m.treasury??companyTreasury1300(game,c.id,row.id))<0?'Bankrupt · wages unpaid and workers leave':(m.treasury??companyTreasury1300(game,c.id,row.id))<50?'Low cash · workforce is shrinking':'Healthy cash reserve'}</small></div>
     <div><span>Revenue</span><strong class="${buildingMoneyTone1300(m.gross)}">+ƒ${money1300(Math.abs(m.gross||0))}</strong></div>
     <div><span>Input costs</span><strong class="${buildingMoneyTone1300(m.inputCost,{cost:true})}">-ƒ${money1300(Math.abs(m.inputCost||0))}</strong></div>
-    <div><span>Wages</span><strong class="${buildingMoneyTone1300(m.wageBill,{cost:true})}">-ƒ${money1300(Math.abs(m.wageBill||0))}</strong></div>
+    <div><span>Wages</span><strong class="${buildingMoneyTone1300(m.wageBill,{cost:true})}">-ƒ${money1300(Math.abs(m.wageBill||0))}</strong>${Number(m.unpaidWages)>0?`<small class="negative">Unpaid: ƒ${money1300(m.unpaidWages)}</small>`:''}</div>
     <div class="profit"><span>Profit</span><strong class="${buildingMoneyTone1300(m.profit)}">${m.profit>=0?'+':'-'}ƒ${money1300(Math.abs(m.profit||0))}</strong><small>Tax paid: -ƒ${money1300(Math.abs(m.tax||0))}</small></div>
    </div>
   </div>`:''}
-  ${owned?`<div class="building-detail-upgrade"><div><span>Treasury</span><strong>ƒ${money1300(game.florins)}</strong>${!pending&&row.cost!==null&&!maxed&&!blocked&&!unavailable?`<small>${buildingConstructionTimeText1300(row.constructionDays)}</small>`:''}</div><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&!pending&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button>${row.level>0&&!pending?`<button class="building-demolish-button" data-action="game-demolish-building" data-city="${c.id}" data-id="${row.id}"><span>DEMOLISH</span><small>Remove 1 level · no refund</small></button>`:''}</div>`:''}
+  ${owned?`<div class="building-detail-upgrade"><div><span>State treasury</span><strong>ƒ${money1300(game.florins)}</strong>${!pending&&row.cost!==null&&!maxed&&!blocked&&!unavailable?`<small>${buildingConstructionTimeText1300(row.constructionDays)}</small>`:''}</div><button ${canBuy?'':'disabled'} data-action="game-build-province" data-city="${c.id}" data-id="${row.id}"><span>${buttonText}</span>${row.cost!==null&&!pending&&!blocked&&!unavailable&&!maxed?`<strong>ƒ${Number(row.cost).toFixed(0)}</strong>`:''}</button>${row.level>0&&!pending?`<button class="building-demolish-button" data-action="game-demolish-building" data-city="${c.id}" data-id="${row.id}"><span>DEMOLISH</span><small>Remove 1 level · no refund</small></button>`:''}</div>`:''}
  </section>`;
 }
 
