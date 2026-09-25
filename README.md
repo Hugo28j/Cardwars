@@ -25,7 +25,7 @@ War and full diplomacy are not implemented yet; the save format and UI now conta
 - Campaign map with city territories, ownership, fog of war and adjacency.
 - Province panel with buildings, workers, wages and local economy.
 - Country panel with Politics, Economy, People, Decisions, Technology, Rebellions and Rankings.
-- A 25-technology research tree with five branches, route choices, specialisations, knowledge diffusion and persistent campaign progress.
+- A full-screen, connected 30-technology research tree with five branches, route choices, specialisations, knowledge diffusion and persistent campaign progress.
 - Monthly economy with sector taxes, army/navy upkeep and administration / anti-corruption spending.
 - Ownership-aware campaign Rankings that remove conquered/rebel cities from their former countries.
 - Overall power status modifiers: Rebellions ×0.50, Free Cities / Free Imperial Cities ×0.75, established nations ×1.00.

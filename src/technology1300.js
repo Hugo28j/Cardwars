@@ -6,38 +6,43 @@ export const TECH_BRANCHES_1300=[
  {id:'administration',name:'Administration & Infrastructure',icon:'landmark',specialization:'Administrative Specialization',specializationEffect:'+3% tax efficiency · +2 Stability'}
 ];
 
-const t=(id,branch,name,tier,effects,requires=[],route='')=>({id,branch,name,tier,effects,requires,route,baseCost:tier===1?100:tier===2?175:tier===3?300:600,technologyGain:tier===1?.5:tier===2?.75:tier===3?1:2});
+const t=(id,branch,name,tier,effects,requires=[],route='')=>({id,branch,name,tier,effects,requires,route,baseCost:tier===1?100:tier===2?175:tier===3?300:tier===4?425:650,technologyGain:tier===1?.5:tier===2?.75:tier===3?1:tier===4?1.25:2});
 
 export const TECHNOLOGIES_1300=[
  t('crop-rotation','agriculture','Improved Crop Rotation',1,['+8% Grain production','+5% Food production','+2% population growth']),
  t('heavy-tools','agriculture','Heavy Agricultural Tools',2,['+10% Farm output','-5% farm workers required','+5% Livestock production'],['crop-rotation']),
  t('intensive-cultivation','agriculture','Intensive Cultivation',3,['+15% Grain output','+10% Food output','+5% maximum farm level','+5% Tools consumption'],['heavy-tools'],'Food route'),
  t('water-wind-power','agriculture','Water & Wind Power',3,['+10% Mill output','+10% Lumber processing','+10% workshop production','-10% Mill workers'],['heavy-tools'],'Mechanisation route'),
- t('agricultural-surplus','agriculture','Agricultural Surplus',5,['+10% total food production','+10% food storage','-15% food spoilage','+5% population growth','+5 Stability when food is sufficient'],['intensive-cultivation','water-wind-power']),
+ t('manorial-granaries','agriculture','Manorial Granaries',4,['+10% food storage','-10% food spoilage','+5% local market supply'],['intensive-cultivation','water-wind-power']),
+ t('agricultural-surplus','agriculture','Agricultural Surplus',5,['+10% total food production','+10% food storage','-15% food spoilage','+5% population growth','+5 Stability when food is sufficient'],['manorial-granaries']),
 
  t('craft-guilds','economy','Craft Guilds',1,['+5% company output','+5% product quality','+5% artisan productivity','-5% workshop production cost']),
  t('specialized-workshops','economy','Specialized Workshops',2,['+10% manufactured goods output','+10% Tools, Clothing and Weapons output','+5% maximum employment capacity'],['craft-guilds']),
  t('merchant-guilds','economy','Merchant Guilds',3,['+10% trade income','-10% trade transport cost','+10% merchant capacity','-5% import cost','+5% export revenue'],['specialized-workshops'],'Trade route'),
  t('advanced-workshops','economy','Advanced Workshops',3,['+15% company output','-5% resource inputs','+10% maximum company level'],['specialized-workshops'],'Industry route'),
- t('commercial-networks','economy','Commercial Networks',5,['+10% national Economy','+10% market efficiency','+10% trade volume','+5% company profits','-10% transportation cost','Markets give +5 Economy'],['merchant-guilds','advanced-workshops']),
+ t('urban-manufactures','economy','Urban Manufactures',4,['+10% manufactured goods output','+5% artisan productivity','+5% urban employment capacity'],['merchant-guilds','advanced-workshops']),
+ t('commercial-networks','economy','Commercial Networks',5,['+10% national Economy','+10% market efficiency','+10% trade volume','+5% company profits','-10% transportation cost','Markets give +5 Economy'],['urban-manufactures']),
 
  t('standardized-arms','army','Standardized Arms',1,['+5% army damage','-5% Weapons production cost','+5% Weapons production']),
  t('crossbow-corps','army','Crossbow Corps',2,['+10% ranged damage','+5% defensive battle strength','+15% Crossbowmen effectiveness','+5% army maintenance'],['standardized-arms']),
  t('organized-retinues','army','Organized Retinues',3,['+10% professional army effectiveness','+10% army morale','+5% reinforcement speed','-5% manpower losses'],['crossbow-corps'],'Field army route'),
  t('siege-engineering','army','Siege Engineering',3,['+20% siege speed','+10% fortification damage','-10% siege attrition'],['crossbow-corps'],'Siege route'),
- t('combined-arms','army','Combined Arms',5,['+10% army effectiveness','+10% battle organization','+5% movement speed','-5% battle casualties','+10% combat with Infantry + Ranged + Cavalry'],['organized-retinues','siege-engineering']),
+ t('campaign-logistics','army','Campaign Logistics',4,['+10% reinforcement speed','-10% campaign attrition','+5% army movement speed'],['organized-retinues','siege-engineering']),
+ t('combined-arms','army','Combined Arms',5,['+10% army effectiveness','+10% battle organization','+5% movement speed','-5% battle casualties','+10% combat with Infantry + Ranged + Cavalry'],['campaign-logistics']),
 
  t('improved-shipwrights','navy','Improved Shipwrights',1,['-10% ship construction cost','+10% ship construction speed','+5% ship durability']),
  t('cog-construction','navy','Cog Construction',2,['+15% cargo capacity','+10% naval trade capacity','+5% ship durability'],['improved-shipwrights']),
  t('stern-rudder','navy','Stern Rudder',3,['+10% ship manoeuvrability','+10% naval combat effectiveness','+5% naval movement speed'],['cog-construction'],'Naval combat route'),
  t('mariners-compass','navy',"Mariners' Compass",3,['+10% naval movement speed','+15% maritime trade range','-10% naval attrition','+10% maritime trade efficiency'],['cog-construction'],'Trade & exploration route'),
- t('maritime-tradition','navy','Maritime Tradition',5,['+10% naval effectiveness','+15% naval trade income','+10% fleet capacity','-10% ship maintenance','Ports give +5 Economy','+10% Shipyard output'],['stern-rudder','mariners-compass']),
+ t('harbour-administration','navy','Harbour Administration',4,['+10% fleet supply','+10% port throughput','-5% ship maintenance'],['stern-rudder','mariners-compass']),
+ t('maritime-tradition','navy','Maritime Tradition',5,['+10% naval effectiveness','+15% naval trade income','+10% fleet capacity','-10% ship maintenance','Ports give +5 Economy','+10% Shipyard output'],['harbour-administration']),
 
  t('weights-measures','administration','Standard Weights & Measures',1,['+5% market efficiency','+5% company efficiency','-5% internal trade cost']),
  t('improved-roads','administration','Improved Roads',2,['+10% land trade speed','+10% army movement speed','-10% transportation cost'],['weights-measures']),
  t('market-charters','administration','Market Charters',3,['+10% city trade','+5% tax income','+10% Market output','Markets give +3 Economy'],['improved-roads'],'Economic administration'),
  t('royal-administration','administration','Royal Administration',3,['+10% tax efficiency','+5 Stability','-10% administrative losses','-5% building time'],['improved-roads'],'State administration'),
- t('organized-realm','administration','Organized Realm',5,['+5% national Economy','+5 Stability','+5% tax income','+5% company output','-5% construction cost','-5% army maintenance','-5% transportation cost'],['market-charters','royal-administration'])
+ t('written-chanceries','administration','Written Chanceries',4,['+5% tax efficiency','-5% administrative losses','-5% decree cost'],['market-charters','royal-administration']),
+ t('organized-realm','administration','Organized Realm',5,['+5% national Economy','+5 Stability','+5% tax income','+5% company output','-5% construction cost','-5% army maintenance','-5% transportation cost'],['written-chanceries'])
 ];
 
 export const TECHNOLOGY_1300=Object.fromEntries(TECHNOLOGIES_1300.map(x=>[x.id,x]));
@@ -60,7 +65,7 @@ export function branchUnlockedCount1300(state,branch){const unlocked=new Set(nor
 export function technologyAvailable1300(state,technology){
  const s=normaliseTechnologyState1300(state),tech=typeof technology==='string'?TECHNOLOGY_1300[technology]:technology;if(!tech||s.unlocked.includes(tech.id))return false;
  if(!tech.requires.length)return true;
- return tech.tier===5?tech.requires.some(id=>s.unlocked.includes(id)):tech.requires.every(id=>s.unlocked.includes(id));
+ return tech.tier===4?tech.requires.some(id=>s.unlocked.includes(id)):tech.requires.every(id=>s.unlocked.includes(id));
 }
 
 export function technologyResearchCost1300(state,technology,{diffusionDiscount=0,tradeDiscount=0}={}){
@@ -73,11 +78,11 @@ export function technologyResearchCost1300(state,technology,{diffusionDiscount=0
 export function technologyBonuses1300(state){
  const u=new Set(normaliseTechnologyState1300(state).unlocked),b={companyOutputPct:0,foodOutputPct:0,populationGrowthPct:0,farmOutputPct:0,farmWorkersPct:0,millOutputPct:0,millWorkersPct:0,lumberOutputPct:0,manufacturedOutputPct:0,inputRequiredPct:0,tradeIncomePct:0,taxIncomePct:0,armyEffectivenessPct:0,navyEffectivenessPct:0,armyMaintenancePct:0,navyMaintenancePct:0,constructionCostPct:0,constructionTimePct:0,stabilityFlat:0,economyFlat:0,marketEconomyFlat:0};
  const add=(id,key,n)=>{if(u.has(id))b[key]+=n;};
- add('crop-rotation','foodOutputPct',5);add('crop-rotation','populationGrowthPct',2);add('heavy-tools','farmOutputPct',10);add('heavy-tools','farmWorkersPct',-5);add('intensive-cultivation','farmOutputPct',15);add('water-wind-power','millOutputPct',10);add('water-wind-power','millWorkersPct',-10);add('water-wind-power','lumberOutputPct',10);add('water-wind-power','manufacturedOutputPct',10);add('agricultural-surplus','foodOutputPct',10);add('agricultural-surplus','populationGrowthPct',5);
- add('craft-guilds','companyOutputPct',5);add('specialized-workshops','manufacturedOutputPct',10);add('merchant-guilds','tradeIncomePct',10);add('advanced-workshops','companyOutputPct',15);add('advanced-workshops','inputRequiredPct',-5);add('commercial-networks','economyFlat',10);add('commercial-networks','companyOutputPct',5);add('commercial-networks','tradeIncomePct',10);add('commercial-networks','marketEconomyFlat',5);
- add('standardized-arms','armyEffectivenessPct',5);add('crossbow-corps','armyMaintenancePct',5);add('organized-retinues','armyEffectivenessPct',10);add('combined-arms','armyEffectivenessPct',10);
- add('stern-rudder','navyEffectivenessPct',10);add('mariners-compass','tradeIncomePct',10);add('maritime-tradition','navyEffectivenessPct',10);add('maritime-tradition','tradeIncomePct',15);add('maritime-tradition','navyMaintenancePct',-10);
- add('weights-measures','companyOutputPct',5);add('market-charters','taxIncomePct',5);add('market-charters','marketEconomyFlat',3);add('royal-administration','taxIncomePct',10);add('royal-administration','stabilityFlat',5);add('royal-administration','constructionTimePct',-5);add('organized-realm','economyFlat',5);add('organized-realm','stabilityFlat',5);add('organized-realm','taxIncomePct',5);add('organized-realm','companyOutputPct',5);add('organized-realm','constructionCostPct',-5);add('organized-realm','armyMaintenancePct',-5);
+ add('crop-rotation','foodOutputPct',5);add('crop-rotation','populationGrowthPct',2);add('heavy-tools','farmOutputPct',10);add('heavy-tools','farmWorkersPct',-5);add('intensive-cultivation','farmOutputPct',15);add('water-wind-power','millOutputPct',10);add('water-wind-power','millWorkersPct',-10);add('water-wind-power','lumberOutputPct',10);add('water-wind-power','manufacturedOutputPct',10);add('manorial-granaries','foodOutputPct',5);add('agricultural-surplus','foodOutputPct',10);add('agricultural-surplus','populationGrowthPct',5);
+ add('craft-guilds','companyOutputPct',5);add('specialized-workshops','manufacturedOutputPct',10);add('merchant-guilds','tradeIncomePct',10);add('advanced-workshops','companyOutputPct',15);add('advanced-workshops','inputRequiredPct',-5);add('urban-manufactures','manufacturedOutputPct',10);add('commercial-networks','economyFlat',10);add('commercial-networks','companyOutputPct',5);add('commercial-networks','tradeIncomePct',10);add('commercial-networks','marketEconomyFlat',5);
+ add('standardized-arms','armyEffectivenessPct',5);add('crossbow-corps','armyMaintenancePct',5);add('organized-retinues','armyEffectivenessPct',10);add('campaign-logistics','armyMaintenancePct',-5);add('combined-arms','armyEffectivenessPct',10);
+ add('stern-rudder','navyEffectivenessPct',10);add('mariners-compass','tradeIncomePct',10);add('harbour-administration','navyMaintenancePct',-5);add('maritime-tradition','navyEffectivenessPct',10);add('maritime-tradition','tradeIncomePct',15);add('maritime-tradition','navyMaintenancePct',-10);
+ add('weights-measures','companyOutputPct',5);add('market-charters','taxIncomePct',5);add('market-charters','marketEconomyFlat',3);add('royal-administration','taxIncomePct',10);add('royal-administration','stabilityFlat',5);add('royal-administration','constructionTimePct',-5);add('written-chanceries','taxIncomePct',5);add('organized-realm','economyFlat',5);add('organized-realm','stabilityFlat',5);add('organized-realm','taxIncomePct',5);add('organized-realm','companyOutputPct',5);add('organized-realm','constructionCostPct',-5);add('organized-realm','armyMaintenancePct',-5);
  if(branchUnlockedCount1300(state,'agriculture')>=3)b.foodOutputPct+=5;if(branchUnlockedCount1300(state,'economy')>=3)b.companyOutputPct+=5;if(branchUnlockedCount1300(state,'army')>=3)b.armyEffectivenessPct+=5;if(branchUnlockedCount1300(state,'navy')>=3)b.navyEffectivenessPct+=5;if(branchUnlockedCount1300(state,'administration')>=3){b.taxIncomePct+=3;b.stabilityFlat+=2;}
  if(u.has('water-wind-power')&&u.has('advanced-workshops'))b.manufacturedOutputPct+=5;if(u.has('merchant-guilds')&&u.has('mariners-compass'))b.tradeIncomePct+=10;if(u.has('standardized-arms')&&u.has('advanced-workshops'))b.inputRequiredPct-=5;if(u.has('agricultural-surplus')&&u.has('commercial-networks'))b.tradeIncomePct+=10;if(u.has('cog-construction')&&u.has('merchant-guilds'))b.tradeIncomePct+=10;
  return b;
