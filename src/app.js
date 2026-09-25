@@ -30,15 +30,15 @@ const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
 const COMPANY_OUTPUT_MULTIPLIER_1300=1.5;
 
 const BUILDING_PRODUCTION_1300={
- fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:40}},
- pastures:{professions:{farmers:.72,laborers:.28},inputs:{tools:.25},outputs:{meat:9,wool:15}},
+ fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:120}},
+ pastures:{professions:{farmers:.72,laborers:.28},inputs:{tools:.25},outputs:{meat:11.25,wool:18.75}},
  textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:12,tools:.7},outputs:{cloth:15}},
  forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:8,arms:4}},
- market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:18}},
+ market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:22.5}},
  barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:11}},
  dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:6,fish:8,services:4}},
  walls:{professions:{laborers:.75,craftsmen:.25},inputs:{},outputs:{}},
- guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:14}},
+ guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:17.5}},
  university:{professions:{scholars:.50,clergy:.25,clerks:.25},inputs:{manuscripts:2},outputs:{services:9,manuscripts:3}},
  watermill:{professions:{laborers:.48,craftsmen:.32,farmers:.20},inputs:{wood:.8,tools:.8},outputs:{grain:18}},
  brewery:{professions:{craftsmen:.55,laborers:.35,merchants:.10},inputs:{grain:11,wood:.5},outputs:{ale:14}},
@@ -49,19 +49,19 @@ const BUILDING_PRODUCTION_1300={
  lumberyard:{professions:{laborers:.82,craftsmen:.18},inputs:{tools:.8},outputs:{wood:21}},
  ironworks:{professions:{craftsmen:.42,laborers:.50,merchants:.08},inputs:{tools:2},outputs:{iron:10}},
  mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:7},directFlorins:15},
- monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:3,services:6}},
+ monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:4.5,services:9}},
  cathedral:{professions:{clergy:.55,clerks:.20,scholars:.15,laborers:.10},inputs:{grain:1,cloth:.5},outputs:{services:10,manuscripts:2}},
  hospital:{professions:{clergy:.30,clerks:.20,laborers:.50},inputs:{grain:2,cloth:1},outputs:{services:9}}
 };
 
 const PRODUCTION_METHODS_1300={
  fields:[
-  {id:'hand-cultivation',name:'Hand Cultivation',inputs:{},outputs:{grain:32},description:'Uses labour and basic hand work only. No purchased Tools input.'},
-  {id:'tool-assisted-farming',name:'Tool-Assisted Farming',requiresTech:'heavy-tools',inputs:{tools:.4},outputs:{grain:40},description:'Heavy agricultural tools raise Grain output but create ongoing Tools costs.'}
+  {id:'hand-cultivation',name:'Hand Cultivation',inputs:{},outputs:{grain:96},description:'Uses labour and basic hand work only. No purchased Tools input.'},
+  {id:'tool-assisted-farming',name:'Tool-Assisted Farming',requiresTech:'heavy-tools',inputs:{tools:.4},outputs:{grain:120},description:'Heavy agricultural tools raise Grain output but create ongoing Tools costs.'}
  ],
  pastures:[
-  {id:'open-herding',name:'Open Herding',inputs:{},outputs:{meat:7,wool:11},description:'Traditional herding with no purchased industrial input.'},
-  {id:'managed-pastures',name:'Managed Pastures',requiresTech:'heavy-tools',inputs:{tools:.25},outputs:{meat:9,wool:15},description:'Better tools and pasture management increase Meat and Wool output.'}
+  {id:'open-herding',name:'Open Herding',inputs:{},outputs:{meat:8.75,wool:13.75},description:'Traditional herding with no purchased industrial input.'},
+  {id:'managed-pastures',name:'Managed Pastures',requiresTech:'heavy-tools',inputs:{tools:.25},outputs:{meat:11.25,wool:18.75},description:'Better tools and pasture management increase Meat and Wool output.'}
  ],
  textiles:[
   {id:'hand-looms',name:'Hand Looms',inputs:{wool:10},outputs:{cloth:13},description:'Traditional hand looms use Wool but no purchased Tools.'},
