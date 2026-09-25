@@ -1,7 +1,7 @@
 import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260924-weekly-cadence-v5';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
-import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-company-treasuries-v1';
+import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-military-knowledge-ironworks-v2';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260925-city-labels-army-spacing-v3';
@@ -27,6 +27,7 @@ const GOODS_1300=[
  {id:'ships',name:'Ships',basePrice:75,category:'military'}
 ];
 const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
+const COMPANY_OUTPUT_MULTIPLIER_1300=1.5;
 
 const BUILDING_PRODUCTION_1300={
  fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:30}},
@@ -34,11 +35,11 @@ const BUILDING_PRODUCTION_1300={
  textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:12,tools:.7},outputs:{cloth:15}},
  forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:8,arms:4}},
  market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:18}},
- barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:6}},
- dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:8}},
- walls:{professions:{laborers:.75,craftsmen:.25},inputs:{stone:5,wood:1},outputs:{services:6}},
+ barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:10}},
+ dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:8,fish:10,services:5}},
+ walls:{professions:{laborers:.75,craftsmen:.25},inputs:{},outputs:{}},
  guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:14}},
- university:{professions:{scholars:.50,clergy:.25,clerks:.25},inputs:{manuscripts:2},outputs:{services:9,manuscripts:1}},
+ university:{professions:{scholars:.50,clergy:.25,clerks:.25},inputs:{manuscripts:2},outputs:{services:9,manuscripts:3}},
  watermill:{professions:{laborers:.48,craftsmen:.32,farmers:.20},inputs:{wood:.8,tools:.8},outputs:{grain:18}},
  brewery:{professions:{craftsmen:.55,laborers:.35,merchants:.10},inputs:{grain:11,wood:.5},outputs:{ale:14}},
  tannery:{professions:{craftsmen:.55,laborers:.40,merchants:.05},inputs:{meat:4,salt:1},outputs:{leather:8}},
@@ -46,13 +47,10 @@ const BUILDING_PRODUCTION_1300={
  saltworks:{professions:{laborers:.80,merchants:.12,craftsmen:.08},inputs:{wood:.5},outputs:{salt:16}},
  quarry:{professions:{laborers:.84,craftsmen:.16},inputs:{tools:1.1},outputs:{stone:20}},
  lumberyard:{professions:{laborers:.82,craftsmen:.18},inputs:{tools:.8},outputs:{wood:21}},
- warehouse:{professions:{merchants:.42,laborers:.38,clerks:.20},inputs:{wood:.5},outputs:{services:17}},
- merchantquarter:{professions:{merchants:.58,clerks:.27,laborers:.15},inputs:{cloth:1.2,ale:.8},outputs:{services:24}},
- customshouse:{professions:{clerks:.48,merchants:.32,laborers:.20},inputs:{manuscripts:.25},outputs:{services:17}},
- mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:19}},
- bridge:{professions:{laborers:.52,merchants:.28,clerks:.20},inputs:{wood:.5,stone:.35},outputs:{services:15}},
- monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:1.6,services:6}},
- cathedral:{professions:{clergy:.55,clerks:.20,scholars:.15,laborers:.10},inputs:{grain:1,cloth:.5},outputs:{services:10,manuscripts:.7}},
+ ironworks:{professions:{craftsmen:.42,laborers:.50,merchants:.08},inputs:{tools:2},outputs:{iron:10}},
+ mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:15},directFlorins:15},
+ monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:3,services:6}},
+ cathedral:{professions:{clergy:.55,clerks:.20,scholars:.15,laborers:.10},inputs:{grain:1,cloth:.5},outputs:{services:10,manuscripts:2}},
  hospital:{professions:{clergy:.30,clerks:.20,laborers:.50},inputs:{grain:2,cloth:1},outputs:{services:9}}
 };
 
@@ -100,9 +98,12 @@ function resolvedProductionMethod1300(game,buildingId,requestedId){
  if(requested&&productionMethodUnlocked1300(game,requested))return requested;
  return methods.find(x=>productionMethodUnlocked1300(game,x))||methods[0];
 }
+function boostedProductionOutputs1300(outputs={}){
+ return Object.fromEntries(Object.entries(outputs).map(([id,n])=>[id,round(Number(n)*COMPANY_OUTPUT_MULTIPLIER_1300,3)]));
+}
 function productionDefinition1300(game,buildingId,requestedId){
  const base=BUILDING_PRODUCTION_1300[buildingId]||{professions:{laborers:1},inputs:{},outputs:{services:1}},method=resolvedProductionMethod1300(game,buildingId,requestedId);
- return {...base,inputs:{...(method.inputs||{})},outputs:{...(method.outputs||{})},methodId:method.id,methodName:method.name};
+ return {...base,inputs:{...(method.inputs||{})},outputs:boostedProductionOutputs1300(method.outputs||{}),directFlorins:Number(method.directFlorins??base.directFlorins)||0,methodId:method.id,methodName:method.name};
 }
 
 const POP_ARCHETYPES=[
@@ -357,7 +358,7 @@ const GAME_DAY_REAL_MS=2000,GAME_INITIAL_CLOCK_DELAY_MS=60000,GAME_AUTOSAVE_DAYS
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
-function freshGameEconomy1300(){return {taxRate:10,nationalWage:.20,tariffs:{},cityWages:{},buildingWages:{},companyPolicies:{},companyTreasuries:{},populationByCity:{},populationDemography:{},populationRemainders:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,weeklyTax:0,weeklyTariffRevenue:0,weekSectorRevenue:0,weekTariffRevenue:0,lastWeekSectorRevenue:0,lastWeekTariffRevenue:0,weeklyBudgetProjection:null,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed week yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0,weeklyCadenceV1:true,startingWage020V1:true};}
+function freshGameEconomy1300(){return {taxRate:10,nationalWage:.40,tariffs:{},cityWages:{},buildingWages:{},companyPolicies:{},companyTreasuries:{},populationByCity:{},populationDemography:{},populationRemainders:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,weeklyTax:0,weeklyTariffRevenue:0,weekSectorRevenue:0,weekTariffRevenue:0,lastWeekSectorRevenue:0,lastWeekTariffRevenue:0,weeklyBudgetProjection:null,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed week yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0,weeklyCadenceV1:true,startingWage020V1:true,startingWage040V2:true};}
 function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},opinionBaselineV2:{},history:[]};}
 function normaliseGameDiplomacy1300(raw){
  const d=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameDiplomacy1300();
@@ -698,7 +699,8 @@ function normaliseGameEconomy1300(raw){
  const e=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameEconomy1300(),hadDynamic=!!(e.dynamicStats&&typeof e.dynamicStats==='object'&&!Array.isArray(e.dynamicStats)),wasWeekly=!!e.weeklyCadenceV1;
  e.taxRate=clamp1300(Math.round(Number.isFinite(Number(e.taxRate))?Number(e.taxRate):10),GAME_TAX_MIN,GAME_TAX_MAX);
  if(!e.startingWage020V1&&Math.abs((Number(e.nationalWage)||.12)-.12)<.001)e.nationalWage=.20;
- e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.20)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);e.startingWage020V1=true;
+ if(!e.startingWage040V2&&Math.abs((Number(e.nationalWage)||.20)-.20)<.001)e.nationalWage=.40;
+ e.nationalWage=clamp1300(Math.round((Number(e.nationalWage)||.40)*100)/100,GAME_WAGE_MIN,GAME_WAGE_MAX);e.startingWage020V1=true;e.startingWage040V2=true;
  for(const key of ['tariffs','cityWages','buildingWages','companyPolicies','companyTreasuries','populationByCity','populationDemography','populationRemainders','employment','lastEconomy','markets','pops','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])if(!e[key]||typeof e[key]!=='object'||Array.isArray(e[key]))e[key]={};
  for(const [cityId,policies] of Object.entries({...e.companyPolicies})){
   if(!policies||typeof policies!=='object'||Array.isArray(policies)){delete e.companyPolicies[cityId];continue;}
@@ -741,7 +743,7 @@ function completedCampaignMonths1300(game){
  return Math.max(0,(d.getUTCFullYear()-1300)*12+d.getUTCMonth());
 }
 function completedCampaignWeeks1300(game){return Math.max(0,Math.floor((Number(game?.day)||0)/7));}
-function expectedAnnualWage1300(game){const twoYearSteps=Math.max(0,Math.floor((Number(game?.day)||0)/(365.2425*2)));return Math.min(GAME_WAGE_MAX,.20+twoYearSteps*.02);}
+function expectedAnnualWage1300(game){const twoYearSteps=Math.max(0,Math.floor((Number(game?.day)||0)/(365.2425*2)));return Math.min(GAME_WAGE_MAX,.40+twoYearSteps*.02);}
 function isCampaignMonday1300(game){return Math.max(0,Math.floor(Number(game?.day)||0))%7===0;}
 function daysUntilCampaignMonday1300(game){const n=Math.max(0,Math.floor(Number(game?.day)||0))%7;return (7-n)%7;}
 function gameStatCap1300(game){return roundStat1300(100+completedCampaignWeeks1300(game)*(.10/WEEKS_PER_MONTH));}
@@ -972,11 +974,8 @@ function buildingAvailability1300(c,b){
   case 'saltworks':return {ok:salt||coastal&&econ>=72,reason:'Needs salt/brine resources or a strong coastal trade economy'};
   case 'quarry':return {ok:stone||people>=8000&&stab>=55,reason:'Needs workable stone deposits and organised labour'};
   case 'lumberyard':return {ok:timber||food>=60,reason:'Needs nearby woodland or a strong rural hinterland'};
-  case 'warehouse':return {ok:trade&&econ>=58,reason:'Needs established trade, markets or a port'};
-  case 'merchantquarter':return {ok:trade&&econ>=70&&people>=7000,reason:'Needs a wealthy commercial city with sustained merchant traffic'};
-  case 'customshouse':return {ok:(coastal||river)&&trade&&econ>=60,reason:'Needs a port, river crossing or major trade route'};
+  case 'ironworks':return {ok:true,reason:''};
   case 'mint':return {ok:finance||econ>=82&&tech>=68&&people>=12000,reason:'Needs strong fiscal authority, skilled metalwork and major commerce'};
-  case 'bridge':return {ok:river||/crossing|bridge/.test(text),reason:'Needs a major river or strategic crossing'};
   case 'monastery':return {ok:religious||tech>=65&&stab>=55,reason:'Needs a strong ecclesiastical or scholarly base'};
   case 'cathedral':return {ok:religious&&people>=6000,reason:'Requires an important bishopric, archbishopric or major church centre'};
   case 'hospital':return {ok:people>=7000&&stab>=48,reason:'Needs a sufficiently large and organised urban population'};
