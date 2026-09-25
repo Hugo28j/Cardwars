@@ -54,7 +54,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=3.6,BUILDING_MAINTENANCE_INPUT_SHARE=.35;
 
 function blankGood(g,previous){const price=Number(previous?.price);return {goodId:g.id,supply:0,demand:0,price:Number.isFinite(price)&&price>0?price:g.basePrice,targetPrice:g.basePrice,basePrice:g.basePrice};}
 function ensureMarket(previous={}){const goods={};for(const g of GOODS_1300)goods[g.id]=blankGood(g,previous?.goods?.[g.id]);return {goods,marketAccess:Number.isFinite(Number(previous?.marketAccess))?Number(previous.marketAccess):1,priceIndex:Number.isFinite(Number(previous?.priceIndex))?Number(previous.priceIndex):1};}
@@ -70,9 +70,24 @@ function ambientSupply(city,market){
  addOrder(market.goods.grain,'supply',k*(.55+food*.65)*(1+(Number(city.grainBonusPct)||0)/100));addOrder(market.goods.meat,'supply',k*(.07+food*.10));addOrder(market.goods.wool,'supply',k*(.09+food*.10));addOrder(market.goods.wood,'supply',k*(.14+food*.14));addOrder(market.goods.stone,'supply',k*(.04+econ*.04));addOrder(market.goods.iron,'supply',k*(.012+econ*.018));addOrder(market.goods.salt,'supply',k*.025);addOrder(market.goods.services,'supply',k*(.12+econ*.18));if(city.coastal)addOrder(market.goods.fish,'supply',k*.18);
 }
 function popOrders(city,market,popState){
- const k=Math.max(.1,Number(city.population||0)/1000),groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],k*.936,{grain:1.50,fish:city.coastal?1.1:.55,meat:.7});
+ const k=Math.max(.1,Number(city.population||0)/1000),groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],k*POP_FOOD_DEMAND_PER_1000,{grain:2.30,fish:city.coastal?1.20:.60,meat:.90});
  for(const [id,n] of Object.entries(food))addOrder(market.goods[id],'demand',n);
- addOrder(market.goods.cloth,'demand',k*.09*wealthFactor);addOrder(market.goods.wood,'demand',k*.035);addOrder(market.goods.salt,'demand',k*.04);addOrder(market.goods.ale,'demand',k*.065*wealthFactor);addOrder(market.goods.leather,'demand',k*.025*wealthFactor);addOrder(market.goods.services,'demand',k*(.10+.07*wealthFactor)*1.10);if(avgWealth>15){addOrder(market.goods.manuscripts,'demand',k*.006*(avgWealth-14));addOrder(market.goods.cloth,'demand',k*.025);}
+ addOrder(market.goods.cloth,'demand',k*.25*wealthFactor);addOrder(market.goods.wood,'demand',k*.10);addOrder(market.goods.salt,'demand',k*.12);addOrder(market.goods.ale,'demand',k*.18*wealthFactor);addOrder(market.goods.leather,'demand',k*.08*wealthFactor);
+ addOrder(market.goods.services,'demand',k*(2.20+1.00*wealthFactor));
+ if(avgWealth>15){addOrder(market.goods.manuscripts,'demand',k*.015*(avgWealth-14));addOrder(market.goods.cloth,'demand',k*.05);}
+}
+function buildingMaintenanceOrders1300(city,market){
+ for(const sector of city.sectors||[]){
+  const level=Math.max(0,Number(sector.level)||0);if(level<=0)continue;
+  const p=sectorPotential(sector,city),inputs=p.def.inputs||{},maintenanceScale=level*BUILDING_MAINTENANCE_INPUT_SHARE;
+  for(const [id,n] of Object.entries(inputs))addOrder(market.goods[id],'demand',Math.max(0,Number(n)||0)*maintenanceScale);
+  addOrder(market.goods.tools,'demand',level*.12);
+  addOrder(market.goods.wood,'demand',level*.08);
+  addOrder(market.goods.stone,'demand',level*.04);
+  if(['forge','ironworks','mint','dockyard'].includes(sector.id))addOrder(market.goods.iron,'demand',level*.08);
+  if(['university','monastery','cathedral'].includes(sector.id))addOrder(market.goods.manuscripts,'demand',level*.10);
+  if(['barracks','dockyard'].includes(sector.id))addOrder(market.goods.arms,'demand',level*.08);
+ }
 }
 function infrastructure(city){const levels=(city.sectors||[]).reduce((n,s)=>n+(Number(s.level)||0),0),support=(city.sectors||[]).reduce((n,s)=>n+(['market','warehouse','merchantquarter','customshouse','bridge','dockyard'].includes(s.id)?Number(s.level)||0:0),0),capacity=10+(Number(city.economy)||50)/5+support*4,usage=Math.max(1,levels*1.7);return {capacity,usage,access:clamp(capacity/usage,.35,1)};}
 function updatePrices(market){
@@ -90,7 +105,7 @@ function updatePops(city,market,previous,sectors){
 export function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35}={}){
  const markets={},pops={},sectorsByCity={};let weeklyTax=0;
  for(const city of cities){
-  const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};ambientSupply(city,market);popOrders(city,market,popState);
+  const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};ambientSupply(city,market);popOrders(city,market,popState);buildingMaintenanceOrders1300(city,market);
   for(const sector of city.sectors||[]){if((Number(sector.level)||0)<=0)continue;const p=sectorPotential(sector,city);for(const [id,n] of Object.entries(p.def.inputs||{}))addOrder(market.goods[id],'demand',n*p.potential);for(const [id,n] of Object.entries(p.def.outputs||{}))addOrder(market.goods[id],'supply',n*p.potential);}
  }
  for(const market of Object.values(markets))updatePrices(market);
