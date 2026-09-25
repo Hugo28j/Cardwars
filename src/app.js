@@ -5,7 +5,7 @@ import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuil
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260925-city-labels-army-spacing-v3';
-import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260925-production-methods-v1';
+import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260926-inflation-v2';
 
 /* Bundled market core: kept inline so GitHub Pages boot does not depend on a second new JS module. */
 const GOODS_1300=[
