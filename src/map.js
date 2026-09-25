@@ -73,8 +73,8 @@ const polygonEdgeDistance=(p,poly)=>{let d=Infinity;for(let i=0;i<poly.length;i+
 const nearestPointOnSegment=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy;if(l2<1e-12)return {point:[...a],distance:Math.hypot(p[0]-a[0],p[1]-a[1]),a,b};const t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/l2)),q=[a[0]+t*dx,a[1]+t*dy];return {point:q,distance:Math.hypot(p[0]-q[0],p[1]-q[1]),a,b};};
 const nearestCoastEdge=(p,polys)=>{let best=null;for(const poly of polys||[])for(let i=0;i<poly.length;i++){const hit=nearestPointOnSegment(p,poly[i],poly[(i+1)%poly.length]);if(!best||hit.distance<best.distance)best=hit;}return best;};
 const compactMilitaryNumber=n=>Math.max(0,Math.round(Number(n)||0)).toLocaleString('en-GB');
-const unitBadge=(textValue,owned)=>{const t=String(textValue),w=Math.max(24,t.length*6.2+12),x=-w/2;return `<g class="military-count ${owned?'player-count':''}" transform="translate(0,13)"><rect x="${x}" y="-7" width="${w}" height="14" rx="6"/><text x="0" y="3" text-anchor="middle">${t}</text></g>`;};
-const soldierPiece=(count,owned)=>`<g class="military-piece soldier-piece ${owned?'player-unit':''}"><ellipse class="unit-ground-shadow" cx="0" cy="8" rx="9.5" ry="3.1"/><path class="soldier-back" d="M-4 -8L3 -9 7 3 1 8-6 4Z"/><path class="soldier-body" d="M-5 -9L1 -11 5 -1 1 7-6 3Z"/><path class="soldier-highlight" d="M-3 -8L0 -9 2 1-1 4Z"/><circle class="soldier-head" cx="-1" cy="-14" r="4"/><path class="soldier-helmet" d="M-5 -15Q-1 -21 4 -15L4 -13-5 -13Z"/><path class="soldier-leg" d="M-3 4L-5 10M2 5L4 10"/><path class="soldier-spear" d="M6 -22L6 8"/><path class="soldier-spear-tip" d="M6 -27L3 -21 9 -21Z"/><path class="soldier-shield" d="M-9 -7Q-4 -10 0 -6L-1 2Q-5 7-9 2Z"/>${unitBadge(compactMilitaryNumber(count),owned)}</g>`;
+const unitBadge=(textValue,owned,y=13)=>{const t=String(textValue),w=Math.max(24,t.length*6.2+12),x=-w/2;return `<g class="military-count ${owned?'player-count':''}" transform="translate(0,${y})"><rect x="${x}" y="-7" width="${w}" height="14" rx="6"/><text x="0" y="3" text-anchor="middle">${t}</text></g>`;};
+const soldierPiece=(count,owned,badgeY=13)=>`<g class="military-piece soldier-piece ${owned?'player-unit':''}"><ellipse class="unit-ground-shadow" cx="0" cy="8" rx="9.5" ry="3.1"/><path class="soldier-back" d="M-4 -8L3 -9 7 3 1 8-6 4Z"/><path class="soldier-body" d="M-5 -9L1 -11 5 -1 1 7-6 3Z"/><path class="soldier-highlight" d="M-3 -8L0 -9 2 1-1 4Z"/><circle class="soldier-head" cx="-1" cy="-14" r="4"/><path class="soldier-helmet" d="M-5 -15Q-1 -21 4 -15L4 -13-5 -13Z"/><path class="soldier-leg" d="M-3 4L-5 10M2 5L4 10"/><path class="soldier-spear" d="M6 -22L6 8"/><path class="soldier-spear-tip" d="M6 -27L3 -21 9 -21Z"/><path class="soldier-shield" d="M-9 -7Q-4 -10 0 -6L-1 2Q-5 7-9 2Z"/>${unitBadge(compactMilitaryNumber(count),owned,badgeY)}</g>`;
 const shipPiece=(count,owned)=>`<g class="military-piece ship-piece ${owned?'player-unit':''}"><ellipse class="unit-ground-shadow ship-shadow" cx="0" cy="8" rx="14" ry="3"/><path class="ship-hull-side" d="M-15 1L15 1 9 8-10 8Z"/><path class="ship-hull" d="M-16 -2L13 -2 16 2-14 4Z"/><path class="ship-deck" d="M-10 -4L9 -4 13 -2-14 -2Z"/><path class="ship-mast" d="M0 -20V1"/><path class="ship-sail-back" d="M1 -18L12 -5 1 -6Z"/><path class="ship-sail" d="M-1 -19L-12 -6-1 -7Z"/><path class="ship-flag" d="M0 -20L8 -17 0 -15Z"/>${unitBadge(compactMilitaryNumber(count),owned)}</g>`;
 
 const safeLabelMetrics=(cell,landPolys,fallback)=>{
@@ -280,10 +280,12 @@ export class WorldMap{
    }
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})" style="--city-border:${cityBorderColor(realm)};--city-border-opacity:${cityBorderOpacity(realm)}">${paths}${borderPaths}</g>`);
-   for(const {c,poly,component,labelPoint,metrics} of cells){
+   for(const {c,poly,component,cellBox,labelPoint,metrics} of cells){
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-'),componentClip=component>=0?componentClips[component]:realmClip;
     this.cityUnitAnchors.set(c.id,{point:labelPoint,clearance:metrics.clearance,cellClip,componentClip});
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
+    const angle=IBERIA_LABEL_ANGLES[c.id]||0;
+    labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${componentClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
    }
   }
   // Across different realms, adjacency is derived from the ACTUAL drawn political border.
@@ -314,7 +316,7 @@ export class WorldMap{
     }
    }
   }
-  this.cityTerritoryLabels=[];
+  this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
  }
  coastMarkerForCity(c){
   if(this.coastMarkerCache.has(c.id))return this.coastMarkerCache.get(c.id);
@@ -375,6 +377,20 @@ export class WorldMap{
    const show=eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
+  const showMilitary=!!game&&unit<.16;
+  for(const t of this.cityTerritoryLabels||[]){
+   const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
+   t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
+   t.style.display=showCityAreas&&fogVisible?'':'none';
+   if(showCityAreas&&fogVisible){
+    t.style.fontSize=(unit*ideal)+'px';t.style.strokeWidth=(unit*1.55)+'px';t.style.letterSpacing=(unit*.12)+'px';
+    const measured=Math.max(1,t.getComputedTextLength()/unit),maxWidth=safePx*1.82,maxHeight=safePx*1.55,scale=Math.min(1,maxWidth/measured,maxHeight/(ideal*1.05)),px=ideal*scale;
+    t.style.fontSize=(unit*px)+'px';
+    const p=screen(+t.getAttribute('x'),+t.getAttribute('y')),w=t.getComputedTextLength()/unit,box={x:p.x-w/2-3,y:p.y-px*.58-2,w:w+6,h:px*1.16+4};
+    const fits=px>=4.8,inView=box.x+box.w>0&&box.x<width&&box.y+box.h>0&&box.y<height;
+    t.style.display=fits&&inView?'':'none';
+   }
+  }
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
   this.svg.querySelector('#cities').innerHTML=CITIES.map(c=>{
    const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=this.cityTerritoryRealms?.has(cityRealm(c));
@@ -382,9 +398,10 @@ export class WorldMap{
    if(game?.fogOfWar&&showCityAreas&&!visibleCities.has(c.id))return '';
    const size=selected||unit<.3?4:2;
    if(territoryCity)return '';
-   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/></g>`;
+   const army=Math.max(0,Number(game?.militaryByCity?.[c.id]?.army??c.army)||0),labelY=showMilitary&&army>0?-34:4;
+   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/><text x="10" y="${labelY}" class="city-label owned">${esc(displayCityName(c))}</text></g>`;
   }).join('');
-  const militaryLayer=this.svg.querySelector('#military-markers'),showMilitary=!!game&&unit<.16;
+  const militaryLayer=this.svg.querySelector('#military-markers');
   if(militaryLayer){
    if(!showMilitary)militaryLayer.innerHTML='';
    else{
@@ -393,7 +410,7 @@ export class WorldMap{
      if(!visibleCities.has(c.id))continue;
      const owned=ownedCities.has(c.id),override=game?.militaryByCity?.[c.id],army=Math.max(0,Number(override?.army??c.army)||0),navy=Math.max(0,Number(override?.navy??c.navy)||0);
       const unitAnchor=this.cityUnitAnchors?.get(c.id),land=unitAnchor?.point||this.cityCenters?.get(c.id)||cityTerritoryPoint(cityRealm(c),c),sq=screen(...land);
-      if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55){const armyMarkup=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${land}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned)}</g>`;pieces.push(unitAnchor?.cellClip&&unitAnchor?.componentClip?`<g clip-path="url(#${unitAnchor.componentClip})"><g clip-path="url(#${unitAnchor.cellClip})">${armyMarkup}</g></g>`:armyMarkup);}
+      if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55){const territoryCity=this.cityTerritoryRealms?.has(cityRealm(c)),badgeY=showCityAreas&&territoryCity?34:13,armyMarkup=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${land}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned,badgeY)}</g>`;pieces.push(unitAnchor?.cellClip&&unitAnchor?.componentClip?`<g clip-path="url(#${unitAnchor.componentClip})"><g clip-path="url(#${unitAnchor.cellClip})">${armyMarkup}</g></g>`:armyMarkup);}
      if(navy>0){const coast=this.coastMarkerForCity(c);if(coast){const cq=screen(...coast);if(cq.x>-55&&cq.y>-55&&cq.x<width+55&&cq.y<height+55)pieces.push(`<g class="navy-map-marker" data-unit-city="${c.id}" transform="translate(${coast}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(navy)} ships</title>${shipPiece(navy,owned)}</g>`);}}
     }
     militaryLayer.innerHTML=pieces.join('');
