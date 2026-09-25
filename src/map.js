@@ -280,12 +280,10 @@ export class WorldMap{
    }
    for(const [key,d] of CITY_BORDER_MANUAL)if(key.startsWith(realm+'|'))borderPaths+=`<path class="city-territory-border city-territory-border-manual" d="${d}"/>`;
    territoryLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${realmClip})" style="--city-border:${cityBorderColor(realm)};--city-border-opacity:${cityBorderOpacity(realm)}">${paths}${borderPaths}</g>`);
-   for(const {c,poly,component,cellBox,labelPoint,metrics} of cells){
+   for(const {c,poly,component,labelPoint,metrics} of cells){
     const cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-'),componentClip=component>=0?componentClips[component]:realmClip;
     this.cityUnitAnchors.set(c.id,{point:labelPoint,clearance:metrics.clearance,cellClip,componentClip});
     defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${polygonPath(poly)}"/></clipPath>`);
-    const angle=IBERIA_LABEL_ANGLES[c.id]||0;
-    labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${componentClip})"><g clip-path="url(#${cellClip})"><text x="${labelPoint[0]}" y="${labelPoint[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${labelPoint[0]} ${labelPoint[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${cellBox.w}" data-cell-h="${cellBox.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g></g>`);
    }
   }
   // Across different realms, adjacency is derived from the ACTUAL drawn political border.
@@ -316,7 +314,7 @@ export class WorldMap{
     }
    }
   }
-  this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
+  this.cityTerritoryLabels=[];
  }
  coastMarkerForCity(c){
   if(this.coastMarkerCache.has(c.id))return this.coastMarkerCache.get(c.id);
