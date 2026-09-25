@@ -123,7 +123,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=3.6,BUILDING_MAINTENANCE_INPUT_SHARE=.35;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=3.6,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
 
 function blankGood(g,previous){
  const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0),consumer=Number(previous?.consumerPrice);
@@ -185,6 +185,20 @@ function updatePrices(market){
  market.basePriceIndex=round(basket.reduce((n,[id,w])=>{const g=GOOD_1300[id],p=Number(market.goods[id]?.price)||g.basePrice;return n+(p/g.basePrice)*w;},0),4);
  market.priceIndex=market.basePriceIndex;
 }
+function integrateRealmPrices1300(markets){
+ const marketList=Object.values(markets||{});if(marketList.length<2)return;
+ for(const g of GOODS_1300){
+  const entries=marketList.map(m=>{const row=m.goods[g.id],s=Math.max(0,Number(row.supply)||0)+Math.min(Math.max(0,Number(row.stock)||0),Math.max(0,Number(row.demand)||0)*.5),d=Math.max(0,Number(row.demand)||0),price=Math.max(.01,Number(row.price)||g.basePrice);return {m,row,s,d,price,surplus:Math.max(0,s-d)};});
+  const totalSupply=entries.reduce((n,x)=>n+x.s,0),totalDemand=entries.reduce((n,x)=>n+x.d,0),totalWeight=entries.reduce((n,x)=>n+Math.max(1,x.s+x.d),0),weightedLocal=entries.reduce((n,x)=>n+x.price*Math.max(1,x.s+x.d),0)/Math.max(1,totalWeight),imbalance=(totalDemand-totalSupply)/Math.max(totalSupply,totalDemand,1),realmModifier=clamp(imbalance*.65,-.62,.62),realmTarget=g.basePrice*(1+realmModifier),surplusWeight=entries.reduce((n,x)=>n+x.surplus,0),surplusPrice=surplusWeight>0?entries.reduce((n,x)=>n+x.price*x.surplus,0)/surplusWeight:weightedLocal,oversupplied=totalSupply>totalDemand;
+  const realmReference=clamp((weightedLocal*.45+realmTarget*.55)*(oversupplied?.72:1)+(oversupplied?surplusPrice*.28:0),g.basePrice*.28,g.basePrice*1.75);
+  for(const x of entries){
+   const access=clamp(Number(x.m.marketAccess)||1,.25,1),baseIntegration=(g.category==='food'||g.category==='service')?REALM_PRICE_FOOD_SERVICE_INTEGRATION:REALM_PRICE_OTHER_INTEGRATION,integration=clamp(baseIntegration*(.55+.45*access),.18,.72);
+   x.row.realmPrice=round(realmReference,4);x.row.realmSupply=round(totalSupply,3);x.row.realmDemand=round(totalDemand,3);x.row.price=round(x.price+(realmReference-x.price)*integration,4);
+  }
+ }
+ const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];
+ for(const market of marketList){market.basePriceIndex=round(basket.reduce((n,[id,w])=>{const g=GOOD_1300[id],p=Number(market.goods[id]?.price)||g.basePrice;return n+(p/g.basePrice)*w;},0),4);market.priceIndex=market.basePriceIndex;}
+}
 function settleRealmMarketFlows1300(markets,tradeStockpile={}){
  const marketList=Object.values(markets||{}),remainingStockpile=Object.fromEntries(GOODS_1300.map(g=>[g.id,Math.max(0,Number(tradeStockpile?.[g.id])||0)])),stockpileUsed={};
  for(const g of GOODS_1300){
@@ -193,6 +207,8 @@ function settleRealmMarketFlows1300(markets,tradeStockpile={}){
   for(const x of entries)x.domesticBought=totalShortage>0?Math.min(x.shortage,internalPool*(x.shortage/totalShortage)):0;
   const internalUsed=entries.reduce((n,x)=>n+x.domesticBought,0);
   for(const x of entries)x.domesticSold=totalSurplus>0?Math.min(x.surplus,internalUsed*(x.surplus/totalSurplus)):0;
+  const exporterVolume=entries.reduce((n,x)=>n+x.domesticSold,0),exporterPrice=exporterVolume>0?entries.reduce((n,x)=>n+x.domesticSold*(Number(x.row.price)||g.basePrice),0)/exporterVolume:entries.reduce((n,x)=>n+(Number(x.row.realmPrice)||Number(x.row.price)||g.basePrice),0)/Math.max(1,entries.length);
+  for(const x of entries){const access=clamp(Number(x.m.marketAccess)||1,.25,1),transport=g.category==='service'?.01:.02+(1-access)*.06;x.row.domesticUnitPrice=round(exporterPrice*(1+transport),4);}
   const afterInternalTotal=entries.reduce((n,x)=>n+Math.max(0,x.shortage-x.domesticBought),0),stockPool=Math.min(remainingStockpile[g.id]||0,afterInternalTotal);
   for(const x of entries)x.stockpileBought=afterInternalTotal>0?Math.min(Math.max(0,x.shortage-x.domesticBought),stockPool*(Math.max(0,x.shortage-x.domesticBought)/afterInternalTotal)):0;
   stockpileUsed[g.id]=round(entries.reduce((n,x)=>n+x.stockpileBought,0),4);remainingStockpile[g.id]=round(Math.max(0,(remainingStockpile[g.id]||0)-stockpileUsed[g.id]),4);
@@ -206,7 +222,7 @@ function settleRealmMarketFlows1300(markets,tradeStockpile={}){
 function applyTariffsToMarket1300(market,tariffs={}){
  const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];let revenue=0;
  for(const g of GOODS_1300){
-  const row=market.goods[g.id],rate=g.category==='service'?0:clamp(Number(tariffs?.[g.id])||0,0,50),fulfilled=Math.max(0,Number(row.fulfilled)||0),foreign=Math.max(0,Number(row.bought)||0),domestic=Math.max(0,Number(row.domesticBought)||0),stockpile=Math.max(0,Number(row.stockpileBought)||0),local=Math.max(0,fulfilled-foreign-domestic-stockpile),share=fulfilled>0?clamp(foreign/fulfilled,0,1):0,localPrice=Number(row.price)||g.basePrice,domesticPrice=localPrice*1.03,stockpilePrice=localPrice*1.05,foreignPrice=localPrice*1.12*(1+rate/100),blended=fulfilled>0?(local*localPrice+domestic*domesticPrice+stockpile*stockpilePrice+foreign*foreignPrice)/fulfilled:localPrice;
+  const row=market.goods[g.id],rate=g.category==='service'?0:clamp(Number(tariffs?.[g.id])||0,0,50),fulfilled=Math.max(0,Number(row.fulfilled)||0),foreign=Math.max(0,Number(row.bought)||0),domestic=Math.max(0,Number(row.domesticBought)||0),stockpile=Math.max(0,Number(row.stockpileBought)||0),local=Math.max(0,fulfilled-foreign-domestic-stockpile),share=fulfilled>0?clamp(foreign/fulfilled,0,1):0,localPrice=Number(row.price)||g.basePrice,domesticPrice=Number(row.domesticUnitPrice)||localPrice*1.03,stockpilePrice=localPrice*1.05,foreignPrice=localPrice*1.12*(1+rate/100),blended=fulfilled>0?(local*localPrice+domestic*domesticPrice+stockpile*stockpilePrice+foreign*foreignPrice)/fulfilled:localPrice;
   row.tariffRate=rate;row.importShare=round(share,4);row.consumerPrice=round(blended,4);row.inputUnitPrice=round(blended,4);row.tariffRevenue=round(foreign*localPrice*FLORINS_PER_MARKET_VALUE*(rate/100),4);revenue+=row.tariffRevenue;
  }
  market.priceIndex=round(basket.reduce((n,[id,w])=>n+normalizedPrice(market,id)*w,0),4);
@@ -240,6 +256,7 @@ function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={}
   }
  }
  for(const market of Object.values(markets))updatePrices(market);
+ integrateRealmPrices1300(markets);
  const tradeFlow=settleRealmMarketFlows1300(markets,tradeStockpile);
  for(const market of Object.values(markets))weeklyTariffRevenue+=applyTariffsToMarket1300(market,tariffs);
  for(const city of cities){
