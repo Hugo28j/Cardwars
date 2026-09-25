@@ -210,7 +210,7 @@ try{
  const legacyRaw=localStorage.getItem(LEGACY_KEY);
  if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
 }catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
-let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceBuildingDetail=null,gameProvinceBuildingCatalog=false,gameCountryPanel=false,gameCountryTab='politics',gameDiplomacyCountry=null,gameRankingCategory='overall',gameClockTimer=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',selectedTechnologyTreeNode='crop-rotation',toastTimer;
+let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceBuildingDetail=null,gameProvinceBuildingCatalog=false,gameCountryPanel=false,gameCountryTab='politics',gameDiplomacyCountry=null,gameRankingCategory='overall',gameClockTimer=null,gameStartCountdownPending=false,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',selectedTechnologyTreeNode='crop-rotation',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const STARTER_REGIONS_1300=[
@@ -304,7 +304,7 @@ function ensureEconomyProfile(p){
 }
 ensureEconomyProfile(profile);
 const GAME_WAGE_MIN=.02,GAME_WAGE_MAX=.50,GAME_WAGE_STEP=.02,GAME_TAX_MIN=0,GAME_TAX_MAX=30,GAME_TAX_COLLECTION_FACTOR=.35;
-const GAME_WEEK_REAL_MS=35000,GAME_AUTOSAVE_DAYS=182;
+const GAME_DAY_REAL_MS=2000,GAME_AUTOSAVE_DAYS=182;
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
@@ -973,9 +973,12 @@ function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}
  if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...d.tradeStockpile}}),techBonuses=technologyBonuses1300(game.technology);e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.weeklyTax=roundStat1300(result.weeklyTaxEstimate*(1+techBonuses.taxIncomePct/100));e.weeklyTariffRevenue=roundStat1300(result.weeklyTariffRevenue*(1+techBonuses.tradeIncomePct/100));if(!forceMarket)e.lastMarketTickDay=Number(game.day)||0;if(collectRevenue&&isCampaignMonday1300(game)){for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(result.tradeStockpileRemaining?.[g.id])||0)*100)/100);accrueTradeSurplus1300(game,result.markets);}if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue){e.weekSectorRevenue=Math.round((Number(e.weekSectorRevenue||0)+e.weeklyTax)*100)/100;e.weekTariffRevenue=Math.round((Number(e.weekTariffRevenue||0)+e.weeklyTariffRevenue)*100)/100;e.monthRevenue=Math.round((e.weekSectorRevenue+e.weekTariffRevenue)*100)/100;}}
  e.monthExpenses=weeklyStateExpenses1300(game).total;invalidateWeeklyBudgetProjection1300(game);
 }
+function refreshGameDateUI1300(){
+ const game=profile.activeGame;if(!game)return;const d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status');
+ if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(status)status.textContent=d.weekday;
+}
 function refreshGameClockUI1300(){
- const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);const d=gameDate1300(game.day),main=$('#game-date-main'),year=$('#game-date-year'),status=$('#game-clock-status');
- if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(status)status.textContent=d.weekday;refreshCampaignResourceBar1300(game);
+ const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);refreshGameDateUI1300();refreshCampaignResourceBar1300(game);
 }
 function settleGameWeek1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
@@ -988,9 +991,11 @@ function maybeAutosaveCampaign1300(game){
  if(day-last<GAME_AUTOSAVE_DAYS)return false;
  game.lastAutosaveDay=day;save();return true;
 }
-function advanceGameWeek1300(){
+function advanceGameDay1300(){
  const game=profile.activeGame;if(!game)return;
- game.day=(Number(game.day)||0)+7;
+ game.day=(Number(game.day)||0)+1;
+ refreshGameDateUI1300();
+ if(!isCampaignMonday1300(game))return;
  processBuildingConstruction1300(game);
  simulateGameEconomyDay1300(game);
  settleGameWeek1300(game);
@@ -1001,16 +1006,32 @@ function advanceGameWeek1300(){
  if(gameCountryPanel)renderGameCountryPanel1300();
  if(gameDiplomacyCountry)renderGameDiplomacyPanel1300();
 }
-function setupGameClock1300(){
- if(gameClockTimer)clearInterval(gameClockTimer);
- refreshGameClockUI1300();
+function setGameStartCountdown1300(value){
+ const el=$('#game-start-countdown');if(!el)return;
+ if(value<=0){el.classList.remove('visible');el.hidden=true;el.textContent='';return;}
+ el.textContent=`GAME STARTS IN ${value}`;el.hidden=false;requestAnimationFrame(()=>el.classList.add('visible'));
+}
+function beginGameDayClock1300(){
  const game=profile.activeGame;if(!game)return;
- game.lastTickAt=Date.now();
+ game.clockStartedAt=Date.now();game.lastTickAt=Date.now();
  gameClockTimer=setInterval(()=>{
   const game=profile.activeGame;if(!game)return;
   game.lastTickAt=Date.now();
-  advanceGameWeek1300();
- },GAME_WEEK_REAL_MS);
+  advanceGameDay1300();
+ },GAME_DAY_REAL_MS);
+}
+function setupGameClock1300(){
+ if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}
+ refreshGameClockUI1300();
+ const game=profile.activeGame;if(!game)return;
+ if(!gameStartCountdownPending){beginGameDayClock1300();return;}
+ gameStartCountdownPending=false;
+ let count=3;setGameStartCountdown1300(count);
+ gameClockTimer=setInterval(()=>{
+  count--;
+  if(count>0){setGameStartCountdown1300(count);return;}
+  clearInterval(gameClockTimer);gameClockTimer=null;setGameStartCountdown1300(0);beginGameDayClock1300();
+ },1000);
 }
 function ensureGameProfile(p){
  p.collection1300=p.collection1300&&typeof p.collection1300==='object'&&!Array.isArray(p.collection1300)?p.collection1300:{};
@@ -1115,7 +1136,7 @@ function startGame1300(){
  for(const country of new Set(CITIES_1300.map(c=>c.country)))profile.activeGame.diplomacy.relations[country]=10;
  for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-100;
  ensureGameDynamicStats1300(profile.activeGame);seedGameEmployment1300(profile.activeGame);simulateGameEconomyDay1300(profile.activeGame,{forceMarket:true,collectRevenue:false});profile.activeGame.economy.lastMarketTickDay=0;updateCampaignRankingSnapshot1300(profile.activeGame);
- selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';save();navigate('game');
+ selected1300=profile.activeGame.hand[0];mapState.selected=selected1300;gameScreen='map';gameStartCountdownPending=true;save();navigate('game');
 }
 
 const purchasedBuildingLevel=(cityId,buildingId)=>Math.max(0,Number(profile.buildings?.[cityId]?.[buildingId])||0);
@@ -2085,6 +2106,7 @@ function gamePage(){
  if(gameScreen==='development')return developmentPage();
  const gameDate=gameDate1300(profile.activeGame.day);
  return `<div class="game-map-shell"><main class="map-surface" id="game-map-host"></main>
+  <div id="game-start-countdown" class="game-start-countdown" hidden aria-live="polite"></div>
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div>
   <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
   ${campaignResourceBarHTML1300(profile.activeGame)}<button class="game-quit-button" data-action="quit-game">Quit</button>
