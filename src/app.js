@@ -63,7 +63,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.0025;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.25;
 
 function blankGood(g,previous){
  const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0),consumer=Number(previous?.consumerPrice);
@@ -109,7 +109,7 @@ function settleRealmMarketFlows1300(markets,tradeStockpile={}){
   stockpileUsed[g.id]=round(entries.reduce((n,x)=>n+x.stockpileBought,0),4);remainingStockpile[g.id]=round(Math.max(0,(remainingStockpile[g.id]||0)-stockpileUsed[g.id]),4);
   for(const x of entries){
    const remainingNeed=Math.max(0,x.shortage-x.domesticBought-x.stockpileBought),access=clamp((Number(x.m.marketAccess)||1)+(Number(x.row.priorityImportBoost)||0),.2,1),bought=remainingNeed*access,remainingSurplus=Math.max(0,x.surplus-x.domesticSold),reserve=remainingSurplus*.18,exportable=Math.max(0,remainingSurplus-reserve),exportShare=clamp(.45+access*.45,.60,.90),sold=exportable*exportShare,carried=Math.max(0,x.oldStock-x.stockUsed+exportable-sold),decay=g.category==='food'?.90:g.category==='service'?0:.97,stock=carried*decay,fulfilled=x.productionUsed+x.stockUsed+x.domesticBought+x.stockpileBought+bought;
-   x.row.need=round(x.need,3);x.row.domesticBought=round(x.domesticBought,3);x.row.domesticSold=round(x.domesticSold,3);x.row.stockpileBought=round(x.stockpileBought,3);x.row.bought=round(bought,3);x.row.sold=round(sold,3);x.row.reserve=round(reserve,3);x.row.stock=round(stock,3);x.row.fulfilled=round(fulfilled,3);x.row.tradeProfit=round((sold*x.row.price-bought*x.row.price*1.12)*FLORINS_PER_MARKET_VALUE,4);
+   x.row.need=round(x.need,3);x.row.localSold=round(x.productionUsed,3);x.row.domesticBought=round(x.domesticBought,3);x.row.domesticSold=round(x.domesticSold,3);x.row.stockpileBought=round(x.stockpileBought,3);x.row.bought=round(bought,3);x.row.sold=round(sold,3);x.row.totalSold=round(x.productionUsed+x.domesticSold+sold,3);x.row.reserve=round(reserve,3);x.row.stock=round(stock,3);x.row.fulfilled=round(fulfilled,3);x.row.tradeProfit=round((sold*x.row.price-bought*x.row.price*1.12)*FLORINS_PER_MARKET_VALUE,4);
   }
  }
  return {remainingStockpile,stockpileUsed};
@@ -158,11 +158,11 @@ function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={}
   for(const sector of city.sectors||[]){
    if((Number(sector.level)||0)<=0)continue;
    const p=sectorPotential(sector,city),inputIds=Object.keys(p.def.inputs||{}),availability=inputIds.length?Math.min(...inputIds.map(id=>clamp((Number(market.goods[id].fulfilled)||0)/Math.max(market.goods[id].demand,1e-6),.12,1))):1,priority=sector.priority||'employment',inputPriceIndex=inputIds.length?inputIds.reduce((n,id)=>n+(Number(market.goods[id].inputUnitPrice)||GOOD_1300[id].basePrice)/GOOD_1300[id].basePrice,0)/inputIds.length:1,cheapness=clamp(1/Math.max(.65,inputPriceIndex),.55,1.25),profitScale=clamp(.25+p.employmentRatio*.40+cheapness*.25,.30,.95),priorityThroughput=priority==='output'?1.16:priority==='profit'?profitScale:1,throughput=clamp(p.employmentRatio*availability*infra.access*priorityThroughput,0,priority==='output'?1.28:1.12),scale=p.potential*throughput/Math.max(.01,p.employmentRatio);
-   let revenueValue=0,inputValue=0;const outputs={},inputs={};
-   for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale;outputs[id]=round(q,3);revenueValue+=q*market.goods[id].price;}
+   let revenueValue=0,inputValue=0;const outputs={},soldOutputs={},inputs={};
+   for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale,row=market.goods[id],marketSupply=Math.max(0,Number(row?.supply)||0),marketSold=Math.max(0,Number(row?.totalSold)||0),soldShare=marketSupply>0?clamp(marketSold/marketSupply,0,1):0,soldQ=q*soldShare;outputs[id]=round(q,3);soldOutputs[id]=round(soldQ,3);revenueValue+=soldQ*(Number(row?.price)||GOOD_1300[id].basePrice);}
    for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale*(p.inputMultiplier||1);inputs[id]=round(q,3);inputValue+=q*(Number(market.goods[id].inputUnitPrice)||Number(market.goods[id].consumerPrice)||market.goods[id].price);}
-   const weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,weeklyWageCost=(p.workers/1000)*Math.max(.01,Number(sector.wage)||.01),weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
-   const weekly=x=>round(x,4);rows[sector.id]={id:sector.id,mode:priority,workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),inputPriceIndex:round(inputPriceIndex,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
+   const weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,weeklyWageCost=p.workers*Math.max(.01,Number(sector.wage)||.01),weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
+   const weekly=x=>round(x,4);rows[sector.id]={id:sector.id,mode:priority,workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),inputPriceIndex:round(inputPriceIndex,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,soldOutputs,gross:weekly(weeklyRevenue),inputCost:weekly(weeklyInputCost),wageBill:weekly(weeklyWageCost),profit:weekly(weeklyProfit),tax:weekly(weeklySectorTax)};
   }
   pops[city.id]=updatePops(city,market,previousPops?.[city.id],Object.values(rows));
  }
@@ -1279,7 +1279,7 @@ function gameBuildingDetailHTML1300(cityId,buildingId){
    <div class="building-detail-progress"><div><span>Throughput</span><strong>${throughput}%</strong></div><i><b style="width:${Math.max(0,Math.min(100,throughput))}%"></b></i></div>
    <div class="building-detail-progress"><div><span>Employment</span><strong>${employment}%</strong></div><i><b style="width:${Math.max(0,Math.min(100,employment))}%"></b></i></div>
   </div>
-  <div class="building-detail-section building-detail-wage-section"><div class="building-detail-wage"><div><span>Minimum wage</span><small>${override?'Custom wage':'Inherited wage'}</small></div>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div></div>
+  <div class="building-detail-section building-detail-wage-section"><div class="building-detail-wage"><div><span>Minimum wage</span><small>${override?'Custom wage':'Inherited wage'} · per worker / week</small></div>${wageStepper1300('building',c.id,row.id,effectiveWage,override)}</div></div>
   <div class="building-detail-section company-control-section">
    <div class="building-detail-section-title"><span>COMPANY CONTROL</span><small>Independent for this company</small></div>
    <label class="company-control-slider"><div><span>Employment target</span><strong data-company-target-value="${c.id}:${row.id}">${policy.employmentTarget}%</strong></div><input type="range" min="0" max="100" step="5" value="${policy.employmentTarget}" data-company-target data-city="${c.id}" data-id="${row.id}" aria-label="Employment target for ${esc(row.name)}"></label>
@@ -1289,7 +1289,7 @@ function gameBuildingDetailHTML1300(cityId,buildingId){
   <div class="building-detail-section"><div class="building-detail-section-title"><span>FINANCES</span><small>Per week</small></div>
    <div class="building-workers-card"><span>WORKERS</span><strong>${compactBuildingWorkers1300(m.workers)} <small>/ ${compactBuildingWorkers1300(m.capacity)}</small></strong></div>
    <div class="building-finance-list">
-    <div><span>Revenue</span><strong class="${buildingMoneyTone1300(m.gross)}">+ƒ${money1300(Math.abs(m.gross||0))}</strong></div>
+    <div><span>Revenue</span><strong class="${buildingMoneyTone1300(m.gross)}">+ƒ${money1300(Math.abs(m.gross||0))}</strong><small>Sold output only</small></div>
     <div><span>Input costs</span><strong class="${buildingMoneyTone1300(m.inputCost,{cost:true})}">-ƒ${money1300(Math.abs(m.inputCost||0))}</strong></div>
     <div><span>Wages</span><strong class="${buildingMoneyTone1300(m.wageBill,{cost:true})}">-ƒ${money1300(Math.abs(m.wageBill||0))}</strong></div>
     <div class="profit"><span>Profit</span><strong class="${buildingMoneyTone1300(m.profit)}">${m.profit>=0?'+':'-'}ƒ${money1300(Math.abs(m.profit||0))}</strong><small>Tax paid: -ƒ${money1300(Math.abs(m.tax||0))}</small></div>
