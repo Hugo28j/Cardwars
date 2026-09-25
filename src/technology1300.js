@@ -68,11 +68,11 @@ export function technologyAvailable1300(state,technology){
  return tech.tier===4?tech.requires.some(id=>s.unlocked.includes(id)):tech.requires.every(id=>s.unlocked.includes(id));
 }
 
-export function technologyResearchCost1300(state,technology,{diffusionDiscount=0,tradeDiscount=0}={}){
+export function technologyResearchCost1300(state,technology,{diffusionDiscount=0,tradeDiscount=0,inflationMultiplier=1}={}){
  const s=normaliseTechnologyState1300(state),tech=typeof technology==='string'?TECHNOLOGY_1300[technology]:technology;if(!tech)return 0;
  const branchCount=branchUnlockedCount1300(s,tech.branch),hasOtherRoute=tech.tier===3&&TECHNOLOGIES_1300.some(x=>x.branch===tech.branch&&x.tier===3&&x.id!==tech.id&&s.unlocked.includes(x.id));
  let multiplier=1;if(branchCount>=3)multiplier-=.15;if(!branchCount&&s.unlocked.length)multiplier+=.10;if(hasOtherRoute)multiplier+=.30;multiplier-=Math.min(.15,Math.max(0,diffusionDiscount));multiplier-=Math.min(.10,Math.max(0,tradeDiscount));
- return Math.max(25,Math.round(tech.baseCost*multiplier));
+ return Math.max(25,Math.round(tech.baseCost*multiplier*Math.max(1,Number(inflationMultiplier)||1)));
 }
 
 export function technologyBonuses1300(state){
