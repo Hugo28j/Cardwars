@@ -398,8 +398,9 @@ export class WorldMap{
    if(game?.fogOfWar&&showCityAreas&&!visibleCities.has(c.id))return '';
    const size=selected||unit<.3?4:2;
    if(territoryCity)return '';
-   const army=Math.max(0,Number(game?.militaryByCity?.[c.id]?.army??c.army)||0),labelY=showMilitary&&army>0?-34:4;
-   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/><text x="10" y="${labelY}" class="city-label owned">${esc(displayCityName(c))}</text></g>`;
+   const army=Math.max(0,Number(game?.militaryByCity?.[c.id]?.army??c.army)||0),hasArmyNumber=showMilitary&&army>0,labelY=hasArmyNumber?-34:4,labelBox={x:q.x+8,y:q.y+labelY-13,w:displayCityName(c).length*7+8,h:19},forceLabel=c.id==='1300-quimper'&&unit<.34,show=selected||forceLabel||(unit<.30&&!occupied.some(b=>overlaps(labelBox,b)));
+   if(show)occupied.push(labelBox);
+   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${show?`<text x="10" y="${labelY}" class="city-label owned">${esc(displayCityName(c))}</text>`:''}</g>`;
   }).join('');
   const militaryLayer=this.svg.querySelector('#military-markers');
   if(militaryLayer){
