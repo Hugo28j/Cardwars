@@ -71,15 +71,15 @@ function ambientSupply(city,market){
  addOrder(market.goods.grain,'supply',k*(.55+food*.65)*(1+(Number(city.grainBonusPct)||0)/100));addOrder(market.goods.meat,'supply',k*(.07+food*.10));addOrder(market.goods.wool,'supply',k*(.09+food*.10));addOrder(market.goods.wood,'supply',k*(.14+food*.14));addOrder(market.goods.stone,'supply',k*(.04+econ*.04));addOrder(market.goods.iron,'supply',k*(.012+econ*.018));addOrder(market.goods.salt,'supply',k*.025);addOrder(market.goods.services,'supply',k*(.12+econ*.18));if(city.coastal)addOrder(market.goods.fish,'supply',k*.18);
 }
 function popOrders(city,market,popState){
- const k=Math.max(.1,Number(city.population||0)/1000),groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],k*POP_FOOD_DEMAND_PER_1000,{grain:2.30,fish:city.coastal?1.20:.60,meat:.90},1.35);
+ const k=Math.max(.1,Number(city.population||0)/1000),demandGrowth=clamp(Number(city.demandGrowthMultiplier)||1,1,3),needK=k*demandGrowth,groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],needK*POP_FOOD_DEMAND_PER_1000,{grain:2.30,fish:city.coastal?1.20:.60,meat:.90},1.35);
  for(const [id,n] of Object.entries(food))addOrder(market.goods[id],'demand',n*priceDemandMultiplier1300(market,id,1.05,.65,2.6));
- addOrder(market.goods.cloth,'demand',k*.25*wealthFactor*priceDemandMultiplier1300(market,'cloth',.95,.60,2.7));
- addOrder(market.goods.wood,'demand',k*.10*priceDemandMultiplier1300(market,'wood',.65,.70,2.0));
- addOrder(market.goods.salt,'demand',k*.12*priceDemandMultiplier1300(market,'salt',.65,.70,2.0));
- addOrder(market.goods.ale,'demand',k*.18*wealthFactor*priceDemandMultiplier1300(market,'ale',1.0,.55,2.8));
- addOrder(market.goods.leather,'demand',k*.08*wealthFactor*priceDemandMultiplier1300(market,'leather',.9,.60,2.5));
- addOrder(market.goods.services,'demand',k*(2.20+1.00*wealthFactor)*priceDemandMultiplier1300(market,'services',.9,.60,2.7));
- if(avgWealth>15){addOrder(market.goods.manuscripts,'demand',k*.015*(avgWealth-14)*priceDemandMultiplier1300(market,'manuscripts',.9,.55,2.6));addOrder(market.goods.cloth,'demand',k*.05*priceDemandMultiplier1300(market,'cloth',1.0,.55,2.8));}
+ addOrder(market.goods.cloth,'demand',needK*.25*wealthFactor*priceDemandMultiplier1300(market,'cloth',.95,.60,2.7));
+ addOrder(market.goods.wood,'demand',needK*.10*priceDemandMultiplier1300(market,'wood',.65,.70,2.0));
+ addOrder(market.goods.salt,'demand',needK*.12*priceDemandMultiplier1300(market,'salt',.65,.70,2.0));
+ addOrder(market.goods.ale,'demand',needK*.18*wealthFactor*priceDemandMultiplier1300(market,'ale',1.0,.55,2.8));
+ addOrder(market.goods.leather,'demand',needK*.08*wealthFactor*priceDemandMultiplier1300(market,'leather',.9,.60,2.5));
+ addOrder(market.goods.services,'demand',needK*(2.20+1.00*wealthFactor)*priceDemandMultiplier1300(market,'services',.9,.60,2.7));
+ if(avgWealth>15){addOrder(market.goods.manuscripts,'demand',needK*.015*(avgWealth-14)*priceDemandMultiplier1300(market,'manuscripts',.9,.55,2.6));addOrder(market.goods.cloth,'demand',needK*.05*priceDemandMultiplier1300(market,'cloth',1.0,.55,2.8));}
 }
 function buildingMaintenanceOrders1300(city,market){
  for(const sector of city.sectors||[]){
