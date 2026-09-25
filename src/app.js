@@ -30,12 +30,12 @@ const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
 const COMPANY_OUTPUT_MULTIPLIER_1300=1.5;
 
 const BUILDING_PRODUCTION_1300={
- fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:38}},
+ fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:40}},
  pastures:{professions:{farmers:.72,laborers:.28},inputs:{tools:.25},outputs:{meat:9,wool:15}},
  textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:12,tools:.7},outputs:{cloth:15}},
  forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:8,arms:4}},
  market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:18}},
- barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:10}},
+ barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:11}},
  dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:6,fish:8,services:4}},
  walls:{professions:{laborers:.75,craftsmen:.25},inputs:{},outputs:{}},
  guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:14}},
@@ -56,19 +56,19 @@ const BUILDING_PRODUCTION_1300={
 
 const PRODUCTION_METHODS_1300={
  fields:[
-  {id:'hand-cultivation',name:'Hand Cultivation',inputs:{},outputs:{grain:30},description:'Uses labour and basic hand work only. No purchased Tools input.'},
-  {id:'tool-assisted-farming',name:'Tool-Assisted Farming',requiresTech:'heavy-tools',inputs:{tools:.4},outputs:{grain:38},description:'Heavy agricultural tools raise Grain output but create ongoing Tools costs.'}
+  {id:'hand-cultivation',name:'Hand Cultivation',inputs:{},outputs:{grain:32},description:'Uses labour and basic hand work only. No purchased Tools input.'},
+  {id:'tool-assisted-farming',name:'Tool-Assisted Farming',requiresTech:'heavy-tools',inputs:{tools:.4},outputs:{grain:40},description:'Heavy agricultural tools raise Grain output but create ongoing Tools costs.'}
  ],
  pastures:[
-  {id:'open-herding',name:'Open Herding',inputs:{},outputs:{meat:6.5,wool:10.5},description:'Traditional herding with no purchased industrial input.'},
+  {id:'open-herding',name:'Open Herding',inputs:{},outputs:{meat:7,wool:11},description:'Traditional herding with no purchased industrial input.'},
   {id:'managed-pastures',name:'Managed Pastures',requiresTech:'heavy-tools',inputs:{tools:.25},outputs:{meat:9,wool:15},description:'Better tools and pasture management increase Meat and Wool output.'}
  ],
  textiles:[
-  {id:'hand-looms',name:'Hand Looms',inputs:{wool:10},outputs:{cloth:12},description:'Traditional hand looms use Wool but no purchased Tools.'},
+  {id:'hand-looms',name:'Hand Looms',inputs:{wool:10},outputs:{cloth:13},description:'Traditional hand looms use Wool but no purchased Tools.'},
   {id:'tool-assisted-looms',name:'Tool-Assisted Looms',requiresTech:'specialized-workshops',inputs:{wool:12,tools:.7},outputs:{cloth:15},description:'Specialized workshop tools increase Cloth output at higher input cost.'}
  ],
  quarry:[
-  {id:'hand-quarrying',name:'Hand Quarrying',inputs:{},outputs:{stone:12},description:'Manual extraction with basic local equipment and no purchased Tools input.'},
+  {id:'hand-quarrying',name:'Hand Quarrying',inputs:{},outputs:{stone:13},description:'Manual extraction with basic local equipment and no purchased Tools input.'},
   {id:'tool-assisted-quarrying',name:'Tool-Assisted Quarrying',requiresTech:'specialized-workshops',inputs:{tools:1.1},outputs:{stone:20},description:'Specialized iron tools greatly increase Stone extraction.'}
  ],
  lumberyard:[
