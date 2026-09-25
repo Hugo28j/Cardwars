@@ -348,7 +348,7 @@ function ensureEconomyProfile(p){
  for(const [cityId,levels] of Object.entries({...p.buildings})){
   if(!Object.hasOwn(CITY_1300,cityId)||!levels||typeof levels!=='object'||Array.isArray(levels)){delete p.buildings[cityId];continue;}
   const clean={};
-  for(const [buildingId,n] of Object.entries(levels))if(validBuildings.has(buildingId)&&Number.isSafeInteger(n)&&n>0)clean[buildingId]=Math.min(ECONOMY_1300.maxBuildingLevel,n);
+  for(const [buildingId,n] of Object.entries(levels))if(validBuildings.has(buildingId)&&Number.isSafeInteger(n)&&n>0)clean[buildingId]=Math.min(Number(BUILDING_1300[buildingId]?.maxLevel)||ECONOMY_1300.maxBuildingLevel,n);
   if(Object.keys(clean).length)p.buildings[cityId]=clean;else delete p.buildings[cityId];
  }
 }
@@ -1214,18 +1214,34 @@ function startGame1300(){
 }
 
 const purchasedBuildingLevel=(cityId,buildingId)=>Math.max(0,Number(profile.buildings?.[cityId]?.[buildingId])||0);
+const buildingMaxLevel1300=b=>Math.max(1,Number(b?.maxLevel)||ECONOMY_1300.maxBuildingLevel);
+function buildingLevelEffects1300(id,level){
+ const l=Math.max(0,Math.floor(Number(level)||0));
+ if(!l)return {};
+ if(id==='barracks')return {armyRecruitmentTimePct:l>=3?-25:l>=2?-20:-10,armyUpkeepPct:l>=3?-25:l>=2?-5:0};
+ if(id==='dockyard')return {shipBuildTimePct:l>=2?-15:-10,shipBuildCostPct:l>=3?-25:0,navyUpkeepPct:l>=3?-25:l>=2?-10:0};
+ if(id==='walls')return {siegeDifficultyPct:l>=4?50:l>=3?30:l>=2?20:10,fortificationUpkeep:l>=4?.25:l>=3?.20:l>=2?.15:.10};
+ if(id==='university')return {technologyInvestmentPct:l*10};
+ if(id==='monastery')return {technologyInvestmentPct:l*6};
+ if(id==='cathedral')return {technologyInvestmentPct:l*8};
+ if(id==='hospital')return {happinessBonus:l*2,lifeExpectancyPct:l*2};
+ return {};
+}
 function cityBuildingState(c){
- const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0,income:0};
+ const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0,income:0,armyRecruitmentTimePct:0,armyUpkeepPct:0,shipBuildTimePct:0,shipBuildCostPct:0,navyUpkeepPct:0,siegeDifficultyPct:0,fortificationUpkeep:0,technologyInvestmentPct:0,happinessBonus:0,lifeExpectancyPct:0};
  const buildings=BUILDINGS_1300.map(b=>{
-  const historical=startingBuildingLevel1300(c,b.id),purchased=purchasedBuildingLevel(c.id,b.id),coastAllowed=!b.requiresCoast||isCoastalCity1300(c),level=coastAllowed?Math.min(ECONOMY_1300.maxBuildingLevel,historical+purchased):0;
+  const maxLevel=buildingMaxLevel1300(b),historical=startingBuildingLevel1300(c,b.id),purchased=purchasedBuildingLevel(c.id,b.id),coastAllowed=!b.requiresCoast||isCoastalCity1300(c),level=coastAllowed?Math.min(maxLevel,historical+purchased):0,levelEffects=buildingLevelEffects1300(b.id,level);
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
-  return {...b,historical,purchased,level,cost:level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null};
+  for(const [key,value] of Object.entries(levelEffects))bonuses[key]=(bonuses[key]||0)+value;
+  return {...b,maxLevel,historical,purchased,level,levelEffects,cost:level<maxLevel?buildingCost1300(b,level):null};
  });
  return {buildings,bonuses,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0),historicalLevels:buildings.reduce((sum,b)=>sum+b.historical,0)};
 }
 function buildingEffectText(b){
- const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',professionalArmyLimit:'Professional army limit',navy:'Navy',income:'Annual income'};
- return Object.entries(b.effects).map(([key,value])=>`${labels[key]||key} ${value>0?'+':''}${value}${key==='income'?' ƒ':key==='professionalArmyLimit'?'%':''}`).join(' · ');
+ const labels={food:'Food',economy:'Economy',technology:'Technology',stability:'Stability',professionalArmyLimit:'Professional army limit',navy:'Navy',income:'Annual income',armyRecruitmentTimePct:'Army recruitment time',armyUpkeepPct:'Army upkeep',shipBuildTimePct:'Ship building time',shipBuildCostPct:'Ship building cost',navyUpkeepPct:'Navy upkeep',siegeDifficultyPct:'Siege difficulty',fortificationUpkeep:'State upkeep / week',technologyInvestmentPct:'Technology investment effectiveness',happinessBonus:'Happiness',lifeExpectancyPct:'Life expectancy'};
+ const pctKeys=new Set(['professionalArmyLimit','armyRecruitmentTimePct','armyUpkeepPct','shipBuildTimePct','shipBuildCostPct','navyUpkeepPct','siegeDifficultyPct','technologyInvestmentPct','lifeExpectancyPct']);
+ const rows=[...Object.entries(b.effects||{}).map(([key,value])=>[key,value]),...Object.entries(b.levelEffects||{}).map(([key,value])=>[key,value])].filter(([,value])=>Number(value)!==0);
+ return rows.map(([key,value])=>`${labels[key]||key} ${Number(value)>0?'+':''}${value}${key==='income'?' ƒ':key==='fortificationUpkeep'?' ƒ':pctKeys.has(key)?'%':''}`).join(' · ');
 }
 function compactBuildingWorkers1300(value){
  const n=Math.max(0,Math.round(Number(value)||0)),compact=(x,d,suffix)=>x.toFixed(d).replace('.',',')+suffix;
@@ -1258,11 +1274,12 @@ function gameBuildingPurchaseLevel(cityId,buildingId){
  return Number(profile.activeGame?.buildings?.[cityId]?.[buildingId])||0;
 }
 function gameProvinceBuildingState(c){
- const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0};
+ const bonuses={food:0,economy:0,technology:0,stability:0,professionalArmyLimit:0,navy:0,armyRecruitmentTimePct:0,armyUpkeepPct:0,shipBuildTimePct:0,shipBuildCostPct:0,navyUpkeepPct:0,siegeDifficultyPct:0,fortificationUpkeep:0,technologyInvestmentPct:0,happinessBonus:0,lifeExpectancyPct:0};
  const buildings=BUILDINGS_1300.map(b=>{
-  const historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id),coastAllowed=!b.requiresCoast||isCoastalCity1300(c),level=coastAllowed?clamp1300(historical+purchased,0,ECONOMY_1300.maxBuildingLevel):0,availability=buildingAvailability1300(c,b),construction=buildingConstructionJob1300(profile.activeGame,c.id,b.id);
+  const maxLevel=buildingMaxLevel1300(b),historical=startingBuildingLevel1300(c,b.id),purchased=gameBuildingPurchaseLevel(c.id,b.id),coastAllowed=!b.requiresCoast||isCoastalCity1300(c),level=coastAllowed?clamp1300(historical+purchased,0,maxLevel):0,availability=buildingAvailability1300(c,b),construction=buildingConstructionJob1300(profile.activeGame,c.id,b.id),levelEffects=buildingLevelEffects1300(b.id,level);
   for(const [key,value] of Object.entries(b.effects))bonuses[key]=(bonuses[key]||0)+value*level;
-  const rawCost=level<ECONOMY_1300.maxBuildingLevel?buildingCost1300(b,level):null,discount=technologyBonuses1300(profile.activeGame?.technology).constructionCostPct,cost=rawCost===null?null:Math.max(1,Math.round(rawCost*(1+discount/100)));return {...b,historical,purchased,level,construction,available:availability.ok,availabilityReason:availability.reason,cost,constructionDays:cost!==null?buildingConstructionDays1300({...b,level,cost}):null};
+  for(const [key,value] of Object.entries(levelEffects))bonuses[key]=(bonuses[key]||0)+value;
+  const rawCost=level<maxLevel?buildingCost1300(b,level):null,discount=technologyBonuses1300(profile.activeGame?.technology).constructionCostPct,cost=rawCost===null?null:Math.max(1,Math.round(rawCost*(1+discount/100)));return {...b,maxLevel,historical,purchased,level,levelEffects,construction,available:availability.ok,availabilityReason:availability.reason,cost,constructionDays:cost!==null?buildingConstructionDays1300({...b,level,cost}):null};
  });
  return {bonuses,buildings,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0)};
 }
@@ -1285,6 +1302,7 @@ function buildingPicture1300(id){
   saltworks:'<path d="M9 43h46v10H9zM14 31h36v12M21 20h22v11"/><path d="M17 52 24 43m9 9 7-9m9 9 4-9M24 14l3-5m8 5 3-5"/>',
   quarry:'<path d="M8 50 19 29l12 8 9-20 16 33z"/><path d="m12 18 9 9m-4-15 10 10M38 33l11 7"/>',
   lumberyard:'<path d="M10 49h44M14 42h36M18 35h28"/><circle cx="19" cy="42" r="7"/><circle cx="39" cy="42" r="7"/><path d="M50 32 57 18M46 30l8-16"/>',
+  ironworks:'<path d="M10 53h44V31L43 21v10L32 21v10L20 21v10H10z"/><path d="M17 53V42h12v11M38 53V40h10v13M15 16h8l3 15h-8z"/><path d="M19 12v-5m12 12 5-7m8 8 8-6"/>',
   warehouse:'<path d="M9 52h46V23L32 10 9 23zM15 52V29h34v23"/><path d="M15 36h34M24 29v23m16-23v23"/>',
   merchantquarter:'<path d="M8 52h48M12 47V24h16v23M36 47V17h16v30"/><path d="M16 24v-8h8v8M40 17V9h8v8M17 33h6m18-7h6m-6 9h6"/>',
   customshouse:'<path d="M10 52h44M14 48V24h36v24M10 24h44L32 10z"/><path d="M22 48V31m10 17V31m10 17V31M19 18h26"/>',
