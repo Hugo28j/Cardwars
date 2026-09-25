@@ -63,8 +63,8 @@ export const BUILDINGS_1300=[
   effects:{economy:1}
  },
  {
-  id:'brewery',name:'Brewery & Alehouse',category:'Food / Urban',cost:85,maxWorkers:300,normalWage:0.11,monthlyRevenue:4.4,
-  description:'Brewers turn grain into durable drink while alehouses create a dependable urban market.',
+  id:'brewery',name:'Brewery & Tavern',category:'Food / Urban',cost:85,maxWorkers:300,normalWage:0.11,monthlyRevenue:4.4,
+  description:'Brewers turn grain into beer while taverns create a dependable urban market.',
   effects:{economy:2,stability:1}
  },
  {
