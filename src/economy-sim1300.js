@@ -23,15 +23,15 @@ export const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
 export const COMPANY_OUTPUT_MULTIPLIER_1300=1.5;
 
 export const BUILDING_PRODUCTION_1300={
- fields:{professions:{farmers:.78,laborers:.22},inputs:{},outputs:{grain:48}},
- pastures:{professions:{farmers:.72,laborers:.28},inputs:{},outputs:{meat:10.5,wool:16.5}},
+ fields:{professions:{farmers:.78,laborers:.22},inputs:{},outputs:{grain:144}},
+ pastures:{professions:{farmers:.72,laborers:.28},inputs:{},outputs:{meat:13.125,wool:20.625}},
  textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:10},outputs:{cloth:19.5}},
  forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:12,arms:6}},
- market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:27}},
+ market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:33.75}},
  barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:16.5}},
  dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:9,fish:12,services:6}},
  walls:{professions:{laborers:.75,craftsmen:.25},inputs:{},outputs:{}},
- guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:21}},
+ guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:26.25}},
  university:{professions:{scholars:.50,clergy:.25,clerks:.25},inputs:{manuscripts:2},outputs:{services:13.5,manuscripts:4.5}},
  watermill:{professions:{laborers:.48,craftsmen:.32,farmers:.20},inputs:{wood:.8,tools:.8},outputs:{grain:27}},
  brewery:{professions:{craftsmen:.55,laborers:.35,merchants:.10},inputs:{grain:11,wood:.5},outputs:{ale:21}},
@@ -42,7 +42,7 @@ export const BUILDING_PRODUCTION_1300={
  lumberyard:{professions:{laborers:.82,craftsmen:.18},inputs:{},outputs:{wood:21}},
  ironworks:{professions:{craftsmen:.42,laborers:.50,merchants:.08},inputs:{tools:2},outputs:{iron:15}},
  mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:10.5},directFlorins:15},
- monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:4.5,services:9}},
+ monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:6.75,services:13.5}},
  cathedral:{professions:{clergy:.55,clerks:.20,scholars:.15,laborers:.10},inputs:{grain:1,cloth:.5},outputs:{services:15,manuscripts:3}},
  hospital:{professions:{clergy:.30,clerks:.20,laborers:.50},inputs:{grain:2,cloth:1},outputs:{services:13.5}}
 };
