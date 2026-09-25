@@ -370,32 +370,15 @@ export class WorldMap{
    const show=eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
-  for(const t of this.cityTerritoryLabels||[]){
-   const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
-   t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
-   t.style.display=showCityAreas&&fogVisible?'':'none';
-   if(showCityAreas&&fogVisible){
-    t.style.fontSize=(unit*ideal)+'px';t.style.strokeWidth=(unit*1.55)+'px';t.style.letterSpacing=(unit*.12)+'px';
-    const measured=Math.max(1,t.getComputedTextLength()/unit),maxWidth=safePx*1.82,maxHeight=safePx*1.55,scale=Math.min(1,maxWidth/measured,maxHeight/(ideal*1.05)),px=ideal*scale;
-    t.style.fontSize=(unit*px)+'px';
-    const p=screen(+t.getAttribute('x'),+t.getAttribute('y')),w=t.getComputedTextLength()/unit,box={x:p.x-w/2-3,y:p.y-px*.58-2,w:w+6,h:px*1.16+4};
-    const fits=px>=4.8,inView=box.x+box.w>0&&box.x<width&&box.y+box.h>0&&box.y<height;
-    t.style.display=fits&&inView?'':'none';
-   }
-  }
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
-  const cities=[...CITIES].sort((a,b)=>(s.selected===b.id?100:0)+b.rarity-((s.selected===a.id?100:0)+a.rarity));
-  this.svg.querySelector('#cities').innerHTML=cities.map(c=>{
+  this.svg.querySelector('#cities').innerHTML=CITIES.map(c=>{
    const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=this.cityTerritoryRealms?.has(cityRealm(c));
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
    if(game?.fogOfWar&&showCityAreas&&!visibleCities.has(c.id))return '';
-   const box={x:q.x+10,y:q.y-10,w:displayCityName(c).length*7+6,h:21};
-   const forceLabel=c.id==='1300-quimper'&&unit<.34;const show=selected||forceLabel||(unit<.30&&!occupied.some(b=>overlaps(box,b)));
-   if(show)occupied.push(box);
    const size=selected||unit<.3?4:2;
    if(territoryCity)return '';
-   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/>${(!territoryCity&&show)?`<text x="10" y="4" class="city-label owned">${esc(displayCityName(c))}</text>`:''}</g>`;
-  }).reverse().join('');
+   return `<g class="city-marker owned" data-city="${c.id}" data-realm="${esc(cityRealm(c))}" transform="translate(${p}) scale(${unit})"><title>${esc(displayCityName(c))} · ${esc(c.country)} · researched 1300 card</title><circle r="9" fill="transparent"/>${selected?'<circle r="10" fill="none" stroke="#f3d9a2" stroke-width="1.2"/>':''}<path d="M0 -${size} ${size} 0 0 ${size} -${size} 0Z" fill="#f8d791" stroke="#283d32" stroke-width="1"/></g>`;
+  }).join('');
   const militaryLayer=this.svg.querySelector('#military-markers'),showMilitary=!!game&&unit<.16;
   if(militaryLayer){
    if(!showMilitary)militaryLayer.innerHTML='';
