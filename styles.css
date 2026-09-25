@@ -803,6 +803,15 @@
 .province-tech-investments article>div:first-child small{display:block;margin-top:4px;font-size:8px;color:#8c998f;line-height:1.4}
 .province-tech-investments .province-tech-slider{width:100%}
 
+/* Full 1300 research tree */
+.tech-command{padding:18px;border-bottom:1px solid #465249;background:radial-gradient(circle at 90% 0,#b99a5520,transparent 42%),#101a16}
+.tech-command-stat>span,.research-ledger span,.active-research span,.tech-command .research-sources>span{font-size:9px;letter-spacing:1px;color:#c8aa65}
+.tech-command-stat>strong{display:block;margin:4px 0;font-family:var(--serif);font-size:34px;color:#e7dec2}.tech-command-stat>strong small{font-size:14px;color:#849188}.tech-command-stat p{font-size:10px;line-height:1.45;color:#93a097}
+.research-ledger{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:15px 0;background:#3d4942}.research-ledger>div{padding:10px;background:#15201b}.research-ledger strong{display:block;margin-top:4px;font-family:var(--serif);font-size:19px;color:#e2d4a9}.research-ledger strong small{font-size:10px;color:#849188}
+.active-research{padding:12px;background:#1a281f;border-left:3px solid #b89b5e}.active-research>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px}.active-research strong{font-family:var(--serif);font-size:17px;color:#e8dbb5}.active-research small{margin-left:auto;font-size:9px;color:#aeb8ae}.active-research>i,.tech-progress i{display:block;height:6px;margin-top:9px;background:#2a352f}.active-research>i b,.tech-progress i b{display:block;height:100%;background:linear-gradient(90deg,#7f925e,#c4a760)}.active-research.empty{border-left-color:#56635a;background:#131d19}.active-research.empty p{margin-top:5px;font-size:10px;color:#89968d}.tech-command .research-sources{margin-top:10px;padding-top:0;border-top:0}.tech-command .research-sources p{margin-top:3px;font-size:9px;line-height:1.45;color:#8d9a91}
+.full-tech-tree{padding:12px;display:flex;flex-direction:column;gap:12px}.tech-branch{border:1px solid #48554d;background:#111b17}.tech-branch>header{display:flex;gap:11px;align-items:center;padding:12px 14px;background:#17231e;border-bottom:1px solid #465249}.tech-branch>header>.icon{width:25px;height:25px;color:#c5aa67}.tech-branch>header span{display:block;font-size:8px;letter-spacing:.9px;color:#85928a}.tech-branch>header strong{display:block;margin:2px 0;font-family:var(--serif);font-size:18px;color:#e4ddc8}.tech-branch>header small{font-size:9px;color:#88958d}.tech-branch>header small.active{color:#89c98d}
+.tech-branch-path{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px}.tech-branch-path>.tech-node:nth-child(1),.tech-branch-path>.tech-node:nth-child(2),.tech-branch-path>.tech-node:nth-child(5){grid-column:1/-1}.tech-node{min-width:0;padding:12px;border:1px solid #465249;background:#131e1a}.tech-node.available{border-color:#847347}.tech-node.researching{border-color:#c2a45f;background:#1c2a21;box-shadow:inset 0 0 0 1px #c2a45f33}.tech-node.researched{border-color:#52715a;background:#17251c}.tech-node.locked{opacity:.52}.tech-node-top{display:flex;justify-content:space-between;gap:8px}.tech-node-top span,.tech-node-top b{font-size:8px;letter-spacing:.6px;color:#89968d}.tech-node-top b{color:#bea45f}.tech-node.researched .tech-node-top b{color:#7fc38d}.tech-node>strong{display:block;margin:7px 0 6px;font-family:var(--serif);font-size:16px;color:#e3decb}.tech-node ul{margin:0;padding-left:17px;color:#9eaaa2}.tech-node li{font-size:9px;line-height:1.45;margin:2px 0}.tech-node-foot{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-top:9px;padding-top:9px;border-top:1px solid #3b4841}.tech-node-foot>small{font-size:8px;line-height:1.35;color:#89968d}.tech-node-foot button{flex:0 0 auto;border:1px solid #aa8e50;background:#a98b4c;color:#101612;padding:7px 9px;font-size:8px;font-weight:700}.tech-node-foot button:disabled{border-color:#566158;background:#29342e;color:#8a968e}.tech-progress{margin-top:8px}.tech-progress small{display:block;margin-top:4px;font-size:8px;color:#aeb8ae}
+
 .country-national-stats strong{min-width:92px}
 .country-national-stats>div{grid-template-columns:90px 110px 1fr}
 .country-policy-card h3{color:#e1cc91}
@@ -812,6 +821,7 @@
  .province-tech-slider{width:150px}
  .province-tech-investments article{grid-template-columns:1fr}
  .province-tech-investments .province-tech-slider{width:100%}
+ .research-ledger{grid-template-columns:1fr}.active-research>div{display:block}.active-research small{display:block;margin-top:4px}.tech-branch-path{grid-template-columns:1fr}.tech-branch-path>.tech-node{grid-column:1!important}
 }
 
 /* Expanded diplomacy: directional values, action reasons and memories. */
