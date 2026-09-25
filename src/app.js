@@ -4,7 +4,7 @@ import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=2026092
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260922-army-five-percent-v9';
 import {icon} from './icons.js';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20260925-weekly-performance-v1';
+import {WorldMap} from './map.js?v=20260925-deferred-map-refresh-v2';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260925-full-screen-tree-v2';
 
 /* Bundled market core: kept inline so GitHub Pages boot does not depend on a second new JS module. */
