@@ -23,25 +23,25 @@ export const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
 export const COMPANY_OUTPUT_MULTIPLIER_1300=1.5;
 
 export const BUILDING_PRODUCTION_1300={
- fields:{professions:{farmers:.78,laborers:.22},inputs:{tools:.4},outputs:{grain:45}},
- pastures:{professions:{farmers:.72,laborers:.28},inputs:{tools:.25},outputs:{meat:13.5,wool:22.5}},
- textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:12,tools:.7},outputs:{cloth:22.5}},
+ fields:{professions:{farmers:.78,laborers:.22},inputs:{},outputs:{grain:45}},
+ pastures:{professions:{farmers:.72,laborers:.28},inputs:{},outputs:{meat:9.75,wool:15.75}},
+ textiles:{professions:{craftsmen:.68,laborers:.27,merchants:.05},inputs:{wool:10},outputs:{cloth:18}},
  forge:{professions:{craftsmen:.62,laborers:.30,merchants:.08},inputs:{iron:8,wood:2},outputs:{tools:12,arms:6}},
  market:{professions:{merchants:.55,laborers:.35,clerks:.10},inputs:{cloth:.8,ale:.6},outputs:{services:27}},
  barracks:{professions:{soldiers:.78,officers:.08,laborers:.14},inputs:{grain:3,arms:1.2},outputs:{services:15}},
- dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:12,fish:15,services:7.5}},
+ dockyard:{professions:{craftsmen:.48,laborers:.42,merchants:.10},inputs:{wood:12,cloth:3,tools:2},outputs:{ships:9,fish:12,services:6}},
  walls:{professions:{laborers:.75,craftsmen:.25},inputs:{},outputs:{}},
  guildhall:{professions:{craftsmen:.50,merchants:.28,clerks:.22},inputs:{cloth:1,tools:.8},outputs:{services:21}},
  university:{professions:{scholars:.50,clergy:.25,clerks:.25},inputs:{manuscripts:2},outputs:{services:13.5,manuscripts:4.5}},
  watermill:{professions:{laborers:.48,craftsmen:.32,farmers:.20},inputs:{wood:.8,tools:.8},outputs:{grain:27}},
  brewery:{professions:{craftsmen:.55,laborers:.35,merchants:.10},inputs:{grain:11,wood:.5},outputs:{ale:21}},
  tannery:{professions:{craftsmen:.55,laborers:.40,merchants:.05},inputs:{meat:4,salt:1},outputs:{leather:12}},
- fishery:{professions:{laborers:.78,merchants:.12,craftsmen:.10},inputs:{wood:.6,salt:.5},outputs:{fish:33}},
- saltworks:{professions:{laborers:.80,merchants:.12,craftsmen:.08},inputs:{wood:.5},outputs:{salt:24}},
- quarry:{professions:{laborers:.84,craftsmen:.16},inputs:{tools:1.1},outputs:{stone:30}},
- lumberyard:{professions:{laborers:.82,craftsmen:.18},inputs:{tools:.8},outputs:{wood:31.5}},
+ fishery:{professions:{laborers:.78,merchants:.12,craftsmen:.10},inputs:{},outputs:{fish:21}},
+ saltworks:{professions:{laborers:.80,merchants:.12,craftsmen:.08},inputs:{wood:.5},outputs:{salt:22.5}},
+ quarry:{professions:{laborers:.84,craftsmen:.16},inputs:{},outputs:{stone:18}},
+ lumberyard:{professions:{laborers:.82,craftsmen:.18},inputs:{},outputs:{wood:21}},
  ironworks:{professions:{craftsmen:.42,laborers:.50,merchants:.08},inputs:{tools:2},outputs:{iron:15}},
- mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:22.5},directFlorins:15},
+ mint:{professions:{craftsmen:.40,clerks:.35,merchants:.25},inputs:{iron:2,tools:.5},outputs:{services:10.5},directFlorins:15},
  monastery:{professions:{clergy:.58,farmers:.20,scholars:.12,laborers:.10},inputs:{grain:2},outputs:{manuscripts:4.5,services:9}},
  cathedral:{professions:{clergy:.55,clerks:.20,scholars:.15,laborers:.10},inputs:{grain:1,cloth:.5},outputs:{services:15,manuscripts:3}},
  hospital:{professions:{clergy:.30,clerks:.20,laborers:.50},inputs:{grain:2,cloth:1},outputs:{services:13.5}}
@@ -54,7 +54,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.25;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05;
 
 function blankGood(g,previous){const price=Number(previous?.price);return {goodId:g.id,supply:0,demand:0,price:Number.isFinite(price)&&price>0?price:g.basePrice,targetPrice:g.basePrice,basePrice:g.basePrice};}
 function ensureMarket(previous={}){const goods={};for(const g of GOODS_1300)goods[g.id]=blankGood(g,previous?.goods?.[g.id]);return {goods,marketAccess:Number.isFinite(Number(previous?.marketAccess))?Number(previous.marketAccess):1,priceIndex:Number.isFinite(Number(previous?.priceIndex))?Number(previous.priceIndex):1};}
@@ -81,7 +81,7 @@ function updatePrices(market){
 }
 function sectorPotential(sector,city){const def=sector.production||BUILDING_PRODUCTION_1300[sector.id]||{inputs:{},outputs:{services:1}},level=Math.max(0,Number(sector.level)||0),capacity=Math.max(1,Number(sector.capacity)||1),workers=clamp(Number(sector.workers)||0,0,capacity),employmentRatio=workers/capacity,technologyFactor=.86+clamp(Number(city.technology)||50,0,100)/500,economyOfScale=1+Math.min(level*.01,.30);return {def,level,capacity,workers,employmentRatio,potential:level*employmentRatio*technologyFactor*economyOfScale};}
 function updatePops(city,market,previous,sectors){
- const wageBenchmark=Math.max(.01,Number(city.expectedWage)||.02),groups=createPopGroups(city,previous),population=groups.reduce((n,g)=>n+g.size,0)||1,totalWorkers=sectors.reduce((n,s)=>n+s.workers,0),employmentRate=clamp(totalWorkers/Math.max(1,Number(city.labourPool)||population*.34),0,1),weightedWage=sectors.reduce((n,s)=>n+s.wage*s.workers,0)/Math.max(1,totalWorkers),realWage=(weightedWage||.08)/wageBenchmark/Math.max(.45,market.priceIndex),employedTotal=Math.min(totalWorkers,Math.round(population*.34));
+ const wageBenchmark=Math.max(.01,Number(city.expectedWage)||.12),groups=createPopGroups(city,previous),population=groups.reduce((n,g)=>n+g.size,0)||1,totalWorkers=sectors.reduce((n,s)=>n+s.workers,0),employmentRate=clamp(totalWorkers/Math.max(1,Number(city.labourPool)||population*.34),0,1),weightedWage=sectors.reduce((n,s)=>n+s.wage*s.workers,0)/Math.max(1,totalWorkers),realWage=(weightedWage||.12)/wageBenchmark/Math.max(.45,market.priceIndex),employedTotal=Math.min(totalWorkers,Math.round(population*.34));
  let remaining=employedTotal;for(const id of ['craftsmen','laborers','burghers','peasants','clergy','nobles']){const g=groups.find(x=>x.id===id);if(!g)continue;const cap=Math.round(g.size*(id==='peasants'?.45:.72)),take=Math.min(cap,remaining);g.employed=take;remaining-=take;}
  for(const g of groups){const employment=g.size?g.employed/g.size:0,base=POP_ARCHETYPES.find(x=>x.id===g.id)?.wealth||10,target=base+(realWage-1)*2.4+(employment-.45)*1.6;g.wealth=round(clamp(g.wealth+(target-g.wealth)*.08,3,35),2);g.standardOfLiving=round(clamp(g.wealth+(1-market.priceIndex)*1.2,2,40),2);}
  return {groups,employmentRate:round(employmentRate,4),averageWealth:round(groups.reduce((n,g)=>n+g.wealth*g.size,0)/population,2),averageStandardOfLiving:round(groups.reduce((n,g)=>n+g.standardOfLiving*g.size,0)/population,2)};
@@ -101,7 +101,7 @@ export function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previous
    let revenueValue=0,inputValue=0;const outputs={},inputs={};
    for(const [id,n] of Object.entries(p.def.outputs||{})){const q=n*scale;outputs[id]=round(q,3);revenueValue+=q*market.goods[id].price;}
    for(const [id,n] of Object.entries(p.def.inputs||{})){const q=n*scale;inputs[id]=round(q,3);inputValue+=q*market.goods[id].price;}
-   const directFlorins=Math.max(0,Number(p.def.directFlorins)||0)*scale,weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE+directFlorins,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,weeklyWage=Math.max(.02,Number(sector.wage)||.02),weeklyWageCost=p.workers*weeklyWage,weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
+   const directFlorins=Math.max(0,Number(p.def.directFlorins)||0)*scale,weeklyRevenue=revenueValue*FLORINS_PER_MARKET_VALUE+directFlorins,weeklyInputCost=inputValue*FLORINS_PER_MARKET_VALUE,monthlyWage=Math.max(.05,Number(sector.wage)||.12),weeklyWageCost=p.workers*(monthlyWage/WEEKS_PER_MONTH),weeklyProfit=weeklyRevenue-weeklyInputCost-weeklyWageCost,weeklySectorTax=Math.max(0,weeklyProfit)*(clamp(Number(taxRate)||0,0,100)/100)*taxCollectionFactor;weeklyTax+=weeklySectorTax;
    const monthly=x=>round(x*WEEKS_PER_MONTH,4);rows[sector.id]={workers:p.workers,capacity:p.capacity,wage:Number(sector.wage)||0,employmentRatio:round(p.employmentRatio,4),inputAvailability:round(availability,4),marketAccess:round(infra.access,4),throughput:round(throughput,4),inputs,outputs,gross:monthly(weeklyRevenue),inputCost:monthly(weeklyInputCost),wageBill:monthly(weeklyWageCost),profit:monthly(weeklyProfit),tax:monthly(weeklySectorTax)};
   }
   pops[city.id]=updatePops(city,market,previousPops?.[city.id],Object.values(rows));
