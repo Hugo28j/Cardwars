@@ -1419,3 +1419,33 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .army-split-panel>button{width:100%;margin-top:10px;padding:9px;border:1px solid #aa8d4b;background:#222d24;color:#e2c66f;font-size:8px;font-weight:700}
 .army-panel-battle{margin:10px 15px;width:calc(100% - 30px)}
 @media(max-width:560px){.army-map-hero{grid-template-columns:1fr}.army-map-hero>div{border-right:0;border-bottom:1px solid #465249}.army-map-hero>div:last-child{border-bottom:0}}
+
+
+/* Live province battle panel */
+#world-map .city-territory-cell.game-battle{fill:#7d2f2f!important;fill-opacity:.24!important;stroke:#d36558;stroke-width:1.5}
+#world-map .army-route-line{fill:none;stroke:#d6bd72;stroke-width:2.2;stroke-dasharray:8 5;vector-effect:non-scaling-stroke;opacity:.9;pointer-events:none}
+#world-map .moving-army-marker{pointer-events:all;cursor:pointer}
+.battle-side-head{border-left-color:#a84c43!important}
+.battle-side-scroll{background:linear-gradient(180deg,#111916,#0d1412)}
+.battle-live-score{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;border-bottom:1px solid #465249;background:#111d19}
+.battle-live-score article{padding:18px 14px;text-align:center}.battle-live-score>i{align-self:center;font-style:normal;font-size:8px;font-weight:800;letter-spacing:1px;color:#8d9b91}
+.battle-live-score span,.battle-live-status>span,.battle-day-log-title span{display:block;font-size:7px;letter-spacing:1px;color:#c8aa64}
+.battle-live-score strong{display:block;margin-top:4px;font-family:var(--serif);font-size:24px;color:#e3deca}.battle-live-score small{display:block;margin-top:3px;font-size:7px;color:#84948a}
+.battle-live-score .defender{background:#241815}.battle-live-score .defender small{color:#d69a7d}
+.battle-morale-panel{padding:13px 15px;border-bottom:1px solid #465249}
+.battle-morale-panel>div+div{margin-top:11px}.battle-morale-panel>div>div{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:5px}.battle-morale-panel span{font-size:7px;letter-spacing:.8px;color:#94a198}.battle-morale-panel strong{font-family:var(--serif);font-size:14px;color:#dfd9c5}
+.battle-morale-panel i{display:block;height:7px;background:#27332d;border:1px solid #3b4a42}.battle-morale-panel i b{display:block;height:100%;background:#b99f5d}
+.battle-morale-panel>div:nth-child(2) i b{background:#9f5b51}
+.battle-live-summary{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #465249}
+.battle-live-summary>div{padding:11px 13px;border-right:1px solid #354139;border-bottom:1px solid #354139}.battle-live-summary>div:nth-child(2n){border-right:0}
+.battle-live-summary span{display:block;font-size:6px;letter-spacing:.7px;color:#7f8e85}.battle-live-summary strong{display:block;margin-top:4px;font-family:var(--serif);font-size:17px;color:#d8d6c7}
+.battle-live-status{padding:13px 15px;border-bottom:1px solid #465249;background:#17201c}.battle-live-status strong{display:block;margin-top:4px;font-family:var(--serif);font-size:18px;color:#dfc66d}.battle-live-status small{display:block;margin-top:3px;font-size:7px;color:#87958d}
+.battle-live-status.won{background:#14251b}.battle-live-status.lost{background:#261715}.battle-live-status.retreated{background:#211f15}
+.battle-panel-retreat{display:block;width:calc(100% - 30px);margin:13px 15px;padding:11px;border:1px solid #a75b4c;background:#271816;color:#e8c7b5;text-align:left;cursor:pointer}
+.battle-panel-retreat:hover{background:#321c19}.battle-panel-retreat strong,.battle-panel-retreat small{display:block}.battle-panel-retreat strong{font-size:9px;letter-spacing:1px}.battle-panel-retreat small{margin-top:4px;font-size:7px;color:#c29d91}
+.battle-finished-note{margin:13px 15px;padding:12px;border:1px solid #58665c;background:#17211c}.battle-finished-note strong,.battle-finished-note small{display:block}.battle-finished-note strong{font-family:var(--serif);font-size:18px;color:#dec36d}.battle-finished-note small{margin-top:4px;font-size:7px;color:#8c9a91}
+.battle-day-log-title{display:flex;justify-content:space-between;align-items:end;padding:13px 15px 7px}.battle-day-log-title small{font-size:7px;color:#7f8c84}
+.battle-day-log{margin:0 15px 18px;border:1px solid #3c4942}.battle-day-log>p{padding:13px;font-size:8px;line-height:1.5;color:#89968e}
+.battle-day-log article{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px 10px;border-bottom:1px solid #2f3a34;background:#121b18}.battle-day-log article:last-child{border-bottom:0}
+.battle-day-log article strong,.battle-day-log article small{display:block}.battle-day-log article strong{font-size:9px;color:#d5d4c5}.battle-day-log article small{margin-top:2px;font-size:6px;color:#7f8e85}.battle-day-log article>span{font-family:var(--serif);font-size:14px;color:#d1ba72}
+.battle-log-morale{grid-column:1/-1;display:flex;gap:12px}
