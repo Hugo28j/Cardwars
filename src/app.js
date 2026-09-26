@@ -429,8 +429,8 @@ function normaliseGameDiplomacy1300(raw){
 }
 const ASK_FLORINS_FAVOR_COST_1300=5;
 function totalDiplomats1300(game){
- const provinces=Math.max(0,game?.ownedCities?.length||0);
- return provinces>=20?5:provinces>=10?4:provinces>=5?3:2;
+ const status=campaignLeaderboardStatus1300(game),ratio=status.scoreRatio;
+ return ratio>=.75?5:ratio>=.50?4:ratio>=.25?3:2;
 }
 function activeDiplomatMissions1300(game){
  return Object.values(diplomacyState(game).pairs).map(p=>({pair:p,ours:p.directions?.[PLAYER_REALM]})).filter(x=>x.ours?.mission);
@@ -1096,7 +1096,12 @@ function applyCompanyTreasuryResults1300(game,sectorsByCity={}){
 }
 function cityLabourPool1300(c,game=profile.activeGame){
  if(!c||!game)return 50;
- const population=effectivePopulation1300(game,c),expected=Math.max(.01,expectedMonthlyWage1300(game)),wage=Math.max(GAME_WAGE_MIN,effectiveCityWage1300(game,c.id)),wageRatio=wage/expected,participation=clamp1300(.50+(wageRatio-1)*.22,.28,.70);
+ const e=game.economy=normaliseGameEconomy1300(game.economy),population=effectivePopulation1300(game,c),expected=Math.max(.01,expectedMonthlyWage1300(game)),wage=Math.max(GAME_WAGE_MIN,effectiveCityWage1300(game,c.id)),wageRatio=wage/expected,pop=e.pops?.[c.id],groups=pop?.groups||[],groupRates={peasants:.56,laborers:.78,craftsmen:.75,burghers:.55,clergy:.38,nobles:.22};
+ let socialBase=.56;
+ if(groups.length){const total=groups.reduce((n,g)=>n+(Number(g.size)||0),0);if(total>0)socialBase=groups.reduce((n,g)=>n+(Number(g.size)||0)*(groupRates[g.id]??.55),0)/total;}
+ const stats=provinceDynamicStats1300(game,c),market=e.markets?.[c.id],foodAvailability=foodAvailabilityFromMarket1300(market,clamp1300((Number(stats.food)||50)/70,.45,1.08)),avgSol=Number(pop?.averageStandardOfLiving)||10,dem=e.populationDemography?.[c.id],happiness=Number.isFinite(Number(dem?.happiness))?Number(dem.happiness):Number(stats.stability)||50,taxRate=Number(e.taxRate)||10;
+ const state=gameProvinceBuildingState(c),jobCapacity=state.buildings.filter(row=>row.level>0&&row.id!=='walls').reduce((n,row)=>n+Math.max(0,Number(row.maxWorkers)||0)*Math.max(0,Number(row.level)||0),0),jobRatio=jobCapacity/Math.max(1,population);
+ const wageEffect=clamp1300((wageRatio-1)*.18,-.18,.20),foodEffect=clamp1300((foodAvailability-.90)*.20,-.12,.05),stabilityEffect=clamp1300((happiness-60)/500,-.09,.08),livingEffect=clamp1300((avgSol-10)*.008,-.06,.08),taxEffect=clamp1300(-(taxRate-10)*.002,-.04,.02),jobEffect=clamp1300((jobRatio-.18)*.18,-.04,.08),participation=clamp1300(socialBase+wageEffect+foodEffect+stabilityEffect+livingEffect+taxEffect+jobEffect,.22,.78);
  return Math.max(50,Math.round(population*participation));
 }
 function buildingAvailability1300(c,b){
@@ -1318,26 +1323,37 @@ function initialiseCampaignIdentity1300(game){
  game.formedNation=typeof game.formedNation==='string'&&game.formedNation?game.formedNation:null;
  game.won=!!game.won;
 }
+function campaignRealmStillExists1300(game,country){
+ if(!game||!country)return false;
+ return CITIES_1300.some(c=>{
+  const saved=game.cityOwners?.[c.id],owner=saved==='player'?'player':typeof saved==='string'&&saved?saved:c.country;
+  return owner===country;
+ });
+}
+function refreshAutoFreeCities1300(game){
+ for(const id of game?.ownedCities||[]){
+  const origin=game.originCountryByCity?.[id]||CITY_1300[id]?.country;
+  if(origin&&!campaignRealmStillExists1300(game,origin))game.independenceByCity[id]=true;
+ }
+}
 function refreshCampaignStage1300(game){
- initialiseCampaignIdentity1300(game);
+ initialiseCampaignIdentity1300(game);refreshAutoFreeCities1300(game);
  if(game.campaignStage==='rebellion'&&(game.ownedCities||[]).length&&game.ownedCities.every(id=>game.independenceByCity[id]===true))game.campaignStage='free_cities';
 }
 function formableRealms1300(game){
  const owned=new Set(game?.ownedCities||[]),groups=new Map();
- for(const c of CITIES_1300){
-  const row=groups.get(c.country)||{country:c.country,cities:[]};row.cities.push(c);groups.set(c.country,row);
- }
+ for(const c of CITIES_1300){const row=groups.get(c.country)||{country:c.country,cities:[]};row.cities.push(c);groups.set(c.country,row);}
  return [...groups.values()].map(row=>{
-  const held=row.cities.filter(c=>owned.has(c.id)),missing=row.cities.filter(c=>!owned.has(c.id));
-  return {...row,held,missing,progress:row.cities.length?held.length/row.cities.length:0,canForm:game?.campaignStage==='free_cities'&&held.length>0&&missing.length===0};
- }).filter(row=>row.held.length>0).sort((a,b)=>b.progress-a.progress||a.missing.length-b.missing.length||a.country.localeCompare(b.country));
+  const held=row.cities.filter(c=>owned.has(c.id)),missing=row.cities.filter(c=>!owned.has(c.id)),multiProvince=row.cities.length>=2;
+  return {...row,held,missing,progress:row.cities.length?held.length/row.cities.length:0,multiProvince,canForm:multiProvince&&game?.campaignStage==='free_cities'&&held.length>0&&missing.length===0};
+ }).filter(row=>row.held.length>0&&row.multiProvince).sort((a,b)=>b.progress-a.progress||a.missing.length-b.missing.length||a.country.localeCompare(b.country));
 }
 function formCampaignNation1300(country){
- const game=profile.activeGame;if(!game)return;
- refreshCampaignStage1300(game);
+ const game=profile.activeGame;if(!game)return;refreshCampaignStage1300(game);
+ const represented=CITIES_1300.filter(c=>c.country===country);if(represented.length<2){toast('One-province realms cannot be formed. Expand into a multi-province country first.');return;}
  const target=formableRealms1300(game).find(x=>x.country===country);
- if(!target){toast('That country is not linked to any province you own.');return;}
- if(game.campaignStage!=='free_cities'){toast('All of your cities must first gain independence and become Free Cities.');return;}
+ if(!target){toast('That country is not linked to enough provinces you own.');return;}
+ if(game.campaignStage!=='free_cities'){toast('All of your cities must first become Free Cities.');return;}
  if(target.missing.length){toast(`You still need ${target.missing.length} province${target.missing.length===1?'':'s'} to form ${target.country}.`);return;}
  game.campaignStage='nation';game.formedNation=target.country;updateCampaignRankingSnapshot1300(game);checkCampaignVictory1300(game);save();renderGameCountryPanel1300();toast(`${target.country} has been formed.`);
 }
@@ -1964,6 +1980,15 @@ function buildCampaignRankings1300(game){
   return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,powerModifier,rawStrength,strength};
  }).filter(r=>r.playableCityCount>0).sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country)).map((r,i)=>({...r,rank:i+1}));
 }
+function campaignLeaderboardStatus1300(game){
+ if(!game)return {rank:null,strength:0,leaderStrength:1,scoreRatio:0,medal:'unranked'};
+ const rows=buildCampaignRankings1300(game),player=rows.find(r=>r.player),leaderStrength=Math.max(1,Number(rows[0]?.strength)||1),rank=Number(player?.rank)||null,strength=Math.max(0,Number(player?.strength)||0),scoreRatio=clamp1300(strength/leaderStrength,0,1);
+ return {rank,strength,leaderStrength,scoreRatio,medal:rank&&rank<=10?'gold':rank&&rank<=15?'silver':rank&&rank<=20?'bronze':'unranked'};
+}
+function campaignRankBadgeHTML1300(game){
+ const r=campaignLeaderboardStatus1300(game),label=r.rank?`#${r.rank}`:'—';
+ return `<div id="campaign-rank-badge" class="campaign-rank-badge ${r.medal}" title="Overall world rank · strength ${strengthNumber(r.strength)}">${label}</div>`;
+}
 function updateCampaignRankingSnapshot1300(game){
  if(!game)return;const d=gameDate1300(game.day);
  game.rankingSnapshot={day:game.day,label:`${d.day} ${d.month} ${d.year}`,rows:buildCampaignRankings1300(game).map(r=>({...r,cities:r.cities.map(c=>c.id),supportTerritories:r.supportTerritories.map(c=>c.id)}))};checkCampaignVictory1300(game);
@@ -2027,7 +2052,7 @@ function populationGroupDetail1300(game,name){
 }
 function openPopulationGroupDetail1300(name){
  const game=profile.activeGame;if(!game||!name)return;const g=populationGroupDetail1300(game,name);
- showDialog(`<div class="simple-dialog population-group-dialog"><span class="eyebrow">PEOPLE · SOCIAL GROUP</span><h2>${esc(g.name)}</h2><p>This shows the current totals across your realm. Food is measured in weekly market units.</p><div class="population-group-detail-grid"><span>Total people<strong>${strengthNumber(g.count)}</strong></span><span>Working<strong>${strengthNumber(g.employed)}</strong></span><span>Unemployed<strong>${strengthNumber(g.unemployed)}</strong></span><span>Working share<strong>${g.workingPct.toFixed(1)}%</strong></span><span>Food needed / week<strong>${g.foodNeed.toFixed(2)}</strong></span><span>Food supplied / week<strong>${g.foodSupplied.toFixed(2)}</strong></span><span>Food coverage<strong class="${g.foodCoverage>=.98?'positive':g.foodCoverage<.8?'negative':''}">${Math.round(g.foodCoverage*100)}%</strong></span><span>Average wealth<strong>${g.wealth.toFixed(1)}</strong></span><span>Standard of living<strong>${g.sol.toFixed(1)}</strong></span></div><p class="population-group-note">The province minimum wage changes how many people are willing to enter the worker pool. Higher wages raise participation; low wages reduce it. Employment still depends on available company jobs.</p></div>`,'population-group-dialog-shell');
+ showDialog(`<div class="simple-dialog population-group-dialog"><span class="eyebrow">PEOPLE · SOCIAL GROUP</span><h2>${esc(g.name)}</h2><p>This shows the current totals across your realm. Food is measured in weekly market units.</p><div class="population-group-detail-grid"><span>Total people<strong>${strengthNumber(g.count)}</strong></span><span>Working<strong>${strengthNumber(g.employed)}</strong></span><span>Unemployed<strong>${strengthNumber(g.unemployed)}</strong></span><span>Working share<strong>${g.workingPct.toFixed(1)}%</strong></span><span>Food needed / week<strong>${g.foodNeed.toFixed(2)}</strong></span><span>Food supplied / week<strong>${g.foodSupplied.toFixed(2)}</strong></span><span>Food coverage<strong class="${g.foodCoverage>=.98?'positive':g.foodCoverage<.8?'negative':''}">${Math.round(g.foodCoverage*100)}%</strong></span><span>Average wealth<strong>${g.wealth.toFixed(1)}</strong></span><span>Standard of living<strong>${g.sol.toFixed(1)}</strong></span></div><p class="population-group-note">The worker pool reacts to the social mix, minimum wage, food supply, happiness and stability, living standards, taxes and available job capacity. Higher wages usually raise participation, but employment still depends on actual company jobs.</p></div>`,'population-group-dialog-shell');
 }
 function countryRebellionRows1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy);
@@ -2113,12 +2138,12 @@ function countryPeopleHTML1300(game){
  <section class="population-groups">${p.groups.map(g=>`<article><div><button type="button" class="population-group-name" data-action="people-group-detail" data-group="${esc(g.name)}">${esc(g.name)}</button><span>${g.pct}%</span></div><i><b style="width:${g.pct}%"></b></i><small>${strengthNumber(g.count)} people · ${g.count?Math.round((Number(g.employed)||0)/g.count*100):0}% working${g.wealth?' · wealth '+g.wealth.toFixed(1)+' · SOL '+g.sol.toFixed(1):''}</small></article>`).join('')}</section>`;
 }
 function countryDecisionsHTML1300(game){
- refreshCampaignStage1300(game);const candidates=formableRealms1300(game),independenceRows=(game.ownedCities||[]).map(id=>({c:CITY_1300[id],origin:game.originCountryByCity?.[id]||CITY_1300[id]?.country,free:game.independenceByCity?.[id]===true})).filter(x=>x.c);
+ refreshCampaignStage1300(game);const candidates=formableRealms1300(game),independenceRows=(game.ownedCities||[]).map(id=>{const c=CITY_1300[id],origin=game.originCountryByCity?.[id]||CITY_1300[id]?.country,free=game.independenceByCity?.[id]===true,parentExists=campaignRealmStillExists1300(game,origin);return {c,origin,free,parentExists};}).filter(x=>x.c);
  return `<div class="country-section-title"><span>INDEPENDENCE</span><small>${campaignStageLabel1300(game)} · right-click countries on the map for diplomacy, recognition, alliances, war and trade</small></div>
- <section class="independence-status">${independenceRows.map(r=>`<article><div><strong>${esc(displayCityName1300(r.c))}</strong><small>Rebelling from ${esc(r.origin)}</small></div><span class="${r.free?'free':'pending'}">${r.free?'INDEPENDENT':'REBELLION'}</span></article>`).join('')}</section>
- <section class="future-diplomacy-note"><strong>Active diplomacy</strong><p>Right-click a country on the campaign map. Parent countries can recognise your rebel provinces, friendly realms can become allies or send financial aid, and provinces can be sold as diplomatic concessions. Trade uses the surplus goods produced by your economy.</p></section>
- <div class="country-section-title"><span>FORMABLE COUNTRIES</span><small>Only countries linked to at least one city you already own</small></div>
- <section class="formable-country-list">${candidates.length?candidates.map(f=>`<article class="${f.canForm?'ready':''}"><div class="formable-head"><div><strong>${esc(f.country)}</strong><small>${f.held.length}/${f.cities.length} required provinces</small></div><span>${Math.round(f.progress*100)}%</span></div><div class="formable-progress"><i style="width:${Math.round(f.progress*100)}%"></i></div><p><b>Owned:</b> ${f.held.map(c=>esc(displayCityName1300(c))).join(', ')||'None'}</p><p><b>Still needed:</b> ${f.missing.length?f.missing.map(c=>esc(displayCityName1300(c))).join(', '):'All required provinces owned'}</p><button data-action="form-country" data-country="${esc(f.country)}" ${f.canForm?'':'disabled'}>${f.canForm?'FORM '+esc(f.country):game.campaignStage!=='free_cities'?'BECOME FREE CITIES FIRST':'MISSING PROVINCES'}</button></article>`).join(''):'<p class="country-empty">No formable country is linked to your current cities.</p>'}</section>
+ <section class="independence-status">${independenceRows.map(r=>`<article><div><strong>${esc(displayCityName1300(r.c))}</strong><small>${r.free?(r.parentExists?`Free from ${esc(r.origin)}`:`${esc(r.origin)} no longer exists`):`Rebelling from ${esc(r.origin)}`}</small></div><span class="${r.free?'free':'pending'}">${r.free?'FREE CITY':'REBELLION'}</span></article>`).join('')}</section>
+ <section class="future-diplomacy-note"><strong>Active diplomacy</strong><p>Right-click a country on the campaign map. Parent countries can recognise your rebel provinces. If a parent country disappears entirely, its rebel provinces automatically become Free Cities. Your realm only reaches the Free Cities stage when every city you own is a Free City.</p></section>
+ <div class="country-section-title"><span>FORMABLE COUNTRIES</span><small>Requires at least 2 provinces · one-province states cannot be formed</small></div>
+ <section class="formable-country-list">${candidates.length?candidates.map(f=>`<article class="${f.canForm?'ready':''}"><div class="formable-head"><div><strong>${esc(f.country)}</strong><small>${f.held.length}/${f.cities.length} required provinces</small></div><span>${Math.round(f.progress*100)}%</span></div><div class="formable-progress"><i style="width:${Math.round(f.progress*100)}%"></i></div><p><b>Owned:</b> ${f.held.map(c=>esc(displayCityName1300(c))).join(', ')||'None'}</p><p><b>Still needed:</b> ${f.missing.length?f.missing.map(c=>esc(displayCityName1300(c))).join(', '):'All required provinces owned'}</p><button data-action="form-country" data-country="${esc(f.country)}" ${f.canForm?'':'disabled'}>${f.canForm?'FORM '+esc(f.country):game.campaignStage!=='free_cities'?'BECOME FREE CITIES FIRST':'MISSING PROVINCES'}</button></article>`).join(''):'<p class="country-empty">No multi-province formable country is linked to your current cities.</p>'}</section>
  <div class="country-section-title"><span>VICTORY</span><small>Final campaign objective</small></div><section class="great-power-goal"><strong>${game.won?'VICTORY · GREAT POWER':'Become a Great Power'}</strong><p>After forming a real nation, reach the <b>Overall Top 5</b> in the campaign Rankings. Entering the Top 5 wins the campaign.</p></section>`;
 }
 function technologyResearchIncome1300(game){
@@ -2334,20 +2359,22 @@ function openGameCountryPanel1300(){
  if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
 }
 function campaignResourceBarHTML1300(game){
- const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game);
+ const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game),rank=campaignLeaderboardStatus1300(game);
  return `<section class="campaign-resource-bar" aria-label="Realm resources">
   <article class="campaign-resource-box treasury"><span>TREASURY</span><strong id="campaign-resource-treasury">ƒ${money1300(game.florins)}</strong><small id="campaign-resource-week" class="${balance>0?'positive':balance<0?'negative':'neutral'}">${balance>0?'+':balance<0?'-':''}ƒ${money1300(Math.abs(balance))}/week</small></article>
   <article class="campaign-resource-box"><span>POPULATION</span><strong id="campaign-resource-population">${strengthNumber(totals.population)}</strong></article>
-  <article class="campaign-resource-box diplomats" title="Diplomats scale with realm size: 1–4 provinces = 2, 5–9 = 3, 10–19 = 4, 20+ = 5."><span>DIPLOMATS</span><strong id="campaign-resource-diplomats">${dip.available} / ${dip.total}</strong><small id="campaign-resource-diplomats-busy">${dip.busy} assigned</small></article>
+  <article class="campaign-resource-box diplomats" title="Diplomats depend on leaderboard strength: under 25% of #1 = 2, 25% = 3, 50% = 4, 75%+ = 5. Current strength: ${strengthNumber(rank.strength)} (${Math.round(rank.scoreRatio*100)}% of #1)."><span>DIPLOMATS</span><strong id="campaign-resource-diplomats">${dip.available} / ${dip.total}</strong><small id="campaign-resource-diplomats-busy">${dip.busy} assigned</small></article>
   <article class="campaign-resource-box"><span>PRO ARMY</span><strong id="campaign-resource-pro-army">${strengthNumber(prof.army)}</strong></article>
   <article class="campaign-resource-box"><span>UNPRO ARMY</span><strong id="campaign-resource-unpro-army">${strengthNumber(unprof.army)}</strong></article>
   <article class="campaign-resource-box"><span>NAVY</span><strong id="campaign-resource-navy">${strengthNumber(mil.navy)}</strong></article>
  </section>`;
 }
 function refreshCampaignResourceBar1300(game){
- if(!game)return;const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game);
+ if(!game)return;const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game),rank=campaignLeaderboardStatus1300(game);
  const set=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
  set('#campaign-resource-treasury','ƒ'+money1300(game.florins));set('#campaign-resource-population',strengthNumber(totals.population));set('#campaign-resource-diplomats',dip.available+' / '+dip.total);set('#campaign-resource-diplomats-busy',dip.busy+' assigned');set('#campaign-resource-pro-army',strengthNumber(prof.army));set('#campaign-resource-unpro-army',strengthNumber(unprof.army));set('#campaign-resource-navy',strengthNumber(mil.navy));
+ const dipBox=$('#campaign-resource-diplomats')?.closest('.campaign-resource-box');if(dipBox)dipBox.title=`Diplomats depend on leaderboard strength. Current strength: ${strengthNumber(rank.strength)} (${Math.round(rank.scoreRatio*100)}% of #1).`;
+ const badge=$('#campaign-rank-badge');if(badge){badge.textContent=rank.rank?`#${rank.rank}`:'—';badge.className=`campaign-rank-badge ${rank.medal}`;badge.title=`Overall world rank · strength ${strengthNumber(rank.strength)}`;}
  const weekly=$('#campaign-resource-week');if(weekly){weekly.textContent=(balance>0?'+':balance<0?'-':'')+'ƒ'+money1300(Math.abs(balance))+'/week';weekly.classList.remove('positive','negative','neutral');weekly.classList.add(balance>0?'positive':balance<0?'negative':'neutral');}
 }
 function gamePage(){
@@ -2361,6 +2388,7 @@ function gamePage(){
   <div id="game-start-countdown" class="game-start-countdown" hidden aria-live="polite"></div>
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div>
   <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
+  ${campaignRankBadgeHTML1300(profile.activeGame)}
   ${campaignResourceBarHTML1300(profile.activeGame)}<button class="game-quit-button" data-action="quit-game">Quit</button>
   <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>
   <aside id="game-country-panel" class="game-country-panel ${gameCountryPanel?'open':''}">${gameCountryPanel?gameCountryPanelHTML1300():''}</aside>
