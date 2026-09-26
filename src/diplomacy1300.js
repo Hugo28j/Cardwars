@@ -61,7 +61,7 @@ export function acceptance(game,a,b,action,powers={}){
 }
 
 export const DIP_ACTIONS={
- improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',peace:'Offer white peace',war:'Declare war (no casus belli)'
+ improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',peace:'Negotiate peace treaty',war:'Declare war (no casus belli)'
 };
 export function performAction(game,a,b,action,powers={},options={}){
  if(!DIP_ACTIONS[action])return {ok:false,message:'Unknown action.'};
