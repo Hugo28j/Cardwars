@@ -964,8 +964,8 @@ function armyOriginCityId1300(game,key){
 }
 function armyKeys1300(game){return Object.keys(ensureGameMilitary1300(game)?.armiesByCity||{});}
 function armyKeysAtLocation1300(game,cityId,{standingOnly=true}={}){
- const m=ensureAdvancedMilitary1300(game);if(!m||!CITY_1300[cityId])return [];
- return Object.entries(m.armiesByCity).filter(([key,a])=>militaryArmyTotal1300(game,key)>0&&(a.location||armyOriginCityId1300(game,key))===cityId&&(!standingOnly||(!movementForArmy1300(game,key)&&!activeBattleForArmy1300(game,key)))).map(([key])=>key);
+ const m=ensureAdvancedMilitary1300(game);if(!m||!CITY_1300[cityId])return [];const moving=new Set((m.movements||[]).map(x=>x.armyHomeId)),fighting=new Set((m.battles||[]).filter(b=>b.status==='active').map(b=>b.armyHomeId));
+ return Object.entries(m.armiesByCity).filter(([key,a])=>militaryArmyTotal1300(game,key)>0&&(a.location||armyOriginCityId1300(game,key))===cityId&&(!standingOnly||(!moving.has(key)&&!fighting.has(key)))).map(([key])=>key);
 }
 function armyDirectProfessionalCount1300(game,key){const m=ensureGameMilitary1300(game);return PROFESSIONAL_MILITARY_UNITS_1300.reduce((n,id)=>n+unitCount1300(m,key,id),0);}
 function armyDirectLevyCount1300(game,key){return unitCount1300(ensureGameMilitary1300(game),key,'levy-swordsmen');}
@@ -1136,7 +1136,7 @@ function processArmyMovements1300(game){
 function processMilitaryAttrition1300(game){
  if((Number(game.day)||0)%7!==0)return false;let changed=false;for(const homeId of armyKeys1300(game)){if(activeBattleForArmy1300(game,homeId))continue;const supply=militarySupplyStatus1300(game,homeId),total=militaryArmyTotal1300(game,homeId);if(total>=100&&supply.food<.45){const loss=Math.max(1,Math.floor(total*(.45-supply.food)*.01));if(applyArmyCasualties1300(game,homeId,loss)>0)changed=true;}}return changed;
 }
-function processAdvancedMilitaryDay1300(game){let changed=processArmyMovements1300(game);for(const b of ensureAdvancedMilitary1300(game).battles)if(resolveBattleDay1300(game,b))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
+function processAdvancedMilitaryDay1300(game){let changed=processArmyMovements1300(game);for(const b of ensureAdvancedMilitary1300(game).battles)if(resolveBattleDay1300(game,b))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(gameArmyPanelKey)renderArmyMapPanel1300();if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
 
 
 function professionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryProfessionalCountCity1300(game,id);army+=byCity[id];}const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryProfessionalLimit1300(game);return {population,basePercent:5,bonusPercent:0,percent:5,limit,rawTotal:army,army,byCity};}
