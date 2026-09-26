@@ -1341,3 +1341,35 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 #world-map .city-territory-cell.game-owned{fill:var(--player-realm-color,#c6534d);fill-opacity:.88}
 #world-map .city-territory-cell.game-owned:hover{fill:var(--player-realm-color,#c6534d);fill-opacity:.98}
 #world-map .military-piece{filter:none!important}
+
+/* Per-city army composition and recruitment */
+.province-military-panel{padding:15px 16px 18px;border-top:1px solid #3c4b43;border-bottom:1px solid #3c4b43;background:#101b17cc}
+.province-military-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.province-military-heading>div span,.military-order-list>span{display:block;font-size:8px;letter-spacing:1.1px;color:#d5b75e}
+.province-military-heading>div strong{display:block;margin-top:3px;font-family:var(--serif);font-size:18px;color:#e8e0c9}
+.province-military-heading>small{max-width:230px;text-align:right;font-size:7px;line-height:1.5;color:#8ca197}
+.province-military-units{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.military-unit-card{min-width:0;padding:10px;border:1px solid #405047;background:#13201b}
+.military-unit-card.locked{opacity:.62;background:#111916}
+.military-unit-title{display:flex;align-items:start;justify-content:space-between;gap:8px}
+.military-unit-title span{display:block;font-size:6px;letter-spacing:.8px;color:#82958b;text-transform:uppercase}
+.military-unit-title strong{display:block;margin-top:2px;font-family:var(--serif);font-size:13px;color:#e3dcc8}
+.military-unit-title>b{font-family:var(--serif);font-size:18px;color:#d8bf72}
+.military-unit-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin:8px 0 7px}
+.military-unit-stats span{padding:4px 3px;background:#0d1713;font-size:6px;color:#82958b;text-align:center}
+.military-unit-stats b{color:#d8d5c5}
+.military-unit-card p{min-height:28px;margin:0 0 8px;font-size:7px;line-height:1.4;color:#809087}
+.military-recruit-row{display:grid;grid-template-columns:54px 1fr 1fr;gap:4px}
+.military-recruit-row input{min-width:0;width:100%;padding:7px 5px;border:1px solid #4a5b51;background:#0d1713;color:#e5dfca;font-size:11px}
+.military-recruit-row button,.military-order-list button{min-height:30px;border:1px solid #857443;background:#1d2a23;color:#dec16a;font-size:7px;font-weight:700;letter-spacing:.4px;cursor:pointer}
+.military-recruit-row button.secondary{border-color:#4c5a52;color:#aeb9b1;background:#142019}
+.military-recruit-row button:disabled{opacity:.35;cursor:default}
+.military-tech-lock{padding:7px;border:1px solid #6b5540;background:#221a15;color:#c99566;font-size:7px;text-align:center;letter-spacing:.6px}
+.military-queued{display:block;margin:-2px 0 7px;color:#89b497;font-size:7px}
+.military-order-list{margin-top:12px}
+.military-order-list article{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #2f3e36}
+.military-order-list article strong{display:block;font-size:9px;color:#d8d5c5}
+.military-order-list article small{display:block;margin-top:2px;font-size:6px;color:#82958b}
+.military-order-list article>span{font-size:7px;color:#d8bf72}
+.military-rule-note{margin-top:11px;padding:9px;border-left:2px solid #8d7844;background:#171f1a;font-size:7px;line-height:1.5;color:#8f9c94}
+@media(max-width:560px){.province-military-units{grid-template-columns:1fr}.province-military-heading{align-items:start;flex-direction:column}.province-military-heading>small{text-align:left}.military-order-list article{grid-template-columns:1fr auto}}
