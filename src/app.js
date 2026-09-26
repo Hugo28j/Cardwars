@@ -522,7 +522,7 @@ function advancedDiplomacyHTML1300(game,country){
   trust:'Spend favors for trust',rival:'Rival',insult:'Insult',guarantee:'Guarantee independence',
   recognition:'Independence recognition',supportIndependence:'Support independence',
   access:'Ask military access',offerAccess:'Offer military access',trade:'Trade agreement',
-  money:'Ask Florins',sellCity:'Sell city',deal:'Exchange',peace:'White peace',war:'Declare war'
+  money:'Ask Florins',sellCity:'Sell city',deal:'Exchange',peace:'Peace treaty',war:'Declare war'
  };
  const blocked=id=>pair.war&&!['peace','insult'].includes(id)||Math.max(0,(ours.cooldowns[id]||0)-game.day)>0||id==='breakAlliance'&&!pair.alliance||id==='alliance'&&pair.alliance;
  const defs={};
@@ -2688,6 +2688,41 @@ function diplomacyDealRequestOptions1300(game,country){
  for(const c of independenceSupportCandidates1300(game,country))out.push(`<option value="support:${c.id}">Support independence · ${esc(displayCityName1300(c))}</option>`);
  return out.join('');
 }
+
+function peaceTreatyOccupiedCities1300(game,country){
+ const m=ensureAdvancedMilitary1300(game);return CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country&&m?.occupations?.[c.id]===gameCountryName1300(game));
+}
+function peaceTreatyAssessment1300(game,country,{cityIds=[],independence=false,florins=0}={}){
+ const {pair}=relation(game,PLAYER_REALM,country);if(!pair.war)return {score:0,note:'You are not at war.',reasons:[]};
+ const occupied=new Set(peaceTreatyOccupiedCities1300(game,country).map(c=>c.id)),selected=[...new Set(cityIds)].filter(id=>occupied.has(id)),warScore=Number(pair.war.warScore)||0,days=Math.max(0,(Number(game.day)||0)-(Number(pair.war.started)||0)),duration=Math.min(12,days/30*1.5),playerStrength=Math.max(1,diplomacyPlayerStrength1300(game)),enemyStrength=Math.max(1,Number(diplomacyCountryStats1300(country).strength)||1),power=clamp1300(Math.log2(playerStrength/enemyStrength)*7,-10,10),occupation=occupied.size*5;
+ let landCost=0;for(const id of selected){const city=CITY_1300[id];landCost+=8+Math.min(8,(Number(city?.people)||0)/20000)+Math.min(6,(Number(city?.economyScore)||50)/20);}
+ const {d}=ensureDiplomacyCountry1300(game,country),cash=Math.max(0,Number(florins)||0),cashShare=cash/Math.max(1,Number(d.aiTreasuries[country])||1),cashCost=Math.min(45,cashShare*38),pending=(game.ownedCities||[]).filter(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country&&game.independenceByCity?.[id]!==true),independenceCost=independence&&pending.length?(pair.war.casusBelli==='fight-for-independence'?4:18):0;
+ const raw=45+warScore*.7+duration+power+occupation-landCost-cashCost-independenceCost,score=clamp1300(Math.round(raw),0,100),reasons=[
+  ['Base willingness',45],['War score',roundStat1300(warScore*.7)],['War duration',roundStat1300(duration)],['Relative strength',roundStat1300(power)],['Occupied provinces',roundStat1300(occupation)],['Land demands',roundStat1300(-landCost)],['Florins demanded',roundStat1300(-cashCost)],['Independence',roundStat1300(-independenceCost)]
+ ].filter(([,v])=>Math.abs(v)>.01);
+ return {score,note:score>=50?'The other side is prepared to accept these terms.':'Reduce your demands or improve your position in the war.',reasons,selected,pending,warScore};
+}
+function peaceTreatyAcceptanceHTML1300(a){
+ return acceptanceMeterHTML1300(a.score,a.note)+`<div class="peace-acceptance-breakdown">${(a.reasons||[]).map(([label,value])=>`<div><span>${esc(label)}</span><strong class="${value>0?'positive':value<0?'negative':''}">${value>0?'+':''}${Number(value).toFixed(1)}</strong></div>`).join('')}</div>`;
+}
+function annexPeaceCity1300(game,country,cityId){
+ const c=CITY_1300[cityId],m=ensureAdvancedMilitary1300(game);if(!c||campaignCityOwner1300(game,c)!==country||m?.occupations?.[cityId]!==gameCountryName1300(game))return false;
+ game.ownedCities??=[];if(!game.ownedCities.includes(cityId))game.ownedCities.push(cityId);game.cityOwners??={};game.cityOwners[cityId]='player';game.originCountryByCity??={};game.originCountryByCity[cityId]??=country;game.independenceByCity??={};game.independenceByCity[cityId]=true;delete m.occupations[cityId];return true;
+}
+function executePeaceTreaty1300(country,cityIds,independence,florins){
+ const game=profile.activeGame;if(!game||!country)return false;const {d}=ensureDiplomacyCountry1300(game,country),{pair,theirs}=relation(game,PLAYER_REALM,country);if(!pair.war){toast('You are no longer at war.');return false;}if(!requireFreeDiplomat1300(game,country,'peace'))return false;
+ const cash=clamp1300(Number(florins)||0,0,Number(d.aiTreasuries[country])||0),assessment=peaceTreatyAssessment1300(game,country,{cityIds,independence,florins:cash});
+ if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,diplomacyRelation1300(game,country)-1);diplomacyLog1300(game,country,`Peace treaty refused (${assessment.score}% acceptance).`);save();renderGameDiplomacyPanel1300();toast(country+' refused these peace terms.');return false;}
+ let annexed=0;for(const id of assessment.selected||[])if(annexPeaceCity1300(game,country,id))annexed++;
+ if(independence){for(const id of assessment.pending||[])game.independenceByCity[id]=true;if((assessment.pending||[]).length)d.recognitions[country]=true;}
+ if(cash>0){d.aiTreasuries[country]=roundStat1300(Math.max(0,(Number(d.aiTreasuries[country])||0)-cash));game.florins=roundStat1300((Number(game.florins)||0)+cash);}
+ const m=ensureAdvancedMilitary1300(game);for(const b of m.battles)if(b.enemyCountry===country&&b.status==='active')b.status='retreated';for(const s of m.sieges)if(s.enemyCountry===country&&s.status==='active')s.status='lifted';for(const [cityId,occupier] of Object.entries({...m.occupations}))if(occupier===gameCountryName1300(game)&&campaignCityOwner1300(game,CITY_1300[cityId])===country)delete m.occupations[cityId];
+ m.movements=m.movements.filter(move=>{const target=CITY_1300[move.to];if(target&&campaignCityOwner1300(game,target)===country){const a=m.armiesByCity[move.armyHomeId];if(a)delete a.movingTo;return false;}return true;});
+ pair.war=null;pair.truceUntil=Math.max(Number(pair.truceUntil)||0,(Number(game.day)||0)+365*5);d.wars[country]=false;theirs.trust=clamp1300((Number(theirs.trust)||50)+5,0,100);setDiplomacyRelation1300(game,country,Math.max(-200,diplomacyRelation1300(game,country)+8));
+ ensureGameDynamicStats1300(game);ensureGamePopulation1300(game);ensureGameMilitary1300(game);seedGameEmployment1300(game);simulateGameEconomyDay1300(game,{forceMarket:true,collectRevenue:false});refreshCampaignStage1300(game);updateCampaignRankingSnapshot1300(game);
+ diplomacyLog1300(game,country,`Peace treaty accepted: ${annexed} province${annexed===1?'':'s'} ceded${independence?', independence recognised':''}${cash>0?', ƒ'+money1300(cash)+' paid':''}.`);gameBattlePanelId=null;gameSiegePanelId=null;syncCampaignMilitaryOverlay1300(game);save();renderGameDiplomacyPanel1300();renderGameCountryPanel1300();refreshGameClockUI1300();toast(country+' accepted the peace treaty.');return true;
+}
+
 function diplomacySliderHTML1300({id,label,min=0,max=100,step=1,value=0,prefix='',suffix=''}) {
  const safeMax=Math.max(Number(min)||0,Number(max)||0),safeValue=clamp1300(Number(value)||0,Number(min)||0,safeMax);
  return `<label class="dip-modal-slider"><span>${esc(label)}</span><strong><span id="${id}-value">${esc(prefix)}${money1300(safeValue)}${esc(suffix)}</span></strong><input id="${id}" type="range" min="${Number(min)||0}" max="${safeMax}" step="${Number(step)||1}" value="${safeValue}"></label>`;
@@ -2718,7 +2753,14 @@ function openDiplomacyAction1300(action){
   const first=supportCities[0],a=first?supportIndependenceAssessment1300(game,country,first.id):{score:0,note:'No eligible city needs a new promise from this country.'};
   body=`<p>Ask ${country} to promise military support if the original owner later starts a war to reclaim one of your cities. The promise is stored per city and activates in a defensive war against that original owner.</p><label class="dip-modal-field"><span>City to support</span><select id="dip-modal-support-city">${supportCities.map(c=>`<option value="${c.id}">${esc(displayCityName1300(c))} · vs ${esc(game.originCountryByCity?.[c.id]||c.country)}</option>`).join('')||'<option value="">No eligible city</option>'}</select></label><div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
   confirm=`<button data-action="dip-modal-support" ${!supportCities.length?'disabled':''}>ASK FOR SUPPORT</button>`;
- }else if(action==='deal'){
+ }else if(action==='peace'){
+  const occupied=peaceTreatyOccupiedCities1300(game,country),maxCash=Math.max(0,Math.floor((Number(d.aiTreasuries[country])||0)*100)/100),defaultIndependence=pair.war?.casusBelli==='fight-for-independence'&&pending.length>0,a=peaceTreatyAssessment1300(game,country,{cityIds:[],independence:defaultIndependence,florins:0});
+  body=`<p>Choose the terms you want in the peace treaty. Occupied provinces can be demanded as land; you may also demand independence recognition and Florins. The other country weighs war score, occupations, relative strength, war duration and the size of your demands.</p><div class="peace-term-block"><div class="peace-term-head"><span>LAND</span><small>${occupied.length} occupied province${occupied.length===1?'':'s'} available</small></div><div class="peace-city-terms">${occupied.length?occupied.map(c=>`<label><input type="checkbox" data-peace-city value="${c.id}"><span>${esc(displayCityName1300(c))}</span><small>Occupied · population ${strengthNumber(c.people)}</small></label>`).join(''):'<p>You have not occupied any provinces from this country yet.</p>'}</div></div><div class="peace-term-block"><label class="peace-independence-term"><input id="dip-modal-peace-independence" type="checkbox" ${defaultIndependence?'checked':''} ${pending.length?'':'disabled'}><span><strong>INDEPENDENCE RECOGNITION</strong><small>${pending.length?pending.length+' rebel province'+(pending.length===1?'':'s')+' still need recognition.':'No unrecognised rebel provinces from this country.'}</small></span></label></div>${diplomacySliderHTML1300({id:'dip-modal-peace-florins',label:'Florins demanded',min:0,max:maxCash,step:.5,value:0,prefix:'ƒ'})}<div id="dip-modal-acceptance">${peaceTreatyAcceptanceHTML1300(a)}</div>`;
+  confirm=`<button data-action="dip-modal-peace">SEND PEACE TERMS</button>`;
+ }else if(action==='peace'){
+  setValue('dip-modal-peace-florins','ƒ');const cityIds=[...modal.querySelectorAll('[data-peace-city]:checked')].map(x=>x.value),independence=!!modal.querySelector('#dip-modal-peace-independence')?.checked,florins=modal.querySelector('#dip-modal-peace-florins')?.value||0,el=modal.querySelector('#dip-modal-acceptance');if(el)el.innerHTML=peaceTreatyAcceptanceHTML1300(peaceTreatyAssessment1300(game,country,{cityIds,independence,florins}));
+ }
+ if(action==='deal'){
   const requestDefault=independenceSupportCandidates1300(game,country)[0]?.id?`support:${independenceSupportCandidates1300(game,country)[0].id}`:'florins',offerDefault='florins',a=diplomacyDealAssessment1300(game,country,offerDefault,5,requestDefault,5);
   body=`<p>Build one exchange. You can offer Florins, trade goods or a city, and request Florins, goods or an independence-support promise in return.</p><div class="dip-deal-grid"><label class="dip-modal-field"><span>You offer</span><select id="dip-modal-deal-offer">${diplomacyDealOfferOptions1300(game,country)}</select><input id="dip-modal-deal-offer-amount" type="number" min="0.01" step="0.01" value="5"></label><span class="dip-deal-arrow">⇄</span><label class="dip-modal-field"><span>You request</span><select id="dip-modal-deal-request">${diplomacyDealRequestOptions1300(game,country)}</select><input id="dip-modal-deal-request-amount" type="number" min="0.01" step="0.01" value="5"></label></div><div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
   confirm=`<button data-action="dip-modal-deal">PROPOSE EXCHANGE</button>`;
@@ -2927,6 +2969,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='research-technology'){startTechnologyResearch1300(id);return;}
  if(a==='game-diplomacy-close'){gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();return;}
  if(a==='dip-advanced'){openDiplomacyAction1300(id);return;}
+ if(a==='dip-modal-peace'){const cityIds=[...modal.querySelectorAll('[data-peace-city]:checked')].map(x=>x.value),independence=!!modal.querySelector('#dip-modal-peace-independence')?.checked,florins=modal.querySelector('#dip-modal-peace-florins')?.value||0;if(executePeaceTreaty1300(gameDiplomacyCountry,cityIds,independence,florins))modal.close();return;}
  if(a==='dip-modal-standard'){const result=runAdvancedDiplomacy1300(id);if(result?.ok)modal.close();return;}
  if(a==='dip-modal-war'){const result=runAdvancedDiplomacy1300('war',{casusBelli:modal.querySelector('#dip-modal-casus-belli')?.value||'no-casus-belli'});if(result?.ok)modal.close();return;}
  if(a==='dip-modal-gift'){const result=runAdvancedDiplomacy1300('gift',{amount:modal.querySelector('#dip-modal-gift-range')?.value});if(result?.ok)modal.close();return;}
