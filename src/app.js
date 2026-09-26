@@ -1563,6 +1563,35 @@ function gameProvinceBuildingCatalogHTML1300(cityId){
   <section class="building-catalog-list">${rows.length?rows.map(row=>{const pending=!!row.construction,canBuy=!pending&&game.florins>=row.cost,pct=pending?constructionProgress1300(game,row.construction):0;return `<article class="building-catalog-card ${pending?'constructing':''}"><button class="building-catalog-icon" data-action="game-building-detail" data-city="${c.id}" data-id="${row.id}" title="Open ${esc(row.name)} details">${buildingPicture1300(row.id)}<span>DETAILS</span></button><div class="building-catalog-copy"><span>${esc(row.category)}</span><strong>${esc(row.name)}</strong><p>${esc(row.description)}</p><em>${pending?`Construction ${pct}% · finishes ${constructionFinishText1300(row.construction)}`:esc(buildingEffectText(row))}</em></div><button class="building-catalog-buy" data-action="game-build-province" data-city="${c.id}" data-id="${row.id}" ${canBuy?'':'disabled'}><span>${pending?'CONSTRUCTING':'BUILD'}</span>${pending?`<small>${pct}%</small>`:`<strong>ƒ${Number(row.cost).toFixed(0)}</strong><small>${buildingConstructionTimeText1300(row.constructionDays)}</small>`}</button></article>`;}).join(''):'<div class="building-catalog-empty"><strong>No new buildings available</strong><p>Every currently available building type already exists here, or this province does not meet the requirements for another type yet.</p></div>'}</section>
  </div>`;
 }
+
+const MILITARY_UNIT_DESCRIPTION_1300={
+ 'levy-swordsmen':'Quickly raised local swordsmen. Cheap and weak; every recruited levy leaves the worker pool.',
+ 'shield-spearmen':'Disciplined spear-and-shield infantry forming the core of the professional army.',
+ archers:'Professional bowmen with long range but lower durability.',
+ crossbowmen:'Hard-hitting ranged troops unlocked by Crossbow Corps.',
+ 'men-at-arms':'Armoured heavy infantry unlocked by Organized Retinues.',
+ knights:'Elite heavy cavalry unlocked by Combined Arms.'
+};
+function provinceMilitaryHTML1300(game,c){
+ const m=ensureGameMilitary1300(game),army=militaryCityArmy1300(game,c.id),prof=militaryProfessionalCountCity1300(game,c.id),levy=militaryLevyCountCity1300(game,c.id),workerDraw=militaryWorkerPoolDraw1300(game,c.id),queues=m.trainingQueues.filter(q=>q.cityId===c.id),levyOrders=m.levyOrders.filter(q=>q.cityId===c.id),unlocked=new Set(normaliseTechnologyState1300(game.technology).unlocked);
+ const orders=[
+  ...queues.map(q=>{const u=MILITARY_UNIT_1300[q.unitId],left=Math.max(0,q.finishDay-game.day),pct=Math.round(clamp1300((game.day-q.startDay)/Math.max(1,q.finishDay-q.startDay)*100,0,100));return `<article><div><strong>${q.amount} ${esc(u.name)}</strong><small>Professional training · whole group joins at completion</small></div><span>${left}d · ${pct}%</span><button data-action="military-cancel-order" data-order="${esc(q.id)}">CANCEL</button></article>`;}),
+  ...levyOrders.map(q=>`<article><div><strong>${q.remaining} / ${q.requested} Levy Swordsmen remaining</strong><small>Raised from worker pool · up to ${levyDailyRate1300(game,c.id)}/day</small></div><span>ACTIVE</span><button data-action="military-cancel-order" data-order="${esc(q.id)}">CANCEL</button></article>`)
+ ];
+ return `<section class="province-military-panel">
+  <div class="province-military-heading"><div><span>CITY ARMY</span><strong>${esc(army?.name||('Army of '+displayCityName1300(c)))}</strong></div><small><b>${strengthNumber(prof)}</b> professional · <b>${strengthNumber(levy)}</b> levy · ${strengthNumber(workerDraw)} drawn from worker pool</small></div>
+  <div class="province-military-units">${MILITARY_UNITS_1300.map(u=>{const count=militaryUnitCount1300(game,c.id,u.id),locked=!!u.tech&&!unlocked.has(u.tech),queued=queues.filter(q=>q.unitId===u.id).reduce((n,q)=>n+q.amount,0),isLevy=!u.professional;return `<article class="military-unit-card ${locked?'locked':''}" data-unit-card="${u.id}">
+   <div class="military-unit-title"><div><span>${esc(u.category)}</span><strong>${esc(u.name)}</strong></div><b>${strengthNumber(count)}</b></div>
+   <div class="military-unit-stats"><span>HP <b>${u.hp}</b></span><span>ATK <b>${u.attack}</b></span><span>RNG <b>${u.range}</b></span><span>ƒ <b>${u.upkeep.toFixed(3)}</b>/wk</span></div>
+   <p>${esc(MILITARY_UNIT_DESCRIPTION_1300[u.id]||'')}</p>
+   ${queued?`<small class="military-queued">+${queued} training</small>`:''}
+   ${locked?`<div class="military-tech-lock">REQUIRES ${esc(TECHNOLOGY_1300[u.tech]?.name||u.tech)}</div>`:`<div class="military-recruit-row"><input type="number" min="1" step="1" value="10" data-military-amount aria-label="Amount of ${esc(u.name)}"><button data-action="${isLevy?'military-raise-levy':'military-train'}" data-city="${c.id}" data-unit="${u.id}">${isLevy?'RAISE':'TRAIN'}${u.professional?` · ${u.trainingDays}d`:''}</button><button class="secondary" data-action="military-disband" data-city="${c.id}" data-unit="${u.id}" ${count?'':'disabled'}>DISBAND</button></div>`}
+  </article>`;}).join('')}</div>
+  ${orders.length?`<div class="military-order-list"><span>ACTIVE RECRUITMENT</span>${orders.join('')}</div>`:''}
+  <div class="military-rule-note"><b>Population:</b> every soldier is one person. Levies come directly from the worker pool. Professional recruitment uses people outside the worker pool first and only pulls workers when that reserve is exhausted.</div>
+ </section>`;
+}
+
 function gameProvincePanelHTML(cityId){
  const game=profile.activeGame,c=CITY_1300[cityId];if(!game||!c)return '';
  const owned=game.ownedCities?.includes(cityId),state=gameProvinceBuildingState(c),b=state.bonuses,coastal=isCoastalCity1300(c),e=game.economy=normaliseGameEconomy1300(game.economy),cap=owned?gameStatCap1300(game):100;
@@ -1575,13 +1604,14 @@ function gameProvincePanelHTML(cityId){
  const existing=state.buildings.filter(row=>row.level>0);
  return `<div class="province-side-head" style="border-left-color:${owned?game.playerColor:'#8a8174'}"><button class="province-side-close" data-action="close-game-province" aria-label="Close">×</button><span>${owned?'YOUR PROVINCE':'VISIBLE PROVINCE'}</span><h2>${esc(displayCityName1300(c))}</h2><p>${owned?'Your Realm':esc(c.country)}</p></div>
  <div class="province-side-scroll">
-  <section class="province-side-facts ${coastal?'has-navy':'no-navy'}"><div class="province-population-fact"><span>Population</span><strong>${strengthNumber(populationNow)}</strong>${owned&&popDemo?`<small class="${Number(popDemo.change)>0?'positive':Number(popDemo.change)<0?'negative':'neutral'}">${Number(popDemo.change)>0?'+':''}${Number(popDemo.change)||0} last week · ${Number(popDemo.annualGrowthPct).toFixed(2)}%/yr</small>`:''}</div>${coastal?`<div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div>`:''}<div><span>Professional army</span><strong>${strengthNumber(owned?(prof?.byCity[c.id]||0):c.army)}</strong></div><div><span>Unprofessional army</span><strong>${owned?'0':'—'}</strong></div></section>
+  <section class="province-side-facts ${coastal?'has-navy':'no-navy'}"><div class="province-population-fact"><span>Population</span><strong>${strengthNumber(populationNow)}</strong>${owned&&popDemo?`<small class="${Number(popDemo.change)>0?'positive':Number(popDemo.change)<0?'negative':'neutral'}">${Number(popDemo.change)>0?'+':''}${Number(popDemo.change)||0} last week · ${Number(popDemo.annualGrowthPct).toFixed(2)}%/yr</small>`:''}</div>${coastal?`<div><span>Navy</span><strong>${strengthNumber(c.navy+b.navy)}</strong></div>`:''}<div><span>Professional army</span><strong>${strengthNumber(owned?(prof?.byCity[c.id]||0):c.army)}</strong></div><div><span>Unprofessional army</span><strong>${owned?strengthNumber(unprofessionalArmyState1300(game).byCity[c.id]||0):'—'}</strong></div></section>
   <section class="province-side-stats dynamic">${stats.map(([label,value,key])=>{const change=Number(changes[key])||0,pct=cap?clamp1300(value/cap*100,0,100):0;return `<div><span>${label}</span><strong>${Number(value).toFixed(2)} <small>/ ${cap.toFixed(2)}</small></strong><em class="${change>0?'positive':change<0?'negative':'neutral'}">${change>0?'+':''}${change.toFixed(2)} this week</em><i><b style="width:${pct}%"></b></i></div>`;}).join('')}</section>
   ${owned?`<section class="province-economic-policy"><div class="policy-heading"><span>PROVINCE POLICY</span><small>National tax and realm wage are set in the country Economy tab</small></div>
    <div class="policy-row"><div><strong>Province minimum wage</strong><small>${cityOverride?'Custom monthly wage':'Inherits realm monthly wage'} · per worker / month</small></div>${wageStepper1300('city',cityId,null,cityWage,cityOverride)}</div>
    <div class="policy-row technology-investment-row"><div><strong>Technology investment</strong><small>Recommended ƒ${money1300(techNeed)}/week · directly affects this province${Number(b.technologyInvestmentPct)>0?` · building effectiveness +${Number(b.technologyInvestmentPct)}%`:''}</small></div><div class="province-tech-slider"><strong data-tech-budget-value="${c.id}">ƒ${money1300(techBudget)}</strong><input data-tech-budget-city="${c.id}" type="range" min="0" max="${techMax}" step="0.01" value="${techBudget}" aria-label="Technology investment in ${esc(displayCityName1300(c))}"><small>ƒ0.00 — ƒ${money1300(techMax)}</small></div></div>
    <div class="workforce-summary"><span><strong>${strengthNumber(summary.workers)}</strong><small>EMPLOYED</small></span><span><strong>${strengthNumber(summary.labour)}</strong><small>WORKER POOL</small></span><span><strong class="${summary.profit<0?'negative':''}">${summary.profit>=0?'+':'-'}ƒ${money1300(Math.abs(summary.profit))}</strong><small>PROFIT / WEEK</small></span></div>
   </section>`:''}
+  ${owned?provinceMilitaryHTML1300(game,c):''}
   ${owned?provinceMarketHTML1300(game,c.id):''}
   <div class="province-building-header"><div><span>BUILDINGS IN THIS PROVINCE</span><strong>${existing.length} building type${existing.length===1?'':'s'}</strong></div><small>${owned?`Treasury <b>ƒ${money1300(game.florins)}</b>`:'Foreign province'}</small></div>
   <section class="province-building-cards compact-owned-buildings">${existing.length?existing.map(row=>{
@@ -2557,6 +2587,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='form-country'){formCampaignNation1300(b.dataset.country);return;}
  if(a==='people-group-detail'){openPopulationGroupDetail1300(b.dataset.group);return;}
  if(a==='game-ranking-category'){if(RANKING_CATEGORIES_1300.some(([x])=>x===id)){gameRankingCategory=id;renderGameCountryPanel1300();}return;}
+ if(a==='military-train'){const card=b.closest('[data-unit-card]'),amount=card?.querySelector('[data-military-amount]')?.value,result=startProfessionalTraining1300(profile.activeGame,b.dataset.city,b.dataset.unit,amount);if(result.ok){save();renderGameProvincePanel();refreshCampaignResourceBar1300(profile.activeGame);}toast(result.message);return;}
+ if(a==='military-raise-levy'){const card=b.closest('[data-unit-card]'),amount=card?.querySelector('[data-military-amount]')?.value,result=startLevyRecruitment1300(profile.activeGame,b.dataset.city,amount);if(result.ok){save();renderGameProvincePanel();}toast(result.message);return;}
+ if(a==='military-disband'){const card=b.closest('[data-unit-card]'),amount=card?.querySelector('[data-military-amount]')?.value,n=disbandMilitaryUnits1300(profile.activeGame,b.dataset.city,b.dataset.unit,amount);if(n){save();syncCampaignMilitaryOverlay1300(profile.activeGame);renderGameProvincePanel();refreshCampaignResourceBar1300(profile.activeGame);toast(n+' soldiers returned to civilian life.');}return;}
+ if(a==='military-cancel-order'){if(cancelMilitaryOrder1300(profile.activeGame,b.dataset.order)){save();renderGameProvincePanel();toast('Recruitment order cancelled.');}return;}
  if(a==='game-build-province'){buyGameProvinceBuilding(b.dataset.city,id);return;}
  if(a==='game-demolish-building'){demolishGameProvinceBuilding1300(b.dataset.city,id);return;}
  if(a==='game-tax-adjust'){changeGameTax1300(b.dataset.delta);return;}
