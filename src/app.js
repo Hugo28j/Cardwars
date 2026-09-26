@@ -176,6 +176,11 @@ function buildingMaintenanceOrders1300(city,market){
   if(['barracks','dockyard'].includes(sector.id))addOrder(market.goods.arms,'demand',level*.08*priceDemandMultiplier1300(market,'arms',.45,.80,1.60));
  }
 }
+function militaryDemandOrders1300(city,market){
+ const d=city?.militaryDemand||{},foodNeed=Math.max(0,Number(d.food)||0),armsNeed=Math.max(0,Number(d.arms)||0);
+ if(foodNeed>0){const food=allocateSubstitutes(market,['grain','fish','meat'],foodNeed,{grain:2.4,fish:city.coastal?.8:.35,meat:1.1},1.1);for(const [id,n] of Object.entries(food))addOrder(market.goods[id],'demand',n*priceDemandMultiplier1300(market,id,.55,.78,1.55));}
+ if(armsNeed>0)addOrder(market.goods.arms,'demand',armsNeed*priceDemandMultiplier1300(market,'arms',.35,.82,1.45));
+}
 function infrastructure(city){const levels=(city.sectors||[]).reduce((n,s)=>n+(Number(s.level)||0),0),support=(city.sectors||[]).reduce((n,s)=>n+(['market','warehouse','merchantquarter','customshouse','bridge','dockyard'].includes(s.id)?Number(s.level)||0:0),0),capacity=10+(Number(city.economy)||50)/5+support*4,usage=Math.max(1,levels*1.7);return {capacity,usage,access:clamp(capacity/usage,.35,1)};}
 function updatePrices(market){
  for(const g of GOODS_1300){
@@ -249,7 +254,7 @@ function updatePops(city,market,previous,sectors){
 function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35,tariffs={},tradeStockpile={}}={}){
  const markets={},pops={},sectorsByCity={};let weeklyTax=0,weeklyTariffRevenue=0;
  for(const city of cities){
-  const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};market.marketAccess=round(infrastructure(city).access,4);ambientSupply(city,market);popOrders(city,market,popState);buildingMaintenanceOrders1300(city,market);
+  const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};market.marketAccess=round(infrastructure(city).access,4);ambientSupply(city,market);popOrders(city,market,popState);buildingMaintenanceOrders1300(city,market);militaryDemandOrders1300(city,market);
   for(const sector of city.sectors||[]){
    if((Number(sector.level)||0)<=0)continue;
    const p=sectorPotential(sector,city),priority=sector.priority||'employment',treasury=Number.isFinite(Number(sector.treasury))?Number(sector.treasury):100,cashFactor=treasury<=0?.15:treasury<50?.55+.45*(treasury/50):1,inputIds=Object.keys(p.def.inputs||{}),inputDemandFactor=priority==='output'?1.22:1,outputEstimateFactor=priority==='output'?1.10:1;
@@ -970,7 +975,7 @@ function militaryUnprofessionalLimit1300(game){return Math.floor((game?.ownedCit
 function startProfessionalTraining1300(game,cityId,unitId,amount){
  const u=MILITARY_UNIT_1300[unitId],n=Math.max(1,Math.floor(Number(amount)||0));if(!game?.ownedCities?.includes(cityId)||!u?.professional)return {ok:false,message:'Invalid professional recruitment order.'};if(!militaryUnitUnlocked1300(game,unitId))return {ok:false,message:u.name+' requires '+(TECHNOLOGY_1300[u.tech]?.name||u.tech)+'.'};
  const active=professionalArmyState1300(game).army,pending=ensureGameMilitary1300(game).trainingQueues.reduce((s,q)=>s+q.amount,0),limit=militaryProfessionalLimit1300(game);if(active+pending+n>limit)return {ok:false,message:'Professional army cap is 5% of population. You can queue at most '+Math.max(0,limit-active-pending)+' more soldiers.'};
- addTrainingOrder1300(ensureGameMilitary1300(game),{cityId,unitId,amount:n,day:game.day});invalidateWeeklyBudgetProjection1300(game);return {ok:true,message:n+' '+u.name+' entered training. The full group joins in '+u.trainingDays+' days.'};
+ const order=addTrainingOrder1300(ensureGameMilitary1300(game),{cityId,unitId,amount:n,day:game.day}),trainingPct=commanderBonus1300(game,cityId,'trainingPct'),days=Math.max(15,Math.round(u.trainingDays*(1-trainingPct/100)));order.finishDay=game.day+days;invalidateWeeklyBudgetProjection1300(game);return {ok:true,message:n+' '+u.name+' entered training. The full group joins in '+days+' days.'};
 }
 function levyDailyRate1300(game,id){const c=CITY_1300[id],lvl=c?gameProvinceBuildingState(c).buildings.find(x=>x.id==='barracks')?.level||0:0;return Math.min(3,1+(lvl>0?1:0)+(lvl>=3?1:0));}
 function startLevyRecruitment1300(game,cityId,amount){
@@ -1087,13 +1092,13 @@ function processAdvancedMilitaryDay1300(game){let changed=processArmyMovements13
 
 function professionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryProfessionalCountCity1300(game,id);army+=byCity[id];}const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryProfessionalLimit1300(game);return {population,basePercent:5,bonusPercent:0,percent:5,limit,rawTotal:army,army,byCity};}
 function unprofessionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryLevyCountCity1300(game,id);army+=byCity[id];}const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryUnprofessionalLimit1300(game);return {population,percent:25,limit,army,byCity};}
-function campaignMilitaryByCity1300(game){const out={};if(!game)return out;const p=professionalArmyState1300(game),u=unprofessionalArmyState1300(game);for(const id of game.ownedCities||[]){const c=CITY_1300[id];if(!c)continue;const b=gameProvinceBuildingState(c).bonuses;out[id]={army:(p.byCity[id]||0)+(u.byCity[id]||0),navy:(Number(c.navy)||0)+(Number(b.navy)||0)};}return out;}
+function campaignMilitaryByCity1300(game){
+ const out={};if(!game)return out;const m=ensureAdvancedMilitary1300(game);
+ for(const homeId of game.ownedCities||[]){const c=CITY_1300[homeId];if(!c)continue;const army=m.armiesByCity[homeId],loc=army?.location||homeId,total=militaryArmyTotal1300(game,homeId);out[loc]??={army:0,navy:0};out[loc].army+=total;const b=gameProvinceBuildingState(c).bonuses;out[homeId]??={army:0,navy:0};out[homeId].navy+=(Number(c.navy)||0)+(Number(b.navy)||0);}
+ return out;
+}
 function syncCampaignMilitaryOverlay1300(game=profile.activeGame){
- if(!world?.state?.game||!game)return;
- world.state.game.ownedCityIds=[...(game.ownedCities||[])];
- world.state.game.cityOwners={...(game.cityOwners||{})};
- world.state.game.militaryByCity=campaignMilitaryByCity1300(game);
- world.refresh();
+ if(!world?.state?.game||!game)return;world.state.game.ownedCityIds=[...(game.ownedCities||[])];world.state.game.cityOwners={...(game.cityOwners||{})};world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.state.game.battlesByCity=Object.fromEntries((ensureAdvancedMilitary1300(game)?.battles||[]).filter(b=>b.status==='active').map(b=>[b.cityId,b.id]));world.refresh();
 }
 function militaryTotals1300(game){const p=professionalArmyState1300(game),u=unprofessionalArmyState1300(game);let navy=0;for(const id of game?.ownedCities||[]){const c=CITY_1300[id];if(c){const b=gameProvinceBuildingState(c).bonuses;navy+=(Number(c.navy)||0)+(Number(b.navy)||0);}}return {army:p.army,unprofessionalArmy:u.army,navy,professionalArmyLimit:p.limit,professionalArmyPercent:p.percent,professionalArmyBonusPercent:p.bonusPercent};}
 function annualInflationFactor1300(game){const years=Math.max(0,Math.floor((Number(game?.day)||0)/365.2425));return Math.pow(1.01,years);}
@@ -1121,7 +1126,7 @@ function technologyBudgetNeed1300(c,game){return roundStat1300(Math.max(.06,prov
 function weeklyStateExpenses1300(game){
  const e=normaliseGameEconomy1300(game.economy),mil=militaryTotals1300(game),tech=(game.ownedCities||[]).reduce((n,id)=>n+(Number(e.technologyBudgets[id])||0),0),buildingSupport=companyBuildingSupportTotal1300(game),bonuses=technologyBonuses1300(game.technology);let armyRaw=0,unprofessionalRaw=0,navyRaw=0,fortifications=0;
  for(const id of game.ownedCities||[]){const c=CITY_1300[id];if(!c)continue;const b=gameProvinceBuildingState(c).bonuses,mod=(1+bonuses.armyMaintenancePct/100)*(1+(Number(b.armyUpkeepPct)||0)/100),navyUnits=Math.max(0,(Number(c.navy)||0)+(Number(b.navy)||0));armyRaw+=militaryCityUpkeep1300(game,id,true)*mod;unprofessionalRaw+=militaryCityUpkeep1300(game,id,false)*mod;navyRaw+=navyUnits*GAME_NAVY_UPKEEP_PER_UNIT*(1+bonuses.navyMaintenancePct/100)*(1+(Number(b.navyUpkeepPct)||0)/100);fortifications+=Math.max(0,Number(b.fortificationUpkeep)||0);}
- const army=roundStat1300(armyRaw),unprofessionalArmy=roundStat1300(unprofessionalRaw),navy=roundStat1300(navyRaw),fortification=roundStat1300(fortifications),stability=roundStat1300(Math.min(e.stabilityBudget,stabilityBudgetMax1300(game))),technology=roundStat1300(tech);return {army,unprofessionalArmy,navy,fortification,stability,technology,buildingSupport,total:roundStat1300(army+unprofessionalArmy+navy+fortification+stability+technology+buildingSupport),armyUnits:mil.army,unprofessionalArmyUnits:mil.unprofessionalArmy||0,navyUnits:mil.navy,stabilityNeed:stabilityBudgetNeed1300(game),stabilityMax:stabilityBudgetMax1300(game)};
+ const army=roundStat1300(armyRaw),unprofessionalArmy=roundStat1300(unprofessionalRaw),commanders=commanderUpkeepTotal1300(game),navy=roundStat1300(navyRaw),fortification=roundStat1300(fortifications),stability=roundStat1300(Math.min(e.stabilityBudget,stabilityBudgetMax1300(game))),technology=roundStat1300(tech);return {army,unprofessionalArmy,commanders,navy,fortification,stability,technology,buildingSupport,total:roundStat1300(army+unprofessionalArmy+commanders+navy+fortification+stability+technology+buildingSupport),armyUnits:mil.army,unprofessionalArmyUnits:mil.unprofessionalArmy||0,navyUnits:mil.navy,stabilityNeed:stabilityBudgetNeed1300(game),stabilityMax:stabilityBudgetMax1300(game)};
 }
 function stabilityPolicyPressure1300(game){
  const e=normaliseGameEconomy1300(game.economy),wageRatio=e.nationalWage/expectedMonthlyWage1300(game),tariffCost=tariffCostOfLivingImpact1300(game);
@@ -1269,7 +1274,7 @@ function companyBuildingSupportTotal1300(game){
 }
 function economyCitySnapshot1300(game,c){
  const state=gameProvinceBuildingState(c),e=game.economy,sectors=state.buildings.filter(row=>row.level>0&&row.id!=='walls').map(row=>{const policy=companyPolicy1300(game,c.id,row.id),method=resolvedProductionMethod1300(game,row.id,policy.productionMethod);return {id:row.id,level:row.level,workers:Math.max(0,Number(e.employment?.[c.id]?.[row.id])||0),capacity:Math.max(1,row.maxWorkers*row.level),wage:companyOperatingWage1300(game,c,row),treasury:companyTreasury1300(game,c.id,row.id),employmentTarget:policy.employmentTarget,buildingSupport:policy.buildingSupport,priority:policy.priority,productionMethod:method.id,production:productionDefinition1300(game,row.id,method.id)};}),stats=provinceDynamicStats1300(game,c);
- return {id:c.id,population:effectivePopulation1300(game,c),food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,coastal:isCoastalCity1300(c),labourPool:cityLabourPool1300(c,game),grainBonusPct:Number(PROVINCE_GRAIN_BONUS_1300[c.id])||0,demandGrowthMultiplier:populationDemandGrowth1300(game),expectedWage:expectedMonthlyWage1300(game),techEffects:technologyBonuses1300(game.technology),sectors};
+ return {id:c.id,population:effectivePopulation1300(game,c),food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,coastal:isCoastalCity1300(c),labourPool:cityLabourPool1300(c,game),grainBonusPct:Number(PROVINCE_GRAIN_BONUS_1300[c.id])||0,demandGrowthMultiplier:populationDemandGrowth1300(game),expectedWage:expectedMonthlyWage1300(game),techEffects:technologyBonuses1300(game.technology),militaryDemand:militaryMarketDemand1300(game,c.id),sectors};
 }
 function calculateWeeklyBudgetProjection1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c));
@@ -1284,7 +1289,7 @@ function weeklyBudgetProjection1300(game,{refresh=false}={}){
 function invalidateWeeklyBudgetProjection1300(game){if(game?.economy)game.economy.weeklyBudgetProjection=null;}
 function refreshWeeklyBudgetDOM1300(game,{refresh=true}={}){
  if(!game)return;const b=weeklyBudgetProjection1300(game,{refresh}),money=(id,value,prefix='')=>{const el=$(id);if(el)el.textContent=prefix+'ƒ'+money1300(Math.abs(value));},signed=(id,value)=>{const el=$(id);if(!el)return;el.textContent=(value<0?'-':'+')+'ƒ'+money1300(Math.abs(value));el.classList.toggle('negative',value<0);el.classList.toggle('positive',value>0);};
- money('#budget-sector-taxes',b.sectorTaxes,'+');money('#budget-import-tariffs',b.importTariffs,'+');money('#budget-army-expense',b.expenses.army,'-');money('#budget-unprof-army-expense',b.expenses.unprofessionalArmy,'-');money('#budget-navy-expense',b.expenses.navy,'-');money('#budget-fortification-expense',b.expenses.fortification,'-');money('#budget-building-support-expense',b.expenses.buildingSupport,'-');money('#budget-stability-expense',b.expenses.stability,'-');money('#budget-tech-expense',b.expenses.technology,'-');money('#budget-total-expenses',b.expenses.total,'-');signed('#budget-current-balance',b.balance);signed('#country-current-week-balance',b.balance);
+ money('#budget-sector-taxes',b.sectorTaxes,'+');money('#budget-import-tariffs',b.importTariffs,'+');money('#budget-army-expense',b.expenses.army,'-');money('#budget-unprof-army-expense',b.expenses.unprofessionalArmy,'-');money('#budget-commanders-expense',b.expenses.commanders,'-');money('#budget-navy-expense',b.expenses.navy,'-');money('#budget-fortification-expense',b.expenses.fortification,'-');money('#budget-building-support-expense',b.expenses.buildingSupport,'-');money('#budget-stability-expense',b.expenses.stability,'-');money('#budget-tech-expense',b.expenses.technology,'-');money('#budget-total-expenses',b.expenses.total,'-');signed('#budget-current-balance',b.balance);signed('#country-current-week-balance',b.balance);
  const top=$('#game-daily-tax');if(top)top.textContent='Week balance: '+(b.balance<0?'-':'')+'ƒ'+money1300(Math.abs(b.balance));
 }
 function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}={}){
@@ -2279,7 +2284,7 @@ function countryEconomyHTML1300(game){
   <div><span>Sector taxes</span><strong id="budget-sector-taxes">+ƒ${money1300(budget.sectorTaxes)}</strong></div>
   <div><span>Import tariffs</span><strong id="budget-import-tariffs" class="${budget.importTariffs>0?'positive':''}">+ƒ${money1300(budget.importTariffs)}</strong></div>
   <div><span>Professional army upkeep</span><strong id="budget-army-expense">-ƒ${money1300(expenses.army)}</strong></div>
-  <div><span>Unprofessional army upkeep</span><strong id="budget-unprof-army-expense">-ƒ${money1300(expenses.unprofessionalArmy)}</strong></div>
+  <div><span>Unprofessional army upkeep</span><strong id="budget-unprof-army-expense">-ƒ${money1300(expenses.unprofessionalArmy)}</strong></div><div><span>Commanders</span><strong id="budget-commanders-expense">-ƒ${money1300(expenses.commanders)}</strong></div>
   <div><span>Navy upkeep</span><strong id="budget-navy-expense">-ƒ${money1300(expenses.navy)}</strong></div>
   <div><span>Fortification upkeep</span><strong id="budget-fortification-expense">-ƒ${money1300(expenses.fortification)}</strong></div>
   <div><span>Building support</span><strong id="budget-building-support-expense">-ƒ${money1300(expenses.buildingSupport)}</strong></div>
