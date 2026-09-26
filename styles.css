@@ -1449,3 +1449,51 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .battle-day-log article{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px 10px;border-bottom:1px solid #2f3a34;background:#121b18}.battle-day-log article:last-child{border-bottom:0}
 .battle-day-log article strong,.battle-day-log article small{display:block}.battle-day-log article strong{font-size:9px;color:#d5d4c5}.battle-day-log article small{margin-top:2px;font-size:6px;color:#7f8e85}.battle-day-log article>span{font-family:var(--serif);font-size:14px;color:#d1ba72}
 .battle-log-morale{grid-column:1/-1;display:flex;gap:12px}
+
+
+/* Army allegiance colours */
+.army-map-marker.player-army .military-count rect,.battle-army.player-army .military-count rect{fill:#285f40;stroke:#a7d2a7}
+.army-map-marker.player-army .soldier-shield,.battle-army.player-army .soldier-shield{fill:#3d7c50;stroke:#b7d7a8}
+.army-map-marker.enemy-army .military-count rect,.battle-enemy-marker.enemy-army .military-count rect{fill:#762f31;stroke:#e0a19a}
+.army-map-marker.enemy-army .soldier-shield,.battle-enemy-marker.enemy-army .soldier-shield{fill:#8b3e3f;stroke:#e1a18e}
+.army-map-marker.ally-army .military-count rect{fill:#365e83;stroke:#aac6df}
+.army-map-marker.ally-army .soldier-shield{fill:#476f96;stroke:#b8d2e8}
+.army-map-marker.neutral-army .military-count rect{fill:#17221ef2;stroke:#b7a269}
+.army-map-marker.neutral-army .soldier-shield{fill:#6f3d35;stroke:#d0ad70}
+.battle-enemy-marker{filter:url(#military-shadow)}
+#world-map .city-territory-cell.game-siege{fill:#a17835!important;fill-opacity:.20!important;stroke:#d7b867;stroke-width:1.35}
+#world-map .city-territory-cell.game-occupied{fill:#406e51!important;fill-opacity:.18!important}
+
+/* Siege side panel */
+.siege-side-head{border-left-color:#b99b52!important}
+.siege-side-scroll{background:linear-gradient(180deg,#111914,#0e1511)}
+.siege-status-card{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #465249;background:#151f19}
+.siege-status-card>div{padding:14px 15px;border-right:1px solid #465249}.siege-status-card>div:last-child{border-right:0}
+.siege-status-card span,.siege-log-title span{display:block;font-size:7px;letter-spacing:1px;color:#c7aa66}
+.siege-status-card strong{display:block;margin-top:4px;font-family:var(--serif);font-size:18px;color:#e2dbc5}
+.siege-status-card small{display:block;margin-top:4px;font-size:7px;line-height:1.4;color:#85958b}
+.siege-bars{padding:14px 15px;border-bottom:1px solid #3f4a43}.siege-bars>div+div{margin-top:14px}
+.siege-bars header{display:flex;justify-content:space-between;gap:10px;align-items:end}.siege-bars header span{font-size:7px;letter-spacing:.7px;color:#95a299}.siege-bars header strong{font-family:var(--serif);font-size:14px;color:#dfd9c5}
+.siege-bars i{display:block;height:8px;margin-top:5px;border:1px solid #3f4d45;background:#25302b}.siege-bars i b{display:block;height:100%}
+.siege-bars i.food b{background:#8f9d62}.siege-bars i.unrest b{background:#9d554b}.siege-bars i.chance b{background:#b89c59}
+.siege-bars small{display:block;margin-top:5px;font-size:7px;line-height:1.45;color:#7f8d85}
+.siege-factors{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #3f4a43}
+.siege-factors>div{padding:10px 12px;border-right:1px solid #334039;border-bottom:1px solid #334039}.siege-factors>div:nth-child(2n){border-right:0}
+.siege-factors span,.siege-factors strong{display:block}.siege-factors span{font-size:6px;color:#7f8e85}.siege-factors strong{margin-top:3px;font-size:9px;color:#d6c891}
+.siege-occupation-note{margin:13px 15px;padding:12px;border:1px solid #4e745a;background:#14251a}.siege-occupation-note strong,.siege-occupation-note small{display:block}.siege-occupation-note strong{font-family:var(--serif);font-size:17px;color:#a9d0ad}.siege-occupation-note small{margin-top:4px;font-size:7px;line-height:1.5;color:#8fa396}
+.siege-log-title{display:flex;justify-content:space-between;align-items:end;padding:13px 15px 7px}.siege-log-title small{font-size:7px;color:#7d8b82}
+.siege-log{margin:0 15px 15px;border:1px solid #3b4841}.siege-log>p{padding:12px;font-size:8px;color:#89968e}
+.siege-log article{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px 10px;border-bottom:1px solid #303b35;background:#121b17}.siege-log article:last-child{border-bottom:0}
+.siege-log strong,.siege-log small{display:block}.siege-log strong{font-size:9px;color:#d6d4c3}.siege-log small{margin-top:2px;font-size:6px;color:#7f8d85}.siege-log article>span{font-size:7px;color:#c8b574}
+
+/* Negotiated peace treaties */
+.peace-term-block{margin:12px 0;padding:11px;border:1px solid #46544c;background:#111b17}
+.peace-term-head{display:flex;justify-content:space-between;gap:10px;align-items:end;margin-bottom:8px}.peace-term-head span{font-size:8px;letter-spacing:1px;color:#ceb36d}.peace-term-head small{font-size:7px;color:#849289}
+.peace-city-terms{display:grid;gap:5px}.peace-city-terms>p{font-size:8px;color:#849188}.peace-city-terms label,.peace-independence-term{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;padding:8px;border:1px solid #354139;background:#0e1713;cursor:pointer}
+.peace-city-terms input,.peace-independence-term input{accent-color:#bca15e}.peace-city-terms span,.peace-independence-term strong{font-size:9px;color:#d6d4c6}.peace-city-terms small,.peace-independence-term small{grid-column:2;display:block;font-size:6px;color:#7f8d84}
+.peace-independence-term span{min-width:0}.peace-independence-term input:disabled+span{opacity:.45}
+.peace-acceptance-breakdown{margin-top:8px;border:1px solid #3b4841;background:#101814}.peace-acceptance-breakdown>div{display:flex;justify-content:space-between;gap:12px;padding:6px 8px;border-bottom:1px solid #2d3832}.peace-acceptance-breakdown>div:last-child{border-bottom:0}.peace-acceptance-breakdown span{font-size:7px;color:#8a978f}.peace-acceptance-breakdown strong{font-size:8px;color:#d0d1c4}
+
+/* Trapped armies cannot retreat. */
+.battle-panel-retreat:disabled{opacity:.38;cursor:not-allowed;background:#1c1817;border-color:#564642}
+@media(max-width:560px){.siege-status-card,.siege-factors{grid-template-columns:1fr}.siege-status-card>div,.siege-factors>div{border-right:0}}
