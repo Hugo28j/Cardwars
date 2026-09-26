@@ -2978,7 +2978,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='dip-modal-sell'){sellCityToCountry1300(gameDiplomacyCountry,modal.querySelector('#dip-modal-sell-city')?.value,modal.querySelector('#dip-modal-sell-price')?.value);modal.close();return;}
  if(a==='dip-modal-support'){requestSupportIndependence1300(gameDiplomacyCountry,modal.querySelector('#dip-modal-support-city')?.value);modal.close();return;}
  if(a==='dip-modal-deal'){const ok=executeDiplomaticDeal1300(gameDiplomacyCountry,modal.querySelector('#dip-modal-deal-offer')?.value,modal.querySelector('#dip-modal-deal-offer-amount')?.value,modal.querySelector('#dip-modal-deal-request')?.value,modal.querySelector('#dip-modal-deal-request-amount')?.value);if(ok)modal.close();return;}
- if(a==='dip-confirm-war'){const g=profile.activeGame,c=b.dataset.country;if(g&&c){const result=performAction(g,PLAYER_REALM,c,'war',diplomacyPowers1300(g,c));if(result.ok){diplomacyLog1300(g,c,result.message);save();}modal.close();renderGameDiplomacyPanel1300();toast(result.message);}return;}
+ if(a==='dip-confirm-war'){const g=profile.activeGame,c=b.dataset.country;if(g&&c){const result=performAction(g,PLAYER_REALM,c,'war',diplomacyPowers1300(g,c));if(result.ok){diplomacyLog1300(g,c,result.message);syncCampaignMilitaryOverlay1300(g);save();}modal.close();renderGameDiplomacyPanel1300();toast(result.message);}return;}
  if(a==='dip-improve'){improveRelations1300(gameDiplomacyCountry);return;}
  if(a==='dip-insult'){insultCountry1300(gameDiplomacyCountry);return;}
  if(a==='dip-war'){declareWar1300(gameDiplomacyCountry);return;}
