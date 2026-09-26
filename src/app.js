@@ -1694,7 +1694,7 @@ function provinceMilitaryHTML1300(game,c){
   ...levyOrders.map(q=>`<article><div><strong>${q.remaining} / ${q.requested} Levy Swordsmen remaining</strong><small>Raised from worker pool - up to ${levyDailyRate1300(game,c.id)}/day</small></div><span>ACTIVE</span><button data-action="military-cancel-order" data-order="${esc(q.id)}">CANCEL</button></article>`)
  ];
  const hired=m.commanders,available=COMMANDER_TEMPLATES_1300.filter(t=>!hired.some(x=>x.templateId===t.id));
- const targetMap=new Map();for(const id of game.ownedCities||[]){const row=CITY_1300[id];if(row)targetMap.set(row.id,row);}for(const row of warTargetSCities1300(game))targetMap.set(row.id,row);
+ const targetMap=new Map();for(const id of game.ownedCities||[]){const row=CITY_1300[id];if(row)targetMap.set(row.id,row);}for(const row of warTargetCities1300(game))targetMap.set(row.id,row);
  const targets=[...targetMap.values()].filter(x=>x.id!==(army?.location||c.id));
  return `<section class="province-military-panel">
   <div class="province-military-heading"><div><span>CITY ARMY</span><strong>${esc(army?.name||('Army of '+displayCityName1300(c)))}</strong></div><small><b>${strengthNumber(prof)}</b> professional - <b>${strengthNumber(levy)}</b> levy - ${strengthNumber(workerDraw)} drawn from worker pool</small></div>
