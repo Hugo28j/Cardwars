@@ -252,6 +252,7 @@
 .workforce-summary span{background:#121d19;padding:8px}
 .workforce-summary strong{display:block;font-family:var(--serif);font-size:15px}
 .workforce-summary small{display:block;font-size:6px;color:#7d8b82;margin-top:2px;letter-spacing:.5px}
+.province-economy-summary{margin-top:0;border-bottom:1px solid #465249}
 .sector-economy{display:grid;grid-template-columns:1fr 1fr;gap:3px 7px;margin-top:7px;padding-top:6px;border-top:1px solid #39463f}
 .sector-economy span{font-size:7px;color:#859389}
 .sector-economy span:first-child{grid-column:1/-1}
