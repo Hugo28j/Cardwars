@@ -1462,7 +1462,7 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .army-map-marker.neutral-army .soldier-shield{fill:#6f3d35;stroke:#d0ad70}
 .battle-enemy-marker{filter:url(#military-shadow)}
 #world-map .city-territory-cell.game-siege{fill:#a17835!important;fill-opacity:.20!important;stroke:#d7b867;stroke-width:1.35}
-#world-map .city-territory-cell.game-occupied{fill:#406e51!important;fill-opacity:.18!important}
+#world-map .city-territory-cell.game-occupied{stroke:#d8c58a;stroke-width:1.25;stroke-opacity:.9}
 
 /* Siege side panel */
 .siege-side-head{border-left-color:#b99b52!important}
@@ -1497,3 +1497,30 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 /* Trapped armies cannot retreat. */
 .battle-panel-retreat:disabled{opacity:.38;cursor:not-allowed;background:#1c1817;border-color:#564642}
 @media(max-width:560px){.siege-status-card,.siege-factors{grid-template-columns:1fr}.siege-status-card>div,.siege-factors>div{border-right:0}}
+
+
+/* Functional commander controls in the province Army tab */
+.commander-section{margin-top:14px;border-top:1px solid #465249;background:#101915}
+.commander-section-head{padding:12px 14px;border-bottom:1px solid #39463f}
+.commander-section-head>div{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.commander-section-head span,.commander-candidates>span,.army-battle-history>span{font-size:7px;letter-spacing:1px;color:#c7aa67}
+.commander-section-head strong{font-family:var(--serif);font-size:15px;color:#e0dcc8}
+.commander-section-head small{display:block;margin-top:4px;font-size:7px;line-height:1.45;color:#85938a}
+.commander-roster,.commander-candidates{padding:8px 12px 11px}
+.commander-candidates>span{display:block;margin:2px 0 7px}
+.commander-roster article,.commander-candidates article{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;align-items:center;padding:9px 0;border-bottom:1px solid #344139}
+.commander-roster article:last-child,.commander-candidates article:last-child{border-bottom:0}
+.commander-roster article>div,.commander-candidates article>div{min-width:0}
+.commander-roster strong,.commander-candidates strong{display:block;font-family:var(--serif);font-size:12px;color:#e2deca}
+.commander-roster small,.commander-candidates small{display:block;margin-top:2px;font-size:7px;line-height:1.35;color:#829087}
+.commander-candidates em{font-family:var(--serif);font-style:normal;font-size:11px;color:#d4bd78;white-space:nowrap}
+.commander-roster button,.commander-candidates button{padding:7px 9px;border:1px solid #8c7747;background:#17221d;color:#ddc477;font-size:7px;font-weight:700;letter-spacing:.5px;cursor:pointer}
+.commander-roster button.secondary{border-color:#4d5b53;color:#aab5ad}
+.commander-roster button:disabled{opacity:.42;cursor:default}
+.commander-roster button:not(:disabled):hover,.commander-candidates button:hover{background:#223128;border-color:#bea25e}
+.army-battle-history{margin:0 12px 12px;padding-top:10px;border-top:1px solid #39463f}
+.army-battle-history>span{display:block;margin-bottom:6px}
+.army-battle-history button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;padding:8px 9px;border-bottom:1px solid #303c35;background:#121c18;text-align:left;cursor:pointer}
+.army-battle-history button:hover{background:#192720}
+.army-battle-history strong{font-family:var(--serif);font-size:11px;color:#ddd9c6}
+.army-battle-history small{font-size:7px;color:#9a8f73}
