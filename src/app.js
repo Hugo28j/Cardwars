@@ -1,8 +1,8 @@
-import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260924-weekly-cadence-v5';
+import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260926-diplo-currency-v18';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-treasury-grain-market-v9';
-import {icon} from './icons.js';
+import {icon} from './icons.js?v=20260926-alert-v2';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260925-city-labels-army-spacing-v3';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260926-inflation-v2';
@@ -415,15 +415,108 @@ const GAME_MONTHS_1300=['January','February','March','April','May','June','July'
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
 function freshGameEconomy1300(){return {taxRate:10,nationalWage:.08,tariffs:{},cityWages:{},buildingWages:{},companyPolicies:{},companyTreasuries:{},populationByCity:{},populationDemography:{},populationRemainders:{},employment:{},lastEconomy:{},markets:{},pops:{},dynamicStats:{},technologyBudgets:{},lastStatChanges:{},statRemainders:{},lastMarketTickDay:null,weeklyTax:0,weeklyTariffRevenue:0,weekSectorRevenue:0,weekTariffRevenue:0,lastWeekSectorRevenue:0,lastWeekTariffRevenue:0,weeklyBudgetProjection:null,monthRevenue:0,monthExpenses:0,lastMonthRevenue:0,lastMonthExpenses:0,lastMonthBalance:0,lastMonthLabel:'No completed week yet',stabilityBudget:0,stabilityModifier:0,corruption:20,lastStabilityChange:0,weeklyCadenceV1:true,startingWage020V1:true,startingWage040V2:true,weeklyWage010V3:true,weeklyWage006V4:true,weeklyWage002V5:true,monthlyWage012V6:true,monthlyWage010V7:true,monthlyWage008V8:true};}
-function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},opinionBaselineV2:{},history:[]};}
-function monthlyDiplomaticPointGain1300(game){const player=buildCampaignRankings1300(game).find(r=>r.player);return round(Math.max(0,Number(player?.strength)||0)*.003/4,4);}
+function freshGameDiplomacy1300(){return {relations:{},alliances:{},wars:{},recognitions:{},tradeStockpile:{},aiTreasuries:{},aiGoods:{},lastImproveDay:{},independenceSupportByCity:{},activeIndependenceSupportWars:{},opinionBaselineV2:{},history:[],notifications:[],notificationSeq:0,diploZeroLatched:false,diploInsultBonusUntilDay:0,diploCurrencyV2:true};}
+function monthlyDiplomaticPointGain1300(game){const player=buildCampaignRankings1300(game).find(r=>r.player);return round(Math.max(0,Number(player?.strength)||0)*.003/8,4);}
 function weeklyDiplomaticPointGain1300(game){return round(monthlyDiplomaticPointGain1300(game)/WEEKS_PER_MONTH,4);}
 function normaliseGameDiplomacy1300(raw){
  const d=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:freshGameDiplomacy1300();
  for(const key of ['relations','alliances','wars','recognitions','tradeStockpile','aiTreasuries','aiGoods','lastImproveDay','independenceSupportByCity','activeIndependenceSupportWars','opinionBaselineV2'])if(!d[key]||typeof d[key]!=='object'||Array.isArray(d[key]))d[key]={};
  for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(d.tradeStockpile[g.id])||0)*100)/100);
  d.history=Array.isArray(d.history)?d.history.slice(-40):[];
+ d.notifications=Array.isArray(d.notifications)?d.notifications.filter(x=>x&&typeof x==='object'&&x.id).slice(-8):[];
+ d.notificationSeq=Math.max(0,Math.floor(Number(d.notificationSeq)||0));
+ d.diploZeroLatched=!!d.diploZeroLatched;
+ d.diploInsultBonusUntilDay=Math.max(0,Number(d.diploInsultBonusUntilDay)||0);
+ d.diploCurrencyV2=true;
+ if(d.network?.pairs)for(const p of Object.values(d.network.pairs))for(const r of Object.values(p?.directions||{}))if(r)r.embargo=false;
  return d;
+}
+const DIPLO_POINT_CAP_1300=25,DIPLO_POINT_START_1300=1;
+const DIPLO_RECURRING_COSTS_1300={improve:.5,curry:.2,access:.1};
+const DIPLO_ONE_TIME_COSTS_1300={gift:.25,alliance:1,breakAlliance:.5,trust:.25,guarantee:1,offerAccess:.25,trade:.5,subsidy:.25,peace:.5,war:1,money:.5,recognition:1,sellCity:.5,supportIndependence:1};
+function diplomaticPoints1300(game){return clamp1300(Number(game?.diploPoints)||0,0,DIPLO_POINT_CAP_1300);}
+function diplomacyActionPointCost1300(action){return Math.max(0,Number(DIPLO_ONE_TIME_COSTS_1300[action])||0);}
+function tradeDiplomaticPointCost1300(offerToken,offerAmount,requestToken,requestAmount){
+ const isGood=t=>{const s=String(t||'');return s.startsWith('good:')||Object.hasOwn(GOOD_1300,s);};
+ const goods=(isGood(offerToken)?Math.max(0,Number(offerAmount)||0):0)+(isGood(requestToken)?Math.max(0,Number(requestAmount)||0):0);
+ return round(goods>0?clamp1300(goods*.05,.25,5):.5,2);
+}
+function rivalWeeklyDiploGainForCountry1300(game,country){
+ const c=diplomacyAllianceContext1300(game,country),ratio=Math.max(0,Number(c.targetStrength)||0)/Math.max(1,Number(c.playerStrength)||1);
+ return round(clamp1300(.5*ratio,0,1.5),3);
+}
+function weeklyDiplomaticPointSummary1300(game){
+ const d=normaliseGameDiplomacy1300(game.diplomacy),n=diplomacyState(game),base=weeklyDiplomaticPointGain1300(game),insult=(Number(game.day)||0)<d.diploInsultBonusUntilDay?.5:0;
+ let rivals=0,improve=0,curry=0,access=0;
+ for(const p of Object.values(n.pairs)){
+  if(!p.countries.includes(PLAYER_REALM))continue;
+  const ours=p.directions?.[PLAYER_REALM],country=p.countries.find(c=>c!==PLAYER_REALM);if(!ours||!country)continue;
+  if(ours.mission==='improve')improve+=DIPLO_RECURRING_COSTS_1300.improve;
+  if(ours.mission==='curry')curry+=DIPLO_RECURRING_COSTS_1300.curry;
+  if(ours.access)access+=DIPLO_RECURRING_COSTS_1300.access;
+  if(ours.rival)rivals+=rivalWeeklyDiploGainForCountry1300(game,country);
+ }
+ const income=round(base+insult+rivals,4),upkeep=round(improve+curry+access,4);
+ return {base,insult:round(insult,3),rivals:round(rivals,3),improve:round(improve,3),curry:round(curry,3),access:round(access,3),income,upkeep,net:round(income-upkeep,4)};
+}
+function clearImproveRelationsForZeroDiplo1300(game){
+ let stopped=0;
+ for(const p of Object.values(diplomacyState(game).pairs)){const ours=p.directions?.[PLAYER_REALM];if(ours?.mission==='improve'){ours.mission=null;stopped++;}}
+ return stopped;
+}
+function queueDiploZeroNotification1300(game,stopped){
+ const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),date=gameDate1300(game.day);d.notificationSeq++;
+ d.notifications.push({id:`diplo-zero-${d.notificationSeq}`,type:'diplo-zero',title:'Diplomatic points depleted',body:`Your diplomatic points reached 0. ${stopped?stopped+' Improve Relations mission'+(stopped===1?' was':'s were')+' recalled.':'All Improve Relations missions are inactive.'} Diplomatic points never go below zero.`,date:`${date.day} ${date.month} ${date.year}`});
+ d.notifications=d.notifications.slice(-8);
+}
+function reconcileDiploZero1300(game,before){
+ const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),now=diplomaticPoints1300(game);game.diploPoints=round(now,4);
+ if(now<=0){
+  const stopped=clearImproveRelationsForZeroDiplo1300(game);
+  if(!d.diploZeroLatched&&(before>0||stopped>0)){queueDiploZeroNotification1300(game,stopped);d.diploZeroLatched=true;}
+ }else d.diploZeroLatched=false;
+}
+function spendDiplomaticPoints1300(game,amount,label='Diplomatic action'){
+ const cost=round(Math.max(0,Number(amount)||0),2);if(!cost)return true;const before=diplomaticPoints1300(game);
+ if(before+1e-9<cost){toast(`${label} needs ${cost.toFixed(2)} diplomatic points. You have ${before.toFixed(2)}.`);return false;}
+ game.diploPoints=round(before-cost,4);reconcileDiploZero1300(game,before);refreshCampaignResourceBar1300(game);renderCampaignNotifications1300(game);return true;
+}
+function settleWeeklyDiplomaticPoints1300(game){
+ const before=diplomaticPoints1300(game),s=weeklyDiplomaticPointSummary1300(game);
+ game.diploPoints=round(clamp1300(before+s.income-s.upkeep,0,DIPLO_POINT_CAP_1300),4);
+ reconcileDiploZero1300(game,before);game.diplomacy.lastDiploBreakdown={...s,day:Number(game.day)||0,balance:game.diploPoints};return s;
+}
+function diplomacyActionPointLabel1300(game,country,action){
+ if(action==='improve')return '0.50 DP/week';
+ if(action==='curry')return '0.20 DP/week';
+ if(action==='access')return '0.10 DP/week';
+ if(action==='rival')return `+${rivalWeeklyDiploGainForCountry1300(game,country).toFixed(2)} DP/week`;
+ if(action==='insult')return '+0.50 DP/week · 1 year';
+ if(action==='deal')return '0.25–5.00 DP · scales with goods';
+ const cost=diplomacyActionPointCost1300(action);return cost?`${cost.toFixed(2)} DP`:'No DP cost';
+}
+function diplomacyActionCanStart1300(game,country,action){
+ const points=diplomaticPoints1300(game),{pair,ours}=relation(game,PLAYER_REALM,country);
+ if(action==='improve'&&ours.mission!=='improve')return points>=DIPLO_RECURRING_COSTS_1300.improve;
+ if(action==='curry'&&ours.mission!=='curry')return points>=DIPLO_RECURRING_COSTS_1300.curry;
+ if(action==='access'&&!ours.access)return points>=DIPLO_RECURRING_COSTS_1300.access;
+ if(action==='deal')return points>=.25;
+ return points>=diplomacyActionPointCost1300(action);
+}
+function campaignDiplomacyNotificationsHTML1300(game){
+ const d=game?.diplomacy?normaliseGameDiplomacy1300(game.diplomacy):freshGameDiplomacy1300(),items=d.notifications||[];
+ return `<div id="campaign-notification-strip" class="campaign-notification-strip ${items.length?'':'empty'}">${items.map(n=>`<button data-action="campaign-notification" data-campaign-notification="${esc(n.id)}" title="${esc(n.title)} · left click for details · right click to dismiss">${icon('alert')}<span>!</span></button>`).join('')}</div>`;
+}
+function renderCampaignNotifications1300(game){
+ const host=$('#campaign-notification-strip');if(!host||!game)return;const d=normaliseGameDiplomacy1300(game.diplomacy),items=d.notifications||[];
+ host.classList.toggle('empty',!items.length);host.innerHTML=items.map(n=>`<button data-action="campaign-notification" data-campaign-notification="${esc(n.id)}" title="${esc(n.title)} · left click for details · right click to dismiss">${icon('alert')}<span>!</span></button>`).join('');
+}
+function dismissCampaignNotification1300(id){
+ const game=profile.activeGame;if(!game)return;const d=normaliseGameDiplomacy1300(game.diplomacy),before=d.notifications.length;d.notifications=d.notifications.filter(n=>n.id!==id);if(d.notifications.length!==before){save();renderCampaignNotifications1300(game);}
+}
+function openCampaignNotification1300(id){
+ const game=profile.activeGame;if(!game)return;const n=normaliseGameDiplomacy1300(game.diplomacy).notifications.find(x=>x.id===id);if(!n)return;
+ showDialog(`<div class="simple-dialog campaign-notification-dialog"><span class="eyebrow">DIPLOMATIC ALERT · ${esc(n.date||'')}</span><h2>${esc(n.title)}</h2><p>${esc(n.body)}</p><div class="dialog-actions"><button class="btn primary" data-action="dismiss-campaign-notification" data-id="${esc(n.id)}">Dismiss</button><button class="btn" data-action="close">Close</button></div></div>`);
 }
 function diplomacyRelation1300(game,country){return opinion(relation(game,PLAYER_REALM,country).theirs);}
 function setDiplomacyRelation1300(game,country,value){const r=relation(game,PLAYER_REALM,country).theirs,current=opinion(r);r.opinion=clamp1300(r.opinion+value-current,-200,200);game.diplomacy.relations[country]=opinion(r);return opinion(r);}
@@ -462,6 +555,15 @@ function initializeDiplomacyWorld1300(game){
 }
 function runAdvancedDiplomacy1300(action,options={}){
  const g=profile.activeGame,c=gameDiplomacyCountry;if(!g||!c)return null;ensureDiplomacyCountry1300(g,c);initializeDiplomacyWorld1300(g);
+ const {ours}=relation(g,PLAYER_REALM,c),startCost=action==='improve'&&ours.mission!=='improve'?DIPLO_RECURRING_COSTS_1300.improve:action==='curry'&&ours.mission!=='curry'?DIPLO_RECURRING_COSTS_1300.curry:action==='access'&&!ours.access?DIPLO_RECURRING_COSTS_1300.access:0,oneTime=diplomacyActionPointCost1300(action);
+ if(startCost&&diplomaticPoints1300(g)<startCost){const message=`You need at least ${startCost.toFixed(2)} diplomatic points to start this action.`;toast(message);return {ok:false,message};}
+ if(oneTime&&diplomaticPoints1300(g)<oneTime){const message=`This action needs ${oneTime.toFixed(2)} diplomatic points. You have ${diplomaticPoints1300(g).toFixed(2)}.`;toast(message);return {ok:false,message};}
+ const result=performAction(g,PLAYER_REALM,c,action,diplomacyPowers1300(g,c),options),charge=oneTime>0&&(result.ok||result.attempted);
+ if(charge)spendDiplomaticPoints1300(g,oneTime,DIP_ACTIONS[action]||'Diplomatic action');
+ if(result.ok||result.attempted){diplomacyLog1300(g,c,result.message);save();}
+ renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(result.message);return result;
+}){
+ const g=profile.activeGame,c=gameDiplomacyCountry;if(!g||!c)return null;ensureDiplomacyCountry1300(g,c);initializeDiplomacyWorld1300(g);
  const result=performAction(g,PLAYER_REALM,c,action,diplomacyPowers1300(g,c),options);
  if(result.ok){
   diplomacyLog1300(g,c,result.message);save();
@@ -473,22 +575,25 @@ function advancedDiplomacyHTML1300(game,country){
  const labels={
   improve:'Improve relations',curry:'Curry favors',gift:'Gift',alliance:'Alliance',breakAlliance:'Break alliance',
   trust:'Spend favors for trust',rival:'Rival',insult:'Insult',guarantee:'Guarantee independence',
-  access:'Ask military access',offerAccess:'Offer military access',trade:'Trade agreement',embargo:'Embargo',
-  subsidy:'Subsidy',peace:'White peace',war:'Declare war'
+  recognition:'Independence recognition',supportIndependence:'Support independence',
+  access:'Ask military access',offerAccess:'Offer military access',trade:'Trade agreement',
+  subsidy:'Subsidy',money:'Ask Florins',sellCity:'Sell city',deal:'Exchange',peace:'White peace',war:'Declare war'
  };
  const blocked=id=>pair.war&&!['peace','insult'].includes(id)||Math.max(0,(ours.cooldowns[id]||0)-game.day)>0||id==='breakAlliance'&&!pair.alliance||id==='alliance'&&pair.alliance;
- const standard=Object.keys(DIP_ACTIONS).filter(id=>id!=='peace'||pair.war).map(id=>({id,label:labels[id]||DIP_ACTIONS[id],disabled:blocked(id)}));
- const extra=[
-  {id:'money',label:'Ask Florins',disabled:pair.war},
-  {id:'recognition',label:'Independence recognition',disabled:pair.war},
-  {id:'sellCity',label:'Sell city',disabled:pair.war||game.ownedCities?.length<=1},
-  {id:'deal',label:'Exchange',disabled:pair.war},
-  {id:'supportIndependence',label:'Support independence',disabled:pair.war}
- ];
- const rows=[...standard,...extra];
- return `<p class="dip-detail-note">Commitments: ${slots}/4 · Diplomats: ${Object.values(diplomacyState(game).pairs).filter(p=>p.directions[PLAYER_REALM]?.mission).length}/2${pair.truceUntil>game.day?` · Truce: ${pair.truceUntil-game.day} days`:''}</p>
+ const defs={};
+ for(const id of Object.keys(DIP_ACTIONS))defs[id]={id,label:labels[id]||DIP_ACTIONS[id],disabled:blocked(id)};
+ Object.assign(defs,{
+  money:{id:'money',label:labels.money,disabled:pair.war},
+  recognition:{id:'recognition',label:labels.recognition,disabled:pair.war},
+  sellCity:{id:'sellCity',label:labels.sellCity,disabled:pair.war||game.ownedCities?.length<=1},
+  deal:{id:'deal',label:labels.deal,disabled:pair.war},
+  supportIndependence:{id:'supportIndependence',label:labels.supportIndependence,disabled:pair.war}
+ });
+ const order=['improve','curry','gift','alliance','breakAlliance','trust','rival','insult','guarantee','recognition','supportIndependence','access','offerAccess','trade','subsidy','money','sellCity','deal','peace','war'];
+ const rows=order.filter(id=>defs[id]&&(id!=='peace'||pair.war)).map(id=>({...defs[id],disabled:defs[id].disabled||!diplomacyActionCanStart1300(game,country,id)}));
+ return `<p class="dip-detail-note">Diplomatic points: <b>${diplomaticPoints1300(game).toFixed(2)} / ${DIPLO_POINT_CAP_1300}</b> · Commitments: ${slots}/4 · Diplomats: ${Object.values(diplomacyState(game).pairs).filter(p=>p.directions[PLAYER_REALM]?.mission).length}/2${pair.truceUntil>game.day?` · Truce: ${pair.truceUntil-game.day} days`:''}</p>
  <div class="dip-section-title compact"><span>DIPLOMATIC ACTIONS</span></div>
- <ul class="dip-action-list">${rows.map(x=>`<li><button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}>${esc(x.label)}</button></li>`).join('')}</ul>
+ <ul class="dip-action-list">${rows.map(x=>{const meta=diplomacyActionPointLabel1300(game,country,x.id),gain=meta.startsWith('+');return `<li><button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}><span>${esc(x.label)}</span><small class="${gain?'gain':'cost'}">${esc(meta)}</small></button></li>`;}).join('')}</ul>
  <details class="dip-memory"><summary>Their diplomatic memories (${theirs.modifiers.length})</summary>${theirs.modifiers.map(m=>`<p>${esc(m.type)} <b class="${m.value>=0?'positive':'negative'}">${m.value>0?'+':''}${m.value.toFixed(1)}</b></p>`).join('')||'<p>No memories yet.</p>'}</details>`;
 }
 function diplomacyRelationLabel1300(v){return v>=70?'Trusted':v>=35?'Friendly':v>=10?'Cordial':v>-10?'Neutral':v>-35?'Tense':v>-70?'Hostile':'Bitter enemies';}
@@ -581,7 +686,7 @@ function citySaleAssessment1300(game,country,cityId,price){
 function tradeAssessment1300(game,country,offerAsset,offerAmount,requestAsset,requestAmount){
  const {d,model}=ensureDiplomacyCountry1300(game,country),oa=String(offerAsset||''),ra=String(requestAsset||''),on=Math.max(0,Number(offerAmount)||0),rn=Math.max(0,Number(requestAmount)||0),rel=diplomacyRelation1300(game,country);
  if(d.wars[country])return {score:0,note:'Normal trade is suspended during war.'};
- const treaty=relation(game,PLAYER_REALM,country);if(treaty.ours.embargo||treaty.theirs.embargo)return {score:0,note:'Trade is blocked by an embargo.'};
+ const treaty=relation(game,PLAYER_REALM,country);
  if(!on||!rn||oa===ra)return {score:0,note:'Choose two different assets and enter both amounts.'};
  if(oa==='florins'&&game.florins<on)return {score:0,note:'You cannot afford your own offer.'};
  if(oa!=='florins'&&(Number(d.tradeStockpile[oa])||0)<on)return {score:0,note:`You do not have enough ${GOOD_1300[oa]?.name||oa} in trade stock.`};
@@ -622,10 +727,11 @@ function grantIndependenceSupport1300(game,country,cityId){
 }
 function requestSupportIndependence1300(country,cityId){
  const game=profile.activeGame;if(!game||!country)return;const c=CITY_1300[cityId],assessment=supportIndependenceAssessment1300(game,country,cityId),rel=diplomacyRelation1300(game,country);
- if(!c){toast('Choose a province first.');return;}
+ if(!c){toast('Choose a province first.');return;}if(!independenceSupportCandidates1300(game,country).some(x=>x.id===cityId)){toast(assessment.note||'This province is not eligible for another support promise.');return;}
+ if(!spendDiplomaticPoints1300(game,1,'Support independence'))return;
  if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-1);diplomacyLog1300(game,country,`Refused to support the independence of ${displayCityName1300(c)} (${assessment.score}% acceptance).`);toast(`${country} refused to support this province.`);}
  else{grantIndependenceSupport1300(game,country,cityId);refreshIndependenceSupportWars1300(game);setDiplomacyRelation1300(game,country,rel+2);diplomacyLog1300(game,country,`Promised to support ${displayCityName1300(c)} if ${assessment.origin} tries to reclaim it.`);toast(`${country} will support ${displayCityName1300(c)} against ${assessment.origin}.`);}
- save();renderGameDiplomacyPanel1300();
+ save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();
 }
 
 function activateIndependenceSupport1300(game,enemyCountry){
@@ -681,7 +787,7 @@ function dealTokenInfo1300(game,country,token,amount,side){
 }
 function diplomacyDealAssessment1300(game,country,offerToken,offerAmount,requestToken,requestAmount){
  const {d}=ensureDiplomacyCountry1300(game,country);if(d.wars[country])return {score:0,note:'Normal negotiations are suspended during war.'};
- const treaty=relation(game,PLAYER_REALM,country);if(treaty.ours.embargo||treaty.theirs.embargo)return {score:0,note:'Negotiations are blocked by an embargo.'};
+ const treaty=relation(game,PLAYER_REALM,country);
  const offer=dealTokenInfo1300(game,country,offerToken,offerAmount,'offer');if(!offer.ok)return {score:0,note:offer.note,offer};
  const request=dealTokenInfo1300(game,country,requestToken,requestAmount,'request');if(!request.ok)return {score:0,note:request.note,offer,request};
  if(String(offerToken||'')===String(requestToken||''))return {score:0,note:'Choose two different things for the exchange.',offer,request};
@@ -701,6 +807,8 @@ function transferPlayerCityInDeal1300(game,country,cityId){
 }
 function executeDiplomaticDeal1300(country,offerToken,offerAmount,requestToken,requestAmount){
  const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),assessment=diplomacyDealAssessment1300(game,country,offerToken,offerAmount,requestToken,requestAmount);
+ if(assessment.score<=0){toast(assessment.note||'This exchange cannot be proposed.');return false;}
+ const diploCost=tradeDiplomaticPointCost1300(offerToken,offerAmount,requestToken,requestAmount);if(!spendDiplomaticPoints1300(game,diploCost,'Exchange'))return false;
  if(!diplomacyAccepts1300(assessment.score)){diplomacyLog1300(game,country,`Rejected exchange (${assessment.score}% acceptance): ${assessment.note}`);setDiplomacyRelation1300(game,country,diplomacyRelation1300(game,country)-1);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the exchange.`);return false;}
  const {offer,request}=assessment;
  if(offer.kind==='florins'){game.florins=Math.round((game.florins-offer.amount)*100)/100;d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]+offer.amount)*100)/100;}
@@ -726,18 +834,21 @@ function requestAlliance1300(country){gameDiplomacyCountry=country;runAdvancedDi
 function requestMoney1300(country,amount){
  const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),n=Math.round(Math.max(0,Number(amount)||0)*100)/100,rel=diplomacyRelation1300(game,country),assessment=moneyRequestAssessment1300(game,country,n);
  if(!n){toast('Enter an amount of Florins to request.');return;}if(d.wars[country]){toast('They will not fund you while at war.');return;}if(n>d.aiTreasuries[country]){toast(`${country} does not have that much available treasury.`);return;}
+ if(!spendDiplomaticPoints1300(game,.5,'Ask Florins'))return;
  if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Request for ƒ${money1300(n)} rejected (${assessment.score}% acceptance).`);toast(`${country} refused the request.`);}else{d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;setDiplomacyRelation1300(game,country,rel+1);diplomacyLog1300(game,country,`Received ƒ${money1300(n)} in financial aid (${assessment.score}% acceptance).`);toast(`${country} sent ƒ${money1300(n)}.`);}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();
 }
 function requestIndependence1300(country){
  const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),pending=(game.ownedCities||[]).filter(id=>(game.originCountryByCity?.[id]||CITY_1300[id]?.country)===country&&game.independenceByCity?.[id]!==true);
  if(!pending.length){toast('You have no unrecognised rebel provinces from this country.');return;}if(d.wars[country]){toast('Recognition cannot be negotiated while you are at war.');return;}
+ if(!spendDiplomaticPoints1300(game,1,'Independence recognition'))return;
  const assessment=independenceAssessment1300(game,country),rel=diplomacyRelation1300(game,country);
  if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-4);diplomacyLog1300(game,country,`Independence recognition rejected for ${pending.length} province${pending.length===1?'':'s'} (${assessment.score}% acceptance).`);toast(`${country} refused to recognise your independence.`);}
  else{for(const id of pending)game.independenceByCity[id]=true;d.recognitions[country]=true;setDiplomacyRelation1300(game,country,Math.max(15,rel+10));refreshCampaignStage1300(game);diplomacyLog1300(game,country,`Recognised the independence of ${pending.length} rebel province${pending.length===1?'':'s'} (${assessment.score}% acceptance).`);toast(`${country} recognised your independence.`);}
- updateCampaignRankingSnapshot1300(game);save();renderGameDiplomacyPanel1300();renderGameCountryPanel1300();
+ updateCampaignRankingSnapshot1300(game);save();renderGameDiplomacyPanel1300();renderGameCountryPanel1300();refreshGameClockUI1300();
 }
 function sellCityToCountry1300(country,cityId,price){
  const game=profile.activeGame;if(!game||!country)return;const c=CITY_1300[cityId],{d}=ensureDiplomacyCountry1300(game,country),n=Math.round(Math.max(0,Number(price)||0)*100)/100;if(!c||!game.ownedCities?.includes(cityId)){toast('Choose one of your provinces.');return;}if(game.ownedCities.length<=1){toast('You cannot sell your final province.');return;}if(d.wars[country]){toast('You cannot peacefully sell a city while at war.');return;}if(n>d.aiTreasuries[country]){toast(`${country} cannot afford that price.`);return;}
+ if(!spendDiplomaticPoints1300(game,.5,'Sell city'))return;
  const rel=diplomacyRelation1300(game,country),assessment=citySaleAssessment1300(game,country,cityId,n);
  if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-2);diplomacyLog1300(game,country,`Rejected offer to buy ${displayCityName1300(c)} for ƒ${money1300(n)} (${assessment.score}% acceptance).`);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the city price.`);return;}
  d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]-n)*100)/100;game.florins=Math.round((game.florins+n)*100)/100;game.ownedCities=game.ownedCities.filter(id=>id!==cityId);game.cityOwners??={};game.cityOwners[cityId]=country;delete game.buildings?.[cityId];delete game.construction?.[cityId];for(const key of ['employment','lastEconomy','markets','pops','cityWages','dynamicStats','technologyBudgets','lastStatChanges','statRemainders'])delete game.economy?.[key]?.[cityId];delete game.economy?.buildingWages?.[cityId];delete game.diplomacy?.independenceSupportByCity?.[cityId];setDiplomacyRelation1300(game,country,rel+5);diplomacyLog1300(game,country,`Bought ${displayCityName1300(c)} for ƒ${money1300(n)}.`);refreshCampaignStage1300(game);updateCampaignRankingSnapshot1300(game);if(world?.state?.game){world.state.game.ownedCityIds=[...game.ownedCities];world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.refresh();}if(gameProvincePanel===cityId){gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();}save();renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(`${displayCityName1300(c)} was sold to ${country}.`);
@@ -747,6 +858,7 @@ function executeDiplomaticTrade1300(country,offerAsset,offerAmount,requestAsset,
  const game=profile.activeGame;if(!game||!country)return;const {d}=ensureDiplomacyCountry1300(game,country),oa=String(offerAsset||''),ra=String(requestAsset||''),on=Math.round(Math.max(0,Number(offerAmount)||0)*100)/100,rn=Math.round(Math.max(0,Number(requestAmount)||0)*100)/100,assessment=tradeAssessment1300(game,country,oa,on,ra,rn);if(!on||!rn||oa===ra){toast('Choose two different assets and enter both amounts.');return;}if(d.wars[country]){toast('Normal trade is suspended while at war.');return;}
  if(oa==='florins'){if(game.florins<on){toast('You do not have enough Florins for this offer.');return;}}else if((Number(d.tradeStockpile[oa])||0)<on){toast(`You only have ${money1300(d.tradeStockpile[oa]||0)} ${GOOD_1300[oa]?.name||oa} in trade stock.`);return;}
  if(ra==='florins'){if(d.aiTreasuries[country]<rn){toast(`${country} cannot pay that many Florins.`);return;}}else if((Number(d.aiGoods[country]?.[ra])||0)<rn){toast(`${country} does not have that much ${GOOD_1300[ra]?.name||ra} available.`);return;}
+ const diploCost=tradeDiplomaticPointCost1300(oa,on,ra,rn);if(!spendDiplomaticPoints1300(game,diploCost,'Trade'))return;
  const rel=diplomacyRelation1300(game,country);
  if(!diplomacyAccepts1300(assessment.score)){setDiplomacyRelation1300(game,country,rel-1);diplomacyLog1300(game,country,`Rejected trade proposal (${assessment.score}% acceptance): ${assessment.note}`);save();renderGameDiplomacyPanel1300();toast(`${country} rejected the trade.`);return;}
  if(oa==='florins'){game.florins=Math.round((game.florins-on)*100)/100;d.aiTreasuries[country]=Math.round((d.aiTreasuries[country]+on)*100)/100;}else{d.tradeStockpile[oa]=Math.round((d.tradeStockpile[oa]-on)*100)/100;d.aiGoods[country][oa]=Math.round(((Number(d.aiGoods[country][oa])||0)+on)*100)/100;}
@@ -1140,12 +1252,12 @@ function refreshGameDateUI1300(){
  if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(status)status.textContent=d.weekday;
 }
 function refreshGameClockUI1300(){
- const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);refreshGameDateUI1300();refreshCampaignResourceBar1300(game);
+ const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);refreshGameDateUI1300();refreshCampaignResourceBar1300(game);renderCampaignNotifications1300(game);
 }
 function settleGameWeek1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
  e.lastMonthRevenue=revenue;e.lastMonthExpenses=expenses;e.lastMonthBalance=balance;e.lastMonthLabel=`${d.day} ${d.month} ${d.year}`;e.lastWeekSectorRevenue=e.weekSectorRevenue;e.lastWeekTariffRevenue=e.weekTariffRevenue;
- game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);game.diploPoints=round(Math.max(0,Number(game.diploPoints)||0)+weeklyDiplomaticPointGain1300(game),4);applyWeeklyStabilityPolicy1300(game);applyWeeklyPopulationChange1300(game);settleWeeklyResearch1300(game);initializeDiplomacyWorld1300(game);for(const event of weeklyDiplomacy(game,completedCampaignWeeks1300(game),Object.fromEntries(buildCampaignRankings1300(game).map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.weekSectorRevenue=0;e.weekTariffRevenue=0;e.monthRevenue=0;e.monthExpenses=weeklyStateExpenses1300(game).total;
+ game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);settleWeeklyDiplomaticPoints1300(game);applyWeeklyStabilityPolicy1300(game);applyWeeklyPopulationChange1300(game);settleWeeklyResearch1300(game);initializeDiplomacyWorld1300(game);for(const event of weeklyDiplomacy(game,completedCampaignWeeks1300(game),Object.fromEntries(buildCampaignRankings1300(game).map(r=>[r.country,r.strength||1]))))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.weekSectorRevenue=0;e.weekTariffRevenue=0;e.monthRevenue=0;e.monthExpenses=weeklyStateExpenses1300(game).total;
 }
 function maybeAutosaveCampaign1300(game){
  if(!game)return false;
@@ -1222,8 +1334,8 @@ function ensureGameProfile(p){
    const playerColor=validRealmColor(g.playerColor)?g.playerColor:p.playerColor;
    const savedOwned=Array.isArray(g.ownedCities)?[...new Set(g.ownedCities)].filter(id=>Object.hasOwn(CITY_1300,id)):[],ownedCities=savedOwned.length?savedOwned:[...validHand],oldOwners=g.cityOwners&&typeof g.cityOwners==='object'&&!Array.isArray(g.cityOwners)?g.cityOwners:{},cityOwners={...oldOwners};for(const id of ownedCities)cityOwners[id]='player';
    const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{},construction=g.construction&&typeof g.construction==='object'&&!Array.isArray(g.construction)?g.construction:{};
-   const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),clockStartsAt=Number.isFinite(Number(g.clockStartsAt))?Number(g.clockStartsAt):null,lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,lastAutosaveDay=Number.isFinite(Number(g.lastAutosaveDay))?Math.max(0,Math.floor(Number(g.lastAutosaveDay))):0,economy=normaliseGameEconomy1300(g.economy);
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,diploPoints:Math.max(0,Number(g.diploPoints)||0),buildings:gameBuildings,construction,day,clockStartedAt,clockStartsAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id],p.activeGame));refreshCampaignStage1300(p.activeGame);
+   const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),clockStartsAt=Number.isFinite(Number(g.clockStartsAt))?Number(g.clockStartsAt):null,lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,lastAutosaveDay=Number.isFinite(Number(g.lastAutosaveDay))?Math.max(0,Math.floor(Number(g.lastAutosaveDay))):0,economy=normaliseGameEconomy1300(g.economy),hadDiploCurrencyV2=!!g.diplomacy?.diploCurrencyV2,savedDiplo=Number.isFinite(Number(g.diploPoints))?Number(g.diploPoints):DIPLO_POINT_START_1300,currentDiplo=clamp1300(!hadDiploCurrencyV2&&savedDiplo<=0?DIPLO_POINT_START_1300:savedDiplo,0,DIPLO_POINT_CAP_1300);
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,diploPoints:currentDiplo,buildings:gameBuildings,construction,day,clockStartedAt,clockStartsAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id],p.activeGame));refreshCampaignStage1300(p.activeGame);
   }
  }
 }
@@ -1298,7 +1410,7 @@ function startGame1300(){
  const shuffled=shuffle1300(profile.deck),hand=shuffled.slice(0,4);
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
- profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,diploPoints:0,buildings:{},construction:{},day:0,clockStartedAt:Date.now(),clockStartsAt:Date.now()+GAME_INITIAL_CLOCK_DELAY_MS,lastTickAt:null,lastAutosaveDay:0,economy:freshGameEconomy1300(),technology:freshTechnologyState1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
+ profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,diploPoints:DIPLO_POINT_START_1300,buildings:{},construction:{},day:0,clockStartedAt:Date.now(),clockStartsAt:Date.now()+GAME_INITIAL_CLOCK_DELAY_MS,lastTickAt:null,lastAutosaveDay:0,economy:freshGameEconomy1300(),technology:freshTechnologyState1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
  // Normal starting opinion is +10. Countries that lost one of your opening cities start at -100 toward you.
  for(const country of new Set(CITIES_1300.map(c=>c.country)))profile.activeGame.diplomacy.relations[country]=10;
  for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-100;
@@ -2158,6 +2270,7 @@ function openDiplomacyAction1300(action){
  const game=profile.activeGame,country=gameDiplomacyCountry;if(!game||!country)return;
  const {d}=ensureDiplomacyCountry1300(game,country),{pair,ours}=relation(game,PLAYER_REALM,country),ownCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),pending=ownCities.filter(c=>(game.originCountryByCity?.[c.id]||c.country)===country&&game.independenceByCity?.[c.id]!==true),supportCities=independenceSupportCandidates1300(game,country);
  const title={money:'Ask for Florins',recognition:'Ask for independence recognition',sellCity:'Sell a city',deal:'Negotiate an exchange',supportIndependence:'Ask for support independence'}[action]||DIP_ACTIONS[action]||'Diplomatic action';
+ const pointMeta=diplomacyActionPointLabel1300(game,country,action);
  let body='',confirm='';
  if(action==='gift'){
   const max=Math.max(0,Math.floor((Number(game.florins)||0)*100)/100),sliderMax=Math.max(1,max),value=max>=1?Math.min(5,max):1;
@@ -2188,7 +2301,7 @@ function openDiplomacyAction1300(action){
   body=`<p>Build one exchange. You can offer Florins, trade goods or a city, and request Florins, goods or an independence-support promise in return.</p><div class="dip-deal-grid"><label class="dip-modal-field"><span>You offer</span><select id="dip-modal-deal-offer">${diplomacyDealOfferOptions1300(game,country)}</select><input id="dip-modal-deal-offer-amount" type="number" min="0.01" step="0.01" value="5"></label><span class="dip-deal-arrow">⇄</span><label class="dip-modal-field"><span>You request</span><select id="dip-modal-deal-request">${diplomacyDealRequestOptions1300(game,country)}</select><input id="dip-modal-deal-request-amount" type="number" min="0.01" step="0.01" value="5"></label></div><div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}</div>`;
   confirm=`<button data-action="dip-modal-deal">PROPOSE EXCHANGE</button>`;
  }else{
-  const active=action==='improve'&&ours.mission==='improve'||action==='curry'&&ours.mission==='curry'||action==='alliance'&&pair.alliance||action==='rival'&&ours.rival||action==='guarantee'&&ours.guarantee||action==='access'&&ours.access||action==='offerAccess'&&relation(game,PLAYER_REALM,country).theirs.access||action==='trade'&&pair.trade||action==='embargo'&&ours.embargo;
+  const active=action==='improve'&&ours.mission==='improve'||action==='curry'&&ours.mission==='curry'||action==='alliance'&&pair.alliance||action==='rival'&&ours.rival||action==='guarantee'&&ours.guarantee||action==='access'&&ours.access||action==='offerAccess'&&relation(game,PLAYER_REALM,country).theirs.access||action==='trade'&&pair.trade;
   const descriptions={
    improve:active?'Recall the diplomat currently improving relations.':'Assign a diplomat to improve their opinion by +3 every Monday, up to +100 from the mission.',
    curry:active?'Recall the diplomat currently currying favors.':'Assign a diplomat to curry extra favors. This requires an alliance.',
@@ -2201,7 +2314,6 @@ function openDiplomacyAction1300(action){
    access:'Ask for military access.',
    offerAccess:active?'Revoke the military access you offered them.':'Offer them military access.',
    trade:'Propose a trade agreement. This improves the acceptance of negotiated exchanges.',
-   embargo:active?'Lift your embargo against them.':'Start an embargo. Existing trade agreement ends.',
    peace:'Offer a white peace and a five-year truce.',
    war:'Declare war without a casus belli. This gives +15 aggressive expansion, −1 diplomatic reputation and −30 trust with the defender. Trade, access and subsidies end.'
   };
@@ -2209,7 +2321,7 @@ function openDiplomacyAction1300(action){
   if(['alliance','access','trade'].includes(action)){const a=proposalAssessment1300(game,country,action);body+=`<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}${action==='alliance'?allianceAcceptanceTableHTML1300(a):''}</div>`;}
   confirm=`<button class="${action==='war'?'danger':''}" data-action="dip-modal-standard" data-id="${action}">${action==='war'?'DECLARE WAR':active&&['improve','curry'].includes(action)?'RECALL':'CONFIRM'}</button>`;
  }
- showDialog(`<div class="diplomacy-action-dialog" data-dip-modal-action="${esc(action)}"><span class="eyebrow">DIPLOMATIC ACTION · ${esc(country.toUpperCase())}</span><h2>${esc(title)}</h2>${body}<div class="dip-modal-actions">${confirm}<button class="secondary" data-action="close">CANCEL</button></div></div>`,'diplomacy-action-modal');
+ showDialog(`<div class="diplomacy-action-dialog" data-dip-modal-action="${esc(action)}"><span class="eyebrow">DIPLOMATIC ACTION · ${esc(country.toUpperCase())}</span><h2>${esc(title)}</h2><div id="dip-modal-dp-cost" class="dip-modal-dp-cost">${esc(pointMeta)}</div>${body}<div class="dip-modal-actions">${confirm}<button class="secondary" data-action="close">CANCEL</button></div></div>`,'diplomacy-action-modal');
  updateDiplomacyActionModalPreview1300();
 }
 function updateDiplomacyActionModalPreview1300(){
@@ -2223,7 +2335,7 @@ function updateDiplomacyActionModalPreview1300(){
  if(action==='deal'){
   const offer=modal.querySelector('#dip-modal-deal-offer')?.value||'',request=modal.querySelector('#dip-modal-deal-request')?.value||'',oa=modal.querySelector('#dip-modal-deal-offer-amount'),ra=modal.querySelector('#dip-modal-deal-request-amount');
   const offerFixed=offer.startsWith('city:'),requestFixed=request.startsWith('support:');if(oa){oa.disabled=offerFixed;if(offerFixed)oa.value='1';}if(ra){ra.disabled=requestFixed;if(requestFixed)ra.value='1';}
-  put(diplomacyDealAssessment1300(game,country,offer,oa?.value,request,ra?.value));
+  put(diplomacyDealAssessment1300(game,country,offer,oa?.value,request,ra?.value));const dp=modal.querySelector('#dip-modal-dp-cost');if(dp)dp.textContent=`${tradeDiplomaticPointCost1300(offer,oa?.value,request,ra?.value).toFixed(2)} DP · trade cost (max 5.00)`;
  }
 }
 function updateDiplomacyAcceptancePreview1300(){updateDiplomacyActionModalPreview1300();}
@@ -2271,20 +2383,23 @@ function openGameCountryPanel1300(){
  if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
 }
 function campaignResourceBarHTML1300(game){
- const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0;
+ const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=weeklyDiplomaticPointSummary1300(game),dipClass=dip.net>0?'positive':dip.net<0?'negative':'neutral';
+ const dipTitle=`Base +${dip.base.toFixed(3)} · rivals +${dip.rivals.toFixed(3)} · insult +${dip.insult.toFixed(3)} · upkeep -${dip.upkeep.toFixed(3)} DP/week`;
  return `<section class="campaign-resource-bar" aria-label="Realm resources">
   <article class="campaign-resource-box treasury"><span>TREASURY</span><strong id="campaign-resource-treasury">ƒ${money1300(game.florins)}</strong><small id="campaign-resource-week" class="${balance>0?'positive':balance<0?'negative':'neutral'}">${balance>0?'+':balance<0?'-':''}ƒ${money1300(Math.abs(balance))}/week</small></article>
   <article class="campaign-resource-box"><span>POPULATION</span><strong id="campaign-resource-population">${strengthNumber(totals.population)}</strong></article>
-  <article class="campaign-resource-box"><span>DIPLO POINTS</span><strong id="campaign-resource-diplo">${Number(game.diploPoints||0).toFixed(2)}</strong><small id="campaign-resource-diplo-week">+${weeklyDiplomaticPointGain1300(game).toFixed(3)}/week · ${monthlyDiplomaticPointGain1300(game).toFixed(3)}/month</small></article>
+  <article class="campaign-resource-box diplo" title="${esc(dipTitle)}"><span>DIPLO POINTS</span><strong id="campaign-resource-diplo">${diplomaticPoints1300(game).toFixed(2)}</strong><small id="campaign-resource-diplo-week" class="${dipClass}">${dip.net>=0?'+':''}${dip.net.toFixed(3)}/week · max ${DIPLO_POINT_CAP_1300}</small></article>
   <article class="campaign-resource-box"><span>PRO ARMY</span><strong id="campaign-resource-pro-army">${strengthNumber(prof.army)}</strong></article>
   <article class="campaign-resource-box"><span>UNPRO ARMY</span><strong id="campaign-resource-unpro-army">${strengthNumber(unprof.army)}</strong></article>
   <article class="campaign-resource-box"><span>NAVY</span><strong id="campaign-resource-navy">${strengthNumber(mil.navy)}</strong></article>
  </section>`;
 }
 function refreshCampaignResourceBar1300(game){
- if(!game)return;const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0;
+ if(!game)return;const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=weeklyDiplomaticPointSummary1300(game),dipClass=dip.net>0?'positive':dip.net<0?'negative':'neutral';
  const set=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
- set('#campaign-resource-treasury','ƒ'+money1300(game.florins));set('#campaign-resource-population',strengthNumber(totals.population));set('#campaign-resource-diplo',Number(game.diploPoints||0).toFixed(2));set('#campaign-resource-diplo-week','+'+weeklyDiplomaticPointGain1300(game).toFixed(3)+'/week · '+monthlyDiplomaticPointGain1300(game).toFixed(3)+'/month');set('#campaign-resource-pro-army',strengthNumber(prof.army));set('#campaign-resource-unpro-army',strengthNumber(unprof.army));set('#campaign-resource-navy',strengthNumber(mil.navy));
+ set('#campaign-resource-treasury','ƒ'+money1300(game.florins));set('#campaign-resource-population',strengthNumber(totals.population));set('#campaign-resource-diplo',diplomaticPoints1300(game).toFixed(2));set('#campaign-resource-diplo-week',(dip.net>=0?'+':'')+dip.net.toFixed(3)+'/week · max '+DIPLO_POINT_CAP_1300);set('#campaign-resource-pro-army',strengthNumber(prof.army));set('#campaign-resource-unpro-army',strengthNumber(unprof.army));set('#campaign-resource-navy',strengthNumber(mil.navy));
+ const dipWeek=$('#campaign-resource-diplo-week');if(dipWeek){dipWeek.classList.remove('positive','negative','neutral');dipWeek.classList.add(dipClass);}
+ const dipBox=document.querySelector('.campaign-resource-box.diplo');if(dipBox)dipBox.title=`Base +${dip.base.toFixed(3)} · rivals +${dip.rivals.toFixed(3)} · insult +${dip.insult.toFixed(3)} · upkeep -${dip.upkeep.toFixed(3)} DP/week`;
  const weekly=$('#campaign-resource-week');if(weekly){weekly.textContent=(balance>0?'+':balance<0?'-':'')+'ƒ'+money1300(Math.abs(balance))+'/week';weekly.classList.remove('positive','negative','neutral');weekly.classList.add(balance>0?'positive':balance<0?'negative':'neutral');}
 }
 function gamePage(){
@@ -2298,7 +2413,7 @@ function gamePage(){
   <div id="game-start-countdown" class="game-start-countdown" hidden aria-live="polite"></div>
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div>
   <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
-  ${campaignResourceBarHTML1300(profile.activeGame)}<button class="game-quit-button" data-action="quit-game">Quit</button>
+  ${campaignResourceBarHTML1300(profile.activeGame)}${campaignDiplomacyNotificationsHTML1300(profile.activeGame)}<button class="game-quit-button" data-action="quit-game">Quit</button>
   <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>
   <aside id="game-country-panel" class="game-country-panel ${gameCountryPanel?'open':''}">${gameCountryPanel?gameCountryPanelHTML1300():''}</aside>
   <aside id="game-diplomacy-panel" class="game-diplomacy-panel ${gameDiplomacyCountry?'open':''}">${gameDiplomacyCountry?diplomacyCountryPanelHTML1300(gameDiplomacyCountry):''}</aside>
@@ -2386,6 +2501,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='select-tech-node'){if(TECHNOLOGY_1300[id]){selectedTechnologyTreeNode=id;renderTechnologyTreeDialog1300();}return;}
  if(a==='research-technology'){startTechnologyResearch1300(id);return;}
  if(a==='game-diplomacy-close'){gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();return;}
+ if(a==='campaign-notification'){openCampaignNotification1300(b.dataset.campaignNotification);return;}
+ if(a==='dismiss-campaign-notification'){dismissCampaignNotification1300(id);modal.close();return;}
  if(a==='dip-advanced'){openDiplomacyAction1300(id);return;}
  if(a==='dip-modal-standard'){const result=runAdvancedDiplomacy1300(id);if(result?.ok)modal.close();return;}
  if(a==='dip-modal-gift'){const result=runAdvancedDiplomacy1300('gift',{amount:modal.querySelector('#dip-modal-gift-range')?.value});if(result?.ok)modal.close();return;}
@@ -2435,7 +2552,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='export')exportSave();
  if(a==='import')$('#import-file').click();
 });
-document.addEventListener('contextmenu',e=>{const shield=e.target.closest('[data-country-shield]');if(shield&&profile.activeGame){e.preventDefault();openGameCountryPanel1300();}});
+document.addEventListener('contextmenu',e=>{const notice=e.target.closest('[data-campaign-notification]');if(notice&&profile.activeGame){e.preventDefault();dismissCampaignNotification1300(notice.dataset.campaignNotification);return;}const shield=e.target.closest('[data-country-shield]');if(shield&&profile.activeGame){e.preventDefault();openGameCountryPanel1300();}});
 document.addEventListener('input',e=>{if(e.target.id==='city-search-1300'){search1300=e.target.value;renderGrid();}if(e.target.id==='deck-search'){deckSearch=e.target.value;render();}if(e.target.id==='atlas-search'){atlasSearch=e.target.value;const list=CITIES_1300.filter(c=>`${c.name} ${c.subrealm} ${c.historicalRole}`.toLowerCase().includes(atlasSearch.toLowerCase()));$('#atlas-city-list').innerHTML=mapList(list);}if(e.target.id==='stability-budget-range'){setStabilityBudget1300(e.target.value);}if(e.target.matches?.('[data-tech-budget-city]'))setProvinceTechnologyBudget1300(e.target.dataset.techBudgetCity,e.target.value);if(e.target.matches?.('[data-company-target]')){const out=document.querySelector('[data-company-target-value="'+e.target.dataset.city+':'+e.target.dataset.id+'"]');if(out)out.textContent=Math.round(Number(e.target.value)||0)+'%';}if(e.target.matches?.('[data-company-support]')){const out=document.querySelector('[data-company-support-value="'+e.target.dataset.city+':'+e.target.dataset.id+'"]');if(out)out.textContent='ƒ'+money1300(e.target.value)+'/week';}if(['dip-money-amount','dip-sell-price','dip-offer-amount','dip-request-amount'].includes(e.target.id))updateDiplomacyAcceptancePreview1300();if(e.target.closest?.('.diplomacy-action-dialog'))updateDiplomacyActionModalPreview1300();});
 document.addEventListener('change',e=>{if(e.target.id==='building-city-select'){buildingCity=e.target.value;render();}if(e.target.id==='country-filter-1300'){country1300=e.target.value;render();}if(e.target.id==='deck-country-filter'){deckCountry=e.target.value;render();}if(e.target.matches?.('[data-company-target]'))setCompanyPolicy1300(e.target.dataset.city,e.target.dataset.id,{employmentTarget:e.target.value});if(e.target.matches?.('[data-company-support]'))setCompanyPolicy1300(e.target.dataset.city,e.target.dataset.id,{recruitmentSupport:e.target.value});if(e.target.matches?.('[data-company-priority]'))setCompanyPolicy1300(e.target.dataset.city,e.target.dataset.id,{priority:e.target.value});if(['dip-sell-city','dip-offer-asset','dip-request-asset'].includes(e.target.id))updateDiplomacyAcceptancePreview1300();if(e.target.closest?.('.diplomacy-action-dialog'))updateDiplomacyActionModalPreview1300();});
 $('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>1000000)throw new Error();const p=migrateProfile(JSON.parse(await file.text()));if(!p||!validateProfile(p))throw new Error();ensureEconomyProfile(p);ensureGameProfile(p);showDialog(`<div class="simple-dialog"><span class="eyebrow">RESTORE CAMPAIGN</span><h2>Import this 1300 campaign?</h2><p>This replaces your current building progress and treasury with <strong>ƒ ${p.florins.toLocaleString('en-GB')}</strong>.</p><div class="dialog-actions">${button('Cancel','close')}${button('Import and replace','confirm-import','primary')}</div></div>`);modal.querySelector('[data-action="confirm-import"]').addEventListener('click',()=>{profile=p;save();navigate('collection');toast('1300 campaign imported.');},{once:true});}catch{toast('Invalid campaign file. Your existing progress was kept.');}});

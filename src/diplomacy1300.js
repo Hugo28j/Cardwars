@@ -48,17 +48,17 @@ export function acceptance(game,a,b,action,powers={}){
 }
 
 export const DIP_ACTIONS={
- improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',embargo:'Start / lift embargo',subsidy:'Start / change subsidy',peace:'Offer white peace',war:'Declare war (no casus belli)'
+ improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',subsidy:'Start / change subsidy',peace:'Offer white peace',war:'Declare war (no casus belli)'
 };
 export function performAction(game,a,b,action,powers={},options={}){
  if(!DIP_ACTIONS[action])return {ok:false,message:'Unknown action.'};
  const {pair,ours,theirs}=relation(game,a,b),day=Number(game.day)||0;
- const fail=message=>({ok:false,message});
+ const fail=(message,attempted=false)=>({ok:false,message,attempted});
  if((ours.cooldowns[action]||0)>day)return fail(`Available in ${Math.ceil(ours.cooldowns[action]-day)} days.`);
  if(pair.war&&!['peace','insult'].includes(action))return fail('This action is unavailable during war.');
  if(['alliance','access','trade'].includes(action)){
   if(action==='alliance'&&pair.alliance||action==='access'&&ours.access||action==='trade'&&pair.trade)return fail('This treaty is already active.');
-  const result=acceptance(game,a,b,action,powers);if(!result.accepted)return fail(result.blocked||`Proposal refused (score ${result.score}; requires 0).`);
+  const result=acceptance(game,a,b,action,powers);if(!result.accepted)return fail(result.blocked||`Proposal refused (score ${result.score}; requires 0).`,!result.blocked);
  }
  let customMessage='';
  if(action==='alliance'){pair.alliance=true;memory(theirs,'Alliance signed',15,day,.25);}
@@ -85,12 +85,11 @@ export function performAction(game,a,b,action,powers={},options={}){
   if(!ours.rival){if(pair.alliance)return fail('End the alliance first.');const count=Object.values(diplomacyState(game).pairs).filter(p=>p.directions[a]?.rival).length;if(count>=3)return fail('Maximum three rivals.');}
   ours.rival=!ours.rival;memory(theirs,'Declared rivalry',ours.rival?-40:20,day,.25);ours.cooldowns.rival=day+365;
  }
- if(action==='insult'){memory(theirs,'Insulted us',-25,day,1);theirs.trust=clamp(theirs.trust-5,0,100);ours.cooldowns.insult=day+90;}
+ if(action==='insult'){memory(theirs,'Insulted us',-50,day,1);theirs.trust=clamp(theirs.trust-10,0,100);ours.cooldowns.insult=day+90;if(a===PLAYER_REALM){game.diplomacy.diploInsultBonusUntilDay=Math.max(Number(game.diplomacy.diploInsultBonusUntilDay)||0,day+365);}}
  if(action==='guarantee')ours.guarantee=!ours.guarantee;
  if(action==='access')ours.access=true;
  if(action==='offerAccess')theirs.access=!theirs.access;
- if(action==='trade'){if(ours.embargo||theirs.embargo)return fail('Lift embargoes first.');pair.trade=true;}
- if(action==='embargo'){ours.embargo=!ours.embargo;if(ours.embargo){pair.trade=false;memory(theirs,'Embargo',-20,day,.5);}}
+ if(action==='trade'){pair.trade=true;}
  if(action==='subsidy'){
   if(options.stop===true){ours.subsidy=0;customMessage='Subsidy stopped.';}
   else{
