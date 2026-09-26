@@ -1309,9 +1309,12 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 @media(max-width:560px){.population-group-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* Overall world-rank badge beside the campaign shield */
-.campaign-rank-badge{position:absolute;left:108px;top:78px;z-index:27;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;pointer-events:none;border:2px solid #5b665f;background:radial-gradient(circle at 34% 28%,#334039,#18231e 66%,#0b120f);box-shadow:0 4px 10px #0009,inset 0 0 0 2px #0d1512;color:#d5dbd3;font-family:var(--serif);font-size:15px;font-weight:700;text-shadow:0 1px 2px #000}
+.campaign-rank-badge{position:absolute;left:100px;top:78px;z-index:27;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;pointer-events:auto;cursor:pointer;padding:0;border:2px solid #5b665f;background:radial-gradient(circle at 34% 28%,#334039,#18231e 66%,#0b120f);box-shadow:0 4px 10px #0009,inset 0 0 0 2px #0d1512;color:#d5dbd3;font-family:var(--serif);font-size:15px;font-weight:700;text-shadow:0 1px 2px #000}
 .campaign-rank-badge.bronze{border-color:#a87345;background:radial-gradient(circle at 32% 28%,#d09a68,#8b5b35 58%,#442b1d);color:#fff0d7;box-shadow:0 4px 11px #0009,0 0 10px #b5793f55,inset 0 0 0 2px #57351f}
 .campaign-rank-badge.silver{border-color:#c5ccd0;background:radial-gradient(circle at 32% 28%,#f1f4f4,#9ca8ad 58%,#4d585d);color:#182026;box-shadow:0 4px 11px #0009,0 0 10px #dce4e455,inset 0 0 0 2px #6d777c;text-shadow:0 1px 1px #fff8}
 .campaign-rank-badge.gold{border-color:#e6c35c;background:radial-gradient(circle at 32% 28%,#fff1a0,#d4a936 57%,#755518);color:#312005;box-shadow:0 4px 11px #0009,0 0 12px #e4bd4c77,inset 0 0 0 2px #8b681f;text-shadow:0 1px 1px #fff6}
-.game-map-shell.province-panel-open .campaign-rank-badge{left:563px}
-@media(max-width:760px){.campaign-rank-badge{left:82px;top:68px;width:38px;height:38px;font-size:13px}.game-map-shell.province-panel-open .campaign-rank-badge{left:82px}}
+.game-map-shell.province-panel-open .campaign-rank-badge{left:555px}
+@media(max-width:760px){.campaign-rank-badge{left:76px;top:68px;width:38px;height:38px;font-size:13px}.game-map-shell.province-panel-open .campaign-rank-badge{left:76px}}
+
+.campaign-rank-badge:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.campaign-rank-badge:focus-visible{outline:2px solid #e0c56f;outline-offset:2px}
