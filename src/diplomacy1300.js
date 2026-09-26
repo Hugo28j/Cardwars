@@ -9,7 +9,7 @@ export function diplomacyState(game){
  if(!Object.hasOwn(d.network,'lastWeek'))d.network.lastWeek=null;
  return d.network;
 }
-const direction=()=>({opinion:0,trust:50,favors:0,ae:0,rival:false,guarantee:false,access:false,embargo:false,subsidy:0,mission:null,modifiers:[],cooldowns:{}});
+const direction=()=>({opinion:0,trust:50,favors:0,ae:0,rival:false,guarantee:false,access:false,embargo:false,mission:null,modifiers:[],cooldowns:{}});
 export function relation(game,a,b){
  if(!a||!b||a===b)throw new Error('Two different countries are required.');
  const n=diplomacyState(game),k=key(a,b);
@@ -48,7 +48,7 @@ export function acceptance(game,a,b,action,powers={}){
 }
 
 export const DIP_ACTIONS={
- improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',subsidy:'Start / change subsidy',peace:'Offer white peace',war:'Declare war (no casus belli)'
+ improve:'Improve relations',curry:'Curry favors',gift:'Send gift',alliance:'Offer alliance',breakAlliance:'Break alliance',trust:'Spend 10 favors for trust',rival:'Declare / remove rival',insult:'Send insult',guarantee:'Guarantee / revoke independence',access:'Ask military access',offerAccess:'Offer / revoke military access',trade:'Offer trade agreement',peace:'Offer white peace',war:'Declare war (no casus belli)'
 };
 export function performAction(game,a,b,action,powers={},options={}){
  if(!DIP_ACTIONS[action])return {ok:false,message:'Unknown action.'};
@@ -70,7 +70,7 @@ export function performAction(game,a,b,action,powers={},options={}){
   const missions=Object.values(diplomacyState(game).pairs).filter(p=>p.directions[a]?.mission).length;
   const mission=action==='improve'?'improve':'curry';
   if(ours.mission===mission){ours.mission=null;customMessage=`${DIP_ACTIONS[action]}: envoy recalled.`;}
-  else {if(!ours.mission&&missions>=2)return fail('Both diplomats are busy. Recall one first.');ours.mission=mission;customMessage=`${DIP_ACTIONS[action]}: envoy assigned.`;}
+  else {const maxDiplomats=clamp(Math.floor(Number(options.maxDiplomats)||2),2,5);if(!ours.mission&&missions>=maxDiplomats)return fail(`All ${maxDiplomats} diplomats are busy. Recall one first.`);ours.mission=mission;customMessage=`${DIP_ACTIONS[action]}: diplomat assigned.`;}
  }
  if(action==='gift'){
   const amount=round(clamp(Number(options.amount)||5,1,100000));
@@ -85,23 +85,15 @@ export function performAction(game,a,b,action,powers={},options={}){
   if(!ours.rival){if(pair.alliance)return fail('End the alliance first.');const count=Object.values(diplomacyState(game).pairs).filter(p=>p.directions[a]?.rival).length;if(count>=3)return fail('Maximum three rivals.');}
   ours.rival=!ours.rival;memory(theirs,'Declared rivalry',ours.rival?-40:20,day,.25);ours.cooldowns.rival=day+365;
  }
- if(action==='insult'){memory(theirs,'Insulted us',-50,day,1);theirs.trust=clamp(theirs.trust-10,0,100);ours.cooldowns.insult=day+90;if(a===PLAYER_REALM){game.diplomacy.diploInsultBonusUntilDay=Math.max(Number(game.diplomacy.diploInsultBonusUntilDay)||0,day+365);}}
+ if(action==='insult'){memory(theirs,'Insulted us',-50,day,1);theirs.trust=clamp(theirs.trust-10,0,100);ours.cooldowns.insult=day+90;}
  if(action==='guarantee')ours.guarantee=!ours.guarantee;
  if(action==='access')ours.access=true;
  if(action==='offerAccess')theirs.access=!theirs.access;
  if(action==='trade'){pair.trade=true;}
- if(action==='subsidy'){
-  if(options.stop===true){ours.subsidy=0;customMessage='Subsidy stopped.';}
-  else{
-   const amount=round(clamp(Number(options.amount)||Number(ours.subsidy)||1,.01,100000)),balance=a===PLAYER_REALM?game.florins:game.diplomacy.aiTreasuries?.[a];
-   if(!Number.isFinite(balance)||balance<amount)return fail(`At least ƒ${amount.toFixed(2)} is needed.`);
-   ours.subsidy=amount;customMessage=`Subsidy set to ƒ${amount.toFixed(2)}/month.`;
-  }
- }
  if(action==='war'){
   if(pair.truceUntil>day)return fail(`Truce: ${pair.truceUntil-day} days remaining.`);
   if(pair.alliance)return fail('End the alliance first.');
-  pair.war={started:day,attacker:a,defender:b};pair.trade=false;ours.access=theirs.access=false;ours.subsidy=theirs.subsidy=0;ours.mission=theirs.mission=null;
+  pair.war={started:day,attacker:a,defender:b};pair.trade=false;ours.access=theirs.access=false;ours.mission=theirs.mission=null;
   memory(theirs,'Declared war',-100,day,.25);theirs.trust=clamp(theirs.trust-30,0,100);
   diplomacyState(game).reputation[a]=clamp((diplomacyState(game).reputation[a]||0)-1,-5,5);
   for(const p of Object.values(diplomacyState(game).pairs)){if(p.directions[a]){const other=p.countries.find(c=>c!==a);p.directions[other].ae=clamp(p.directions[other].ae+15,0,200);}}
@@ -126,10 +118,6 @@ export function weeklyDiplomacy(game,week,powers={}){
   r.modifiers=r.modifiers.map(m=>({...m,value:round(Math.sign(m.value)*Math.max(0,Math.abs(m.value)-m.decay))})).filter(m=>m.value);
   if(!p.war&&r.mission==='improve') {const m=other.modifiers.find(m=>m.type==='Improved relations');if((m?.value||0)<100)memory(other,'Improved relations',Math.min(3,100-(m?.value||0)),game.day,.5);}
   if(p.alliance){r.favors=round(clamp(r.favors+.2+(r.mission==='curry'?.8:0),0,100));r.trust=round(clamp(r.trust+.05,0,100));}
-  if(r.subsidy&&!p.war){const d=game.diplomacy,bal=a===PLAYER_REALM?game.florins:d.aiTreasuries?.[a]||0;
-   if(bal<r.subsidy){r.subsidy=0;events.push(`${a===PLAYER_REALM?'Your':a+'’s'} subsidies to ${b} stopped: insufficient funds.`);}
-   else {if(a===PLAYER_REALM)game.florins=round(bal-r.subsidy);else d.aiTreasuries[a]=round(bal-r.subsidy);d.aiTreasuries??={};if(b===PLAYER_REALM)game.florins=round(game.florins+r.subsidy);else d.aiTreasuries[b]=round((d.aiTreasuries[b]||0)+r.subsidy);memory(other,'Subsidies',1,game.day,.1);}
-  }
  }
  // AI agreements between countries are evaluated every 13 weeks, always on a Monday tick.
  if(week%13===0)for(const p of Object.values(n.pairs)){
