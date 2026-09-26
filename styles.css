@@ -1295,3 +1295,15 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .dip-action-list button>small.diplomat{color:#c7ad6a}
 .dip-action-list button>small.favor{color:#79b8d8}
 .dip-modal-action-cost{display:inline-block;margin:0 0 9px;padding:5px 7px;border:1px solid #6f633e;background:#a88d5114;color:#d7bc73;font-size:8px;font-weight:700;letter-spacing:.35px}
+
+/* Clickable population groups + detail tablet */
+.population-group-name{appearance:none;border:0;background:transparent;padding:0;color:#e5ddc8;font-family:var(--serif);font-size:14px;cursor:pointer;text-align:left}
+.population-group-name:hover{color:#d1b66f;text-decoration:underline;text-underline-offset:3px}
+.population-group-name:focus-visible{outline:1px solid #c7a966;outline-offset:3px}
+.population-group-dialog{max-width:520px}
+.population-group-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:14px 0;background:#3b4841;border:1px solid #3b4841}
+.population-group-detail-grid>span{min-width:0;padding:11px 10px;background:#121d18;font-size:7px;letter-spacing:.5px;color:#849189}
+.population-group-detail-grid>span strong{display:block;margin-top:5px;font-family:var(--serif);font-size:17px;letter-spacing:0;color:#e2dcc8}
+.population-group-detail-grid>span strong.positive{color:#7fc38d}.population-group-detail-grid>span strong.negative{color:#d37c72}
+.population-group-note{font-size:8px!important;line-height:1.55!important;color:#87958b!important}
+@media(max-width:560px){.population-group-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
