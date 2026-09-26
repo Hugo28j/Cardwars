@@ -1320,7 +1320,7 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .campaign-rank-badge:focus-visible{outline:2px solid #e0c56f;outline-offset:2px}
 
 /* Campaign action notifications beside the world-rank badge */
-.campaign-hud-notifications{position:absolute;left:136px;top:78px;z-index:28;display:flex;flex-flow:row nowrap;align-items:center;gap:6px;max-width:calc(100vw - 150px);overflow:hidden;pointer-events:auto}
+.campaign-hud-notifications{position:absolute;left:136px;top:84px;z-index:28;display:flex;flex-flow:row nowrap;align-items:center;gap:6px;max-width:calc(100vw - 150px);overflow:hidden;pointer-events:auto}
 .campaign-hud-notifications.empty{display:none}
 .campaign-hud-notification{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;padding:0;border-radius:6px;border:1px solid #746d4e;background:linear-gradient(145deg,#24312b,#111a17);color:#dbc06f;box-shadow:0 4px 10px #0009,inset 0 0 0 1px #0d1512;cursor:pointer}
 .campaign-hud-notification .icon{width:22px;height:22px}
@@ -1329,4 +1329,7 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .campaign-hud-notification.tech-idle{color:#d8bc69;border-color:#927c49}
 .campaign-hud-notification.company-loss{color:#db8075;border-color:#8b514b;background:linear-gradient(145deg,#38231f,#191412)}
 .game-map-shell.province-panel-open .campaign-hud-notifications{left:591px}
-@media(max-width:760px){.campaign-hud-notifications{left:106px;top:68px;gap:5px;max-width:calc(100vw - 112px)}.campaign-hud-notification{width:38px;height:38px;flex-basis:38px}.campaign-hud-notification .icon{width:20px;height:20px}.game-map-shell.province-panel-open .campaign-hud-notifications{left:106px}}
+@media(max-width:760px){.campaign-hud-notifications{left:106px;top:74px;gap:5px;max-width:calc(100vw - 112px)}.campaign-hud-notification{width:38px;height:38px;flex-basis:38px}.campaign-hud-notification .icon{width:20px;height:20px}.game-map-shell.province-panel-open .campaign-hud-notifications{left:106px}}
+
+.campaign-hud-notification.tech-investment-zero{color:#8fc3d4;border-color:#527989}
+.campaign-hud-notification.stability-investment-zero{color:#c9b66e;border-color:#7f7448}
