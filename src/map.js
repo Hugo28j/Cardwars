@@ -350,14 +350,14 @@ export class WorldMap{
  refresh(){if(!this.svg)return;this.cancelScheduledRefresh();const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   this.updateBorderZoomStyle();
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
-  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),visibleCities=new Set(ownedCities);
+  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),visibleCities=new Set(ownedCities),fogDetail=!!game?.fogOfWar&&unit<.13;
   if(game?.fogOfWar)for(const id of ownedCities)for(const neighbour of this.cityAdjacency?.get(id)||[])visibleCities.add(neighbour);
   this.svg.style.setProperty('--player-realm-color',game?.playerColor||'#c6534d');
   for(const cell of this.svg.querySelectorAll('.city-territory-cell')){
    const id=cell.dataset.city,isOwned=ownedCities.has(id),isVisible=visibleCities.has(id);
    cell.classList.toggle('game-owned',!!game&&isOwned);
    cell.classList.toggle('game-visible',!!game&&!isOwned&&isVisible);
-   cell.classList.toggle('game-hidden',!!game&&!!game.fogOfWar&&showCityAreas&&!isOwned&&!isVisible);
+   cell.classList.toggle('game-hidden',!!game&&fogDetail&&!isOwned&&!isVisible);
   }
   // Country / polity names follow the territory that realm still owns.
   // When a realm loses a city, its name is re-centered over its remaining city cells.
@@ -398,7 +398,7 @@ export class WorldMap{
    const show=!realmGone&&eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
-  const showMilitary=!!game&&unit<.16;this.cityLabelBoxes=new Map();
+  const showMilitary=!!game&&unit<.105;this.cityLabelBoxes=new Map();
   for(const t of this.cityTerritoryLabels||[]){
    const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
    t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
@@ -416,7 +416,7 @@ export class WorldMap{
   this.svg.querySelector('#cities').innerHTML=CITIES.map(c=>{
    const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=this.cityTerritoryRealms?.has(cityRealm(c));
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
-   if(game?.fogOfWar&&showCityAreas&&!visibleCities.has(c.id))return '';
+   if(fogDetail&&!visibleCities.has(c.id))return '';
    const size=selected||unit<.3?4:2;
    if(territoryCity)return '';
    const army=Math.max(0,Number(game?.militaryByCity?.[c.id]?.army??c.army)||0),hasArmyNumber=showMilitary&&army>0,labelY=hasArmyNumber?-34:4,labelBox={x:q.x+8,y:q.y+labelY-13,w:displayCityName(c).length*7+8,h:19},forceLabel=c.id==='1300-quimper'&&unit<.34,show=selected||forceLabel||(unit<.30&&!occupied.some(b=>overlaps(labelBox,b)));
@@ -433,13 +433,18 @@ export class WorldMap{
      const owned=ownedCities.has(c.id),override=game?.militaryByCity?.[c.id],army=Math.max(0,Number(override?.army??c.army)||0),navy=Math.max(0,Number(override?.navy??c.navy)||0);
       const unitAnchor=this.cityUnitAnchors?.get(c.id),land=unitAnchor?.point||this.cityCenters?.get(c.id)||cityTerritoryPoint(cityRealm(c),c),sq=screen(...land);
       if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55){
-      const territoryCity=this.cityTerritoryRealms?.has(cityRealm(c)),badgeY=showCityAreas&&territoryCity?28:13,labelBox=this.cityLabelBoxes?.get(c.id),badgeW=Math.max(24,compactMilitaryNumber(army).length*6.2+12),boxW=Math.max(42,badgeW+6),boxH=badgeY>20?66:53,candidates=territoryCity?[[0,48],[0,-48],[46,16],[-46,16],[46,-20],[-46,-20]]:[[0,0],[0,44],[0,-44],[42,0],[-42,0]],cell=this.cityCellGeometry?.get(c.id);
-      const boxAt=(q,dx,dy)=>({x:q.x+dx-boxW/2,y:q.y+dy-29,w:boxW,h:boxH}),mapAt=(dx,dy)=>[land[0]+dx*unit,land[1]+dy*unit],insideCell=p=>!territoryCity||!cell||(pointInPolygon(p,cell.poly)&&(cell.componentPoly?pointInPolygon(p,cell.componentPoly):cell.realmPolys.some(poly=>pointInPolygon(p,poly))));
+      const territoryCity=this.cityTerritoryRealms?.has(cityRealm(c)),badgeY=showCityAreas&&territoryCity?28:13,labelBox=this.cityLabelBoxes?.get(c.id),badgeW=Math.max(24,compactMilitaryNumber(army).length*6.2+12),boxW=Math.max(42,badgeW+6),boxH=badgeY>20?66:53,candidates=territoryCity?[[0,50],[0,-50],[48,12],[-48,12],[48,-26],[-48,-26],[36,40],[-36,40],[36,-40],[-36,-40],[0,72],[0,-72],[68,0],[-68,0]]:[[0,0],[0,44],[0,-44],[42,0],[-42,0]],cell=this.cityCellGeometry?.get(c.id);
+      const boxAt=(q,dx,dy)=>({x:q.x+dx-boxW/2,y:q.y+dy-29,w:boxW,h:boxH}),mapAt=(dx,dy)=>[land[0]+dx*unit,land[1]+dy*unit],screenToMap=(x,y)=>[this.view.x+x*unit,this.view.y+y*unit],insideCellPoint=p=>!territoryCity||!cell||(pointInPolygon(p,cell.poly)&&(cell.componentPoly?pointInPolygon(p,cell.componentPoly):cell.realmPolys.some(poly=>pointInPolygon(p,poly)))),boxInsideCell=box=>{if(!territoryCity||!cell)return true;const inset=1.5,x0=box.x+inset,y0=box.y+inset,x1=box.x+box.w-inset,y1=box.y+box.h-inset,cx=(x0+x1)/2,cy=(y0+y1)/2;return [[x0,y0],[x1,y0],[x1,y1],[x0,y1],[cx,y0],[cx,y1],[x0,cy],[x1,cy]].every(([x,y])=>insideCellPoint(screenToMap(x,y)));};
       let chosen=null;
-      for(const [dx,dy] of candidates){const qbox=boxAt(sq,dx,dy),mp=mapAt(dx,dy),inView=qbox.x+qbox.w>2&&qbox.x<width-2&&qbox.y+qbox.h>2&&qbox.y<height-2;if(!inView||labelBox&&overlaps(qbox,labelBox)||militaryBoxes.some(b=>overlaps(qbox,b))||!insideCell(mp))continue;chosen={dx,dy,box:qbox,point:mp};break;}
-      if(!chosen)for(const [dx,dy] of candidates){const qbox=boxAt(sq,dx,dy),mp=mapAt(dx,dy),inView=qbox.x+qbox.w>2&&qbox.x<width-2&&qbox.y+qbox.h>2&&qbox.y<height-2;if(!inView||labelBox&&overlaps(qbox,labelBox)||militaryBoxes.some(b=>overlaps(qbox,b)))continue;chosen={dx,dy,box:qbox,point:mp};break;}
-      chosen??={dx:0,dy:48,box:boxAt(sq,0,48),point:mapAt(0,48)};militaryBoxes.push(chosen.box);
-      const armyMarkup=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${chosen.point}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned,badgeY)}</g>`;pieces.push(armyMarkup);
+      // First try positions that keep the complete army marker inside its own city
+      // and avoid both the city name and other army markers.
+      for(const [dx,dy] of candidates){const qbox=boxAt(sq,dx,dy),mp=mapAt(dx,dy),inView=qbox.x+qbox.w>2&&qbox.x<width-2&&qbox.y+qbox.h>2&&qbox.y<height-2;if(!inView||labelBox&&overlaps(qbox,labelBox)||militaryBoxes.some(b=>overlaps(qbox,b))||!boxInsideCell(qbox))continue;chosen={dx,dy,box:qbox,point:mp};break;}
+      // If there genuinely is no free position, the one allowed fallback is on top
+      // of the city name. The SVG clip below still prevents it drawing outside the city.
+      if(!chosen){const qbox=boxAt(sq,0,0);chosen={dx:0,dy:0,box:qbox,point:land,fallback:true};}
+      militaryBoxes.push(chosen.box);
+      const marker=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${chosen.point}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned,badgeY)}</g>`;
+      const armyMarkup=territoryCity&&unitAnchor?.cellClip&&unitAnchor?.componentClip?`<g clip-path="url(#${unitAnchor.componentClip})"><g clip-path="url(#${unitAnchor.cellClip})">${marker}</g></g>`:marker;pieces.push(armyMarkup);
      }
      if(navy>0){const coast=this.coastMarkerForCity(c);if(coast){const cq=screen(...coast);if(cq.x>-55&&cq.y>-55&&cq.x<width+55&&cq.y<height+55)pieces.push(`<g class="navy-map-marker" data-unit-city="${c.id}" transform="translate(${coast}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(navy)} ships</title>${shipPiece(navy,owned)}</g>`);}}
     }
