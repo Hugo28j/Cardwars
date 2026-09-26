@@ -323,7 +323,7 @@ try{
  const legacyRaw=localStorage.getItem(LEGACY_KEY);
  if(legacyRaw){const p=migrateProfile(JSON.parse(legacyRaw));if(p&&validateProfile(p))legacyProfile=p;}
 }catch{storageFailed=true;accounts={};currentAccountKey=null;authUser=null;}
-let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceTab='general',gameProvinceBuildingDetail=null,gameProvinceBuildingCatalog=false,gameArmyPanelKey=null,gameArmyMoveMode=false,gameArmySplitMode=false,gameBattlePanelId=null,gameCountryPanel=false,gameCountryTab='politics',gameDiplomacyCountry=null,gameRankingCategory='overall',gameClockTimer=null,gameStartCountdownPending=false,activeBattleDialogId=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',selectedTechnologyTreeNode='crop-rotation',toastTimer;
+let view='collection',country1300='all',search1300='',deckCountry='all',deckSearch='',world=null,selected1300='1300-seville',buildingCity='1300-seville',gameScreen='map',gameProvincePanel=null,gameProvinceTab='general',gameProvinceBuildingDetail=null,gameProvinceBuildingCatalog=false,gameArmyPanelKey=null,gameArmyMoveMode=false,gameArmySplitMode=false,gameBattlePanelId=null,gameSiegePanelId=null,gameCountryPanel=false,gameCountryTab='politics',gameDiplomacyCountry=null,gameRankingCategory='overall',gameClockTimer=null,gameStartCountdownPending=false,activeBattleDialogId=null,flagPaintColor='#f2e7c9',atlasRegion=null,atlasSearch='',rankingCategory='overall',selectedTechnologyTreeNode='crop-rotation',toastTimer;
 const mapState={selected:selected1300,collection:{}};
 const COUNTRIES_1300=[...new Set(CITIES_1300.map(c=>c.country))].sort((a,b)=>a.localeCompare(b));
 const STARTER_REGIONS_1300=[
@@ -992,13 +992,13 @@ function militaryWorkerPoolDraw1300(game,id){
 function militaryProfessionalLimit1300(game){return Math.floor((game?.ownedCities||[]).reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0)*.05);}
 function militaryUnprofessionalLimit1300(game){return Math.floor((game?.ownedCities||[]).reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0)*.25);}
 function startProfessionalTraining1300(game,cityId,unitId,amount){
- const u=MILITARY_UNIT_1300[unitId],n=Math.max(1,Math.floor(Number(amount)||0));if(!game?.ownedCities?.includes(cityId)||!u?.professional)return {ok:false,message:'Invalid professional recruitment order.'};if(!militaryUnitUnlocked1300(game,unitId))return {ok:false,message:u.name+' requires '+(TECHNOLOGY_1300[u.tech]?.name||u.tech)+'.'};
+ const u=MILITARY_UNIT_1300[unitId],n=Math.max(1,Math.floor(Number(amount)||0));if(!game?.ownedCities?.includes(cityId)||!u?.professional)return {ok:false,message:'Invalid professional recruitment order.'};if(activeSiegeAtCity1300(game,cityId))return {ok:false,message:'You cannot recruit or train troops in a province under siege.'};if(!militaryUnitUnlocked1300(game,unitId))return {ok:false,message:u.name+' requires '+(TECHNOLOGY_1300[u.tech]?.name||u.tech)+'.'};
  const active=professionalArmyState1300(game).army,pending=ensureGameMilitary1300(game).trainingQueues.reduce((s,q)=>s+q.amount,0),limit=militaryProfessionalLimit1300(game);if(active+pending+n>limit)return {ok:false,message:'Professional army cap is 5% of population. You can queue at most '+Math.max(0,limit-active-pending)+' more soldiers.'};
  const order=addTrainingOrder1300(ensureGameMilitary1300(game),{cityId,unitId,amount:n,day:game.day}),trainingPct=commanderBonus1300(game,cityId,'trainingPct'),days=Math.max(15,Math.round(u.trainingDays*(1-trainingPct/100)));order.finishDay=game.day+days;invalidateWeeklyBudgetProjection1300(game);return {ok:true,message:n+' '+u.name+' entered training. The full group joins in '+days+' days.'};
 }
 function levyDailyRate1300(game,id){const c=CITY_1300[id],lvl=c?gameProvinceBuildingState(c).buildings.find(x=>x.id==='barracks')?.level||0:0;return Math.min(3,1+(lvl>0?1:0)+(lvl>=3?1:0));}
 function startLevyRecruitment1300(game,cityId,amount){
- const n=Math.max(1,Math.floor(Number(amount)||0));if(!game?.ownedCities?.includes(cityId))return {ok:false,message:'Invalid levy recruitment order.'};const s=unprofessionalArmyState1300(game),pending=ensureGameMilitary1300(game).levyOrders.reduce((x,q)=>x+q.remaining,0);if(s.army+pending+n>s.limit)return {ok:false,message:'Unprofessional army cap is 25% of population. You can raise at most '+Math.max(0,s.limit-s.army-pending)+' more levies.'};
+ const n=Math.max(1,Math.floor(Number(amount)||0));if(!game?.ownedCities?.includes(cityId))return {ok:false,message:'Invalid levy recruitment order.'};if(activeSiegeAtCity1300(game,cityId))return {ok:false,message:'You cannot raise levies in a province under siege.'};const s=unprofessionalArmyState1300(game),pending=ensureGameMilitary1300(game).levyOrders.reduce((x,q)=>x+q.remaining,0);if(s.army+pending+n>s.limit)return {ok:false,message:'Unprofessional army cap is 25% of population. You can raise at most '+Math.max(0,s.limit-s.army-pending)+' more levies.'};
  addLevyOrder1300(ensureGameMilitary1300(game),{cityId,amount:n,day:game.day});return {ok:true,message:'Raising '+n+' Levy Swordsmen at up to '+levyDailyRate1300(game,cityId)+' per day.'};
 }
 function cancelMilitaryOrder1300(game,id){const ok=cancelOrder1300(ensureGameMilitary1300(game),id);if(ok)invalidateWeeklyBudgetProjection1300(game);return ok;}
@@ -1039,8 +1039,10 @@ function ensureAdvancedMilitary1300(game){
  m.commanders=Array.isArray(m.commanders)?m.commanders:[];
  m.movements=Array.isArray(m.movements)?m.movements:[];
  m.battles=Array.isArray(m.battles)?m.battles:[];
+ m.sieges=Array.isArray(m.sieges)?m.sieges:[];
+ m.occupations=m.occupations&&typeof m.occupations==='object'&&!Array.isArray(m.occupations)?m.occupations:{};
  m.supplyByCity=m.supplyByCity&&typeof m.supplyByCity==='object'&&!Array.isArray(m.supplyByCity)?m.supplyByCity:{};
- m.nextCommanderId=Math.max(1,Math.floor(Number(m.nextCommanderId)||1));m.nextMovementId=Math.max(1,Math.floor(Number(m.nextMovementId)||1));m.nextBattleId=Math.max(1,Math.floor(Number(m.nextBattleId)||1));m.nextArmyGroupId=Math.max(1,Math.floor(Number(m.nextArmyGroupId)||1));
+ m.nextCommanderId=Math.max(1,Math.floor(Number(m.nextCommanderId)||1));m.nextMovementId=Math.max(1,Math.floor(Number(m.nextMovementId)||1));m.nextBattleId=Math.max(1,Math.floor(Number(m.nextBattleId)||1));m.nextSiegeId=Math.max(1,Math.floor(Number(m.nextSiegeId)||1));m.nextArmyGroupId=Math.max(1,Math.floor(Number(m.nextArmyGroupId)||1));
  const validUnits=new Set(MILITARY_UNITS_1300.map(u=>u.id));
  for(const [key,a] of Object.entries(m.armiesByCity||{})){
   const fallbackHome=CITY_1300[key]?key:(game.ownedCities||[])[0];a.homeCityId=CITY_1300[a.homeCityId]?a.homeCityId:fallbackHome;a.location=CITY_1300[a.location]?a.location:a.homeCityId;a.id=a.id||('army-'+key);a.name=a.name||('Army of '+displayCityName1300(CITY_1300[a.homeCityId]||CITY_1300[a.location]));
@@ -1050,6 +1052,7 @@ function ensureAdvancedMilitary1300(game){
  m.commanders=m.commanders.filter(c=>c&&COMMANDER_TEMPLATE_1300[c.templateId]).map(c=>({...COMMANDER_TEMPLATE_1300[c.templateId],...c,id:String(c.id)}));
  m.movements=m.movements.filter(x=>x&&m.armiesByCity[x.armyHomeId]&&CITY_1300[x.to]&&Number(x.finishDay)>Number(game.day||0)-1);
  m.battles=m.battles.filter(b=>b&&m.armiesByCity[b.armyHomeId]&&CITY_1300[b.cityId]&&['active','won','lost','retreated'].includes(b.status||'active')).slice(-20);
+ m.sieges=m.sieges.filter(s=>s&&CITY_1300[s.cityId]&&['active','won','lifted'].includes(s.status||'active')).slice(-30).map(s=>({...s,armyHomeIds:Array.isArray(s.armyHomeIds)?s.armyHomeIds.filter(k=>m.armiesByCity[k]):[],foodPct:clamp1300(Number.isFinite(Number(s.foodPct))?Number(s.foodPct):100,0,100),unrestPct:clamp1300(Number.isFinite(Number(s.unrestPct))?Number(s.unrestPct):10,0,100),lastRollDay:Number.isFinite(Number(s.lastRollDay))?Number(s.lastRollDay):Number(s.startedDay)||0,log:Array.isArray(s.log)?s.log.slice(0,12):[]}));
  return m;
 }
 function commanderForArmy1300(game,homeId){const m=ensureAdvancedMilitary1300(game),a=m?.armiesByCity?.[homeId];return a?.commanderId?m.commanders.find(c=>c.id===a.commanderId)||null:null;}
