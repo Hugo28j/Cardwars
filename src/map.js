@@ -355,7 +355,8 @@ export class WorldMap{
  updateMovingArmyAnimation(){
   const game=this.state?.game,moves=game?.movements;if(this.destroyed||!Array.isArray(moves)||!moves.length)return false;
   const dayDuration=Math.max(250,Number(game.dayDurationMs)||2000),dayNow=Number(game.day)||0,lastTick=Number(game.lastTickAt)||Date.now(),dayFraction=Math.max(0,Math.min(.999,(Date.now()-lastTick)/dayDuration));
-  for(const el of this.svg?.querySelectorAll('.moving-army-marker[data-move-id]')||[]){
+  const movingEls=[...(this.svg?.querySelectorAll('.moving-army-marker[data-move-id]')||[])];if(!movingEls.length)return false;
+  for(const el of movingEls){
    const move=moves.find(x=>String(x.id)===el.dataset.moveId);if(!move)continue;const from=this.cityUnitAnchors?.get(move.from)?.point||this.cityCenters?.get(move.from),to=this.cityUnitAnchors?.get(move.to)?.point||this.cityCenters?.get(move.to);if(!from||!to)continue;
    const start=Number.isFinite(Number(move.visualStartDay))?Number(move.visualStartDay):(Number(move.startDay)||dayNow),finish=Number(move.finishDay)||start+1,span=Math.max(.001,finish-start),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-start)/span)),x=from[0]+(to[0]-from[0])*progress,y=from[1]+(to[1]-from[1])*progress;
    el.setAttribute('transform',`translate(${x} ${y})`);
