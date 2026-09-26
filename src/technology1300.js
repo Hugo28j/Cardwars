@@ -24,11 +24,11 @@ export const TECHNOLOGIES_1300=[
  t('commercial-networks','economy','Commercial Networks',5,['+10% national Economy','+10% market efficiency','+10% trade volume','+5% company profits','-10% transportation cost','Markets give +5 Economy'],['urban-manufactures']),
 
  t('standardized-arms','army','Standardized Arms',1,['+5% army damage','-5% Weapons production cost','+5% Weapons production']),
- t('crossbow-corps','army','Crossbow Corps',2,['+10% ranged damage','+5% defensive battle strength','+15% Crossbowmen effectiveness','+5% army maintenance'],['standardized-arms']),
- t('organized-retinues','army','Organized Retinues',3,['+10% professional army effectiveness','+10% army morale','+5% reinforcement speed','-5% manpower losses'],['crossbow-corps'],'Field army route'),
+ t('crossbow-corps','army','Crossbow Corps',2,['UNLOCKS Crossbowmen','+10% ranged damage','+5% defensive battle strength','+15% Crossbowmen effectiveness','+5% army maintenance'],['standardized-arms']),
+ t('organized-retinues','army','Organized Retinues',3,['UNLOCKS Men-at-Arms','+10% professional army effectiveness','+10% army morale','+5% reinforcement speed','-5% manpower losses'],['crossbow-corps'],'Field army route'),
  t('siege-engineering','army','Siege Engineering',3,['+20% siege speed','+10% fortification damage','-10% siege attrition'],['crossbow-corps'],'Siege route'),
  t('campaign-logistics','army','Campaign Logistics',4,['+10% reinforcement speed','-10% campaign attrition','+5% army movement speed'],['organized-retinues','siege-engineering']),
- t('combined-arms','army','Combined Arms',5,['+10% army effectiveness','+10% battle organization','+5% movement speed','-5% battle casualties','+10% combat with Infantry + Ranged + Cavalry'],['campaign-logistics']),
+ t('combined-arms','army','Combined Arms',5,['UNLOCKS Knights','+10% army effectiveness','+10% battle organization','+5% movement speed','-5% battle casualties','+10% combat with Infantry + Ranged + Cavalry'],['campaign-logistics']),
 
  t('improved-shipwrights','navy','Improved Shipwrights',1,['UNLOCKS Equipped Fishing','-10% ship construction cost','+10% ship construction speed','+5% ship durability']),
  t('cog-construction','navy','Cog Construction',2,['+15% cargo capacity','+10% naval trade capacity','+5% ship durability'],['improved-shipwrights']),
