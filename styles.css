@@ -511,7 +511,7 @@
 .military-count rect{fill:#17221ef2;stroke:#b7a269;stroke-width:1}
 .military-count text{font-family:var(--serif);font-size:9px;font-weight:700;fill:#f3e5bc;paint-order:stroke;stroke:#0a110f;stroke-width:1.4px}
 .military-count.player-count rect{fill:var(--player-realm-color,#c6534d);stroke:#f1d59c}
-.army-map-marker,.navy-map-marker{pointer-events:none}
+.navy-map-marker{pointer-events:none}.army-map-marker{pointer-events:all;cursor:grab}.army-map-marker:active{cursor:grabbing}.army-map-marker.selected-army .military-count rect{stroke:#fff0bf;stroke-width:1.8}.army-map-marker.move-armed .military-count rect{stroke:#e6c75f;stroke-width:2.2}
 
 /* Expanded c.1300 building catalogue */
 .province-building-cards{padding-bottom:24px}
@@ -1385,3 +1385,37 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .dip-war-goals strong{color:#e3dcc8;font-family:var(--serif)}
 .dip-war-goals small{margin-top:4px;color:#8fa096;line-height:1.45}
 @media(max-width:560px){.province-military-units{grid-template-columns:1fr}.province-military-heading{align-items:start;flex-direction:column}.province-military-heading>small{text-align:left}.military-order-list article{grid-template-columns:1fr auto}}
+
+
+/* Interactive field army panel */
+.army-map-panel-scroll{background:linear-gradient(180deg,#101a17,#0d1512)}
+.army-map-hero{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #465249;background:#111d19}
+.army-map-hero>div{padding:14px 15px;border-right:1px solid #465249}.army-map-hero>div:last-child{border-right:0}
+.army-map-hero span,.army-map-status-grid span,.army-map-route>span,.army-map-section-title span,.army-split-panel>div>span{display:block;font-size:7px;letter-spacing:1px;color:#c8aa64}
+.army-map-hero strong{display:block;margin-top:4px;font-family:var(--serif);font-size:22px;color:#e4dec9}
+.army-map-hero small{display:block;margin-top:3px;font-size:7px;color:#829188}
+.army-map-status-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #465249}
+.army-map-status-grid>div{padding:11px 15px;border-right:1px solid #465249}.army-map-status-grid>div:last-child{border-right:0}
+.army-map-status-grid strong{display:block;margin-top:3px;font-family:var(--serif);font-size:16px}
+.army-map-route{padding:12px 15px;border-bottom:1px solid #465249;background:#17221d}
+.army-map-route strong{display:block;margin-top:4px;font-size:10px;line-height:1.45;color:#e0d7bc}
+.army-map-route small{display:block;margin-top:4px;font-size:7px;color:#8da095}
+.army-map-section-title{display:flex;justify-content:space-between;align-items:end;gap:8px;padding:12px 15px 7px}
+.army-map-section-title small{font-size:7px;color:#839087}
+.army-map-unit-list{margin:0 15px 12px;border:1px solid #3d4b43}
+.army-map-unit-list>div{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:9px 10px;border-bottom:1px solid #2f3c35;background:#121e1a}
+.army-map-unit-list>div:last-child{border-bottom:0}.army-map-unit-list span{font-size:9px;color:#d2d4c6}.army-map-unit-list strong{font-family:var(--serif);font-size:14px;color:#dfc777}.army-map-unit-list small{grid-column:1/-1;font-size:6px;color:#7c8b82}
+.army-map-stack-list{display:grid;gap:5px;margin:0 15px 12px}
+.army-map-stack-list button{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #405047;background:#121d19;color:#b8c1ba;text-align:left}
+.army-map-stack-list button.active{border-color:#b89b57;background:#1c2922;color:#ead697}.army-map-stack-list button span{font-size:8px}.army-map-stack-list button strong{font-family:var(--serif)}
+.army-map-command{display:grid;gap:7px;padding:12px 15px;border-top:1px solid #3c4a42}
+.army-map-command button{padding:11px 12px;border:1px solid #56655b;background:#14211c;color:#d3d7c9;text-align:left}
+.army-map-command button:not(:disabled){cursor:pointer}.army-map-command button:not(:disabled):hover,.army-map-command button.active{border-color:#b59650;background:#1b2a23}
+.army-map-command button:disabled{opacity:.38}.army-map-command strong,.army-map-command small{display:block}.army-map-command strong{font-size:8px;letter-spacing:.7px;color:#dcc376}.army-map-command small{margin-top:4px;font-size:7px;line-height:1.4;color:#87968d}
+.army-split-panel{margin:0 15px 14px;padding:12px;border:1px solid #6c6040;background:#171f1a}
+.army-split-panel>div{margin-bottom:9px}.army-split-panel>div small{display:block;margin-top:3px;font-size:7px;color:#87958c}
+.army-split-panel label{display:grid;grid-template-columns:1fr 72px;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid #2f3d35}
+.army-split-panel label>span{font-size:8px;color:#c9cec2}.army-split-panel label small{color:#75857c}.army-split-panel input{width:100%;padding:7px;border:1px solid #4a5a51;background:#0d1713;color:#e4dfcb}
+.army-split-panel>button{width:100%;margin-top:10px;padding:9px;border:1px solid #aa8d4b;background:#222d24;color:#e2c66f;font-size:8px;font-weight:700}
+.army-panel-battle{margin:10px 15px;width:calc(100% - 30px)}
+@media(max-width:560px){.army-map-hero{grid-template-columns:1fr}.army-map-hero>div{border-right:0;border-bottom:1px solid #465249}.army-map-hero>div:last-child{border-bottom:0}}
