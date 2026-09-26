@@ -149,6 +149,7 @@ export function weeklyDiplomacy(game,week,powers={}){
  // AI agreements between countries are evaluated every 13 weeks, always on a Monday tick.
  if(week%13===0)for(const p of Object.values(n.pairs)){
   const [a,b]=p.countries;if(a===PLAYER_REALM||b===PLAYER_REALM||p.war)continue;
+  if(!p.trade&&acceptance(game,a,b,'trade',powers).accepted&&acceptance(game,b,a,'trade',powers).accepted){p.trade=true;events.push(`${a} and ${b} signed a trade agreement.`);}
   if(!p.alliance&&acceptance(game,a,b,'alliance',powers).accepted&&acceptance(game,b,a,'alliance',powers).accepted){p.alliance=true;events.push(`${a} and ${b} formed an alliance.`);}
  }
  syncLegacy(game);return events;
