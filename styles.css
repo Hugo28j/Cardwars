@@ -252,7 +252,7 @@
 .workforce-summary span{background:#121d19;padding:8px}
 .workforce-summary strong{display:block;font-family:var(--serif);font-size:15px}
 .workforce-summary small{display:block;font-size:6px;color:#7d8b82;margin-top:2px;letter-spacing:.5px}
-.province-economy-summary{margin-top:0;border-bottom:1px solid #465249}
+.province-economy-summary{margin-top:0;border-bottom:1px solid #465249;flex:0 0 auto}
 .sector-economy{display:grid;grid-template-columns:1fr 1fr;gap:3px 7px;margin-top:7px;padding-top:6px;border-top:1px solid #39463f}
 .sector-economy span{font-size:7px;color:#859389}
 .sector-economy span:first-child{grid-column:1/-1}
@@ -1343,6 +1343,8 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 #world-map .city-territory-cell{fill:#fff;fill-opacity:0;pointer-events:all;transition:none!important}
 #world-map .city-territory-cell:hover{fill:#fff;fill-opacity:.028}
 #world-map .city-territory-cell.game-visible{fill:#fff;fill-opacity:0}
+#world-map .city-territory-cell.game-hidden{fill:#07100d;fill-opacity:.86;cursor:default}
+#world-map .city-territory-cell.game-hidden:hover{fill:#07100d;fill-opacity:.86}
 #world-map .city-territory-cell.game-owned{fill:var(--player-realm-color,#c6534d);fill-opacity:.88}
 #world-map .city-territory-cell.game-owned:hover{fill:var(--player-realm-color,#c6534d);fill-opacity:.98}
 #world-map .military-piece{filter:none!important}
