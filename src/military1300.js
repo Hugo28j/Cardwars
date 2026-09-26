@@ -29,7 +29,7 @@ export function normaliseMilitaryState1300(raw,{ownedCities=[],startingByCity={}
  const valid=new Set(MILITARY_UNITS_1300.map(x=>x.id));
  for(const id of ownedCities){
   const army=m.armiesByCity[id]&&typeof m.armiesByCity[id]==='object'?m.armiesByCity[id]:{id:'army-'+id,name:'Army of '+cityName(id),location:id,units:{}};
-  army.id=army.id||'army-'+id;army.name=army.name||'Army of '+cityName(id);army.location=id;army.units=army.units&&typeof army.units==='object'&&!Array.isArray(army.units)?army.units:{};
+  army.id=army.id||'army-'+id;army.name=army.name||'Army of '+cityName(id);army.location=typeof army.location==='string'&&army.location?army.location:id;army.units=army.units&&typeof army.units==='object'&&!Array.isArray(army.units)?army.units:{};
   for(const key of Object.keys({...army.units}))if(!valid.has(key))delete army.units[key];else army.units[key]=Math.max(0,Math.floor(Number(army.units[key])||0));
   for(const u of MILITARY_UNITS_1300)if(!Number.isFinite(Number(army.units[u.id])))army.units[u.id]=0;
   m.armiesByCity[id]=army;
