@@ -357,7 +357,7 @@ export class WorldMap{
   const dayDuration=Math.max(250,Number(game.dayDurationMs)||2000),dayNow=Number(game.day)||0,lastTick=Number(game.lastTickAt)||Date.now(),dayFraction=Math.max(0,Math.min(.999,(Date.now()-lastTick)/dayDuration));
   for(const el of this.svg?.querySelectorAll('.moving-army-marker[data-move-id]')||[]){
    const move=moves.find(x=>String(x.id)===el.dataset.moveId);if(!move)continue;const from=this.cityUnitAnchors?.get(move.from)?.point||this.cityCenters?.get(move.from),to=this.cityUnitAnchors?.get(move.to)?.point||this.cityCenters?.get(move.to);if(!from||!to)continue;
-   const start=Number(move.startDay)||dayNow,finish=Number(move.finishDay)||start+1,span=Math.max(1,finish-start),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-start)/span)),x=from[0]+(to[0]-from[0])*progress,y=from[1]+(to[1]-from[1])*progress;
+   const start=Number.isFinite(Number(move.visualStartDay))?Number(move.visualStartDay):(Number(move.startDay)||dayNow),finish=Number(move.finishDay)||start+1,span=Math.max(.001,finish-start),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-start)/span)),x=from[0]+(to[0]-from[0])*progress,y=from[1]+(to[1]-from[1])*progress;
    el.setAttribute('transform',`translate(${x} ${y})`);
   }
   return true;
@@ -457,7 +457,7 @@ export class WorldMap{
     const routePieces=[],dayDuration=Math.max(250,Number(game.dayDurationMs)||2000),dayNow=Number(game.day)||0,lastTick=Number(game.lastTickAt)||Date.now(),dayFraction=Math.max(0,Math.min(.999,(Date.now()-lastTick)/dayDuration));
     for(const move of game.movements){
      const fromAnchor=this.cityUnitAnchors?.get(move.from)?.point||this.cityCenters?.get(move.from),toAnchor=this.cityUnitAnchors?.get(move.to)?.point||this.cityCenters?.get(move.to);if(!fromAnchor||!toAnchor)continue;
-     const span=Math.max(1,(Number(move.finishDay)||dayNow+1)-(Number(move.startDay)||dayNow)),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-(Number(move.startDay)||dayNow))/span)),current=[fromAnchor[0]+(toAnchor[0]-fromAnchor[0])*progress,fromAnchor[1]+(toAnchor[1]-fromAnchor[1])*progress],remainingMs=Math.max(120,(1-progress)*span*dayDuration),route=Array.isArray(move.route)?move.route:[],idx=Math.max(0,Number(move.routeIndex)||0),future=route.slice(idx+1).map(id=>this.cityUnitAnchors?.get(id)?.point||this.cityCenters?.get(id)).filter(Boolean),pathPoints=[fromAnchor,...future];
+     const visualStart=Number.isFinite(Number(move.visualStartDay))?Number(move.visualStartDay):(Number(move.startDay)||dayNow),span=Math.max(.001,(Number(move.finishDay)||dayNow+1)-visualStart),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-visualStart)/span)),current=[fromAnchor[0]+(toAnchor[0]-fromAnchor[0])*progress,fromAnchor[1]+(toAnchor[1]-fromAnchor[1])*progress],remainingMs=Math.max(120,(1-progress)*span*dayDuration),route=Array.isArray(move.route)?move.route:[],idx=Math.max(0,Number(move.routeIndex)||0),future=route.slice(idx+1).map(id=>this.cityUnitAnchors?.get(id)?.point||this.cityCenters?.get(id)).filter(Boolean),pathPoints=[fromAnchor,...future];
      const d=pathPoints.length>1?'M'+pathPoints.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join('L'):'';
      if(d)routePieces.push(`<path class="army-route-line" d="${d}" marker-end="url(#army-route-arrow)"/>`);
      const selected=game?.selectedArmyCity===move.from,scale=unit;
