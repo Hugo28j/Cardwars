@@ -1524,3 +1524,14 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .army-battle-history button:hover{background:#192720}
 .army-battle-history strong{font-family:var(--serif);font-size:11px;color:#ddd9c6}
 .army-battle-history small{font-size:7px;color:#9a8f73}
+
+/* AI country relations and hostile army movement */
+#world-map .army-route-line.enemy-route-line{stroke:#b65c55;stroke-dasharray:6 5;opacity:.86}
+#world-map .moving-army-marker.enemy-army{pointer-events:none;cursor:default}
+.dip-network-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:0 14px 12px}
+.dip-network-card{min-width:0;border:1px solid #39483f;background:#111a17;padding:9px}
+.dip-network-card>span{display:block;font-size:7px;letter-spacing:1px;color:#c8aa64;margin-bottom:6px}
+.dip-network-card div{display:flex;flex-direction:column;gap:4px}
+.dip-network-card b,.dip-network-card small{font-size:8px;line-height:1.25;font-weight:600;color:#d8ddcf;overflow-wrap:anywhere}
+.dip-network-card.negative b{color:#d99a8f}.dip-network-card.positive b{color:#9fc49f}
+@media(max-width:720px){.dip-network-grid{grid-template-columns:1fr}}

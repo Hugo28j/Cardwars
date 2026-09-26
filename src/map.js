@@ -457,12 +457,12 @@ export class WorldMap{
    else{
     const routePieces=[],dayDuration=Math.max(250,Number(game.dayDurationMs)||2000),dayNow=Number(game.day)||0,lastTick=Number(game.lastTickAt)||Date.now(),dayFraction=Math.max(0,Math.min(.999,(Date.now()-lastTick)/dayDuration));
     for(const move of game.movements){
-     const fromAnchor=this.cityUnitAnchors?.get(move.from)?.point||this.cityCenters?.get(move.from),toAnchor=this.cityUnitAnchors?.get(move.to)?.point||this.cityCenters?.get(move.to);if(!fromAnchor||!toAnchor)continue;
+     const enemy=move.side==='enemy';if(enemy&&!visibleCities.has(move.from)&&!visibleCities.has(move.to))continue;const fromAnchor=this.cityUnitAnchors?.get(move.from)?.point||this.cityCenters?.get(move.from),toAnchor=this.cityUnitAnchors?.get(move.to)?.point||this.cityCenters?.get(move.to);if(!fromAnchor||!toAnchor)continue;
      const visualStart=Number.isFinite(Number(move.visualStartDay))?Number(move.visualStartDay):(Number(move.startDay)||dayNow),span=Math.max(.001,(Number(move.finishDay)||dayNow+1)-visualStart),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-visualStart)/span)),current=[fromAnchor[0]+(toAnchor[0]-fromAnchor[0])*progress,fromAnchor[1]+(toAnchor[1]-fromAnchor[1])*progress],remainingMs=Math.max(120,(1-progress)*span*dayDuration),route=Array.isArray(move.route)?move.route:[],idx=Math.max(0,Number(move.routeIndex)||0),future=route.slice(idx+1).map(id=>this.cityUnitAnchors?.get(id)?.point||this.cityCenters?.get(id)).filter(Boolean),pathPoints=[fromAnchor,...future];
      const d=pathPoints.length>1?'M'+pathPoints.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join('L'):'';
-     if(d)routePieces.push(`<path class="army-route-line" d="${d}" marker-end="url(#army-route-arrow)"/>`);
-     const selected=game?.selectedArmyCity===move.from,scale=unit;
-     routePieces.push(`<g class="army-map-marker moving-army-marker player-army ${selected?'selected-army':''}" data-move-id="${esc(String(move.id))}" data-unit-city="${move.from}" transform="translate(${current[0]} ${current[1]})"><g transform="scale(${scale})"><title>${esc(move.name||'Army')}: ${compactMilitaryNumber(move.count)} soldiers marching</title><circle class="army-click-hitbox" cx="0" cy="0" r="28" fill="transparent" pointer-events="all"/>${soldierPiece(move.count,'player',13)}</g></g>`);
+     if(d)routePieces.push(`<path class="army-route-line ${enemy?'enemy-route-line':''}" d="${d}" marker-end="url(#army-route-arrow)"/>`);
+     const selected=!enemy&&game?.selectedArmyCity===move.from,scale=unit,relation=enemy?'enemy':'player';
+     routePieces.push('<g class="army-map-marker moving-army-marker '+relation+'-army '+(selected?'selected-army':'')+'" data-move-id="'+esc(String(move.id))+'" '+(enemy?'pointer-events="none"':'data-unit-city="'+move.from+'"')+' transform="translate('+current[0]+' '+current[1]+')"><g transform="scale('+scale+')"><title>'+esc(move.name||'Army')+': '+compactMilitaryNumber(move.count)+' soldiers marching</title>'+(enemy?'':'<circle class="army-click-hitbox" cx="0" cy="0" r="28" fill="transparent" pointer-events="all"/>')+soldierPiece(move.count,relation,13)+'</g></g>');
     }
     movementLayer.innerHTML=routePieces.join('');this.ensureMovementAnimationLoop();
    }

@@ -2953,6 +2953,13 @@ function updateDiplomacyActionModalPreview1300(){
 }
 function updateDiplomacyAcceptancePreview1300(){updateDiplomacyActionModalPreview1300();}
 
+function diplomacyCountryNetworkHTML1300(game,country){
+ const key=diplomacyRealmKey1300(game,country),pairs=Object.values(diplomacyState(game).pairs||{}).filter(p=>p?.countries?.includes(key)),display=k=>k===PLAYER_REALM?gameCountryName1300(game):k,allies=new Set(),rivals=new Set(),wars=[];
+ for(const p of pairs){const other=p.countries.find(x=>x!==key);if(!other)continue;const otherName=display(other);if(p.alliance)allies.add(otherName);const ours=!!p.directions?.[key]?.rival,theirs=!!p.directions?.[other]?.rival;if(ours||theirs)rivals.add(otherName+(ours&&theirs?' · mutual':ours?' · declared':' · declared against them'));if(p.war){const role=p.war.attacker===key?'attacking':'defending',goal=p.war.casusBelliName||p.war.warGoal||'War';wars.push(otherName+' · '+role+' · '+goal);}}
+ const list=(title,rows,cls)=>'<article class="dip-network-card '+(cls||'')+'"><span>'+title+'</span><div>'+(rows.length?rows.map(x=>'<b>'+esc(x)+'</b>').join(''):'<small>None</small>')+'</div></article>';
+ return '<div class="dip-section-title"><span>DIPLOMATIC RELATIONS</span><small>Current AI alliances, rivals and wars</small></div><section class="dip-network-grid">'+list('ALLIANCES',[...allies].sort(),'positive')+list('RIVALS',[...rivals].sort(),'negative')+list('WARS',wars.sort(),'negative')+'</section>';
+}
+
 function diplomacyCountryPanelHTML1300(country){
  const game=profile.activeGame;if(!game||!country)return '';
  const {d,stats}=ensureDiplomacyCountry1300(game,country),r=relation(game,PLAYER_REALM,country),theirOpinion=opinion(r.theirs),ourOpinion=opinion(r.ours),war=!!r.pair.war,ally=!!r.pair.alliance,cities=diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory),history=d.history.filter(x=>x.country===country).slice(-7).reverse();
@@ -2968,6 +2975,7 @@ function diplomacyCountryPanelHTML1300(country){
    <div><span>Favors</span><strong>${r.ours.favors.toFixed(1)}</strong></div>
    <div><span>Aggressive expansion</span><strong>${r.theirs.ae.toFixed(1)}</strong></div>
   </section>
+  ${diplomacyCountryNetworkHTML1300(game,country)}
   ${advancedDiplomacyHTML1300(game,country)}
   <div class="dip-section-title"><span>KNOWN PROVINCES</span><small>${cities.length} playable city territories</small></div>
   <section class="dip-city-list">${cities.length?cities.slice(0,16).map(c=>`<span>${esc(displayCityName1300(c))}</span>`).join(''):'<small>No playable city cards are currently attached to this realm.</small>'}</section>
