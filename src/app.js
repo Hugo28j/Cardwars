@@ -562,13 +562,6 @@ function runAdvancedDiplomacy1300(action,options={}){
  if(charge)spendDiplomaticPoints1300(g,oneTime,DIP_ACTIONS[action]||'Diplomatic action');
  if(result.ok||result.attempted){diplomacyLog1300(g,c,result.message);save();}
  renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(result.message);return result;
-}){
- const g=profile.activeGame,c=gameDiplomacyCountry;if(!g||!c)return null;ensureDiplomacyCountry1300(g,c);initializeDiplomacyWorld1300(g);
- const result=performAction(g,PLAYER_REALM,c,action,diplomacyPowers1300(g,c),options);
- if(result.ok){
-  diplomacyLog1300(g,c,result.message);save();
- }
- renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(result.message);return result;
 }
 function advancedDiplomacyHTML1300(game,country){
  const {pair,ours,theirs}=relation(game,PLAYER_REALM,country),slots=relationSlots(game,PLAYER_REALM);
