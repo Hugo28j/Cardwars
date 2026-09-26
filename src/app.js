@@ -1182,7 +1182,7 @@ function processArmyMovements1300(game){
 function processMilitaryAttrition1300(game){
  if((Number(game.day)||0)%7!==0)return false;let changed=false;for(const homeId of armyKeys1300(game)){if(activeBattleForArmy1300(game,homeId))continue;const supply=militarySupplyStatus1300(game,homeId),total=militaryArmyTotal1300(game,homeId);if(total>=100&&supply.food<.45){const loss=Math.max(1,Math.floor(total*(.45-supply.food)*.01));if(applyArmyCasualties1300(game,homeId,loss)>0)changed=true;}}return changed;
 }
-function processAdvancedMilitaryDay1300(game){let changed=processArmyMovements1300(game);for(const b of ensureAdvancedMilitary1300(game).battles)if(resolveBattleDay1300(game,b))changed=true;if(processSiegesDay1300(game))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(gameArmyPanelKey)renderArmyMapPanel1300();if(gameBattlePanelId)renderGameBattlePanel1300();if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
+function processAdvancedMilitaryDay1300(game){let changed=processArmyMovements1300(game);for(const b of ensureAdvancedMilitary1300(game).battles)if(resolveBattleDay1300(game,b))changed=true;if(processSiegesDay1300(game))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(gameArmyPanelKey)renderArmyMapPanel1300();if(gameBattlePanelId)renderGameBattlePanel1300();if(gameSiegePanelId)renderGameSiegePanel1300();if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
 
 
 function professionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryProfessionalCountCity1300(game,id);army+=byCity[id];}const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryProfessionalLimit1300(game);return {population,basePercent:5,bonusPercent:0,percent:5,limit,rawTotal:army,army,byCity};}
@@ -1196,8 +1196,17 @@ function campaignMilitaryByCity1300(game){
 function campaignMovementOverlay1300(game){
  const m=ensureAdvancedMilitary1300(game);return (m?.movements||[]).map(move=>{const army=m.armiesByCity[move.armyHomeId];return {id:move.id,armyKey:move.armyHomeId,name:army?.name||'Army',count:militaryArmyTotal1300(game,move.armyHomeId),from:move.from,to:move.to,finalTarget:move.finalTarget||move.to,route:Array.isArray(move.route)?[...move.route]:[move.from,move.to],routeIndex:Number(move.routeIndex)||0,startDay:Number(move.startDay)||0,finishDay:Number(move.finishDay)||0};}).filter(x=>x.count>0&&CITY_1300[x.from]&&CITY_1300[x.to]);
 }
+function campaignBattleOverlay1300(game){
+ const m=ensureAdvancedMilitary1300(game);return Object.fromEntries((m?.battles||[]).filter(b=>b.status==='active').map(b=>[b.cityId,{id:b.id,armyKey:b.armyHomeId,playerCount:militaryArmyTotal1300(game,b.armyHomeId),enemyCount:battleUnitTotal1300(b.enemyUnits),playerMorale:roundStat1300(b.playerMorale),enemyMorale:roundStat1300(b.enemyMorale),enemyCountry:b.enemyCountry,playerCountry:gameCountryName1300(game)}]));
+}
+function campaignSiegeOverlay1300(game){
+ const m=ensureAdvancedMilitary1300(game);return Object.fromEntries((m?.sieges||[]).filter(s=>s.status==='active').map(s=>[s.cityId,{id:s.id,cityId:s.cityId,enemyCountry:s.enemyCountry,foodPct:roundStat1300(s.foodPct),unrestPct:roundStat1300(s.unrestPct),chance:siegeSuccessChance1300(game,s),strength:siegeStrength1300(game,s)}]));
+}
+function campaignDiplomacyMapState1300(game){
+ const d=normaliseGameDiplomacy1300(game.diplomacy);return {playerCountry:gameCountryName1300(game),wars:Object.keys(d.wars||{}).filter(k=>d.wars[k]),alliances:Object.keys(d.alliances||{}).filter(k=>d.alliances[k])};
+}
 function syncCampaignMilitaryOverlay1300(game=profile.activeGame){
- if(!world?.state?.game||!game)return;const military=ensureAdvancedMilitary1300(game);world.state.game.ownedCityIds=[...(game.ownedCities||[])];world.state.game.cityOwners={...(game.cityOwners||{})};world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.state.game.movements=campaignMovementOverlay1300(game);world.state.game.battlesByCity=Object.fromEntries((military?.battles||[]).filter(b=>b.status==='active').map(b=>[b.cityId,b.id]));world.state.game.day=Number(game.day)||0;world.state.game.lastTickAt=Number(game.lastTickAt)||Date.now();world.state.game.dayDurationMs=GAME_DAY_REAL_MS;world.refresh();
+ if(!world?.state?.game||!game)return;const military=ensureAdvancedMilitary1300(game),dip=campaignDiplomacyMapState1300(game);world.state.game.ownedCityIds=[...(game.ownedCities||[])];world.state.game.cityOwners={...(game.cityOwners||{})};world.state.game.playerCountry=dip.playerCountry;world.state.game.wars=dip.wars;world.state.game.alliances=dip.alliances;world.state.game.militaryByCity=campaignMilitaryByCity1300(game);world.state.game.movements=campaignMovementOverlay1300(game);world.state.game.battlesByCity=campaignBattleOverlay1300(game);world.state.game.siegesByCity=campaignSiegeOverlay1300(game);world.state.game.occupations={...(military?.occupations||{})};world.state.game.day=Number(game.day)||0;world.state.game.lastTickAt=Number(game.lastTickAt)||Date.now();world.state.game.dayDurationMs=GAME_DAY_REAL_MS;world.refresh();
 }
 function militaryTotals1300(game){const p=professionalArmyState1300(game),u=unprofessionalArmyState1300(game);let navy=0;for(const id of game?.ownedCities||[]){const c=CITY_1300[id];if(c){const b=gameProvinceBuildingState(c).bonuses;navy+=(Number(c.navy)||0)+(Number(b.navy)||0);}}return {army:p.army,unprofessionalArmy:u.army,navy,professionalArmyLimit:p.limit,professionalArmyPercent:p.percent,professionalArmyBonusPercent:p.bonusPercent};}
 function annualInflationFactor1300(game){const years=Math.max(0,Math.floor((Number(game?.day)||0)/365.2425));return Math.pow(1.01,years);}
@@ -1808,7 +1817,34 @@ function renderGameBattlePanel1300(){
 }
 function openGameBattlePanel1300(battleId){
  const game=profile.activeGame,b=ensureAdvancedMilitary1300(game)?.battles.find(x=>x.id===battleId);if(!game||!b)return;
- gameBattlePanelId=battleId;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameBattlePanel1300();
+ gameBattlePanelId=battleId;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameBattlePanel1300();
+}
+
+
+function gameSiegePanelHTML1300(siegeId){
+ const game=profile.activeGame,m=ensureAdvancedMilitary1300(game),s=m?.sieges.find(x=>x.id===siegeId);if(!game||!s)return '';
+ const c=CITY_1300[s.cityId],days=Math.max(0,(Number(game.day)||0)-(Number(s.startedDay)||0)),food=clamp1300(Number(s.foodPct)||0,0,100),unrest=clamp1300(Number(s.unrestPct)||0,0,100),chance=s.status==='active'?siegeSuccessChance1300(game,s):Number(s.lastChance)||100,strength=siegeStrength1300(game,s),fort=siegeFortificationPct1300(game,s.cityId),toRoll=s.status==='active'?Math.max(0,30-((Number(game.day)||0)-(Number(s.lastRollDay)||0))):0,status=s.status==='active'?'SIEGE IN PROGRESS':s.status==='won'?'CITY OCCUPIED':'SIEGE LIFTED';
+ return `<div class="province-side-head siege-side-head"><button class="province-side-close" data-action="siege-panel-close" aria-label="Close">×</button><span>SIEGE · DAY ${days+1}</span><h2>${esc(displayCityName1300(c))}</h2><p>${esc(s.enemyCountry||c?.country||'Enemy province')}</p></div>
+ <div class="province-side-scroll siege-side-scroll">
+  <section class="siege-status-card"><div><span>STATUS</span><strong>${status}</strong><small>${s.status==='active'?'The city is cut off from outside supply.':'The siege is no longer active.'}</small></div><div><span>BESIEGING ARMY</span><strong>${strengthNumber(strength)}</strong><small>${(s.armyHomeIds||[]).length} army group${(s.armyHomeIds||[]).length===1?'':'s'}</small></div></section>
+  <section class="siege-bars">
+   <div><header><span>CITY FOOD</span><strong>${Math.round(food)}%</strong></header><i class="food"><b style="width:${food}%"></b></i><small>No outside trade or food deliveries reach the city while the siege continues.</small></div>
+   <div><header><span>UNREST</span><strong>${Math.round(unrest)}%</strong></header><i class="unrest"><b style="width:${unrest}%"></b></i><small>Low food and low stability increase unrest and make surrender more likely.</small></div>
+   <div><header><span>NEXT MONTHLY SURRENDER CHANCE</span><strong>${Math.round(chance)}%</strong></header><i class="chance"><b style="width:${chance}%"></b></i><small>${s.status==='active'?toRoll+' days until the next siege roll.':'Final siege roll completed.'}</small></div>
+  </section>
+  <section class="siege-factors"><div><span>Fortification resistance</span><strong>${fort?'-'+Math.round(fort*.25)+' pts':'None'}</strong></div><div><span>Time under siege</span><strong>${Math.floor(days/30)} month${Math.floor(days/30)===1?'':'s'}</strong></div><div><span>Food shortage</span><strong>${Math.round(100-food)}%</strong></div><div><span>Population unrest</span><strong>${Math.round(unrest)}%</strong></div></section>
+  ${s.status==='won'?'<div class="siege-occupation-note"><strong>OCCUPIED</strong><small>The province remains legally owned by the enemy until a peace treaty transfers it.</small></div>':''}
+  <div class="siege-log-title"><span>MONTHLY SIEGE ROLLS</span><small>Newest first</small></div>
+  <section class="siege-log">${s.log?.length?s.log.map(x=>`<article><div><strong>Day ${Math.max(1,(Number(x.day)||0)-s.startedDay+1)}</strong><small>${x.type==='success'?'City surrendered':'City held out'}</small></div><span>Chance ${Math.round(Number(x.chance)||0)}%</span><span>Roll ${Number.isFinite(Number(x.roll))?Number(x.roll).toFixed(1):'—'}</span></article>`).join(''):'<p>The first surrender roll happens after 30 siege days.</p>'}</section>
+  <div class="military-rule-note"><b>Siege rule:</b> the original owner cannot recruit troops in this province while it is besieged. Surrender chance rises with time, shortages and unrest.</div>
+ </div>`;
+}
+function renderGameSiegePanel1300(){
+ const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;if(!gameSiegePanelId){if(!gameProvincePanel&&!gameArmyPanelKey&&!gameBattlePanelId){panel.innerHTML='';panel.classList.remove('open');shell?.classList.remove('province-panel-open');}return;}
+ const html=gameSiegePanelHTML1300(gameSiegePanelId);if(!html){gameSiegePanelId=null;renderGameProvincePanel();return;}const scroll=panel.querySelector('.siege-side-scroll')?.scrollTop||0;panel.innerHTML=html;panel.classList.add('open');shell?.classList.add('province-panel-open');const next=panel.querySelector('.siege-side-scroll');if(next)next.scrollTop=scroll;
+}
+function openGameSiegePanel1300(siegeId){
+ const game=profile.activeGame,s=ensureAdvancedMilitary1300(game)?.sieges.find(x=>x.id===siegeId);if(!game||!s)return;gameSiegePanelId=siegeId;gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameSiegePanel1300();
 }
 
 function provinceMilitaryHTML1300(game,c){
@@ -1892,7 +1928,7 @@ function renderArmyMapPanel1300(){
 }
 function openMapArmyPanel1300(locationId,intent='click'){
  const game=profile.activeGame;if(!game)return;const keys=armyKeysAtLocation1300(game,locationId,{standingOnly:false});if(!keys.length)return;const current=gameArmyPanelKey&&keys.includes(gameArmyPanelKey)?gameArmyPanelKey:keys.find(k=>!movementForArmy1300(game,k)&&!activeBattleForArmy1300(game,k))||keys[0];
- gameBattlePanelId=null;gameArmyPanelKey=current;gameArmySplitMode=false;gameArmyMoveMode=intent==='context'&&!movementForArmy1300(game,current)&&!activeBattleForArmy1300(game,current);gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderArmyMapPanel1300();
+ gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=current;gameArmySplitMode=false;gameArmyMoveMode=intent==='context'&&!movementForArmy1300(game,current)&&!activeBattleForArmy1300(game,current);gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderArmyMapPanel1300();
 }
 function orderSelectedArmyMovement1300(targetId,sourceLocation=null){
  const game=profile.activeGame;if(!game)return false;let key=gameArmyPanelKey;if(sourceLocation){const keys=armyKeysAtLocation1300(game,sourceLocation,{standingOnly:true});if(!key||!keys.includes(key))key=keys[0];}
@@ -1944,7 +1980,7 @@ function gameProvincePanelHTML(cityId){
  </div>`;
 }
 function renderGameProvincePanel(){
- const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;if(gameBattlePanelId){renderGameBattlePanel1300();return;}if(gameArmyPanelKey){renderArmyMapPanel1300();return;}
+ const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;if(gameBattlePanelId){renderGameBattlePanel1300();return;}if(gameSiegePanelId){renderGameSiegePanel1300();return;}if(gameArmyPanelKey){renderArmyMapPanel1300();return;}
  if(!gameProvincePanel||!CITY_1300[gameProvincePanel]){panel.innerHTML='';panel.classList.remove('open');shell?.classList.remove('province-panel-open');if(world?.state?.game){world.state.game.selectedArmyCity=null;world.state.game.armyMoveMode=false;world.refresh();}return;}
  const scroll=panel.querySelector('.province-side-scroll')?.scrollTop||0;panel.innerHTML=gameProvincePanelHTML(gameProvincePanel);panel.classList.add('open');shell?.classList.add('province-panel-open');const next=panel.querySelector('.province-side-scroll');if(next)next.scrollTop=scroll;
 }
@@ -2750,7 +2786,7 @@ function renderGameDiplomacyPanel1300(){
  const panel=$('#game-diplomacy-panel');if(!panel)return;if(!gameDiplomacyCountry||!profile.activeGame){panel.innerHTML='';panel.classList.remove('open');return;}const scroll=panel.querySelector('.dip-scroll')?.scrollTop||0;panel.innerHTML=diplomacyCountryPanelHTML1300(gameDiplomacyCountry);panel.classList.add('open');const next=panel.querySelector('.dip-scroll');if(next)next.scrollTop=scroll;
 }
 function openGameDiplomacyPanel1300(region){
- const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}ensureDiplomacyCountry1300(game,country);gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel();renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
+ const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}ensureDiplomacyCountry1300(game,country);gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel();renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
 }
 
 function gameCountryPanelHTML1300(){
@@ -2764,7 +2800,7 @@ function renderGameCountryPanel1300(){
  const oldScroll=panel.querySelector('.country-panel-scroll')?.scrollTop||0;panel.innerHTML=gameCountryPanelHTML1300();panel.classList.add('open');const sc=panel.querySelector('.country-panel-scroll');if(sc)sc.scrollTop=oldScroll;
 }
 function openGameCountryPanel1300(){
- if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
+ if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
 }
 function campaignResourceBarHTML1300(game){
  const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game),rank=campaignLeaderboardStatus1300(game);
@@ -2872,10 +2908,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='flag-color'&&!profile.activeGame){const c=b.dataset.color;if(FLAG_COLORS_1300.includes(c)){flagPaintColor=c;render();}return;}
  if(a==='flag-cell'&&!profile.activeGame){const i=Number(b.dataset.index);if(Number.isInteger(i)&&i>=0&&i<FLAG_SIZE){profile.playerFlag=normaliseFlag1300(profile.playerFlag);profile.playerFlag[i]=flagPaintColor;save();document.querySelectorAll('[data-flag-index="'+i+'"]').forEach(el=>el.style.setProperty('--flag-cell',flagPaintColor));}return;}
  if(a==='flag-reset'&&!profile.activeGame){profile.playerFlag=Array(FLAG_SIZE).fill(DEFAULT_FLAG_COLOR);save();render();return;}
- if(a==='start-game'){gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;startGame1300();return;}
+ if(a==='start-game'){gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;startGame1300();return;}
  if(a==='game-map'){gameScreen='map';render();return;}
  if(a==='game-province-tab'){if(GAME_PROVINCE_TABS_1300.some(([tabId])=>tabId===id)){gameProvinceTab=id;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;const provinceScroll=$('#game-province-panel .province-side-scroll');if(provinceScroll)provinceScroll.scrollTop=0;renderGameProvincePanel();}return;}
- if(a==='close-game-province'){gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();return;}
+ if(a==='close-game-province'){gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();return;}
  if(a==='game-building-detail'){if(BUILDING_1300[id]&&CITY_1300[b.dataset.city]){gameProvincePanel=b.dataset.city;gameProvinceTab='economy';gameProvinceBuildingDetail=id;renderGameProvincePanel();}return;}
  if(a==='game-building-detail-back'){gameProvinceBuildingDetail=null;renderGameProvincePanel();return;}
  if(a==='game-building-catalog-open'){if(gameProvincePanel&&profile.activeGame?.ownedCities?.includes(gameProvincePanel)){gameProvinceTab='economy';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=true;renderGameProvincePanel();}return;}
@@ -2911,6 +2947,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='people-group-detail'){openPopulationGroupDetail1300(b.dataset.group);return;}
  if(a==='game-ranking-category'){if(RANKING_CATEGORIES_1300.some(([x])=>x===id)){gameRankingCategory=id;renderGameCountryPanel1300();}return;}
  if(a==='battle-panel-close'){gameBattlePanelId=null;renderGameProvincePanel();return;}
+ if(a==='siege-panel-close'){gameSiegePanelId=null;renderGameProvincePanel();return;}
  if(a==='battle-open'){openGameBattlePanel1300(b.dataset.battle);return;}
  if(a==='battle-tactic'){const result=setBattleTactic1300(profile.activeGame,b.dataset.battle,b.dataset.tactic);if(result.ok){save();if(gameBattlePanelId)renderGameBattlePanel1300();renderBattleDialog1300(b.dataset.battle);}toast(result.message);return;}
  if(a==='battle-retreat'){const result=retreatBattle1300(profile.activeGame,b.dataset.battle);if(result.ok){save();syncCampaignMilitaryOverlay1300(profile.activeGame);refreshCampaignResourceBar1300(profile.activeGame);if(gameBattlePanelId)renderGameBattlePanel1300();if(gameArmyPanelKey)renderArmyMapPanel1300();}toast(result.message);return;}
@@ -2936,7 +2973,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-building-wage-reset'){resetBuildingWage1300(b.dataset.city,id);return;}
  if(a==='game-production-methods'){openProductionMethods1300(b.dataset.city,id);return;}
  if(a==='game-select-production-method'){setCompanyPolicy1300(b.dataset.city,id,{productionMethod:b.dataset.method});modal.close();return;}
- if(a==='quit-game'){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;profile.activeGame=null;for(const key of ['previousGame','previousGames','pastGame','pastGames','gameHistory','campaignHistory','savedGame','savedGames','lastGame'])delete profile[key];mapState.game=null;gameScreen='map';gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;save();render();toast('Campaign deleted from this device. Your deck and collection were kept.');return;}
+ if(a==='quit-game'){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;profile.activeGame=null;for(const key of ['previousGame','previousGames','pastGame','pastGames','gameHistory','campaignHistory','savedGame','savedGames','lastGame'])delete profile[key];mapState.game=null;gameScreen='map';gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;save();render();toast('Campaign deleted from this device. Your deck and collection were kept.');return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();
  if(a==='country1300'){country1300=id;render();}
