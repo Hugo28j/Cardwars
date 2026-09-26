@@ -1084,8 +1084,13 @@ function activeBattleAtCity1300(game,cityId){return ensureAdvancedMilitary1300(g
 function movementForArmy1300(game,homeId){return ensureAdvancedMilitary1300(game)?.movements.find(x=>x.armyHomeId===homeId)||null;}
 function cityWarOwner1300(game,c){const owner=campaignCityOwner1300(game,c),player=gameCountryName1300(game);return owner===player?null:owner;}
 function warTargetCities1300(game){return CITIES_1300.filter(c=>{const owner=cityWarOwner1300(game,c);return owner&&game?.diplomacy?.wars?.[owner];});}
+function diplomacyRealmKey1300(game,country){return country===gameCountryName1300(game)?PLAYER_REALM:country;}
+function countriesAllied1300(game,a,b){
+ if(!a||!b)return false;if(a===b)return true;const ak=diplomacyRealmKey1300(game,a),bk=diplomacyRealmKey1300(game,b);
+ return Object.values(diplomacyState(game).pairs||{}).some(p=>p?.alliance&&p.countries?.includes(ak)&&p.countries?.includes(bk));
+}
 function armyCanEnterCity1300(game,cityId){
- const c=CITY_1300[cityId];if(!c)return false;const owner=campaignCityOwner1300(game,c),player=gameCountryName1300(game);return owner===player||!!game?.diplomacy?.wars?.[owner];
+ const c=CITY_1300[cityId];if(!c)return false;const owner=campaignCityOwner1300(game,c),player=gameCountryName1300(game);return owner===player||countriesAllied1300(game,player,owner)||!!game?.diplomacy?.wars?.[owner];
 }
 function armyRoute1300(game,fromId,targetId){
  if(!CITY_1300[fromId]||!CITY_1300[targetId]||!armyCanEnterCity1300(game,targetId))return null;if(fromId===targetId)return [fromId];if(!world?.neighboursOf)return null;
@@ -1114,13 +1119,19 @@ function activeSiegeAtCity1300(game,cityId){return ensureAdvancedMilitary1300(ga
 function playerOccupationAtCity1300(game,cityId){return ensureAdvancedMilitary1300(game)?.occupations?.[cityId]===gameCountryName1300(game);}
 function warScoreAdjust1300(game,country,delta){const p=country?relation(game,PLAYER_REALM,country).pair:null;if(!p?.war)return 0;p.war.warScore=roundStat1300(clamp1300((Number(p.war.warScore)||0)+(Number(delta)||0),-100,100));return p.war.warScore;}
 function adjacentCityIds1300(cityId){return world?.neighboursOf?.(cityId)||[];}
-function nearestPlayerRetreatCity1300(game,cityId){const from=CITY_1300[cityId],player=gameCountryName1300(game);if(!from)return null;return adjacentCityIds1300(cityId).filter(id=>CITY_1300[id]&&campaignCityOwner1300(game,CITY_1300[id])===player).sort((a,b)=>armyDistanceKm1300(from,CITY_1300[a])-armyDistanceKm1300(from,CITY_1300[b]))[0]||null;}
-function nearestEnemyRetreatCity1300(game,battle){const from=CITY_1300[battle?.cityId],enemy=battle?.enemyCountry;if(!from||!enemy)return null;return adjacentCityIds1300(battle.cityId).filter(id=>CITY_1300[id]&&campaignCityOwner1300(game,CITY_1300[id])===enemy&&!playerOccupationAtCity1300(game,id)&&!activeSiegeAtCity1300(game,id)).sort((a,b)=>armyDistanceKm1300(from,CITY_1300[a])-armyDistanceKm1300(from,CITY_1300[b]))[0]||null;}
+function nearestPlayerRetreatCity1300(game,cityId){
+ const from=CITY_1300[cityId],player=gameCountryName1300(game);if(!from)return null;
+ return adjacentCityIds1300(cityId).filter(id=>{const c=CITY_1300[id];if(!c||activeSiegeAtCity1300(game,id))return false;const owner=campaignCityOwner1300(game,c);return owner===player||countriesAllied1300(game,player,owner);}).sort((a,b)=>armyDistanceKm1300(from,CITY_1300[a])-armyDistanceKm1300(from,CITY_1300[b]))[0]||null;
+}
+function nearestEnemyRetreatCity1300(game,battle){
+ const from=CITY_1300[battle?.cityId],enemy=battle?.enemyCountry;if(!from||!enemy)return null;
+ return adjacentCityIds1300(battle.cityId).filter(id=>{const c=CITY_1300[id];if(!c||playerOccupationAtCity1300(game,id)||activeSiegeAtCity1300(game,id))return false;const owner=campaignCityOwner1300(game,c);return owner===enemy||countriesAllied1300(game,enemy,owner);}).sort((a,b)=>armyDistanceKm1300(from,CITY_1300[a])-armyDistanceKm1300(from,CITY_1300[b]))[0]||null;
+}
 function siegeStrength1300(game,siege){const m=ensureAdvancedMilitary1300(game);if(!m||!siege)return 0;return (siege.armyHomeIds||[]).reduce((n,key)=>n+((m.armiesByCity[key]?.location===siege.cityId)?militaryArmyTotal1300(game,key):0),0);}
 function siegeFortificationPct1300(game,cityId){const c=CITY_1300[cityId];if(!c)return 0;return Math.max(0,Number(gameProvinceBuildingState(c)?.bonuses?.siegeDifficultyPct)||0);}
 function siegeSuccessChance1300(game,siege){
- const c=CITY_1300[siege?.cityId];if(!c||!siege)return 0;const days=Math.max(0,(Number(game.day)||0)-(Number(siege.startedDay)||0)),months=days/30,strength=Math.max(1,siegeStrength1300(game,siege)),baseArmy=Math.max(50,Number(c.army)||50),strengthTerm=clamp1300(Math.log2(strength/baseArmy)*5,-6,16),foodTerm=(100-clamp1300(siege.foodPct,0,100))*.22,unrestTerm=clamp1300(siege.unrestPct,0,100)*.28,fortPenalty=siegeFortificationPct1300(game,siege.cityId)*.25;
- return clamp1300(Math.round((5+months*7+strengthTerm+foodTerm+unrestTerm-fortPenalty)*10)/10,2,90);
+ const c=CITY_1300[siege?.cityId];if(!c||!siege)return 0;const days=Math.max(0,(Number(game.day)||0)-(Number(siege.startedDay)||0)),weeks=days/7,strength=Math.max(1,siegeStrength1300(game,siege)),baseArmy=Math.max(50,Number(c.army)||50),strengthTerm=clamp1300(Math.log2(strength/baseArmy)*5,-6,16),foodTerm=(100-clamp1300(siege.foodPct,0,100))*.22,unrestTerm=clamp1300(siege.unrestPct,0,100)*.28,fortPenalty=siegeFortificationPct1300(game,siege.cityId)*.25;
+ return clamp1300(Math.round((3+weeks*1.6+strengthTerm+foodTerm+unrestTerm-fortPenalty)*10)/10,1,90);
 }
 function startSiege1300(game,armyHomeId,cityId,enemyCountry=null){
  const m=ensureAdvancedMilitary1300(game),c=CITY_1300[cityId];if(!m||!c)return null;let siege=activeSiegeAtCity1300(game,cityId);const keys=armyKeysAtLocation1300(game,cityId,{standingOnly:false}).filter(k=>militaryArmyTotal1300(game,k)>0);if(armyHomeId&&!keys.includes(armyHomeId)&&m.armiesByCity[armyHomeId]?.location===cityId)keys.push(armyHomeId);
@@ -1135,7 +1146,7 @@ function processSiegesDay1300(game){
   const atCity=armyKeysAtLocation1300(game,siege.cityId,{standingOnly:false}).filter(k=>militaryArmyTotal1300(game,k)>0&&!activeBattleForArmy1300(game,k));siege.armyHomeIds=[...new Set(atCity)];
   const stillAtWar=!!game.diplomacy?.wars?.[siege.enemyCountry];if(!stillAtWar||!siege.armyHomeIds.length){siege.status='lifted';siege.liftedDay=Number(game.day)||0;changed=true;continue;}
   const pop=Math.max(1000,Number(c.people)||1000),foodScore=clamp1300(Number(c.food)||50,0,100),drain=clamp1300(.22+pop/90000*.12+(65-foodScore)/210,.12,1.15);siege.foodPct=clamp1300(siege.foodPct-drain,0,100);siege.unrestPct=clamp1300(siege.unrestPct+.04+Math.max(0,55-siege.foodPct)*.022+Math.max(0,55-(Number(c.stability)||50))*.004,0,100);changed=true;
-  if((Number(game.day)||0)-(Number(siege.lastRollDay)||0)>=30){const chance=siegeSuccessChance1300(game,siege),roll=Math.random()*100;siege.lastRollDay=Number(game.day)||0;siege.lastChance=chance;siege.lastRoll=Math.round(roll*10)/10;if(roll<=chance)completeSiegeOccupation1300(game,siege);else{siege.log.unshift({day:game.day,type:'hold',chance,roll:siege.lastRoll,foodPct:roundStat1300(siege.foodPct),unrestPct:roundStat1300(siege.unrestPct)});siege.log=siege.log.slice(0,12);}changed=true;}
+  if((Number(game.day)||0)-(Number(siege.lastRollDay)||0)>=7){const chance=siegeSuccessChance1300(game,siege),roll=Math.random()*100;siege.lastRollDay=Number(game.day)||0;siege.lastChance=chance;siege.lastRoll=Math.round(roll*10)/10;if(roll<=chance)completeSiegeOccupation1300(game,siege);else{siege.log.unshift({day:game.day,type:'hold',chance,roll:siege.lastRoll,foodPct:roundStat1300(siege.foodPct),unrestPct:roundStat1300(siege.unrestPct)});siege.log=siege.log.slice(0,16);}changed=true;}
  }return changed;
 }
 function createBattle1300(game,homeId,cityId,retreatCityId){
@@ -1149,6 +1160,10 @@ function tacticCombat1300(units,tacticId,phase,commander={},supply=1,morale=100)
 }
 function removeEnemyCasualties1300(units,count){let left=Math.max(0,Math.floor(count));for(const id of ['levy-swordsmen','shield-spearmen','archers','crossbowmen','men-at-arms','knights']){if(left<=0)break;const have=Math.max(0,Number(units[id])||0),take=Math.min(have,left);units[id]=have-take;left-=take;}return Math.max(0,Math.floor(count))-left;}
 function applyArmyCasualties1300(game,homeId,count){let left=Math.max(0,Math.floor(count)),dead=0;const army=militaryCityArmy1300(game,homeId);if(!army)return 0;for(const id of ['levy-swordsmen','shield-spearmen','archers','crossbowmen','men-at-arms','knights']){if(left<=0)break;const have=militaryUnitCount1300(game,homeId,id),take=Math.min(have,left);if(take){dead+=applyMilitaryCasualties1300(game,homeId,id,take);left-=take;}}return dead;}
+function wipeArmyOnSurrender1300(game,homeId){
+ const army=militaryCityArmy1300(game,homeId);if(!army)return 0;let removed=0;for(const id of Object.keys(army.units||{})){const n=Math.max(0,Math.floor(Number(army.units[id])||0));removed+=n;army.units[id]=0;}army.morale=0;return removed;
+}
+function wipeEnemyOnSurrender1300(battle){const removed=battleUnitTotal1300(battle?.enemyUnits);if(battle?.enemyUnits)for(const id of Object.keys(battle.enemyUnits))battle.enemyUnits[id]=0;return removed;}
 function resolveBattleDay1300(game,battle){
  if(!battle||battle.status!=='active'||battle.lastResolvedDay>=game.day)return false;
  const army=militaryCityArmy1300(game,battle.armyHomeId);if(!army){battle.status='lost';return true;}
