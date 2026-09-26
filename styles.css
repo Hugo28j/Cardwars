@@ -1372,4 +1372,9 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .military-order-list article small{display:block;margin-top:2px;font-size:6px;color:#82958b}
 .military-order-list article>span{font-size:7px;color:#d8bf72}
 .military-rule-note{margin-top:11px;padding:9px;border-left:2px solid #8d7844;background:#171f1a;font-size:7px;line-height:1.5;color:#8f9c94}
+.dip-war-goals{display:grid;gap:7px;margin:12px 0}
+.dip-war-goals article{padding:10px;border:1px solid #405047;background:#13201b}
+.dip-war-goals strong,.dip-war-goals small{display:block}
+.dip-war-goals strong{color:#e3dcc8;font-family:var(--serif)}
+.dip-war-goals small{margin-top:4px;color:#8fa096;line-height:1.45}
 @media(max-width:560px){.province-military-units{grid-template-columns:1fr}.province-military-heading{align-items:start;flex-direction:column}.province-military-heading>small{text-align:left}.military-order-list article{grid-template-columns:1fr auto}}

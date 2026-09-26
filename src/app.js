@@ -1,4 +1,4 @@
-import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots} from './diplomacy1300.js?v=20260926-diplomats-v20';
+import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots, availableCasusBelli1300} from './diplomacy1300.js?v=20260926-rebellion-cb-v21';
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-treasury-grain-market-v9';
@@ -468,6 +468,7 @@ function diplomacyActionMeta1300(game,country,action){
  if(action==='improve')return ours.mission==='improve'?'Recall diplomat':'Uses 1 diplomat';
  if(action==='curry')return ours.mission==='curry'?'Recall diplomat':'Uses 1 diplomat';
  if(action==='money')return `${ASK_FLORINS_FAVOR_COST_1300} favors`;
+ if(action==='war'&&availableCasusBelli1300(game,PLAYER_REALM,country).length)return 'Casus belli available';
  return 'Needs free diplomat';
 }
 function diplomacyRelation1300(game,country){return opinion(relation(game,PLAYER_REALM,country).theirs);}
@@ -509,6 +510,7 @@ function runAdvancedDiplomacy1300(action,options={}){
  const g=profile.activeGame,c=gameDiplomacyCountry;if(!g||!c)return null;ensureDiplomacyCountry1300(g,c);initializeDiplomacyWorld1300(g);
  if(!requireFreeDiplomat1300(g,c,action))return {ok:false,message:'No diplomat available.'};
  const result=performAction(g,PLAYER_REALM,c,action,diplomacyPowers1300(g,c),{...options,maxDiplomats:totalDiplomats1300(g)});
+ if(result.ok&&action==='war')refreshIndependenceSupportWars1300(g);
  if(result.ok||result.attempted){diplomacyLog1300(g,c,result.message);save();}
  renderGameDiplomacyPanel1300();refreshGameClockUI1300();toast(result.message);return result;
 }
@@ -988,7 +990,7 @@ function applyMilitaryCasualties1300(game,cityId,unitId,amount){
  const dead=applyUnitLosses1300(ensureGameMilitary1300(game),cityId,unitId,amount),c=CITY_1300[cityId];if(!dead||!c)return 0;ensureGamePopulation1300(game);const pop=effectivePopulation1300(game,c),next=Math.max(1,pop-dead);game.economy.populationByCity[cityId]=next;rescalePopulationGroups1300(game,cityId,next);invalidateWeeklyBudgetProjection1300(game);return dead;
 }
 function militaryCityUpkeep1300(game,id,professional){
- let total=0;for(const u of MILITARY_UNITS_1300)if(u.professional===professional)total+=militaryUnitCount1300(game,id,u.id)*u.upkeep;if(professional)for(const q of ensureGameMilitary1300(game).trainingQueues.filter(q=>q.cityId===id))total+=q.amount*MILITARY_UNIT_1300[q.unitId].upkeep*.5;return total;
+ let total=0;for(const u of MILITARY_UNITS_1300)if(u.professional===professional)total+=militaryUnitCount1300(game,id,u.id)*u.upkeep;if(professional)for(const q of ensureGameMilitary1300(game).trainingQueues.filter(q=>q.cityId===id))total+=q.amount*MILITARY_UNIT_1300[q.unitId].upkeep;return total;
 }
 function processMilitaryDay1300(game){
  const m=ensureGameMilitary1300(game),done=completeTrainingForDay1300(m,game.day);let changed=done.length>0;
@@ -1704,12 +1706,12 @@ function provinceMilitaryHTML1300(game,c){
    <div class="military-unit-stats"><span>HP <b>${u.hp}</b></span><span>ATK <b>${u.attack}</b></span><span>RNG <b>${u.range}</b></span><span>&#402;; <b>${u.upkeep.toFixed(3)}</b>/wk</span></div>
    <p>${esc(MILITARY_UNIT_DESCRIPTION_1300[u.id]||'')}</p>
   ${queued?`<small class="military-queued">+${queued} training</small>`:''}
-   ${locked?`<div class="military-tech-lock">REQUIRES ${esc(TECHNOLOGY_1300[u.tech]?.name||u.tech)}</div>`:`<div class="military-recruit-row"><input type="numbe" min="1" step="1" value="10" data-military-amount aria-label="Amount of ${esc(u.name)}"><button data-action="${isLevy?'military-raise-levy':'military-train'}" data-city="${c.id}" data-unit="${u.id}">${isLevy?'RAISE':'TRAIN'}${u.professional?` - ${u.trainingDays}d`:'t'}</button><button class="secondary" data-action="military-disband" data-city="${c.id}" data-unit="${u.id}" ${count?'':'disabled'}>DISBAND</button></div>`}
+  ${locked?`<div class="military-tech-lock">REQUIRES ${esc(TECHNOLOGY_1300[u.tech]?.name||u.tech)}</div>`:`<div class="military-recruit-row"><input type="number" min="1" step="1" value="10" data-military-amount aria-label="Amount of ${esc(u.name)}"><button data-action="${isLevy?'military-raise-levy':'military-train'}" data-city="${c.id}" data-unit="${u.id}">${isLevy?'RAISE':'TRAIN'}${u.professional?` - ${u.trainingDays}d`:''}</button><button class="secondary" data-action="military-disband" data-city="${c.id}" data-unit="${u.id}" ${count?'':'disabled'}>DISBAND</button></div>`}
   </article>`;}).join('')}</div>
   ${orders.length?`<div class="military-order-list"><span>ACTIVE RECRUITMENT</span>${orders.join('')}</div>`:''}
   <div class="commander-section">
    <div class="commander-section-head"><div><span>COMMANDER</span><strong>${esc(commander?.name||'No commander assigned')}</strong></div><small>${commander?esc(commander.summary)+' - &#402;'+commander.upkeep.toFixed(2)+'/week':'You may hire several commanders, but only one can command this army.'}</small></div>
-   ${hired.length?`<div class="commander-roster">${hired.map(x=>{const assigned=Object.entries(m.armiesByCity).find(([,a])=>a.commanderId===x.id)?.[0];return `<article><div><strong>${esc(x.name)}</strong><small>${esc(x.summary)} - &#402;$kx.upkeep.toFixed(2)}/week${assigned?' - assigned to '+esc(displayCityName1300(CITY_1300[assigned])):''}</small></div><buttn data-action="commander-assign" data-city="${c.id}" data-commander="${x.id}" ${army?.commanderId===x.id?'disabled':''}>${army?.commanderId===x.id?'ASSIGNED':'ASSIGN'}</button><button class="secondary" data-action="commander-dismiss" data-commander="${x.id}">DISMISS</button></article>`;}).join('')}</div>`:''}
+   ${hired.length?`<div class="commander-roster">${hired.map(x=>{const assigned=Object.entries(m.armiesByCity).find(([,a])=>a.commanderId===x.id)?.[0];return `<article><div><strong>${esc(x.name)}</strong><small>${esc(x.summary)} - &#402;${x.upkeep.toFixed(2)}/week${assigned?' - assigned to '+esc(displayCityName1300(CITY_1300[assigned])):''}</small></div><button data-action="commander-assign" data-city="${c.id}" data-commander="${x.id}" ${army?.commanderId===x.id?'disabled':''}>${army?.commanderId===x.id?'ASSIGNED':'ASSIGN'}</button><button class="secondary" data-action="commander-dismiss" data-commander="${x.id}">DISMISS</button></article>`;}).join('')}</div>`:''}
    ${available.length?`<div class="commander-candidates"><span>AVAILABLE COMMANDERS</span>${available.map(x=>`<article><div><strong>${esc(x.name)}</strong><small>${esc(x.summary)}</small></div><em>&#402;${x.upkeep.toFixed(2)}/week</em><button data-action="commander-hire" data-template="${x.id}">HIRE</button></article>`).join('')}</div>`:''}
   </div>
   ${recentBattles.length?`<div class="army-battle-history"><span>BATTLES</span>${recentBattles.map(b=>`<button data-action="battle-open" data-battle="${b.id}"><strong>${esc(displayCityName1300(CITY_1300[b.cityId]))}</strong><small>${b.status.toUpperCase()} - losses ${strengthNumber(b.playerCasualties)} / ${strengthNumber(b.enemyCasualties)}</small></button>`).join('')}</div>`:''}
@@ -1968,6 +1970,10 @@ function revealPackCard1300(buttonEl){
   next.classList.add('ready');
   const nextButton=next.querySelector('[data-action="reveal-pack-card"]');if(nextButton)nextButton.disabled=false;
   const hint=modal.querySelector('.pack-reveal-hint span');if(hint)hint.textContent='Click the top card to reveal it';
+ }else if(action==='war'){
+  const claims=availableCasusBelli1300(game,PLAYER_REALM,country),choices=[...claims,{id:'no-casus-belli',name:'No Casus Belli',warGoal:'Conquest',targetCityIds:[]}];
+  body=`<p>Choose the legal reason and war goal. Rebel provinces from the same original country are grouped into one independence war.</p><label class="dip-modal-field"><span>Casus belli</span><select id="dip-modal-casus-belli">${choices.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}${x.targetCityIds?.length?' · '+x.targetCityIds.length+' rebel province'+(x.targetCityIds.length===1?'':'s'):''}</option>`).join('')}</select></label><div class="dip-war-goals">${choices.map(x=>`<article data-cb-info="${esc(x.id)}"><strong>${esc(x.name)}</strong><small>${esc(x.warGoal)}${x.id==='no-casus-belli'?' · +15 aggressive expansion · −1 diplomatic reputation':x.targetCityIds?.length?' · ticking war score while every rebel province stays controlled':''}</small></article>`).join('')}</div>`;
+  confirm=`<button class="danger" data-action="dip-modal-war">DECLARE WAR</button>`;
  }else{
   modal.classList.add('pack-reveal-complete');
   modal.querySelectorAll('[data-reveal-complete]').forEach(el=>el.disabled=false);
@@ -2504,7 +2510,7 @@ function openDiplomacyAction1300(action){
    offerAccess:active?'Revoke the military access you offered them.':'Offer them military access.',
    trade:'Propose a trade agreement. This improves the acceptance of negotiated exchanges.',
    peace:'Offer a white peace and a five-year truce.',
-   war:'Declare war without a casus belli. This gives +15 aggressive expansion, −1 diplomatic reputation and −30 trust with the defender. Trade and access end.'
+   war:'Choose a casus belli and declare war. Trade and military access end.'
   };
   body=`<p>${esc(descriptions[action]||'Confirm this diplomatic action.')}</p>`;
   if(['alliance','access','trade'].includes(action)){const a=proposalAssessment1300(game,country,action);body+=`<div id="dip-modal-acceptance">${acceptanceMeterHTML1300(a.score,a.note)}${action==='alliance'?allianceAcceptanceTableHTML1300(a):''}</div>`;}
@@ -2531,7 +2537,7 @@ function updateDiplomacyAcceptancePreview1300(){updateDiplomacyActionModalPrevie
 function diplomacyCountryPanelHTML1300(country){
  const game=profile.activeGame;if(!game||!country)return '';
  const {d,stats}=ensureDiplomacyCountry1300(game,country),r=relation(game,PLAYER_REALM,country),theirOpinion=opinion(r.theirs),ourOpinion=opinion(r.ours),war=!!r.pair.war,ally=!!r.pair.alliance,cities=diplomacyCountryCities1300(country).filter(c=>!c.supportTerritory),history=d.history.filter(x=>x.country===country).slice(-7).reverse();
- const status=war?'AT WAR':ally?'ALLIANCE':d.recognitions[country]?'RECOGNISES YOUR INDEPENDENCE':'NO TREATY';
+ const status=war?`${r.pair.war.casusBelliName||'WAR'} · SCORE ${Number(r.pair.war.warScore)||0}`:ally?'ALLIANCE':d.recognitions[country]?'RECOGNISES YOUR INDEPENDENCE':'NO TREATY';
  return `<div class="dip-panel-head"><button class="country-panel-close" data-action="game-diplomacy-close">×</button><div class="dip-realm-seal">${icon('crown')}</div><div class="dip-panel-title"><span>${esc(polityType(country).toUpperCase())}</span><h2>${esc(country)}</h2><small class="${war?'negative':ally?'positive':''}">${status}</small></div><div class="dip-header-opinion" title="Your opinion / their opinion" aria-label="Your opinion ${ourOpinion.toFixed(1)}; their opinion ${theirOpinion.toFixed(1)}"><strong><b class="${diplomacyOpinionClass1300(ourOpinion)}">${ourOpinion>0?'+':''}${ourOpinion.toFixed(1)}</b><i>/</i><b class="${diplomacyOpinionClass1300(theirOpinion)}">${theirOpinion>0?'+':''}${theirOpinion.toFixed(1)}</b></strong></div></div>
  <div class="dip-scroll">
   <section class="dip-compact-stats">
@@ -2694,6 +2700,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-diplomacy-close'){gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();return;}
  if(a==='dip-advanced'){openDiplomacyAction1300(id);return;}
  if(a==='dip-modal-standard'){const result=runAdvancedDiplomacy1300(id);if(result?.ok)modal.close();return;}
+ if(a==='dip-modal-war'){const result=runAdvancedDiplomacy1300('war',{casusBelli:modal.querySelector('#dip-modal-casus-belli')?.value||'no-casus-belli'});if(result?.ok)modal.close();return;}
  if(a==='dip-modal-gift'){const result=runAdvancedDiplomacy1300('gift',{amount:modal.querySelector('#dip-modal-gift-range')?.value});if(result?.ok)modal.close();return;}
  if(a==='dip-modal-money'){requestMoney1300(gameDiplomacyCountry,modal.querySelector('#dip-modal-money-range')?.value);modal.close();return;}
  if(a==='dip-modal-recognition'){requestIndependence1300(gameDiplomacyCountry);modal.close();return;}

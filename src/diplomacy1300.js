@@ -1,5 +1,10 @@
 // Directional relations; treaties are shared by an unordered country pair.
 export const PLAYER_REALM = '@player';
+export const CASUS_BELLI_1300={
+ 'no-casus-belli':{id:'no-casus-belli',name:'No Casus Belli',warGoal:'Conquest',aggressiveExpansion:15,reputation:-1,trust:-30},
+ 'fight-for-independence':{id:'fight-for-independence',name:'Fight for Independence',warGoal:'Secure recognition of the rebel provinces',aggressiveExpansion:0,reputation:0,trust:-10},
+ 'war-against-rebellion':{id:'war-against-rebellion',name:'War Against Rebellion',warGoal:'Return the rebel provinces',aggressiveExpansion:0,reputation:0,trust:-10}
+};
 const clamp = (n,a,b)=>Math.max(a,Math.min(b,Number(n)||0));
 const round = n=>Math.round(n*100)/100;
 const key = (a,b)=>JSON.stringify([a,b].sort());
@@ -23,6 +28,14 @@ export function relation(game,a,b){
  const p=n.pairs[k];return {pair:p,ours:p.directions[a],theirs:p.directions[b]};
 }
 export function opinion(r){return clamp(r.opinion-r.ae+r.modifiers.reduce((s,m)=>s+m.value,0),-200,200);}
+function rebelCities(game,origin){return (game?.ownedCities||[]).filter(id=>(game?.originCountryByCity?.[id]===origin)&&game?.independenceByCity?.[id]!==true);}
+export function availableCasusBelli1300(game,a,b){
+ const out=[];
+ if(a===PLAYER_REALM){const cities=rebelCities(game,b);if(cities.length)out.push({...CASUS_BELLI_1300['fight-for-independence'],targetCityIds:cities});}
+ if(b===PLAYER_REALM){const cities=rebelCities(game,a);if(cities.length)out.push({...CASUS_BELLI_1300['war-against-rebellion'],targetCityIds:cities});}
+ return out;
+}
+export function activeWarScore1300(game,a,b){const war=relation(game,a,b).pair.war;return war?clamp(war.warScore,-100,100):0;}
 export function attitude(r,ratio=1){return r.ae>=50&&opinion(r)<0?'Outraged':r.rival?'Rival':opinion(r)<-50?'Hostile':ratio>1.8&&opinion(r)<50?'Threatened':opinion(r)>=50&&r.trust>=45?'Friendly':'Neutral';}
 function memory(r,type,value,day,decay=1){const old=r.modifiers.find(m=>m.type===type);if(old){old.value=clamp(old.value+value,-100,100);old.day=day;}else r.modifiers.push({type,value,day,decay});}
 export function relationSlots(game,a){return Object.values(diplomacyState(game).pairs).filter(p=>p.countries.includes(a)&&(p.alliance||p.marriage||p.directions[a].guarantee)).length;}
@@ -93,10 +106,14 @@ export function performAction(game,a,b,action,powers={},options={}){
  if(action==='war'){
   if(pair.truceUntil>day)return fail(`Truce: ${pair.truceUntil-day} days remaining.`);
   if(pair.alliance)return fail('End the alliance first.');
-  pair.war={started:day,attacker:a,defender:b};pair.trade=false;ours.access=theirs.access=false;ours.mission=theirs.mission=null;
-  memory(theirs,'Declared war',-100,day,.25);theirs.trust=clamp(theirs.trust-30,0,100);
-  diplomacyState(game).reputation[a]=clamp((diplomacyState(game).reputation[a]||0)-1,-5,5);
-  for(const p of Object.values(diplomacyState(game).pairs)){if(p.directions[a]){const other=p.countries.find(c=>c!==a);p.directions[other].ae=clamp(p.directions[other].ae+15,0,200);}}
+  const requested=String(options.casusBelli||'no-casus-belli'),cb=CASUS_BELLI_1300[requested]||CASUS_BELLI_1300['no-casus-belli'],valid=cb.id==='no-casus-belli'?cb:availableCasusBelli1300(game,a,b).find(x=>x.id===cb.id);
+  if(!valid)return fail('That casus belli is no longer valid.');
+  const targetCityIds=[...(valid.targetCityIds||[])];
+  pair.war={started:day,attacker:a,defender:b,casusBelli:cb.id,casusBelliName:cb.name,warGoal:cb.warGoal,targetCityIds,warScore:0,lastWarScoreWeek:null};pair.trade=false;ours.access=theirs.access=false;ours.mission=theirs.mission=null;
+  memory(theirs,'Declared war',-100,day,.25);theirs.trust=clamp(theirs.trust+cb.trust,0,100);
+  diplomacyState(game).reputation[a]=clamp((diplomacyState(game).reputation[a]||0)+cb.reputation,-5,5);
+  if(cb.aggressiveExpansion)for(const p of Object.values(diplomacyState(game).pairs)){if(p.directions[a]){const other=p.countries.find(c=>c!==a);p.directions[other].ae=clamp(p.directions[other].ae+cb.aggressiveExpansion,0,200);}}
+  customMessage=`Declared ${cb.name} against ${b}.`;
  }
  if(action==='peace'){
   if(!pair.war)return fail('You are not at war.');
@@ -117,7 +134,17 @@ export function weeklyDiplomacy(game,week,powers={}){
   r.ae=round(Math.max(0,r.ae-.2));
   r.modifiers=r.modifiers.map(m=>({...m,value:round(Math.sign(m.value)*Math.max(0,Math.abs(m.value)-m.decay))})).filter(m=>m.value);
   if(!p.war&&r.mission==='improve') {const m=other.modifiers.find(m=>m.type==='Improved relations');if((m?.value||0)<100)memory(other,'Improved relations',Math.min(3,100-(m?.value||0)),game.day,.5);}
-  if(p.alliance){r.favors=round(clamp(r.favors+.2+(r.mission==='curry'?.8:0),0,100));r.trust=round(clamp(r.trust+.05,0,100));}
+ if(p.alliance){r.favors=round(clamp(r.favors+.2+(r.mission==='curry'?.8:0),0,100));r.trust=round(clamp(r.trust+.05,0,100));}
+ }
+ for(const p of Object.values(n.pairs))if(p.war&&p.war.lastWarScoreWeek!==week){
+  const w=p.war;w.lastWarScoreWeek=week;
+  if(w.casusBelli==='fight-for-independence'){
+   const held=(w.targetCityIds||[]).filter(id=>game?.ownedCities?.includes(id)).length,total=Math.max(1,(w.targetCityIds||[]).length),tick=held===total?.5:held/total-.5;
+   w.warScore=round(clamp((Number(w.warScore)||0)+tick,-100,100));
+  }else if(w.casusBelli==='war-against-rebellion'){
+   const rebelHeld=(w.targetCityIds||[]).filter(id=>game?.ownedCities?.includes(id)).length,total=Math.max(1,(w.targetCityIds||[]).length),tick=rebelHeld===0?.5:.5-rebelHeld/total;
+   w.warScore=round(clamp((Number(w.warScore)||0)+tick,-100,100));
+  }
  }
  // AI agreements between countries are evaluated every 13 weeks, always on a Monday tick.
  if(week%13===0)for(const p of Object.values(n.pairs)){
