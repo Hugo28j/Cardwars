@@ -1751,6 +1751,32 @@ function battleDialogHTML1300(game,b){
 function openBattleDialog1300(id){const game=profile.activeGame,b=ensureAdvancedMilitary1300(game)?.battles.find(x=>x.id===id);if(!game||!b)return;activeBattleDialogId=id;showDialog(battleDialogHTML1300(game,b),'battle-dialog-shell');}
 function renderBattleDialog1300(id=activeBattleDialogId){const game=profile.activeGame,b=ensureAdvancedMilitary1300(game)?.battles.find(x=>x.id===id);if(!game||!b){activeBattleDialogId=null;return;}if(modal.open&&activeBattleDialogId===id)showDialog(battleDialogHTML1300(game,b),'battle-dialog-shell');}
 function openBattleByCity1300(cityId){const b=activeBattleAtCity1300(profile.activeGame,cityId);if(b)openBattleDialog1300(b.id);}
+function gameBattlePanelHTML1300(battleId){
+ const game=profile.activeGame,b=ensureAdvancedMilitary1300(game)?.battles.find(x=>x.id===battleId);if(!game||!b)return '';
+ const c=CITY_1300[b.cityId],army=militaryCityArmy1300(game,b.armyHomeId),playerTotal=militaryArmyTotal1300(game,b.armyHomeId),enemyTotal=battleUnitTotal1300(b.enemyUnits),days=Math.max(0,(Number(game.day)||0)-b.startedDay),defenderBonus=Number(b.defenderBonusPct)||BATTLE_DEFENDER_BONUS_PCT_1300,latest=b.log?.[0],playerPct=clamp1300(Number(b.playerMorale)||0,0,100),enemyPct=clamp1300(Number(b.enemyMorale)||0,0,100),status=String(b.status||'active');
+ const resultLabel=status==='won'?'VICTORY':status==='lost'?'DEFEAT':status==='retreated'?'RETREATED':'BATTLE IN PROGRESS';
+ return `<div class="province-side-head battle-side-head"><button class="province-side-close" data-action="battle-panel-close" aria-label="Close">×</button><span>BATTLE · DAY ${days+1}</span><h2>${esc(displayCityName1300(c))}</h2><p>${esc(army?.name||'Your army')} vs ${esc(b.enemyCountry||c?.country||'Defenders')}</p></div>
+ <div class="province-side-scroll battle-side-scroll">
+  <section class="battle-live-score"><article class="attacker"><span>YOUR ARMY</span><strong>${strengthNumber(playerTotal)}</strong><small>Attacker</small></article><i>VS</i><article class="defender"><span>DEFENDERS</span><strong>${strengthNumber(enemyTotal)}</strong><small>+${defenderBonus}% defense bonus</small></article></section>
+  <section class="battle-morale-panel"><div><div><span>YOUR MORALE</span><strong>${Math.round(playerPct)}%</strong></div><i><b style="width:${playerPct}%"></b></i></div><div><div><span>DEFENDER MORALE</span><strong>${Math.round(enemyPct)}%</strong></div><i><b style="width:${enemyPct}%"></b></i></div></section>
+  <section class="battle-live-summary"><div><span>TODAY · YOUR LOSSES</span><strong class="negative">${strengthNumber(latest?.day===game.day?latest.playerLoss:0)}</strong></div><div><span>TODAY · ENEMY LOSSES</span><strong>${strengthNumber(latest?.day===game.day?latest.enemyLoss:0)}</strong></div><div><span>TOTAL YOUR LOSSES</span><strong class="negative">${strengthNumber(b.playerCasualties)}</strong></div><div><span>TOTAL ENEMY LOSSES</span><strong>${strengthNumber(b.enemyCasualties)}</strong></div></section>
+  <section class="battle-live-status ${status}"><span>STATUS</span><strong>${resultLabel}</strong><small>Battle calculations update once every in-game day.</small></section>
+  ${status==='active'?`<button class="battle-panel-retreat" data-action="battle-retreat" data-battle="${b.id}"><strong>RETREAT</strong><small>Withdraw automatically to the nearest friendly province.</small></button>`:`<section class="battle-finished-note"><strong>${resultLabel}</strong><small>${status==='retreated'?'Army withdrew to '+esc(displayCityName1300(CITY_1300[b.retreatCityId]))+'.':'This battle has ended.'}</small></section>`}
+  <div class="battle-day-log-title"><span>DAILY CASUALTIES</span><small>Newest day first</small></div>
+  <section class="battle-day-log">${b.log?.length?b.log.map(x=>`<article><div><strong>Day ${x.day-b.startedDay+1}</strong><small>${x.phase==='ranged'?'Ranged exchange':'Main engagement'}</small></div><span class="negative">−${strengthNumber(x.playerLoss)}</span><span>−${strengthNumber(x.enemyLoss)}</span><div class="battle-log-morale"><small>You ${Math.round(Number(x.playerMorale)||0)}%</small><small>Def ${Math.round(Number(x.enemyMorale)||0)}%</small></div></article>`).join(''):'<p>No casualties yet. The first combat update happens on the next in-game day.</p>'}</section>
+ </div>`;
+}
+function renderGameBattlePanel1300(){
+ const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;
+ if(!gameBattlePanelId){if(!gameProvincePanel&&!gameArmyPanelKey){panel.innerHTML='';panel.classList.remove('open');shell?.classList.remove('province-panel-open');}return;}
+ const html=gameBattlePanelHTML1300(gameBattlePanelId);if(!html){gameBattlePanelId=null;renderGameProvincePanel();return;}
+ const scroll=panel.querySelector('.battle-side-scroll')?.scrollTop||0;panel.innerHTML=html;panel.classList.add('open');shell?.classList.add('province-panel-open');const next=panel.querySelector('.battle-side-scroll');if(next)next.scrollTop=scroll;
+}
+function openGameBattlePanel1300(battleId){
+ const game=profile.activeGame,b=ensureAdvancedMilitary1300(game)?.battles.find(x=>x.id===battleId);if(!game||!b)return;
+ gameBattlePanelId=battleId;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameBattlePanel1300();
+}
+
 function provinceMilitaryHTML1300(game,c){
  const m=ensureAdvancedMilitary1300(game),army=militaryCityArmy1300(game,c.id),prof=militaryProfessionalCountCity1300(game,c.id),levy=militaryLevyCountCity1300(game,c.id),workerDraw=militaryWorkerPoolDraw1300(game,c.id),queues=m.trainingQueues.filter(q=>q.cityId===c.id),levyOrders=m.levyOrders.filter(q=>q.cityId===c.id),unlocked=new Set(normaliseTechnologyState1300(game.technology).unlocked),supply=militarySupplyStatus1300(game,c.id),commander=commanderForArmy1300(game,c.id),movement=movementForArmy1300(game,c.id),battle=activeBattleForArmy1300(game,c.id),recentBattles=m.battles.filter(b=>b.armyHomeId===c.id).slice(-4).reverse(),location=CITY_1300[army?.location||c.id]||c;
  const orders=[
