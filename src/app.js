@@ -2,7 +2,7 @@ import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, 
 import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260922-army-five-percent-v5';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-treasury-grain-market-v9';
-import {icon} from './icons.js?v=20260926-alert-v2';
+import {icon} from './icons.js?v=20260926-hud-notifications-v3';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
 import {WorldMap} from './map.js?v=20260925-city-labels-army-spacing-v3';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260926-inflation-v2';
@@ -1199,7 +1199,7 @@ function refreshGameDateUI1300(){
  if(main)main.textContent=`${d.day} ${d.month}`;if(year)year.textContent=d.year;if(status)status.textContent=d.weekday;
 }
 function refreshGameClockUI1300(){
- const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);refreshGameDateUI1300();refreshCampaignResourceBar1300(game);
+ const game=profile.activeGame;if(!game)return;game.economy=normaliseGameEconomy1300(game.economy);refreshGameDateUI1300();refreshCampaignResourceBar1300(game);renderCampaignHudNotifications1300(game);
 }
 function settleGameWeek1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
@@ -1282,7 +1282,7 @@ function ensureGameProfile(p){
    const savedOwned=Array.isArray(g.ownedCities)?[...new Set(g.ownedCities)].filter(id=>Object.hasOwn(CITY_1300,id)):[],ownedCities=savedOwned.length?savedOwned:[...validHand],oldOwners=g.cityOwners&&typeof g.cityOwners==='object'&&!Array.isArray(g.cityOwners)?g.cityOwners:{},cityOwners={...oldOwners};for(const id of ownedCities)cityOwners[id]='player';
    const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{},construction=g.construction&&typeof g.construction==='object'&&!Array.isArray(g.construction)?g.construction:{};
    const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),clockStartsAt=Number.isFinite(Number(g.clockStartsAt))?Number(g.clockStartsAt):null,lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,lastAutosaveDay=Number.isFinite(Number(g.lastAutosaveDay))?Math.max(0,Math.floor(Number(g.lastAutosaveDay))):0,economy=normaliseGameEconomy1300(g.economy);
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,construction,day,clockStartedAt,clockStartsAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id],p.activeGame));refreshCampaignStage1300(p.activeGame);
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,construction,day,clockStartedAt,clockStartsAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot,hudNotificationDismissed:g.hudNotificationDismissed&&typeof g.hudNotificationDismissed==='object'&&!Array.isArray(g.hudNotificationDismissed)?g.hudNotificationDismissed:{}};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id],p.activeGame));refreshCampaignStage1300(p.activeGame);
   }
  }
 }
@@ -1368,7 +1368,7 @@ function startGame1300(){
  const shuffled=shuffle1300(profile.deck),hand=shuffled.slice(0,4);
  const startingFlorins=Math.round(hand.reduce((sum,id)=>sum+(Number(CITY_1300[id]?.startingFlorins)||.01),0)*100)/100;
  const ownedCities=[...hand],cityOwners=Object.fromEntries(ownedCities.map(id=>[id,'player']));
- profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},construction:{},day:0,clockStartedAt:Date.now(),clockStartsAt:Date.now()+GAME_INITIAL_CLOCK_DELAY_MS,lastTickAt:null,lastAutosaveDay:0,economy:freshGameEconomy1300(),technology:freshTechnologyState1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false};
+ profile.activeGame={date:'1300-01-01',deck:[...profile.deck],hand,ownedCities,cityOwners,playerColor:profile.playerColor,flag:normaliseFlag1300(profile.playerFlag),startingFlorins,florins:startingFlorins,buildings:{},construction:{},day:0,clockStartedAt:Date.now(),clockStartsAt:Date.now()+GAME_INITIAL_CLOCK_DELAY_MS,lastTickAt:null,lastAutosaveDay:0,economy:freshGameEconomy1300(),technology:freshTechnologyState1300(),diplomacy:freshGameDiplomacy1300(),campaignStage:'rebellion',originCountryByCity:Object.fromEntries(ownedCities.map(id=>[id,CITY_1300[id]?.country||'Unknown'])),independenceByCity:Object.fromEntries(ownedCities.map(id=>[id,false])),formedNation:null,won:false,hudNotificationDismissed:{}};
  // Normal starting opinion is +10. Countries that lost one of your opening cities start at -100 toward you.
  for(const country of new Set(CITIES_1300.map(c=>c.country)))profile.activeGame.diplomacy.relations[country]=10;
  for(const victim of new Set(ownedCities.map(id=>CITY_1300[id]?.country).filter(Boolean)))profile.activeGame.diplomacy.relations[victim]=-100;
@@ -1989,6 +1989,52 @@ function campaignRankBadgeHTML1300(game){
  const r=campaignLeaderboardStatus1300(game),label=r.rank?`#${r.rank}`:'—';
  return `<button id="campaign-rank-badge" class="campaign-rank-badge ${r.medal}" data-action="open-rankings-tab" title="Open Rankings · overall world rank · strength ${strengthNumber(r.strength)}" aria-label="Open Rankings, current world rank ${label}">${label}</button>`;
 }
+function campaignHudDismissals1300(game){
+ if(!game)return {};
+ if(!game.hudNotificationDismissed||typeof game.hudNotificationDismissed!=='object'||Array.isArray(game.hudNotificationDismissed))game.hudNotificationDismissed={};
+ return game.hudNotificationDismissed;
+}
+function campaignCompanyLosses1300(game){
+ const losses=[];if(!game)return losses;
+ for(const cityId of game.ownedCities||[]){
+  const c=CITY_1300[cityId];if(!c)continue;
+  const state=gameProvinceBuildingState(c);
+  for(const row of state.buildings){
+   if(row.level<=0||row.id==='walls')continue;
+   const m=gameSectorMetrics1300(game,cityId,row.id),net=Number.isFinite(Number(m.netCash))?Number(m.netCash):(Number(m.profit)||0)-(Number(m.tax)||0);
+   if(net<-.004)losses.push({id:`company-loss:${cityId}:${row.id}`,type:'company-loss',cityId,buildingId:row.id,icon:'trendDown',title:`${row.name} in ${displayCityName1300(c)} is losing ƒ${money1300(Math.abs(net))}/week`,loss:net,name:row.name,cityName:displayCityName1300(c)});
+  }
+ }
+ return losses.sort((a,b)=>a.loss-b.loss||a.cityName.localeCompare(b.cityName)||a.name.localeCompare(b.name));
+}
+function campaignHudNotificationState1300(game){
+ const dismissed=campaignHudDismissals1300(game),state=game.technology=normaliseTechnologyState1300(game.technology),techNeeded=!state.activeResearch&&state.unlocked.length<TECHNOLOGIES_1300.length,losses=campaignCompanyLosses1300(game),liveCompanyKeys=new Set(losses.map(x=>x.id));
+ if(!techNeeded)delete dismissed['tech-idle'];
+ for(const key of Object.keys(dismissed))if(key.startsWith('company-loss:')&&!liveCompanyKeys.has(key))delete dismissed[key];
+ const items=[];
+ if(techNeeded&&!dismissed['tech-idle'])items.push({id:'tech-idle',type:'tech-idle',icon:'tech',title:'No technology is being researched · left-click to open the Technology Tree · right-click to dismiss'});
+ for(const loss of losses)if(!dismissed[loss.id])items.push({...loss,title:loss.title+' · left-click to open this company · right-click to dismiss'});
+ return items;
+}
+function campaignHudNotificationsHTML1300(game){
+ const items=campaignHudNotificationState1300(game);
+ return `<div id="campaign-hud-notifications" class="campaign-hud-notifications ${items.length?'':'empty'}" aria-label="Campaign notifications">${items.map(n=>`<button type="button" class="campaign-hud-notification ${n.type}" data-action="campaign-hud-notification" data-notification-id="${esc(n.id)}" data-notification-type="${esc(n.type)}" ${n.cityId?`data-city="${esc(n.cityId)}"`:''} ${n.buildingId?`data-building="${esc(n.buildingId)}"`:''} title="${esc(n.title)}" aria-label="${esc(n.title)}">${icon(n.icon)}</button>`).join('')}</div>`;
+}
+function renderCampaignHudNotifications1300(game){
+ const host=$('#campaign-hud-notifications');if(!host||!game)return;
+ const items=campaignHudNotificationState1300(game);host.classList.toggle('empty',!items.length);
+ host.innerHTML=items.map(n=>`<button type="button" class="campaign-hud-notification ${n.type}" data-action="campaign-hud-notification" data-notification-id="${esc(n.id)}" data-notification-type="${esc(n.type)}" ${n.cityId?`data-city="${esc(n.cityId)}"`:''} ${n.buildingId?`data-building="${esc(n.buildingId)}"`:''} title="${esc(n.title)}" aria-label="${esc(n.title)}">${icon(n.icon)}</button>`).join('');
+}
+function dismissCampaignHudNotification1300(id){
+ const game=profile.activeGame;if(!game||!id)return;campaignHudDismissals1300(game)[id]=true;save();renderCampaignHudNotifications1300(game);
+}
+function openCampaignHudNotification1300(type,cityId,buildingId){
+ const game=profile.activeGame;if(!game)return;
+ if(type==='tech-idle'){gameCountryTab='technology';openGameCountryPanel1300();openTechnologyTree1300();return;}
+ if(type==='company-loss'&&CITY_1300[cityId]&&BUILDING_1300[buildingId]&&game.ownedCities?.includes(cityId)){
+  modal.close();gameCountryPanel=false;renderGameCountryPanel1300();gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameProvincePanel=cityId;gameProvinceBuildingCatalog=false;gameProvinceBuildingDetail=buildingId;renderGameProvincePanel();world?.focus?.(cityId);
+ }
+}
 function updateCampaignRankingSnapshot1300(game){
  if(!game)return;const d=gameDate1300(game.day);
  game.rankingSnapshot={day:game.day,label:`${d.day} ${d.month} ${d.year}`,rows:buildCampaignRankings1300(game).map(r=>({...r,cities:r.cities.map(c=>c.id),supportTerritories:r.supportTerritories.map(c=>c.id)}))};checkCampaignVictory1300(game);
@@ -2165,7 +2211,7 @@ function settleWeeklyResearch1300(game){
  game.technology=normaliseTechnologyState1300(game.technology);const active=TECHNOLOGY_1300[game.technology.activeResearch],context=active?technologyCostContext1300(game,active):{},result=applyWeeklyResearch1300(game.technology,technologyResearchIncome1300(game).weekly,context);game.technology=result.state;applyTechnologyCompletions1300(game,result.completed);
 }
 function startTechnologyResearch1300(id){
- const game=profile.activeGame,tech=TECHNOLOGY_1300[id];if(!game||!tech)return;game.technology=normaliseTechnologyState1300(game.technology);if(game.technology.unlocked.includes(id)){toast('This technology is already researched.');return;}if(!technologyAvailable1300(game.technology,tech)){toast('Research the required technology first.');return;}if(tech.branch==='navy'&&!(game.ownedCities||[]).some(cityId=>isCoastalCity1300(CITY_1300[cityId]))){toast('You need at least one coastal province to research naval technology.');return;}game.technology.activeResearch=id;const result=applyWeeklyResearch1300(game.technology,0,technologyCostContext1300(game,tech));game.technology=result.state;applyTechnologyCompletions1300(game,result.completed);save();renderGameCountryPanel1300();if(modal.open&&modal.classList.contains('tech-tree-dialog'))renderTechnologyTreeDialog1300();toast('Research started: '+tech.name+'.');
+ const game=profile.activeGame,tech=TECHNOLOGY_1300[id];if(!game||!tech)return;game.technology=normaliseTechnologyState1300(game.technology);if(game.technology.unlocked.includes(id)){toast('This technology is already researched.');return;}if(!technologyAvailable1300(game.technology,tech)){toast('Research the required technology first.');return;}if(tech.branch==='navy'&&!(game.ownedCities||[]).some(cityId=>isCoastalCity1300(CITY_1300[cityId]))){toast('You need at least one coastal province to research naval technology.');return;}game.technology.activeResearch=id;delete campaignHudDismissals1300(game)['tech-idle'];const result=applyWeeklyResearch1300(game.technology,0,technologyCostContext1300(game,tech));game.technology=result.state;applyTechnologyCompletions1300(game,result.completed);save();renderGameCountryPanel1300();renderCampaignHudNotifications1300(game);if(modal.open&&modal.classList.contains('tech-tree-dialog'))renderTechnologyTreeDialog1300();toast('Research started: '+tech.name+'.');
 }
 function technologyNodeHTML1300(game,state,tech){
  const researched=state.unlocked.includes(tech.id),active=state.activeResearch===tech.id,available=technologyAvailable1300(state,tech),coastal=(game.ownedCities||[]).some(id=>isCoastalCity1300(CITY_1300[id])),navyBlocked=tech.branch==='navy'&&!coastal,context=technologyCostContext1300(game,tech),cost=technologyResearchCost1300(state,tech,context),progress=researched?cost:Math.min(cost,Number(state.progressByTech[tech.id])||0),pct=researched?100:Math.round(progress/cost*100),requirement=tech.requires.map(id=>TECHNOLOGY_1300[id]?.name).filter(Boolean).join(' or ');
@@ -2389,6 +2435,7 @@ function gamePage(){
   <div class="game-date-panel"><span>CAMPAIGN DATE</span><strong id="game-date-main">${gameDate.day} ${gameDate.month}</strong><small id="game-date-year">${gameDate.year}</small><em id="game-clock-status"></em></div>
   <button class="game-country-shield ${gameProvincePanel?'province-open':''}" data-action="game-country-open" data-country-shield="1" aria-label="Open your country">${flagShieldHTML1300(profile.activeGame.flag,'map-shield')}</button>
   ${campaignRankBadgeHTML1300(profile.activeGame)}
+  ${campaignHudNotificationsHTML1300(profile.activeGame)}
   ${campaignResourceBarHTML1300(profile.activeGame)}<button class="game-quit-button" data-action="quit-game">Quit</button>
   <aside id="game-province-panel" class="game-province-panel ${gameProvincePanel?'open':''}">${gameProvincePanel?gameProvincePanelHTML(gameProvincePanel):''}</aside>
   <aside id="game-country-panel" class="game-country-panel ${gameCountryPanel?'open':''}">${gameCountryPanel?gameCountryPanelHTML1300():''}</aside>
@@ -2472,6 +2519,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-building-catalog-back'){gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();return;}
  if(a==='game-country-open'){openGameCountryPanel1300();return;}
  if(a==='open-rankings-tab'){gameCountryTab='rankings';openGameCountryPanel1300();return;}
+ if(a==='campaign-hud-notification'){openCampaignHudNotification1300(b.dataset.notificationType,b.dataset.city,b.dataset.building);return;}
  if(a==='game-country-close'){gameCountryPanel=false;renderGameCountryPanel1300();return;}
  if(a==='game-country-tab'){if(GAME_COUNTRY_TABS.some(([x])=>x===id)){gameCountryTab=id;renderGameCountryPanel1300();}return;}
  if(a==='open-tech-tree'){openTechnologyTree1300();return;}
@@ -2526,7 +2574,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='export')exportSave();
  if(a==='import')$('#import-file').click();
 });
-document.addEventListener('contextmenu',e=>{const shield=e.target.closest('[data-country-shield]');if(shield&&profile.activeGame){e.preventDefault();openGameCountryPanel1300();}});
+document.addEventListener('contextmenu',e=>{const notice=e.target.closest('[data-notification-id]');if(notice&&profile.activeGame){e.preventDefault();dismissCampaignHudNotification1300(notice.dataset.notificationId);return;}const shield=e.target.closest('[data-country-shield]');if(shield&&profile.activeGame){e.preventDefault();openGameCountryPanel1300();}});
 document.addEventListener('input',e=>{if(e.target.id==='city-search-1300'){search1300=e.target.value;renderGrid();}if(e.target.id==='deck-search'){deckSearch=e.target.value;render();}if(e.target.id==='atlas-search'){atlasSearch=e.target.value;const list=CITIES_1300.filter(c=>`${c.name} ${c.subrealm} ${c.historicalRole}`.toLowerCase().includes(atlasSearch.toLowerCase()));$('#atlas-city-list').innerHTML=mapList(list);}if(e.target.id==='stability-budget-range'){setStabilityBudget1300(e.target.value);}if(e.target.matches?.('[data-tech-budget-city]'))setProvinceTechnologyBudget1300(e.target.dataset.techBudgetCity,e.target.value);if(e.target.matches?.('[data-company-target]')){const out=document.querySelector('[data-company-target-value="'+e.target.dataset.city+':'+e.target.dataset.id+'"]');if(out)out.textContent=Math.round(Number(e.target.value)||0)+'%';}if(e.target.matches?.('[data-company-support]')){const out=document.querySelector('[data-company-support-value="'+e.target.dataset.city+':'+e.target.dataset.id+'"]');if(out)out.textContent='ƒ'+money1300(e.target.value)+'/week';}if(['dip-money-amount','dip-sell-price','dip-offer-amount','dip-request-amount'].includes(e.target.id))updateDiplomacyAcceptancePreview1300();if(e.target.closest?.('.diplomacy-action-dialog'))updateDiplomacyActionModalPreview1300();});
 document.addEventListener('change',e=>{if(e.target.id==='building-city-select'){buildingCity=e.target.value;render();}if(e.target.id==='country-filter-1300'){country1300=e.target.value;render();}if(e.target.id==='deck-country-filter'){deckCountry=e.target.value;render();}if(e.target.matches?.('[data-company-target]'))setCompanyPolicy1300(e.target.dataset.city,e.target.dataset.id,{employmentTarget:e.target.value});if(e.target.matches?.('[data-company-support]'))setCompanyPolicy1300(e.target.dataset.city,e.target.dataset.id,{recruitmentSupport:e.target.value});if(e.target.matches?.('[data-company-priority]'))setCompanyPolicy1300(e.target.dataset.city,e.target.dataset.id,{priority:e.target.value});if(['dip-sell-city','dip-offer-asset','dip-request-asset'].includes(e.target.id))updateDiplomacyAcceptancePreview1300();if(e.target.closest?.('.diplomacy-action-dialog'))updateDiplomacyActionModalPreview1300();});
 $('#import-file').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>1000000)throw new Error();const p=migrateProfile(JSON.parse(await file.text()));if(!p||!validateProfile(p))throw new Error();ensureEconomyProfile(p);ensureGameProfile(p);showDialog(`<div class="simple-dialog"><span class="eyebrow">RESTORE CAMPAIGN</span><h2>Import this 1300 campaign?</h2><p>This replaces your current building progress and treasury with <strong>ƒ ${p.florins.toLocaleString('en-GB')}</strong>.</p><div class="dialog-actions">${button('Cancel','close')}${button('Import and replace','confirm-import','primary')}</div></div>`);modal.querySelector('[data-action="confirm-import"]').addEventListener('click',()=>{profile=p;save();navigate('collection');toast('1300 campaign imported.');},{once:true});}catch{toast('Invalid campaign file. Your existing progress was kept.');}});

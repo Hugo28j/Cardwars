@@ -23,6 +23,7 @@ const paths={
  play:'<path d="m8 4 12 8-12 8z"/>',pause:'<path d="M8 4v16M16 4v16"/>',
  help:'<circle cx="12" cy="12" r="9"/><path d="M9 8c0-4 7-4 7 0 0 3-4 2-4 6m0 3v1"/>',
  alert:'<path d="M12 3 22 20H2Z"/><path d="M12 8v6m0 3v.1"/>',
+ trendDown:'<path d="M3 5v14h18"/><path d="m6 8 4 4 3-3 5 6"/><path d="M15 15h3v-3"/>',
  save:'<path d="M4 3h14l3 3v15H3V3zM7 3v6h10V3M7 21v-7h10v7"/>',
  check:'<path d="m4 12 5 5L20 6"/>',lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/>',
  list:'<path d="M8 5h13M8 12h13M8 19h13M3 5h1M3 12h1M3 19h1"/>',
