@@ -350,7 +350,7 @@ export class WorldMap{
  refresh(){if(!this.svg)return;this.cancelScheduledRefresh();const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   this.updateBorderZoomStyle();
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
-  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),visibleCities=new Set(ownedCities),fogDetail=!!game?.fogOfWar&&unit<.13;
+  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),visibleCities=new Set(ownedCities),fogDetail=!!game?.fogOfWar&&showCityAreas;
   if(game?.fogOfWar)for(const id of ownedCities)for(const neighbour of this.cityAdjacency?.get(id)||[])visibleCities.add(neighbour);
   this.svg.style.setProperty('--player-realm-color',game?.playerColor||'#c6534d');
   for(const cell of this.svg.querySelectorAll('.city-territory-cell')){
@@ -398,7 +398,7 @@ export class WorldMap{
    const show=!realmGone&&eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
-  const showMilitary=!!game&&unit<.105;this.cityLabelBoxes=new Map();
+  const showMilitary=!!game&&unit<.070;this.cityLabelBoxes=new Map();
   for(const t of this.cityTerritoryLabels||[]){
    const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
    t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
@@ -435,16 +435,17 @@ export class WorldMap{
       if(army>0&&sq.x>-45&&sq.y>-55&&sq.x<width+45&&sq.y<height+55){
       const territoryCity=this.cityTerritoryRealms?.has(cityRealm(c)),badgeY=showCityAreas&&territoryCity?28:13,labelBox=this.cityLabelBoxes?.get(c.id),badgeW=Math.max(24,compactMilitaryNumber(army).length*6.2+12),boxW=Math.max(42,badgeW+6),boxH=badgeY>20?66:53,candidates=territoryCity?[[0,50],[0,-50],[48,12],[-48,12],[48,-26],[-48,-26],[36,40],[-36,40],[36,-40],[-36,-40],[0,72],[0,-72],[68,0],[-68,0]]:[[0,0],[0,44],[0,-44],[42,0],[-42,0]],cell=this.cityCellGeometry?.get(c.id);
       const boxAt=(q,dx,dy)=>({x:q.x+dx-boxW/2,y:q.y+dy-29,w:boxW,h:boxH}),mapAt=(dx,dy)=>[land[0]+dx*unit,land[1]+dy*unit],screenToMap=(x,y)=>[this.view.x+x*unit,this.view.y+y*unit],insideCellPoint=p=>!territoryCity||!cell||(pointInPolygon(p,cell.poly)&&(cell.componentPoly?pointInPolygon(p,cell.componentPoly):cell.realmPolys.some(poly=>pointInPolygon(p,poly)))),boxInsideCell=box=>{if(!territoryCity||!cell)return true;const inset=1.5,x0=box.x+inset,y0=box.y+inset,x1=box.x+box.w-inset,y1=box.y+box.h-inset,cx=(x0+x1)/2,cy=(y0+y1)/2;return [[x0,y0],[x1,y0],[x1,y1],[x0,y1],[cx,y0],[cx,y1],[x0,cy],[x1,cy]].every(([x,y])=>insideCellPoint(screenToMap(x,y)));};
-      let chosen=null;
-      // First try positions that keep the complete army marker inside its own city
-      // and avoid both the city name and other army markers.
+      let chosen=null,markerScale=1;
+      // Prefer a normal-size position where the ENTIRE army hitbox fits inside
+      // this city's polygon, while also avoiding the city name and other armies.
       for(const [dx,dy] of candidates){const qbox=boxAt(sq,dx,dy),mp=mapAt(dx,dy),inView=qbox.x+qbox.w>2&&qbox.x<width-2&&qbox.y+qbox.h>2&&qbox.y<height-2;if(!inView||labelBox&&overlaps(qbox,labelBox)||militaryBoxes.some(b=>overlaps(qbox,b))||!boxInsideCell(qbox))continue;chosen={dx,dy,box:qbox,point:mp};break;}
-      // If there genuinely is no free position, the one allowed fallback is on top
-      // of the city name. The SVG clip below still prevents it drawing outside the city.
-      if(!chosen){const qbox=boxAt(sq,0,0);chosen={dx:0,dy:0,box:qbox,point:land,fallback:true};}
+      // Only when no clean spot exists may the army overlap the city name.
+      // Put it on the safest interior point and shrink it just enough to fit.
+      if(!chosen){const safePx=Math.max(1,(Number(unitAnchor?.clearance)||0)/unit),needRadius=Math.hypot(boxW/2,boxH/2);markerScale=Math.max(.22,Math.min(1,(safePx/Math.max(1,needRadius))*.90));const sw=boxW*markerScale,sh=boxH*markerScale,qbox={x:sq.x-sw/2,y:sq.y-29*markerScale,w:sw,h:sh};chosen={dx:0,dy:0,box:qbox,point:land,fallback:true};}
       militaryBoxes.push(chosen.box);
-      const marker=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${chosen.point}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned,badgeY)}</g>`;
-      const armyMarkup=territoryCity&&unitAnchor?.cellClip&&unitAnchor?.componentClip?`<g clip-path="url(#${unitAnchor.componentClip})"><g clip-path="url(#${unitAnchor.cellClip})">${marker}</g></g>`:marker;pieces.push(armyMarkup);
+      const marker=`<g class="army-map-marker" data-unit-city="${c.id}" transform="translate(${chosen.point}) scale(${unit*markerScale})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(army)} soldiers</title>${soldierPiece(army,owned,badgeY)}</g>`;
+      // Hard clip = the army can never render outside its own city border.
+      const armyMarkup=territoryCity&&unitAnchor?.cellClip&&unitAnchor?.componentClip?`<g class="army-city-hitbox" clip-path="url(#${unitAnchor.componentClip})"><g clip-path="url(#${unitAnchor.cellClip})">${marker}</g></g>`:marker;pieces.push(armyMarkup);
      }
      if(navy>0){const coast=this.coastMarkerForCity(c);if(coast){const cq=screen(...coast);if(cq.x>-55&&cq.y>-55&&cq.x<width+55&&cq.y<height+55)pieces.push(`<g class="navy-map-marker" data-unit-city="${c.id}" transform="translate(${coast}) scale(${unit})"><title>${esc(displayCityName(c))}: ${compactMilitaryNumber(navy)} ships</title>${shipPiece(navy,owned)}</g>`);}}
     }
