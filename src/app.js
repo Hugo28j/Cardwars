@@ -1018,8 +1018,8 @@ function processMilitaryDay1300(game){
  for(const orderId of orderIds){
   let live=ensureGameMilitary1300(game).levyOrders.find(q=>q.id===orderId);if(!live)continue;const c=CITY_1300[live.cityId];if(!c)continue;
   const remainingBefore=Math.max(0,Math.floor(Number(live.remaining)||0)),rate=levyDailyRate1300(game,live.cityId),labour=Math.max(0,cityLabourPool1300(c,game)),room=Math.max(0,militaryUnprofessionalLimit1300(game)-unprofessionalArmyState1300(game).army),take=Math.min(remainingBefore,rate,labour,room);
-  live=ensureGameMilitary1300(game).levyOrders.find(q=>q.id===orderId);if(!live)continue;
-  if(take>0){const army=ensureGameMilitary1300(game).armiesByCity[live.cityId];if(army){army.units['levy-swordsmen']=(Number(army.units['levy-swordsmen'])||0)+take;live.remaining=Math.max(0,remainingBefore-take);changed=true;}}
+  const liveState=ensureGameMilitary1300(game);live=liveState.levyOrders.find(q=>q.id===orderId);if(!live)continue;
+  if(take>0){const army=liveState.armiesByCity[live.cityId];if(army){army.units['levy-swordsmen']=(Number(army.units['levy-swordsmen'])||0)+take;live.remaining=Math.max(0,remainingBefore-take);changed=true;}}
  }
  const current=ensureGameMilitary1300(game);current.levyOrders=current.levyOrders.filter(q=>Math.max(0,Number(q.remaining)||0)>0);
  if(processAdvancedMilitaryDay1300(game))changed=true;if(changed){invalidateWeeklyBudgetProjection1300(game);syncCampaignMilitaryOverlay1300(game);}return changed;
