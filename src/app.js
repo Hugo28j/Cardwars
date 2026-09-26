@@ -1987,7 +1987,7 @@ function campaignLeaderboardStatus1300(game){
 }
 function campaignRankBadgeHTML1300(game){
  const r=campaignLeaderboardStatus1300(game),label=r.rank?`#${r.rank}`:'—';
- return `<div id="campaign-rank-badge" class="campaign-rank-badge ${r.medal}" title="Overall world rank · strength ${strengthNumber(r.strength)}">${label}</div>`;
+ return `<button id="campaign-rank-badge" class="campaign-rank-badge ${r.medal}" data-action="open-rankings-tab" title="Open Rankings · overall world rank · strength ${strengthNumber(r.strength)}" aria-label="Open Rankings, current world rank ${label}">${label}</button>`;
 }
 function updateCampaignRankingSnapshot1300(game){
  if(!game)return;const d=gameDate1300(game.day);
@@ -2471,6 +2471,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-building-catalog-open'){if(gameProvincePanel&&profile.activeGame?.ownedCities?.includes(gameProvincePanel)){gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=true;renderGameProvincePanel();}return;}
  if(a==='game-building-catalog-back'){gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();return;}
  if(a==='game-country-open'){openGameCountryPanel1300();return;}
+ if(a==='open-rankings-tab'){gameCountryTab='rankings';openGameCountryPanel1300();return;}
  if(a==='game-country-close'){gameCountryPanel=false;renderGameCountryPanel1300();return;}
  if(a==='game-country-tab'){if(GAME_COUNTRY_TABS.some(([x])=>x===id)){gameCountryTab=id;renderGameCountryPanel1300();}return;}
  if(a==='open-tech-tree'){openTechnologyTree1300();return;}
