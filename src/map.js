@@ -59,7 +59,7 @@ const sharedIslandBorders=atlas=>{const edges=new Map();for(const f of atlas){if
 const sameRealmSeamCovers=(atlas,mode)=>atlas.filter(f=>!f.outline&&!f.underlay).map((f,i,arr)=>{const realm=realmOf(f),edges=new Map();for(const seg of svgSubpaths(f.d)){const pts=svgSubpathPoints(seg);for(let j=0;j<pts.length;j++){const a=pts[j],b=pts[(j+1)%pts.length],ak=a[0].toFixed(3)+','+a[1].toFixed(3),bk=b[0].toFixed(3)+','+b[1].toFixed(3),key=ak<bk?ak+'|'+bk:bk+'|'+ak;let edge=edges.get(key);if(!edge){edge={a,b,count:0};edges.set(key,edge);}edge.count++;}}const d=[...edges.values()].filter(e=>e.count>1).map(e=>'M'+e.a[0].toFixed(3)+','+e.a[1].toFixed(3)+'L'+e.b[0].toFixed(3)+','+e.b[1].toFixed(3)).join('');if(!d)return'';const fill=mode==='historical'?colorForRealm(realm):palettes[i%palettes.length];return `<path d="${d}" fill="none" stroke="${fill}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`;}).join('');
 const IBERIA_REALMS=new Set(['Kingdom of Portugal','Crown of Castile','Crown of Aragon','Kingdom of Navarre','Granada','Andorra','Roussillon']);
 const cityRealm=c=>c.country==='Emirate of Granada'?'Granada':(CITY_REALM_ALIASES.get(c.country)||c.country);
-const ownerRealmForCity=(game,c)=>{const saved=game?.cityOwners?.[c.id];if(saved==='player')return 'player';const raw=typeof saved==='string'&&saved?saved:c.country;return raw==='Emirate of Granada'?'Granada':(CITY_REALM_ALIASES.get(raw)||raw);};
+const ownerRealmForCity=(game,c)=>{const saved=game?.cityOwners?.[c.id];if(saved==='player')return 'player';if(saved&&game?.playerColors?.[saved])return saved;const raw=typeof saved==='string'&&saved?saved:c.country;return raw==='Emirate of Granada'?'Granada':(CITY_REALM_ALIASES.get(raw)||raw);};
 // Every c.1300 city now gets the same territory treatment that France and Iberia already use.
 // The active subset is intersected with the currently loaded atlas so unmatched/modern realms keep normal markers.
 const CITY_TERRITORY_REALMS=new Set(CITIES.map(cityRealm));
@@ -375,7 +375,7 @@ export class WorldMap{
  refresh(){if(!this.svg)return;this.cancelScheduledRefresh();const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   this.updateBorderZoomStyle();
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
-  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),fogDetail=!!game?.fogOfWar&&showCityAreas,visibleCities=new Set(),visionSources=new Set(),playerCountry=game?.playerCountry||'',alliedCountries=new Set(game?.alliances||[]),rawOwner=c=>{const saved=game?.cityOwners?.[c.id];return saved==='player'?playerCountry:(typeof saved==='string'&&saved?saved:c.country);},friendlyCountry=country=>!!country&&(country===playerCountry||alliedCountries.has(country));
+  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),fogDetail=!!game?.fogOfWar&&showCityAreas,visibleCities=new Set(),visionSources=new Set(),playerCountry=game?.playerCountry||'',alliedCountries=new Set(game?.alliances||[]),rawOwner=c=>{const saved=game?.cityOwners?.[c.id];if(saved&&game?.playerColors?.[saved])return saved;return saved==='player'?playerCountry:(typeof saved==='string'&&saved?saved:c.country);},friendlyCountry=country=>!!country&&(country===playerCountry||country===game?.localPlayerId||alliedCountries.has(country));
   if(!game?.fogOfWar){for(const c of CITIES)visibleCities.add(c.id);}
   else{
    for(const c of CITIES){
@@ -390,12 +390,14 @@ export class WorldMap{
   const occupationPatternByCountry=new Map(),patternHost=this.svg.querySelector('#occupation-patterns'),occupiers=[...new Set(Object.values(game?.occupations||{}).filter(Boolean))];
   if(patternHost){patternHost.innerHTML=occupiers.map((country,i)=>{const id='occupation-stripes-'+i,realm=CITY_REALM_ALIASES.get(country)||country,color=country===game?.playerCountry?(game?.playerColor||'#c6534d'):colorForRealm(realm);occupationPatternByCountry.set(country,id);return `<pattern id="${id}" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)"><rect width="9" height="9" fill="transparent"/><path d="M0 -2V11" stroke="${color}" stroke-width="3.2" stroke-opacity=".88"/></pattern>`;}).join('');}
   for(const cell of this.svg.querySelectorAll('.city-territory-cell')){
-   const id=cell.dataset.city,isOwned=ownedCities.has(id),isVisible=visibleCities.has(id);
-   cell.classList.toggle('game-owned',!!game&&isOwned);
+   const id=cell.dataset.city,savedOwner=game?.cityOwners?.[id],humanColor=savedOwner?game?.playerColors?.[savedOwner]:null,isOwned=ownedCities.has(id)||savedOwner===game?.localPlayerId,isHumanOwned=!!humanColor,isVisible=visibleCities.has(id);
+   cell.classList.toggle('game-owned',!!game&&isOwned);cell.classList.toggle('game-player-owned',!!game&&isHumanOwned);
    cell.classList.toggle('game-visible',!!game&&!isOwned&&isVisible);
    const occupier=game?.occupations?.[id],occupationPattern=occupier?occupationPatternByCountry.get(occupier):null;
    cell.classList.toggle('game-hidden',!!game&&fogDetail&&!isVisible);cell.classList.toggle('game-battle',!!game?.battlesByCity?.[id]);cell.classList.toggle('game-siege',!!game?.siegesByCity?.[id]);cell.classList.toggle('game-occupied',!!occupier);
-   if(occupationPattern&&(!fogDetail||isVisible)){cell.style.fill=`url(#${occupationPattern})`;cell.style.fillOpacity='.92';}else{cell.style.removeProperty('fill');cell.style.removeProperty('fill-opacity');}
+   if(occupationPattern&&(!fogDetail||isVisible)){cell.style.fill=`url(#${occupationPattern})`;cell.style.fillOpacity='.92';}
+   else if(isHumanOwned){cell.style.fill=humanColor;cell.style.fillOpacity=isOwned?'.92':'.78';}
+   else{cell.style.removeProperty('fill');cell.style.removeProperty('fill-opacity');}
   }
   // Country / polity names follow the territory that realm still owns.
   // When a realm loses a city, its name is re-centered over its remaining city cells.
@@ -436,7 +438,7 @@ export class WorldMap{
    const show=!realmGone&&eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
-  const showMilitary=!!game&&showCityAreas;this.cityLabelBoxes=new Map();
+  const showMilitary=!!game&&!game?.hideMilitary&&showCityAreas;this.cityLabelBoxes=new Map();
   for(const t of this.cityTerritoryLabels||[]){
    const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
    t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
