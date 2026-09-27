@@ -429,7 +429,7 @@ function ensureEconomyProfile(p){
 }
 ensureEconomyProfile(profile);
 const GAME_WAGE_MIN=.05,GAME_WAGE_MAX=1.00,GAME_WAGE_STEP=.01,GAME_TAX_MIN=0,GAME_TAX_MAX=30,GAME_TAX_COLLECTION_FACTOR=.35;
-const GAME_DAY_REAL_MS=2000,GAME_INITIAL_CLOCK_DELAY_MS=60000,GAME_AUTOSAVE_DAYS=182,RESEARCH_RATE_MULTIPLIER_1300=3;
+const GAME_DAY_REAL_MS=2000,GAME_INITIAL_CLOCK_DELAY_MS=120000,GAME_AUTOSAVE_DAYS=182,RESEARCH_RATE_MULTIPLIER_1300=3;
 const GAME_MONTHS_1300=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const clamp1300=(n,min,max)=>Math.max(min,Math.min(max,n));
 const money1300=n=>(Number(n)||0).toFixed(2);
