@@ -1,4 +1,4 @@
-import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260922-army-five-percent-v5';
+import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260927-denmark-byzantium-portugal-v6';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CITY_DISPLAY_NAMES=new Map([
@@ -16,14 +16,14 @@ const historicalLabels=[
  ['NAVARRE',-1.7,42.7,2],['GRANADA',-4.6,36.8,2],
  ['AQUITAINE',-0.55,45.15,2],
  ['POLAND',19,52,1],['LITHUANIA',25,54.5,1],['TEUTONIC ORDER',20.5,54,2],
- ['HUNGARY',20,47,1],['SERBIA',20.4,43.5,2],['BULGARIA',25.3,43.2,2]
+ ['DENMARK',10.3,56.35,1],['HUNGARY',20,47,1],['SERBIA',20.4,43.5,2],['BULGARIA',25.3,43.2,2]
 ];
 const HISTORICAL_LABEL_REALMS=new Map([
  ['FRANCE','Kingdom of France'],['ENGLAND','Kingdom of England'],['SCOTLAND','Kingdom of Scotland'],
  ['PORTUGAL','Kingdom of Portugal'],['CASTILE','Crown of Castile'],['ARAGON','Crown of Aragon'],
  ['NAVARRE','Kingdom of Navarre'],['GRANADA','Granada'],['AQUITAINE','Kingdom of England'],
  ['POLAND','Kingdom of Poland'],['LITHUANIA','Grand Duchy of Lithuania'],['TEUTONIC ORDER','Teutonic Order'],
- ['HUNGARY','Kingdom of Hungary'],['SERBIA','Kingdom of Serbia'],['BULGARIA','Second Bulgarian Empire']
+ ['DENMARK','Kingdom of Denmark'],['HUNGARY','Kingdom of Hungary'],['SERBIA','Kingdom of Serbia'],['BULGARIA','Second Bulgarian Empire']
 ]);
 const bounds={x:120,y:180,w:684,h:390};
 const overlaps=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
@@ -165,7 +165,7 @@ const IBERIA_LABEL_ANGLES={
  '1300-santiago':-7,'1300-leon':-5,'1300-burgos':4,'1300-valladolid':0,'1300-salamanca':-3,'1300-zamora':-7,'1300-segovia':5,'1300-avila':-8,
  '1300-plasencia':-9,'1300-badajoz':-11,'1300-toledo':3,'1300-cuenca':10,'1300-guadalajara':5,'1300-cordoba':-5,
  '1300-seville':0,'1300-jaen':5,'1300-braga':-8,'1300-guimaraes':-10,'1300-porto':0,'1300-coimbra':0,'1300-santarem':-7,
- '1300-lisbon':0,'1300-evora':5,'1300-silves':0,'1300-pamplona':0,'1300-andorra-la-vella':0,'1300-perpignan':-8,'1300-huesca':0,'1300-zaragoza':0,'1300-girona':-22,
+ '1300-lisbon':0,'1300-evora':5,'1300-silves':0,'1300-guarda':-6,'1300-faro':0,'1300-pamplona':0,'1300-andorra-la-vella':0,'1300-perpignan':-8,'1300-huesca':0,'1300-zaragoza':0,'1300-girona':-22,
  '1300-barcelona':-22,'1300-tarragona':-16,'1300-valencia':0,'1300-alicante':-18,'1300-murcia':7,'1300-granada':0,
  '1300-malaga':-6,'1300-almeria':-14,'1300-porto':-10
 };
