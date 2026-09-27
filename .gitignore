@@ -2,3 +2,5 @@ node_modules/
 .DS_Store
 test-results/
 __pycache__/
+server/data/multiplayer-state.json
+server/data/multiplayer-state.json.tmp
