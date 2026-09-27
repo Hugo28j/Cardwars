@@ -31,3 +31,14 @@ test('fog of war uses friendly cities occupations alliances and player armies as
  assert.match(mapSource,/move\?\.side!=='enemy'/);
  assert.match(mapSource,/fogDetail&&!isVisible/);
 });
+
+
+test('campaign province clicks do not force a full synchronous map refresh',()=>{
+ const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
+ const start=source.indexOf("world=new WorldMap($('#game-map-host')");
+ const end=source.indexOf("setupGameClock1300()",start);
+ const block=source.slice(start,end);
+ assert.ok(start>=0&&end>start);
+ assert.doesNotMatch(block,/mapState\.selected=id;world\.refresh\(\)/);
+ assert.match(block,/mapState\.selected=id;renderGameProvincePanel\(\)/);
+});

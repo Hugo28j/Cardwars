@@ -63,6 +63,7 @@ const ownerRealmForCity=(game,c)=>{const saved=game?.cityOwners?.[c.id];if(saved
 // Every c.1300 city now gets the same territory treatment that France and Iberia already use.
 // The active subset is intersected with the currently loaded atlas so unmatched/modern realms keep normal markers.
 const CITY_TERRITORY_REALMS=new Set(CITIES.map(cityRealm));
+const CITY_IDS=new Set(CITIES.map(c=>c.id));
 const displayRealmName=name=>name==='Granada'?'Emirate of Granada':name;
 const polygonPath=poly=>poly.length?'M'+poly.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join('L')+'Z':'';
 const polygonBox=poly=>{const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};};
@@ -381,8 +382,8 @@ export class WorldMap{
     const owner=rawOwner(c),occupier=game?.occupations?.[c.id],friendlyOwner=friendlyCountry(owner),friendlyOccupier=friendlyCountry(occupier);
     if((friendlyOwner&&(!occupier||friendlyOccupier))||occupier===playerCountry)visionSources.add(c.id);
    }
-   for(const [cityId,row] of Object.entries(game?.militaryByCity||{}))if(Number(row?.army)>0&&CITIES.some(c=>c.id===cityId))visionSources.add(cityId);
-   for(const move of game?.movements||[])if(move?.side!=='enemy'&&CITIES.some(c=>c.id===move?.from))visionSources.add(move.from);
+   for(const [cityId,row] of Object.entries(game?.militaryByCity||{}))if(Number(row?.army)>0&&CITY_IDS.has(cityId))visionSources.add(cityId);
+   for(const move of game?.movements||[])if(move?.side!=='enemy'&&CITY_IDS.has(move?.from))visionSources.add(move.from);
    for(const id of visionSources){visibleCities.add(id);for(const neighbour of this.cityAdjacency?.get(id)||[])visibleCities.add(neighbour);}
   }
   this.svg.style.setProperty('--player-realm-color',game?.playerColor||'#c6534d');
