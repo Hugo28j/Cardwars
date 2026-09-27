@@ -33,14 +33,27 @@ War and full diplomacy are not implemented yet; the save format and UI now conta
 
 ## Run locally
 
-Use Node 18+ for tests and Python 3 for the static server:
+Use Node 18+ and Python 3. Install the small WebSocket dependency once:
 
 ```sh
+npm install
 npm test
 npm start
 ```
 
-Open `http://localhost:4173`. No npm dependencies or build step are required. Serve over HTTP; ES modules do not work by opening `index.html` directly.
+Open `http://localhost:4173`. Serve over HTTP; ES modules do not work by opening `index.html` directly.
+
+### Multiplayer lobby (step 1)
+
+The repository now includes a lightweight WebSocket lobby server for 1–6 players. Start it in a second terminal:
+
+```sh
+npm run multiplayer
+```
+
+When the static site runs on localhost it automatically connects to `ws://localhost:8787`. The Game page can create a lobby, join a six-character invite code, share an invite URL, mark players Ready, transfer host if the host leaves, and let the host start once everyone is ready. A disconnected player's slot is reserved for 45 seconds for refresh/reconnect.
+
+GitHub Pages cannot run this WebSocket process. For internet multiplayer, deploy `server/multiplayer-server.js` to a small Node host and enter its `wss://...` URL in the multiplayer screen. This first step only synchronises the lobby; the shared campaign simulation is intentionally not started yet.
 
 ## GitHub Pages
 
