@@ -438,7 +438,7 @@ export class WorldMap{
    const show=!realmGone&&eligible&&inView&&fits&&!collision&&!(showCityAreas&&(territoryCountry||umbrella));
    t.style.display=show?'':'none';if(show)occupied.push(box);
   }
-  const showMilitary=!!game&&!game?.hideMilitary&&showCityAreas;this.cityLabelBoxes=new Map();
+  const showMilitary=!!game&&!game?.hideMilitary&&showCityAreas,showMovementRoutes=!!game&&showCityAreas&&(showMilitary||game?.showMovements);this.cityLabelBoxes=new Map();
   for(const t of this.cityTerritoryLabels||[]){
    const name=t.textContent||'',safe=+(t.dataset.safeRadius||0),safePx=safe/unit,ideal=name.length>18?12:name.length>12?13:14.5,cityId=t.dataset.cityLabel,fogVisible=!game?.fogOfWar||visibleCities.has(cityId);
    t.classList.toggle('game-owned-label',!!game&&ownedCities.has(cityId));
@@ -465,7 +465,7 @@ export class WorldMap{
   }).join('');
   const movementLayer=this.svg.querySelector('#army-movement-routes');
   if(movementLayer){
-   if(!showMilitary||!Array.isArray(game?.movements)||!game.movements.length)movementLayer.innerHTML='';
+   if(!showMovementRoutes||!Array.isArray(game?.movements)||!game.movements.length)movementLayer.innerHTML='';
    else{
     const routePieces=[],dayDuration=Math.max(250,Number(game.dayDurationMs)||2000),dayNow=Number(game.day)||0,lastTick=Number(game.lastTickAt)||Date.now(),dayFraction=Math.max(0,Math.min(.999,(Date.now()-lastTick)/dayDuration));
     for(const move of game.movements){

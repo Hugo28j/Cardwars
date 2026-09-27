@@ -29,6 +29,7 @@ export class MultiplayerLobbyClient1300{
  async resume(player){if(this.resumePending||!this.hasSession())return false;this.resumePending=true;const ok=await this.connect(player);if(ok)this._send({type:'resume_lobby',clientId:this.clientId,code:this.resumeCode,player});this.resumePending=false;return ok;}
  ready(value){this._send({type:'set_ready',clientId:this.clientId,ready:!!value});}
  start(){this._send({type:'start_lobby',clientId:this.clientId});}
+ command(action,payload={}){const commandId='cmd-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);this._send({type:'campaign_command',clientId:this.clientId,commandId,action:String(action||''),payload});return commandId;}
  leave(){if(this.ws?.readyState===WebSocket.OPEN)this._send({type:'leave_lobby',clientId:this.clientId});this._clearLobby();this._set({lobby:null,campaign:null,started:false,error:null},'leave');}
  disconnect(clearLobby=true){if(this.reconnectTimer){clearTimeout(this.reconnectTimer);this.reconnectTimer=null;}if(this.ws){try{this.ws.close();}catch{}this.ws=null;}if(clearLobby){this._clearLobby();this._set({status:'idle',lobby:null,campaign:null,started:false},'disconnect');}}
  _send(payload){if(this.ws?.readyState===WebSocket.OPEN)this.ws.send(JSON.stringify(payload));else this._fail('Not connected to the multiplayer server.');}
@@ -36,6 +37,8 @@ export class MultiplayerLobbyClient1300{
   if(msg.type==='lobby_state'){this._rememberLobby(msg.lobby?.code);this._set({status:'connected',lobby:msg.lobby,campaign:msg.lobby?.campaign||null,error:null,started:msg.lobby?.status==='started'},'lobby_state');}
   else if(msg.type==='campaign_state')this._set({status:'connected',campaign:msg.campaign,lobby:msg.lobby||this.state.lobby,started:true,error:null},'campaign_state');
   else if(msg.type==='game_started'){this._rememberLobby(msg.lobby?.code);this._set({status:'connected',lobby:msg.lobby,campaign:msg.campaign||msg.lobby?.campaign||null,error:null,started:true},'game_started');}
+  else if(msg.type==='campaign_update')this._set({status:'connected',campaign:msg.campaign,lobby:msg.lobby||this.state.lobby,started:true,error:null},'campaign_update');
+  else if(msg.type==='command_result')this._set({lastCommand:msg,error:null},'command_result');
   else if(msg.type==='left_lobby'){this._clearLobby();this._set({lobby:null,campaign:null,started:false,error:null},'leave');}
   else if(msg.type==='error'){if(/not found|no longer/i.test(msg.message||''))this._clearLobby();this._fail(msg.message||'Multiplayer error.');}
  }
