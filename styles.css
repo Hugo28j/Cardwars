@@ -1535,3 +1535,7 @@ dialog.tech-tree-dialog{width:100vw;height:100dvh;max-width:none;max-height:none
 .dip-network-card b,.dip-network-card small{font-size:8px;line-height:1.25;font-weight:600;color:#d8ddcf;overflow-wrap:anywhere}
 .dip-network-card.negative b{color:#d99a8f}.dip-network-card.positive b{color:#9fc49f}
 @media(max-width:720px){.dip-network-grid{grid-template-columns:1fr}}
+
+/* Fog of war: captured own provinces can be hidden when no friendly source sees them. */
+#world-map .city-territory-cell.game-owned.game-hidden{fill:#07100d;fill-opacity:.86;cursor:default}
+#world-map .city-territory-cell.game-owned.game-hidden:hover{fill:#07100d;fill-opacity:.86}

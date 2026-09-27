@@ -20,3 +20,14 @@ test('AI military campaign and right-click diplomacy network are wired into the 
  assert.match(mapSource,/enemy-route-line/);
  assert.match(mapSource,/move\.side==='enemy'/);
 });
+
+
+test('fog of war uses friendly cities occupations alliances and player armies as vision sources',()=>{
+ const mapSource=readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
+ assert.match(mapSource,/visionSources=new Set/);
+ assert.match(mapSource,/alliedCountries=new Set\(game\?\.alliances/);
+ assert.match(mapSource,/occupier===playerCountry/);
+ assert.match(mapSource,/game\?\.militaryByCity/);
+ assert.match(mapSource,/move\?\.side!=='enemy'/);
+ assert.match(mapSource,/fogDetail&&!isVisible/);
+});

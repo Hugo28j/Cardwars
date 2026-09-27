@@ -374,8 +374,17 @@ export class WorldMap{
  refresh(){if(!this.svg)return;this.cancelScheduledRefresh();const width=this.host.clientWidth||1000,height=this.host.clientHeight||600,unit=this.view.w/width,s=this.state,occupied=[];
   this.updateBorderZoomStyle();
   const screen=(x,y)=>({x:(x-this.view.x)/unit,y:(y-this.view.y)/unit});
-  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),visibleCities=new Set(ownedCities),fogDetail=!!game?.fogOfWar&&showCityAreas;
-  if(game?.fogOfWar)for(const id of ownedCities)for(const neighbour of this.cityAdjacency?.get(id)||[])visibleCities.add(neighbour);
+  const showCityAreas=unit<.082,game=s.game||null,ownedCities=new Set(game?.ownedCityIds||[]),fogDetail=!!game?.fogOfWar&&showCityAreas,visibleCities=new Set(),visionSources=new Set(),playerCountry=game?.playerCountry||'',alliedCountries=new Set(game?.alliances||[]),rawOwner=c=>{const saved=game?.cityOwners?.[c.id];return saved==='player'?playerCountry:(typeof saved==='string'&&saved?saved:c.country);},friendlyCountry=country=>!!country&&(country===playerCountry||alliedCountries.has(country));
+  if(!game?.fogOfWar){for(const c of CITIES)visibleCities.add(c.id);}
+  else{
+   for(const c of CITIES){
+    const owner=rawOwner(c),occupier=game?.occupations?.[c.id],friendlyOwner=friendlyCountry(owner),friendlyOccupier=friendlyCountry(occupier);
+    if((friendlyOwner&&(!occupier||friendlyOccupier))||occupier===playerCountry)visionSources.add(c.id);
+   }
+   for(const [cityId,row] of Object.entries(game?.militaryByCity||{}))if(Number(row?.army)>0&&CITIES.some(c=>c.id===cityId))visionSources.add(cityId);
+   for(const move of game?.movements||[])if(move?.side!=='enemy'&&CITIES.some(c=>c.id===move?.from))visionSources.add(move.from);
+   for(const id of visionSources){visibleCities.add(id);for(const neighbour of this.cityAdjacency?.get(id)||[])visibleCities.add(neighbour);}
+  }
   this.svg.style.setProperty('--player-realm-color',game?.playerColor||'#c6534d');
   const occupationPatternByCountry=new Map(),patternHost=this.svg.querySelector('#occupation-patterns'),occupiers=[...new Set(Object.values(game?.occupations||{}).filter(Boolean))];
   if(patternHost){patternHost.innerHTML=occupiers.map((country,i)=>{const id='occupation-stripes-'+i,realm=CITY_REALM_ALIASES.get(country)||country,color=country===game?.playerCountry?(game?.playerColor||'#c6534d'):colorForRealm(realm);occupationPatternByCountry.set(country,id);return `<pattern id="${id}" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)"><rect width="9" height="9" fill="transparent"/><path d="M0 -2V11" stroke="${color}" stroke-width="3.2" stroke-opacity=".88"/></pattern>`;}).join('');}
@@ -384,7 +393,7 @@ export class WorldMap{
    cell.classList.toggle('game-owned',!!game&&isOwned);
    cell.classList.toggle('game-visible',!!game&&!isOwned&&isVisible);
    const occupier=game?.occupations?.[id],occupationPattern=occupier?occupationPatternByCountry.get(occupier):null;
-   cell.classList.toggle('game-hidden',!!game&&fogDetail&&!isOwned&&!isVisible);cell.classList.toggle('game-battle',!!game?.battlesByCity?.[id]);cell.classList.toggle('game-siege',!!game?.siegesByCity?.[id]);cell.classList.toggle('game-occupied',!!occupier);
+   cell.classList.toggle('game-hidden',!!game&&fogDetail&&!isVisible);cell.classList.toggle('game-battle',!!game?.battlesByCity?.[id]);cell.classList.toggle('game-siege',!!game?.siegesByCity?.[id]);cell.classList.toggle('game-occupied',!!occupier);
    if(occupationPattern){cell.style.fill=`url(#${occupationPattern})`;cell.style.fillOpacity='.92';}else{cell.style.removeProperty('fill');cell.style.removeProperty('fill-opacity');}
   }
   // Country / polity names follow the territory that realm still owns.
