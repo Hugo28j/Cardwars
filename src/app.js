@@ -29,7 +29,8 @@ const GOODS_1300=[
  {id:'ships',name:'Ships',basePrice:75,category:'military'}
 ];
 const GOOD_1300=Object.fromEntries(GOODS_1300.map(g=>[g.id,g]));
-const COMPANY_OUTPUT_MULTIPLIER_1300=1.125;
+const COMPANY_OUTPUT_MULTIPLIER_1300=1.125,FOOD_COMPANY_OUTPUT_MULTIPLIER_1300=.70;
+const FOOD_COMPANY_BUILDINGS_1300=new Set(['fields','pastures','watermill','fishery','saltworks']);
 const PROVINCE_GRAIN_BONUS_1300={
  '1300-orleans':35,
  '1300-paris':20,
@@ -114,8 +115,9 @@ function boostedProductionOutputs1300(outputs={}){
  return Object.fromEntries(Object.entries(outputs).map(([id,n])=>[id,round(Number(n)*COMPANY_OUTPUT_MULTIPLIER_1300,3)]));
 }
 function productionDefinition1300(game,buildingId,requestedId){
- const base=BUILDING_PRODUCTION_1300[buildingId]||{professions:{laborers:1},inputs:{},outputs:{services:1}},method=resolvedProductionMethod1300(game,buildingId,requestedId);
- return {...base,inputs:{...(method.inputs||{})},outputs:boostedProductionOutputs1300(method.outputs||{}),directFlorins:Number(method.directFlorins??base.directFlorins)||0,methodId:method.id,methodName:method.name};
+ const base=BUILDING_PRODUCTION_1300[buildingId]||{professions:{laborers:1},inputs:{},outputs:{services:1}},method=resolvedProductionMethod1300(game,buildingId,requestedId),outputs=boostedProductionOutputs1300(method.outputs||{});
+ if(FOOD_COMPANY_BUILDINGS_1300.has(buildingId))for(const id of Object.keys(outputs))if(GOOD_1300[id]?.category==='food')outputs[id]=round(outputs[id]*FOOD_COMPANY_OUTPUT_MULTIPLIER_1300,3);
+ return {...base,inputs:{...(method.inputs||{})},outputs,directFlorins:Number(method.directFlorins??base.directFlorins)||0,methodId:method.id,methodName:method.name};
 }
 
 const POP_ARCHETYPES=[
@@ -125,7 +127,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=20,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=10,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
 
 function blankGood(g,previous){
  const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0),consumer=Number(previous?.consumerPrice);
