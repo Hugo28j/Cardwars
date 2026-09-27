@@ -127,7 +127,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=10,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=10,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.82,REALM_PRICE_OTHER_INTEGRATION=.68;
 
 function blankGood(g,previous){
  const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0),consumer=Number(previous?.consumerPrice);
@@ -153,17 +153,17 @@ function ambientSupply(city,market){
  addOrder(market.goods.grain,'supply',k*(.55+food*.65)*(1+(Number(city.grainBonusPct)||0)/100));addOrder(market.goods.meat,'supply',k*(.07+food*.10));addOrder(market.goods.wool,'supply',k*(.09+food*.10));addOrder(market.goods.wood,'supply',k*(.14+food*.14));addOrder(market.goods.stone,'supply',k*(.04+econ*.04));addOrder(market.goods.iron,'supply',k*(.012+econ*.018));addOrder(market.goods.salt,'supply',k*.025);addOrder(market.goods.services,'supply',k*(.12+econ*.18));if(city.coastal)addOrder(market.goods.fish,'supply',k*.18);
 }
 function popOrders(city,market,popState){
- const k=Math.max(.1,Number(city.population||0)/1000),demandGrowth=clamp(Number(city.demandGrowthMultiplier)||1,1,3),needK=k*demandGrowth,groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],needK*POP_FOOD_DEMAND_PER_1000,{grain:2.30,fish:city.coastal?1.20:.60,meat:.90},1.35);
+ const k=Math.max(.1,Number(city.population||0)/1000),demandGrowth=clamp(Number(city.demandGrowthMultiplier)||1,1,3),consumerGrowth=clamp(Number(city.consumerDemandGrowthMultiplier)||1,1,3),needK=k*demandGrowth,groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],needK*POP_FOOD_DEMAND_PER_1000,{grain:2.30,fish:city.coastal?1.20:.60,meat:.90},1.35);
  for(const [id,n] of Object.entries(food))addOrder(market.goods[id],'demand',n*priceDemandMultiplier1300(market,id,1.05,.65,2.6));
- addOrder(market.goods.cloth,'demand',needK*.30*wealthFactor*priceDemandMultiplier1300(market,'cloth',.95,.60,2.7));
+ addOrder(market.goods.cloth,'demand',needK*consumerGrowth*.30*wealthFactor*priceDemandMultiplier1300(market,'cloth',.95,.60,2.7));
  addOrder(market.goods.wood,'demand',needK*.10*priceDemandMultiplier1300(market,'wood',.65,.70,2.0));
  addOrder(market.goods.salt,'demand',needK*.12*priceDemandMultiplier1300(market,'salt',.65,.70,2.0));
  addOrder(market.goods.ale,'demand',needK*.18*wealthFactor*priceDemandMultiplier1300(market,'ale',1.0,.55,2.8));
  addOrder(market.goods.leather,'demand',needK*.08*wealthFactor*priceDemandMultiplier1300(market,'leather',.9,.60,2.5));
- addOrder(market.goods.services,'demand',needK*(2.20+1.00*wealthFactor)*priceDemandMultiplier1300(market,'services',.9,.60,2.7));
+ addOrder(market.goods.services,'demand',needK*consumerGrowth*(2.20+1.00*wealthFactor)*priceDemandMultiplier1300(market,'services',.9,.60,2.7));
  if(avgWealth>15){
   addOrder(market.goods.manuscripts,'demand',needK*.015*(avgWealth-14)*priceDemandMultiplier1300(market,'manuscripts',.9,.55,2.6));
-  addOrder(market.goods.cloth,'demand',needK*.05*priceDemandMultiplier1300(market,'cloth',1.0,.55,2.8));
+  addOrder(market.goods.cloth,'demand',needK*consumerGrowth*.05*priceDemandMultiplier1300(market,'cloth',1.0,.55,2.8));
  }
 }
 function buildingMaintenanceOrders1300(city,market){
@@ -201,14 +201,14 @@ function integrateRealmPrices1300(markets){
   const totalSupply=entries.reduce((n,x)=>n+x.s,0),totalDemand=entries.reduce((n,x)=>n+x.d,0),totalWeight=entries.reduce((n,x)=>n+Math.max(1,x.s+x.d),0),weightedLocal=entries.reduce((n,x)=>n+x.price*Math.max(1,x.s+x.d),0)/Math.max(1,totalWeight),imbalance=(totalDemand-totalSupply)/Math.max(totalSupply,totalDemand,1),realmModifier=clamp(imbalance*.65,-.62,.62),realmTarget=g.basePrice*(1+realmModifier),surplusWeight=entries.reduce((n,x)=>n+x.surplus,0),surplusPrice=surplusWeight>0?entries.reduce((n,x)=>n+x.price*x.surplus,0)/surplusWeight:weightedLocal,oversupplied=totalSupply>totalDemand;
   const realmReference=clamp((weightedLocal*.45+realmTarget*.55)*(oversupplied?.72:1)+(oversupplied?surplusPrice*.28:0),g.basePrice*.28,g.basePrice*1.75);
   for(const x of entries){
-   const access=clamp(Number(x.m.marketAccess)||1,.25,1),baseIntegration=(g.category==='food'||g.category==='service')?REALM_PRICE_FOOD_SERVICE_INTEGRATION:REALM_PRICE_OTHER_INTEGRATION,integration=clamp(baseIntegration*(.55+.45*access),.18,.72);
+   const access=clamp(Number(x.m.marketAccess)||1,.25,1),baseIntegration=(g.category==='food'||g.category==='service')?REALM_PRICE_FOOD_SERVICE_INTEGRATION:REALM_PRICE_OTHER_INTEGRATION,integration=clamp(baseIntegration*(.75+.25*access),.55,.90);
    x.row.realmPrice=round(realmReference,4);x.row.realmSupply=round(totalSupply,3);x.row.realmDemand=round(totalDemand,3);x.row.price=round(x.price+(realmReference-x.price)*integration,4);
   }
  }
  const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];
  for(const market of marketList){market.basePriceIndex=round(basket.reduce((n,[id,w])=>{const g=GOOD_1300[id],p=Number(market.goods[id]?.price)||g.basePrice;return n+(p/g.basePrice)*w;},0),4);market.priceIndex=market.basePriceIndex;}
 }
-function settleRealmMarketFlows1300(markets,tradeStockpile={},foreignSupply={}){
+function settleRealmMarketFlows1300(markets,tradeStockpile={},foreignSupply={},foreignTradeEfficiency=1,foreignTransportCostReduction=0){
  const marketList=Object.values(markets||{}),remainingStockpile=Object.fromEntries(GOODS_1300.map(g=>[g.id,Math.max(0,Number(tradeStockpile?.[g.id])||0)])),remainingForeign=Object.fromEntries(GOODS_1300.map(g=>[g.id,Math.max(0,Number(foreignSupply?.[g.id])||0)])),stockpileUsed={},foreignUsed={};
  for(const g of GOODS_1300){
   const entries=marketList.map(m=>{const row=m.goods[g.id],need=Math.max(0,Number(row.demand)||0),produced=Math.max(0,Number(row.supply)||0),oldStock=Math.max(0,Number(row.stock)||0),productionUsed=Math.min(produced,need),afterProduction=Math.max(0,need-productionUsed),stockUsed=Math.min(oldStock,afterProduction),shortage=Math.max(0,afterProduction-stockUsed),surplus=Math.max(0,produced-productionUsed);return {m,row,need,produced,oldStock,productionUsed,stockUsed,shortage,surplus};});
@@ -217,24 +217,24 @@ function settleRealmMarketFlows1300(markets,tradeStockpile={},foreignSupply={}){
   const internalUsed=entries.reduce((n,x)=>n+x.domesticBought,0);
   for(const x of entries)x.domesticSold=totalSurplus>0?Math.min(x.surplus,internalUsed*(x.surplus/totalSurplus)):0;
   const exporterVolume=entries.reduce((n,x)=>n+x.domesticSold,0),exporterPrice=exporterVolume>0?entries.reduce((n,x)=>n+x.domesticSold*(Number(x.row.price)||g.basePrice),0)/exporterVolume:entries.reduce((n,x)=>n+(Number(x.row.realmPrice)||Number(x.row.price)||g.basePrice),0)/Math.max(1,entries.length);
-  for(const x of entries){const access=clamp(Number(x.m.marketAccess)||1,.25,1),transport=g.category==='service'?.01:.02+(1-access)*.06;x.row.domesticUnitPrice=round(exporterPrice*(1+transport),4);}
+  for(const x of entries){const access=clamp(Number(x.m.marketAccess)||1,.25,1),transport=g.category==='service'?.0025:.005+(1-access)*.015;x.row.domesticUnitPrice=round(exporterPrice*(1+transport),4);}
   const afterInternalTotal=entries.reduce((n,x)=>n+Math.max(0,x.shortage-x.domesticBought),0),stockPool=Math.min(remainingStockpile[g.id]||0,afterInternalTotal);
   for(const x of entries)x.stockpileBought=afterInternalTotal>0?Math.min(Math.max(0,x.shortage-x.domesticBought),stockPool*(Math.max(0,x.shortage-x.domesticBought)/afterInternalTotal)):0;
   stockpileUsed[g.id]=round(entries.reduce((n,x)=>n+x.stockpileBought,0),4);remainingStockpile[g.id]=round(Math.max(0,(remainingStockpile[g.id]||0)-stockpileUsed[g.id]),4);
-  const automaticImportShare=g.category==='food'?.25:.60,foreignCandidates=entries.map(x=>{const remainingNeed=Math.max(0,x.shortage-x.domesticBought-x.stockpileBought),access=clamp((Number(x.m.marketAccess)||1)+(Number(x.row.priorityImportBoost)||0),.2,1),desired=remainingNeed*access*automaticImportShare;return {x,remainingNeed,access,desired};}),totalDesired=foreignCandidates.reduce((n,q)=>n+q.desired,0),foreignPool=Math.min(Math.max(0,remainingForeign[g.id]||0),totalDesired);
+  const automaticImportShare=g.category==='food'?.25:.60,tradeEfficiency=clamp(Number(foreignTradeEfficiency)||1,.90,1.10),foreignCandidates=entries.map(x=>{const remainingNeed=Math.max(0,x.shortage-x.domesticBought-x.stockpileBought),access=clamp((Number(x.m.marketAccess)||1)+(Number(x.row.priorityImportBoost)||0),.2,1),desired=remainingNeed*access*automaticImportShare*tradeEfficiency;return {x,remainingNeed,access,desired};}),totalDesired=foreignCandidates.reduce((n,q)=>n+q.desired,0),foreignPool=Math.min(Math.max(0,remainingForeign[g.id]||0),totalDesired);
   for(const q of foreignCandidates)q.x.foreignBought=totalDesired>0?Math.min(q.remainingNeed,foreignPool*(q.desired/totalDesired)):0;
   foreignUsed[g.id]=round(foreignCandidates.reduce((n,q)=>n+q.x.foreignBought,0),4);remainingForeign[g.id]=round(Math.max(0,(remainingForeign[g.id]||0)-foreignUsed[g.id]),4);
   for(const x of entries){
    const access=clamp((Number(x.m.marketAccess)||1)+(Number(x.row.priorityImportBoost)||0),.2,1),bought=Math.max(0,Number(x.foreignBought)||0),remainingSurplus=Math.max(0,x.surplus-x.domesticSold),reserve=remainingSurplus*.18,exportable=Math.max(0,remainingSurplus-reserve),exportShare=clamp(.45+access*.45,.60,.90),sold=exportable*exportShare,carried=Math.max(0,x.oldStock-x.stockUsed+exportable-sold),decay=g.category==='food'?.90:g.category==='service'?0:.97,stock=carried*decay,fulfilled=x.productionUsed+x.stockUsed+x.domesticBought+x.stockpileBought+bought;
-   x.row.need=round(x.need,3);x.row.localSold=round(x.productionUsed,3);x.row.domesticBought=round(x.domesticBought,3);x.row.domesticSold=round(x.domesticSold,3);x.row.stockpileBought=round(x.stockpileBought,3);x.row.bought=round(bought,3);x.row.sold=round(sold,3);x.row.totalSold=round(x.productionUsed+x.domesticSold+sold,3);x.row.reserve=round(reserve,3);x.row.stock=round(stock,3);x.row.fulfilled=round(fulfilled,3);x.row.tradeProfit=round((sold*x.row.price-bought*x.row.price*(g.category==='food'?1.25:1.12))*FLORINS_PER_MARKET_VALUE,4);
+   x.row.need=round(x.need,3);x.row.localSold=round(x.productionUsed,3);x.row.domesticBought=round(x.domesticBought,3);x.row.domesticSold=round(x.domesticSold,3);x.row.stockpileBought=round(x.stockpileBought,3);x.row.bought=round(bought,3);x.row.sold=round(sold,3);x.row.totalSold=round(x.productionUsed+x.domesticSold+sold,3);x.row.reserve=round(reserve,3);x.row.stock=round(stock,3);x.row.fulfilled=round(fulfilled,3);const importMarkup=Math.max(.05,(g.category==='food'?.25:.12)-clamp(Number(foreignTransportCostReduction)||0,0,.05));x.row.tradeProfit=round((sold*x.row.price-bought*x.row.price*(1+importMarkup))*FLORINS_PER_MARKET_VALUE,4);
   }
  }
  return {remainingStockpile,stockpileUsed,foreignUsed,remainingForeign};
 }
-function applyTariffsToMarket1300(market,tariffs={}){
+function applyTariffsToMarket1300(market,tariffs={},foreignTransportCostReduction=0){
  const basket=[['grain',.34],['fish',.08],['meat',.08],['cloth',.18],['salt',.07],['ale',.08],['services',.17]];let revenue=0;
  for(const g of GOODS_1300){
-  const row=market.goods[g.id],rate=g.category==='service'?0:clamp(Number(tariffs?.[g.id])||0,0,50),fulfilled=Math.max(0,Number(row.fulfilled)||0),foreign=Math.max(0,Number(row.bought)||0),domestic=Math.max(0,Number(row.domesticBought)||0),stockpile=Math.max(0,Number(row.stockpileBought)||0),local=Math.max(0,fulfilled-foreign-domestic-stockpile),share=fulfilled>0?clamp(foreign/fulfilled,0,1):0,localPrice=Number(row.price)||g.basePrice,domesticPrice=Number(row.domesticUnitPrice)||localPrice*1.03,stockpilePrice=localPrice*1.05,foreignPrice=localPrice*(g.category==='food'?1.25:1.12)*(1+rate/100),blended=fulfilled>0?(local*localPrice+domestic*domesticPrice+stockpile*stockpilePrice+foreign*foreignPrice)/fulfilled:localPrice;
+  const row=market.goods[g.id],rate=g.category==='service'?0:clamp(Number(tariffs?.[g.id])||0,0,50),fulfilled=Math.max(0,Number(row.fulfilled)||0),foreign=Math.max(0,Number(row.bought)||0),domestic=Math.max(0,Number(row.domesticBought)||0),stockpile=Math.max(0,Number(row.stockpileBought)||0),local=Math.max(0,fulfilled-foreign-domestic-stockpile),share=fulfilled>0?clamp(foreign/fulfilled,0,1):0,localPrice=Number(row.price)||g.basePrice,domesticPrice=Number(row.domesticUnitPrice)||localPrice*1.03,stockpilePrice=localPrice*1.05,transportMarkup=Math.max(.05,(g.category==='food'?.25:.12)-clamp(Number(foreignTransportCostReduction)||0,0,.05)),foreignPrice=localPrice*(1+transportMarkup)*(1+rate/100),blended=fulfilled>0?(local*localPrice+domestic*domesticPrice+stockpile*stockpilePrice+foreign*foreignPrice)/fulfilled:localPrice;
   row.tariffRate=rate;row.importShare=round(share,4);row.consumerPrice=round(blended,4);row.inputUnitPrice=round(blended,4);row.tariffRevenue=round(foreign*localPrice*FLORINS_PER_MARKET_VALUE*(rate/100),4);revenue+=row.tariffRevenue;
  }
  market.priceIndex=round(basket.reduce((n,[id,w])=>n+normalizedPrice(market,id)*w,0),4);
@@ -257,7 +257,7 @@ function updatePops(city,market,previous,sectors){
  for(const g of groups){const employment=g.size?g.employed/g.size:0,base=POP_ARCHETYPES.find(x=>x.id===g.id)?.wealth||10,target=base+(realWage-1)*2.4+(employment-.45)*1.6;g.wealth=round(clamp(g.wealth+(target-g.wealth)*.08,3,35),2);g.standardOfLiving=round(clamp(g.wealth+(1-market.priceIndex)*1.2,2,40),2);}
  return {groups,employmentRate:round(employmentRate,4),averageWealth:round(groups.reduce((n,g)=>n+g.wealth*g.size,0)/population,2),averageStandardOfLiving:round(groups.reduce((n,g)=>n+g.standardOfLiving*g.size,0)/population,2)};
 }
-function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35,tariffs={},tradeStockpile={},foreignSupply={}}={}){
+function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={},taxRate=10,taxCollectionFactor=.35,tariffs={},tradeStockpile={},foreignSupply={},foreignTradeEfficiency=1,foreignTransportCostReduction=0}={}){
  const markets={},pops={},sectorsByCity={};let weeklyTax=0,weeklyTariffRevenue=0;
  for(const city of cities){
   const market=markets[city.id]=ensureMarket(previousMarkets?.[city.id]),popState={groups:createPopGroups(city,previousPops?.[city.id])};market.marketAccess=round(infrastructure(city).access,4);ambientSupply(city,market);popOrders(city,market,popState);buildingMaintenanceOrders1300(city,market);militaryDemandOrders1300(city,market);
@@ -270,8 +270,8 @@ function simulateWeeklyEconomy1300({cities=[],previousMarkets={},previousPops={}
  }
  for(const market of Object.values(markets))updatePrices(market);
  integrateRealmPrices1300(markets);
- const tradeFlow=settleRealmMarketFlows1300(markets,tradeStockpile,foreignSupply);
- for(const market of Object.values(markets))weeklyTariffRevenue+=applyTariffsToMarket1300(market,tariffs);
+ const tradeFlow=settleRealmMarketFlows1300(markets,tradeStockpile,foreignSupply,foreignTradeEfficiency,foreignTransportCostReduction);
+ for(const market of Object.values(markets))weeklyTariffRevenue+=applyTariffsToMarket1300(market,tariffs,foreignTransportCostReduction);
  for(const city of cities){
   const market=markets[city.id],infra=infrastructure(city),rows=sectorsByCity[city.id]={};market.marketAccess=round(infra.access,4);
   for(const sector of city.sectors||[]){
@@ -606,8 +606,14 @@ function ensureDiplomacyCountry1300(game,country){
  for(const g of GOODS_1300)if(!Number.isFinite(Number(d.aiGoods[country][g.id])))d.aiGoods[country][g.id]=initialAIGoodStock1300(model,g);
  return {d,stats,model};
 }
+function foreignTradeTechnology1300(game){
+ const cities=(game?.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean);if(!cities.length)return {technology:50,efficiency:1,transportReduction:0};
+ let weight=0,total=0;for(const c of cities){const pop=Math.max(1,effectivePopulation1300(game,c)),tech=Number(provinceDynamicStats1300(game,c)?.technology)||Number(c.technology)||50;total+=tech*pop;weight+=pop;}
+ const technology=total/Math.max(1,weight),efficiency=clamp1300(1+(technology-50)*.0015,.97,1.075),transportReduction=clamp1300((technology-50)*.001,0,.05);
+ return {technology,efficiency,transportReduction};
+}
 function foreignImportContext1300(game,{replenish=false}={}){
- const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),playerName=gameCountryName1300(game),playerCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),countries=[...new Set(CITIES_1300.map(c=>campaignCityOwner1300(game,c)).filter(name=>name&&name!==playerName))],pool=Object.fromEntries(GOODS_1300.map(g=>[g.id,0])),sources=Object.fromEntries(GOODS_1300.map(g=>[g.id,[]]));
+ const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),playerName=gameCountryName1300(game),playerCities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean),countries=[...new Set(CITIES_1300.map(c=>campaignCityOwner1300(game,c)).filter(name=>name&&name!==playerName))],pool=Object.fromEntries(GOODS_1300.map(g=>[g.id,0])),sources=Object.fromEntries(GOODS_1300.map(g=>[g.id,[]])),tradeTech=foreignTradeTechnology1300(game);
  for(const country of countries){
   const pair=relation(game,PLAYER_REALM,country).pair,rel=diplomacyRelation1300(game,country);
   if(pair?.war||d.wars[country]||rel<=-35)continue;
@@ -619,12 +625,12 @@ function foreignImportContext1300(game,{replenish=false}={}){
    const surplus=Math.max(0,Number(model.balances[g.id])||0),initial=initialAIGoodStock1300(model,g),stored=Number(d.aiGoods[country][g.id]);let stock=Number.isFinite(stored)?Math.max(0,stored):initial;
    if(replenish&&surplus>0&&stock<surplus*4)stock=Math.min(surplus*4,stock+surplus);
    if(replenish||!Number.isFinite(stored))d.aiGoods[country][g.id]=Math.round(stock*100)/100;
-   const exportFraction=g.category==='food'?(pair?.trade?.30:.05):(pair?.trade?.40:.12),available=Math.max(0,stock*exportFraction*relationFactor*distanceFactor);
+   const exportFraction=g.category==='food'?(pair?.trade?.30:.05):(pair?.trade?.40:.12),available=Math.max(0,stock*exportFraction*relationFactor*distanceFactor*tradeTech.efficiency);
    if(available>.0001){pool[g.id]+=available;sources[g.id].push({country,available,stock});}
   }
  }
  for(const g of GOODS_1300)pool[g.id]=roundStat1300(pool[g.id]);
- return {pool,sources};
+ return {pool,sources,tradeEfficiency:tradeTech.efficiency,transportCostReduction:tradeTech.transportReduction,technology:tradeTech.technology};
 }
 function consumeForeignImports1300(game,context,usedByGood={}){
  const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy);
@@ -923,6 +929,10 @@ function completedCampaignMonths1300(game){
 function completedCampaignWeeks1300(game){return Math.max(0,Math.floor((Number(game?.day)||0)/7));}
 function expectedMonthlyWage1300(game){const years=Math.max(0,Math.floor((Number(game?.day)||0)/365.2425));return Math.min(GAME_WAGE_MAX,.08+years*.01);}
 function populationDemandGrowth1300(game){const years=Math.max(0,(Number(game?.day)||0)/365.2425);return Math.min(3,1+years*.01);}
+function consumerDemandGrowth1300(game){
+ const years=Math.max(0,(Number(game?.day)||0)/365.2425),target=Math.min(2.5,Math.pow(1.03,years)),general=populationDemandGrowth1300(game);
+ return Math.max(1,target/Math.max(1,general));
+}
 function isCampaignMonday1300(game){return Math.max(0,Math.floor(Number(game?.day)||0))%7===0;}
 function daysUntilCampaignMonday1300(game){const n=Math.max(0,Math.floor(Number(game?.day)||0))%7;return (7-n)%7;}
 function gameStatCap1300(game){return roundStat1300(100+completedCampaignWeeks1300(game)*(.10/WEEKS_PER_MONTH));}
@@ -1077,7 +1087,7 @@ function processMilitaryDay1300(game){
   if(take>0){const army=liveState.armiesByCity[live.cityId];if(army){army.units['levy-swordsmen']=(Number(army.units['levy-swordsmen'])||0)+take;live.remaining=Math.max(0,remainingBefore-take);changed=true;}}
  }
  const current=ensureGameMilitary1300(game);current.levyOrders=current.levyOrders.filter(q=>Math.max(0,Number(q.remaining)||0)>0);
- if(processAdvancedMilitaryDay1300(game))changed=true;if(changed){invalidateWeeklyBudgetProjection1300(game);syncCampaignMilitaryOverlay1300(game);}return changed;
+ if(processAIRecruitmentDay1300(game))changed=true;if(processAdvancedMilitaryDay1300(game))changed=true;if(changed){invalidateWeeklyBudgetProjection1300(game);syncCampaignMilitaryOverlay1300(game);}return changed;
 }
 
 const COMMANDER_TEMPLATES_1300=[
@@ -1108,6 +1118,7 @@ function ensureAdvancedMilitary1300(game){
  m.occupations=m.occupations&&typeof m.occupations==='object'&&!Array.isArray(m.occupations)?m.occupations:{};
  m.enemyFieldArmies=m.enemyFieldArmies&&typeof m.enemyFieldArmies==='object'&&!Array.isArray(m.enemyFieldArmies)?m.enemyFieldArmies:{};
  m.aiWarStates=m.aiWarStates&&typeof m.aiWarStates==='object'&&!Array.isArray(m.aiWarStates)?m.aiWarStates:{};
+ m.aiRecruitment=m.aiRecruitment&&typeof m.aiRecruitment==='object'&&!Array.isArray(m.aiRecruitment)?m.aiRecruitment:{};
  m.supplyByCity=m.supplyByCity&&typeof m.supplyByCity==='object'&&!Array.isArray(m.supplyByCity)?m.supplyByCity:{};
  m.nextCommanderId=Math.max(1,Math.floor(Number(m.nextCommanderId)||1));m.nextMovementId=Math.max(1,Math.floor(Number(m.nextMovementId)||1));m.nextEnemyMovementId=Math.max(1,Math.floor(Number(m.nextEnemyMovementId)||1));m.nextBattleId=Math.max(1,Math.floor(Number(m.nextBattleId)||1));m.nextSiegeId=Math.max(1,Math.floor(Number(m.nextSiegeId)||1));m.nextEnemySiegeId=Math.max(1,Math.floor(Number(m.nextEnemySiegeId)||1));m.nextArmyGroupId=Math.max(1,Math.floor(Number(m.nextArmyGroupId)||1));
  const validUnits=new Set(MILITARY_UNITS_1300.map(u=>u.id)),normaliseUnits=raw=>{const units=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};for(const unit of MILITARY_UNITS_1300)units[unit.id]=Math.max(0,Math.floor(Number(units[unit.id])||0));for(const id of Object.keys(units))if(!validUnits.has(id))delete units[id];return units;};
@@ -1122,7 +1133,7 @@ function ensureAdvancedMilitary1300(game){
  m.sieges=m.sieges.filter(s=>s&&CITY_1300[s.cityId]&&['active','won','lifted'].includes(s.status||'active')).slice(-30);for(const s of m.sieges){s.armyHomeIds=Array.isArray(s.armyHomeIds)?s.armyHomeIds.filter(k=>m.armiesByCity[k]):[];s.foodPct=clamp1300(Number.isFinite(Number(s.foodPct))?Number(s.foodPct):100,0,100);s.unrestPct=clamp1300(Number.isFinite(Number(s.unrestPct))?Number(s.unrestPct):10,0,100);s.lastRollDay=Number.isFinite(Number(s.lastRollDay))?Number(s.lastRollDay):Number(s.startedDay)||0;s.log=Array.isArray(s.log)?s.log.slice(0,12):[];}
  m.enemySieges=m.enemySieges.filter(s=>s&&s.attackerCountry&&CITY_1300[s.cityId]&&['active','won','lifted'].includes(s.status||'active')).slice(-30).map(s=>({...s,foodPct:clamp1300(Number.isFinite(Number(s.foodPct))?Number(s.foodPct):100,0,100),unrestPct:clamp1300(Number.isFinite(Number(s.unrestPct))?Number(s.unrestPct):10,0,100),lastRollDay:Number.isFinite(Number(s.lastRollDay))?Number(s.lastRollDay):Number(s.startedDay)||0,log:Array.isArray(s.log)?s.log.slice(0,12):[]}));
  for(const [cityId,row] of Object.entries({...m.enemyFieldArmies})){if(!CITY_1300[cityId]||!row||typeof row!=='object'){delete m.enemyFieldArmies[cityId];continue;}row.country=String(row.country||campaignCityOwner1300(game,CITY_1300[cityId])||'');row.units=normaliseUnits(row.units);row.morale=clamp1300(Number.isFinite(Number(row.morale))?Number(row.morale):70,0,100);row.homeCityId=CITY_1300[row.homeCityId]?row.homeCityId:cityId;row.order=String(row.order||'hold');row.targetCityId=CITY_1300[row.targetCityId]?row.targetCityId:null;if(battleUnitTotal1300(row.units)<=0)delete m.enemyFieldArmies[cityId];}
- for(const [country,state] of Object.entries({...m.aiWarStates})){if(!state||typeof state!=='object'){delete m.aiWarStates[country];continue;}state.seeded=!!state.seeded;state.startedDay=Math.max(0,Number(state.startedDay)||0);state.lastOrderDay=Number.isFinite(Number(state.lastOrderDay))?Number(state.lastOrderDay):-9999;state.stagingCityId=CITY_1300[state.stagingCityId]?state.stagingCityId:null;state.targetCityId=CITY_1300[state.targetCityId]?state.targetCityId:null;}
+ for(const [country,state] of Object.entries({...m.aiWarStates})){if(!state||typeof state!=='object'){delete m.aiWarStates[country];continue;}state.seeded=!!state.seeded;state.startedDay=Math.max(0,Number(state.startedDay)||0);state.lastOrderDay=Number.isFinite(Number(state.lastOrderDay))?Number(state.lastOrderDay):-9999;state.lastMobilizeDay=Number.isFinite(Number(state.lastMobilizeDay))?Number(state.lastMobilizeDay):-9999;state.stagingCityId=CITY_1300[state.stagingCityId]?state.stagingCityId:null;state.targetCityId=CITY_1300[state.targetCityId]?state.targetCityId:null;}
  return m;
 }
 function commanderForArmy1300(game,homeId){const m=ensureAdvancedMilitary1300(game),a=m?.armiesByCity?.[homeId];return a?.commanderId?m.commanders.find(c=>c.id===a.commanderId)||null:null;}
@@ -1184,7 +1195,7 @@ function enemyComposition1300(c,game=null){
 function battleUnitTotal1300(units){return Object.values(units||{}).reduce((n,x)=>n+Math.max(0,Number(x)||0),0);}
 function mergeBattleUnits1300(target,source){for(const u of MILITARY_UNITS_1300)target[u.id]=Math.max(0,Math.floor(Number(target[u.id])||0))+Math.max(0,Math.floor(Number(source?.[u.id])||0));return target;}
 function storeEnemyRetreatArmy1300(game,battle,cityId){
- const m=ensureAdvancedMilitary1300(game);if(!m||!CITY_1300[cityId]||!battle)return null;const existing=m.enemyFieldArmies[cityId]&&m.enemyFieldArmies[cityId].country===battle.enemyCountry?m.enemyFieldArmies[cityId]:{country:battle.enemyCountry,homeCityId:cityId,units:{},morale:Math.max(25,Number(battle.enemyMorale)||25),order:'hold',targetCityId:null};mergeBattleUnits1300(existing.units,battle.enemyUnits);existing.morale=Math.max(25,Math.min(Number(existing.morale)||50,Number(battle.enemyMorale)||50));m.enemyFieldArmies[cityId]=existing;for(const id of Object.keys(battle.enemyUnits||{}))battle.enemyUnits[id]=0;return existing;
+ const m=ensureAdvancedMilitary1300(game);if(!m||!CITY_1300[cityId]||!battle)return null;const existing=m.enemyFieldArmies[cityId]&&m.enemyFieldArmies[cityId].country===battle.enemyCountry?m.enemyFieldArmies[cityId]:{country:battle.enemyCountry,homeCityId:battle.enemyHomeCityId||battle.cityId||cityId,units:{},morale:Math.max(25,Number(battle.enemyMorale)||25),order:'hold',targetCityId:null};mergeBattleUnits1300(existing.units,battle.enemyUnits);existing.morale=Math.max(25,Math.min(Number(existing.morale)||50,Number(battle.enemyMorale)||50));m.enemyFieldArmies[cityId]=existing;for(const id of Object.keys(battle.enemyUnits||{}))battle.enemyUnits[id]=0;return existing;
 }
 function countriesAtWar1300(game,a,b){
  if(!game||!a||!b||a===b)return false;const ak=diplomacyRealmKey1300(game,a),bk=diplomacyRealmKey1300(game,b);try{return !!relation(game,ak,bk).pair.war;}catch{return false;}
@@ -1207,14 +1218,77 @@ function enemyArmyRoute1300(game,country,fromId,targetId){
 function enemyMovementDays1300(country,fromId,toId,game){
  const from=CITY_1300[fromId],to=CITY_1300[toId];if(!from||!to)return 4;const tech=buildCampaignRankings1300(game).find(r=>r.country===country)?.technologyAvg||50,distance=armyDistanceKm1300(from,to),bonus=clamp1300((tech-50)*.12,0,10),base=3+7*clamp1300(distance/350,0,1);return clamp1300(Math.round(base/(1+bonus/100)),3,10);
 }
+function ensureAIRecruitmentState1300(game,country){
+ const m=ensureAdvancedMilitary1300(game);if(!m||!country)return null;m.aiRecruitment??={};let s=m.aiRecruitment[country];
+ if(!s||typeof s!=='object'||Array.isArray(s))s=m.aiRecruitment[country]={seeded:false,standingByCity:{},trainingQueues:[],nextOrderId:1,lastRecruitWeek:-9999};
+ s.standingByCity=s.standingByCity&&typeof s.standingByCity==='object'&&!Array.isArray(s.standingByCity)?s.standingByCity:{};s.trainingQueues=Array.isArray(s.trainingQueues)?s.trainingQueues:[];s.nextOrderId=Math.max(1,Math.floor(Number(s.nextOrderId)||1));s.lastRecruitWeek=Number.isFinite(Number(s.lastRecruitWeek))?Number(s.lastRecruitWeek):-9999;
+ const cities=CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country),ids=new Set(cities.map(c=>c.id)),fallback=cities[0]?.id||null;
+ if(!s.seeded){for(const c of cities)s.standingByCity[c.id]=Math.max(0,Math.round(Number(c.army)||0));s.seeded=true;}
+ if(fallback)for(const [id,nRaw] of Object.entries({...s.standingByCity})){const n=Math.max(0,Math.floor(Number(nRaw)||0));if(ids.has(id)){s.standingByCity[id]=n;continue;}if(n>0)s.standingByCity[fallback]=(Number(s.standingByCity[fallback])||0)+n;delete s.standingByCity[id];}
+ s.trainingQueues=s.trainingQueues.filter(q=>q&&MILITARY_UNIT_1300[q.unitId]?.professional&&Number(q.amount)>0).map(q=>{const cityId=ids.has(q.cityId)?q.cityId:fallback;return cityId?{id:String(q.id||'ai-training-'+s.nextOrderId++),cityId,unitId:q.unitId,amount:Math.max(1,Math.floor(Number(q.amount)||1)),startDay:Math.max(0,Math.floor(Number(q.startDay)||0)),finishDay:Math.max(0,Math.floor(Number(q.finishDay)||0)),cost:Math.max(0,Number(q.cost)||0)}:null;}).filter(Boolean);
+ return s;
+}
+function aiArmyCommittedHome1300(game,country,homeId){
+ const m=ensureAdvancedMilitary1300(game);if(!m)return 0;let total=0;
+ for(const row of Object.values(m.enemyFieldArmies||{}))if(row.country===country&&row.homeCityId===homeId)total+=enemyFieldArmyTotal1300(row);
+ for(const move of m.enemyMovements||[])if(move.country===country&&move.homeCityId===homeId)total+=enemyMovementTotal1300(move);
+ for(const battle of m.battles||[])if(battle.enemyCountry===country&&(battle.enemyHomeCityId||battle.cityId)===homeId)total+=battleUnitTotal1300(battle.enemyUnits);
+ return total;
+}
+function aiArmyCountForCity1300(game,country,cityId){
+ const s=ensureAIRecruitmentState1300(game,country);if(!s)return 0;return Math.max(0,Math.floor(Number(s.standingByCity[cityId])||0))+aiArmyCommittedHome1300(game,country,cityId);
+}
+function aiArmyCountryTotal1300(game,country){
+ const s=ensureAIRecruitmentState1300(game,country);if(!s)return 0;const cities=CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country);return cities.reduce((n,c)=>n+aiArmyCountForCity1300(game,country,c.id),0);
+}
+function takeAIStandingArmy1300(game,country,cityId,amount){
+ const s=ensureAIRecruitmentState1300(game,country);if(!s)return 0;const have=Math.max(0,Math.floor(Number(s.standingByCity[cityId])||0)),take=Math.min(have,Math.max(0,Math.floor(Number(amount)||0)));s.standingByCity[cityId]=have-take;return take;
+}
+function returnAIStandingArmy1300(game,country,homeId,amount){
+ const s=ensureAIRecruitmentState1300(game,country),n=Math.max(0,Math.floor(Number(amount)||0));if(!s||n<=0)return false;const own=CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country),target=own.some(c=>c.id===homeId)?homeId:own[0]?.id;if(!target)return false;s.standingByCity[target]=Math.max(0,Math.floor(Number(s.standingByCity[target])||0))+n;return true;
+}
+function returnEnemyBattleSurvivorsToStanding1300(game,battle){
+ const n=battleUnitTotal1300(battle?.enemyUnits);if(!battle?.enemyCountry||n<=0)return false;const ok=returnAIStandingArmy1300(game,battle.enemyCountry,battle.enemyHomeCityId||battle.cityId,n);if(ok)for(const id of Object.keys(battle.enemyUnits||{}))battle.enemyUnits[id]=0;return ok;
+}
+function processAIRecruitmentDay1300(game){
+ const m=ensureAdvancedMilitary1300(game);if(!m)return false;let changed=false;
+ for(const [country] of Object.entries(m.aiRecruitment||{})){const s=ensureAIRecruitmentState1300(game,country);if(!s)continue;const done=s.trainingQueues.filter(q=>(Number(game.day)||0)>=q.finishDay);for(const q of done){s.standingByCity[q.cityId]=Math.max(0,Math.floor(Number(s.standingByCity[q.cityId])||0))+q.amount;changed=true;}if(done.length)s.trainingQueues=s.trainingQueues.filter(q=>(Number(game.day)||0)<q.finishDay);}
+ return changed;
+}
+function aiRecruitUnit1300(technology,aggression){
+ if(technology>=84&&aggression>=.68)return MILITARY_UNIT_1300.knights;
+ if(technology>=74)return MILITARY_UNIT_1300['men-at-arms'];
+ if(technology>=63)return MILITARY_UNIT_1300.crossbowmen;
+ if(technology>=54)return MILITARY_UNIT_1300.archers;
+ return MILITARY_UNIT_1300['shield-spearmen'];
+}
+function manageAIRecruitmentWeek1300(game,countries,week){
+ const d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),m=ensureAdvancedMilitary1300(game);if(!m)return [];
+ const events=[];
+ for(const snapshot of countries||[]){const country=String(snapshot?.country||'');if(!country||country===gameCountryName1300(game))continue;const s=ensureAIRecruitmentState1300(game,country);if(!s||s.lastRecruitWeek===week)continue;
+  const aiState=normaliseCountryAI1300(game.ai).countries?.[country]||{},aggression=clamp1300(Number(aiState.personality?.aggression)||.5,0,1),militaryInvestment=Math.max(0,Number(aiState.modifiers?.armyPct)||0),atWar=countriesAtWar1300(game,country,gameCountryName1300(game)),population=Math.max(0,Number(snapshot.population)||0),targetPct=clamp1300((atWar?.018:.006)+aggression*(atWar?.012:.006)+(militaryInvestment/100)*.015,.004,.05),desired=Math.floor(population*targetPct),active=aiArmyCountryTotal1300(game,country),pending=s.trainingQueues.reduce((n,q)=>n+q.amount,0),shortage=Math.max(0,desired-active-pending),cities=CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country&&!m.occupations?.[c.id]&&!activeSiegeAtCity1300(game,c.id)).sort((a,b)=>(Number(b.people)||0)-(Number(a.people)||0));
+  s.lastRecruitWeek=week;if(shortage<=0||!cities.length)continue;const maxQueues=Math.max(1,Math.min(4,Math.ceil(cities.length/4)));if(s.trainingQueues.length>=maxQueues)continue;
+  const technology=Math.max(0,Number(snapshot.technologyAvg)||50),unit=aiRecruitUnit1300(technology,aggression),batchCap=Math.max(10,Math.min(500,Math.round(population*(atWar?.0012:.0005)))),reserve=Math.max(25,20+cities.length*5),treasury=Math.max(0,Number(d.aiTreasuries[country])||0),perSoldier=Math.max(.001,unit.upkeep*Math.max(4,unit.trainingDays/7)),affordable=Math.max(0,Math.floor((treasury-reserve)/perSoldier)),amount=Math.min(shortage,batchCap,affordable);if(amount<1)continue;
+  const city=cities[(Math.max(0,Math.floor(Number(week)||0))+s.nextOrderId)%cities.length],cost=roundStat1300(amount*perSoldier),order={id:'ai-training-'+s.nextOrderId++,cityId:city.id,unitId:unit.id,amount,startDay:Number(game.day)||0,finishDay:(Number(game.day)||0)+unit.trainingDays,cost};s.trainingQueues.push(order);d.aiTreasuries[country]=roundStat1300(Math.max(0,treasury-cost));
+  aiState.decisions=Array.isArray(aiState.decisions)?aiState.decisions:[];aiState.decisions.unshift({week:Number(week)||0,text:'Recruited '+amount+' '+unit.name+' in '+displayCityName1300(city)+'; training takes '+unit.trainingDays+' days for '+cost.toFixed(2)+' florins.'});aiState.decisions=aiState.decisions.slice(0,12);
+  if(atWar)events.push(country+' began training '+amount+' '+unit.name+' for the war.');
+ }
+ return events;
+}
 function seedAIMilitaryForWar1300(game,country){
- const m=ensureAdvancedMilitary1300(game),player=gameCountryName1300(game);if(!m||!country||country===player||!countriesAtWar1300(game,country,player))return false;const state=m.aiWarStates[country]??={seeded:false,startedDay:Number(game.day)||0,lastOrderDay:-9999,stagingCityId:null,targetCityId:null};m.aiWarStates[country]=state;if(state.seeded)return false;let changed=false;
- for(const c of CITIES_1300.filter(city=>campaignCityOwner1300(game,city)===country)){const live=campaignCityStats1300(game,c,false),mobile=Math.max(0,Math.round((Number(live.army)||0)*.55));if(mobile<=0)continue;const row={country,homeCityId:c.id,units:enemyCompositionFromTotal1300(mobile,live.technology),morale:100,order:'mobilise',targetCityId:null};if(putEnemyFieldArmy1300(game,c.id,row))changed=true;}
- state.seeded=true;state.startedDay=Number(game.day)||0;return changed;
+ const m=ensureAdvancedMilitary1300(game),player=gameCountryName1300(game);if(!m||!country||country===player||!countriesAtWar1300(game,country,player))return false;const state=m.aiWarStates[country]??={seeded:false,startedDay:Number(game.day)||0,lastOrderDay:-9999,lastMobilizeDay:-9999,stagingCityId:null,targetCityId:null};m.aiWarStates[country]=state;
+ const day=Number(game.day)||0;if(state.seeded&&day-(Number(state.lastMobilizeDay)||0)<7)return false;const recruitment=ensureAIRecruitmentState1300(game,country);if(!recruitment)return false;let changed=false;
+ for(const c of CITIES_1300.filter(city=>campaignCityOwner1300(game,city)===country)){const standing=Math.max(0,Math.floor(Number(recruitment.standingByCity[c.id])||0)),fraction=state.seeded?.25:.55,mobile=Math.floor(standing*fraction);if(mobile<=0)continue;takeAIStandingArmy1300(game,country,c.id,mobile);const tech=applyCountryAIStats1300(game,country,{technology:Number(c.technology)||50}).technology,row={country,homeCityId:c.id,units:enemyCompositionFromTotal1300(mobile,tech),morale:100,order:'mobilise',targetCityId:null};if(putEnemyFieldArmy1300(game,c.id,row))changed=true;else returnAIStandingArmy1300(game,country,c.id,mobile);}
+ state.seeded=true;state.startedDay=state.startedDay||day;state.lastMobilizeDay=day;return changed;
 }
 function cleanupAIMilitaryAfterPeace1300(game){
  const m=ensureAdvancedMilitary1300(game),player=gameCountryName1300(game);if(!m)return false;let changed=false;
- for(const country of Object.keys({...m.aiWarStates}))if(!countriesAtWar1300(game,country,player)){for(const [cityId,row] of Object.entries({...m.enemyFieldArmies}))if(row.country===country){delete m.enemyFieldArmies[cityId];changed=true;}const beforeMoves=m.enemyMovements.length,beforeSieges=m.enemySieges.length;m.enemyMovements=m.enemyMovements.filter(x=>x.country!==country);m.enemySieges=m.enemySieges.filter(x=>x.attackerCountry!==country);if(beforeMoves!==m.enemyMovements.length||beforeSieges!==m.enemySieges.length)changed=true;delete m.aiWarStates[country];}
+ for(const country of Object.keys({...m.aiWarStates}))if(!countriesAtWar1300(game,country,player)){
+  for(const [cityId,row] of Object.entries({...m.enemyFieldArmies}))if(row.country===country){returnAIStandingArmy1300(game,country,row.homeCityId||cityId,enemyFieldArmyTotal1300(row));delete m.enemyFieldArmies[cityId];changed=true;}
+  for(const move of m.enemyMovements.filter(x=>x.country===country))returnAIStandingArmy1300(game,country,move.homeCityId||move.from,enemyMovementTotal1300(move));
+  for(const battle of m.battles.filter(b=>b.enemyCountry===country&&battleUnitTotal1300(b.enemyUnits)>0))if(returnEnemyBattleSurvivorsToStanding1300(game,battle))changed=true;
+  const beforeMoves=m.enemyMovements.length,beforeSieges=m.enemySieges.length;m.enemyMovements=m.enemyMovements.filter(x=>x.country!==country);m.enemySieges=m.enemySieges.filter(x=>x.attackerCountry!==country);if(beforeMoves!==m.enemyMovements.length||beforeSieges!==m.enemySieges.length)changed=true;delete m.aiWarStates[country];
+ }
  return changed;
 }
 function startEnemyArmyMovement1300(game,country,fromId,targetId){
@@ -1222,7 +1296,7 @@ function startEnemyArmyMovement1300(game,country,fromId,targetId){
 }
 function playerArmyKeysAtCity1300(game,cityId){return armyKeysAtLocation1300(game,cityId,{standingOnly:true}).sort((a,b)=>militaryArmyTotal1300(game,b)-militaryArmyTotal1300(game,a));}
 function createEnemyAttackBattle1300(game,country,cityId){
- const m=ensureAdvancedMilitary1300(game),row=m?.enemyFieldArmies?.[cityId],playerKey=playerArmyKeysAtCity1300(game,cityId)[0];if(!m||!row||row.country!==country||!playerKey||activeBattleAtCity1300(game,cityId))return null;const army=militaryCityArmy1300(game,playerKey),personality=game.ai?.countries?.[country]?.personality||{},battle={id:'battle-'+m.nextBattleId++,armyHomeId:playerKey,cityId,enemyCountry:country,enemyUnits:{...row.units},playerMorale:clamp1300(Number(army?.morale)||100,0,100),enemyMorale:row.morale,playerTactic:'hold',enemyTactic:Number(personality.aggression)>.62?'assault':'hold',enemyAttacker:true,defenderBonusPct:BATTLE_DEFENDER_BONUS_PCT_1300,lastTacticDay:(Number(game.day)||0)-3,startedDay:Number(game.day)||0,lastResolvedDay:Number(game.day)||0,status:'active',retreatCityId:null,playerCasualties:0,enemyCasualties:0,log:[]};delete m.enemyFieldArmies[cityId];m.battles.push(battle);return battle;
+ const m=ensureAdvancedMilitary1300(game),row=m?.enemyFieldArmies?.[cityId],playerKey=playerArmyKeysAtCity1300(game,cityId)[0];if(!m||!row||row.country!==country||!playerKey||activeBattleAtCity1300(game,cityId))return null;const army=militaryCityArmy1300(game,playerKey),personality=game.ai?.countries?.[country]?.personality||{},battle={id:'battle-'+m.nextBattleId++,armyHomeId:playerKey,cityId,enemyCountry:country,enemyHomeCityId:row.homeCityId||cityId,enemyUnits:{...row.units},playerMorale:clamp1300(Number(army?.morale)||100,0,100),enemyMorale:row.morale,playerTactic:'hold',enemyTactic:Number(personality.aggression)>.62?'assault':'hold',enemyAttacker:true,defenderBonusPct:BATTLE_DEFENDER_BONUS_PCT_1300,lastTacticDay:(Number(game.day)||0)-3,startedDay:Number(game.day)||0,lastResolvedDay:Number(game.day)||0,status:'active',retreatCityId:null,playerCasualties:0,enemyCasualties:0,log:[]};delete m.enemyFieldArmies[cityId];m.battles.push(battle);return battle;
 }
 function enemySiegeAtCity1300(game,cityId){return ensureAdvancedMilitary1300(game)?.enemySieges.find(s=>s.cityId===cityId&&s.status==='active')||null;}
 function startEnemySiege1300(game,country,cityId){
@@ -1276,7 +1350,7 @@ function processAIMilitaryDay1300(game){
  const m=ensureAdvancedMilitary1300(game),player=gameCountryName1300(game);if(!m)return false;let changed=cleanupAIMilitaryAfterPeace1300(game),seeded=false;const enemies=Object.keys(game.diplomacy?.wars||{}).filter(country=>game.diplomacy.wars[country]&&countriesAtWar1300(game,country,player));for(const country of enemies)if(seedAIMilitaryForWar1300(game,country)){changed=true;seeded=true;}if(processEnemyArmyMovements1300(game))changed=true;for(const [cityId,row] of Object.entries({...m.enemyFieldArmies}))if(enemies.includes(row.country)&&handleEnemyArmyAtCity1300(game,row.country,cityId))changed=true;if(seeded||(Number(game.day)||0)%7===0)for(const country of enemies)if(issueCountryAIMilitaryOrders1300(game,country))changed=true;return changed;
 }
 function restoreEnemyAttackerAfterVictory1300(game,battle){
- if(!battle?.enemyAttacker||battleUnitTotal1300(battle.enemyUnits)<=0)return false;const row={country:battle.enemyCountry,homeCityId:battle.cityId,units:{...battle.enemyUnits},morale:Math.max(25,Number(battle.enemyMorale)||25),order:'hold',targetCityId:null};for(const id of Object.keys(battle.enemyUnits||{}))battle.enemyUnits[id]=0;const placed=putEnemyFieldArmy1300(game,battle.cityId,row);if(!placed)return false;if(!playerArmyKeysAtCity1300(game,battle.cityId).length)startEnemySiege1300(game,battle.enemyCountry,battle.cityId);return true;
+ if(!battle?.enemyAttacker||battleUnitTotal1300(battle.enemyUnits)<=0)return false;const row={country:battle.enemyCountry,homeCityId:battle.enemyHomeCityId||battle.cityId,units:{...battle.enemyUnits},morale:Math.max(25,Number(battle.enemyMorale)||25),order:'hold',targetCityId:null};for(const id of Object.keys(battle.enemyUnits||{}))battle.enemyUnits[id]=0;const placed=putEnemyFieldArmy1300(game,battle.cityId,row);if(!placed)return false;if(!playerArmyKeysAtCity1300(game,battle.cityId).length)startEnemySiege1300(game,battle.enemyCountry,battle.cityId);return true;
 }
 function afterPlayerBattleVictory1300(game,battle){
  const m=ensureAdvancedMilitary1300(game),c=CITY_1300[battle?.cityId],player=gameCountryName1300(game);if(!m||!c||!battle)return false;const owner=campaignCityOwner1300(game,c);if(owner===player){if(m.occupations?.[c.id]&&m.occupations[c.id]!==player)delete m.occupations[c.id];return true;}startSiege1300(game,battle.armyHomeId,battle.cityId,battle.enemyCountry);return true;
@@ -1316,7 +1390,9 @@ function processSiegesDay1300(game){
  }return changed;
 }
 function createBattle1300(game,homeId,cityId,retreatCityId){
- const m=ensureAdvancedMilitary1300(game);if(activeBattleAtCity1300(game,cityId))return activeBattleAtCity1300(game,cityId);const c=CITY_1300[cityId],player=gameCountryName1300(game),owner=campaignCityOwner1300(game,c),field=m.enemyFieldArmies[cityId],enemyCountry=field?.country||owner,enemyUnits=owner===player?{}:enemyComposition1300(c,game);if(field&&countriesAtWar1300(game,field.country,player)){mergeBattleUnits1300(enemyUnits,field.units);delete m.enemyFieldArmies[cityId];}const enemyTotal=battleUnitTotal1300(enemyUnits),id='battle-'+m.nextBattleId++,army=militaryCityArmy1300(game,homeId),battle={id,armyHomeId:homeId,cityId,enemyCountry,enemyUnits,playerMorale:clamp1300(Number(army?.morale)||100,0,100),enemyMorale:field?.morale??100,playerTactic:'hold',enemyTactic:'hold',defenderBonusPct:BATTLE_DEFENDER_BONUS_PCT_1300,lastTacticDay:(Number(game.day)||0)-3,startedDay:Number(game.day)||0,lastResolvedDay:Number(game.day)||0,status:enemyTotal>0?'active':'won',retreatCityId:retreatCityId||homeId,playerCasualties:0,enemyCasualties:0,log:[]};m.battles.push(battle);return battle;
+ const m=ensureAdvancedMilitary1300(game);if(activeBattleAtCity1300(game,cityId))return activeBattleAtCity1300(game,cityId);const c=CITY_1300[cityId],player=gameCountryName1300(game),owner=campaignCityOwner1300(game,c),field=m.enemyFieldArmies[cityId],enemyCountry=field?.country||owner,enemyUnits={};let enemyHomeCityId=field?.homeCityId||cityId;
+ if(owner!==player&&countriesAtWar1300(game,owner,player)){const local=ensureAIRecruitmentState1300(game,owner),standing=Math.max(0,Math.floor(Number(local?.standingByCity?.[cityId])||0)),defenders=takeAIStandingArmy1300(game,owner,cityId,standing),tech=applyCountryAIStats1300(game,owner,{technology:Number(c.technology)||50}).technology;if(defenders>0)mergeBattleUnits1300(enemyUnits,enemyCompositionFromTotal1300(defenders,tech));}
+ if(field&&countriesAtWar1300(game,field.country,player)){mergeBattleUnits1300(enemyUnits,field.units);enemyHomeCityId=field.homeCityId||enemyHomeCityId;delete m.enemyFieldArmies[cityId];}const enemyTotal=battleUnitTotal1300(enemyUnits),id='battle-'+m.nextBattleId++,army=militaryCityArmy1300(game,homeId),battle={id,armyHomeId:homeId,cityId,enemyCountry,enemyHomeCityId,enemyUnits,playerMorale:clamp1300(Number(army?.morale)||100,0,100),enemyMorale:field?.morale??100,playerTactic:'hold',enemyTactic:'hold',defenderBonusPct:BATTLE_DEFENDER_BONUS_PCT_1300,lastTacticDay:(Number(game.day)||0)-3,startedDay:Number(game.day)||0,lastResolvedDay:Number(game.day)||0,status:enemyTotal>0?'active':'won',retreatCityId:retreatCityId||homeId,playerCasualties:0,enemyCasualties:0,log:[]};m.battles.push(battle);return battle;
 }
 function tacticCombat1300(units,tacticId,phase,commander={},supply=1,morale=100){
  const t=BATTLE_TACTICS_1300[tacticId]||BATTLE_TACTICS_1300.hold;let attack=0,hp=0,total=0,rangedCount=0,cavalry=0;
@@ -1336,7 +1412,7 @@ function resolveBattleDay1300(game,battle){
  if(!battle||battle.status!=='active'||battle.lastResolvedDay>=game.day)return false;
  const army=militaryCityArmy1300(game,battle.armyHomeId);if(!army){battle.status='lost';battle.lastResolvedDay=game.day;if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);return true;}
  const beforePlayer=militaryArmyTotal1300(game,battle.armyHomeId),beforeEnemy=battleUnitTotal1300(battle.enemyUnits);
- if(beforePlayer<=0){battle.status='lost';battle.lastResolvedDay=game.day;warScoreAdjust1300(game,battle.enemyCountry,-4);if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);return true;}
+ if(beforePlayer<=0){battle.status='lost';battle.lastResolvedDay=game.day;warScoreAdjust1300(game,battle.enemyCountry,-4);if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);else returnEnemyBattleSurvivorsToStanding1300(game,battle);return true;}
  if(beforeEnemy<=0){battle.status='won';battle.lastResolvedDay=game.day;warScoreAdjust1300(game,battle.enemyCountry,4);afterPlayerBattleVictory1300(game,battle);return true;}
  const phase=game.day-battle.startedDay<2?'ranged':'melee',supply=militarySupplyStatus1300(game,battle.armyHomeId),commander=commanderForArmy1300(game,battle.armyHomeId)?.bonuses||{},defenderBonus=Number(battle.defenderBonusPct)||BATTLE_DEFENDER_BONUS_PCT_1300,playerCommander=battle.enemyAttacker?{...commander,defensePct:(Number(commander.defensePct)||0)+defenderBonus}:commander,enemyCommander=battle.enemyAttacker?{}:{defensePct:defenderBonus},p=tacticCombat1300(army.units,battle.playerTactic,phase,playerCommander,supply.combat,battle.playerMorale),e=tacticCombat1300(battle.enemyUnits,battle.enemyTactic,phase,enemyCommander,.94,battle.enemyMorale);
  const playerDice=battleDiceRoll1300(),enemyDice=battleDiceRoll1300(),playerDamage=battleDiceDamageMultiplier1300(playerDice),enemyDamage=battleDiceDamageMultiplier1300(enemyDice);
@@ -1350,12 +1426,12 @@ function resolveBattleDay1300(game,battle){
   if(retreat){storeEnemyRetreatArmy1300(game,battle,retreat);battle.status='won';battle.enemyRetreatedTo=retreat;battle.enemyMoraleRetreat=true;warScoreAdjust1300(game,battle.enemyCountry,4);afterPlayerBattleVictory1300(game,battle);}
   else{battle.enemySurrendered=true;battle.enemySurrenderedUnits=wipeEnemyOnSurrender1300(battle);enemyRemaining=0;battle.status='won';warScoreAdjust1300(game,battle.enemyCountry,6);afterPlayerBattleVictory1300(game,battle);}
  }
- if(battle.status==='active'&&playerRemaining<=0){battle.status='lost';warScoreAdjust1300(game,battle.enemyCountry,-4);if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);}
+ if(battle.status==='active'&&playerRemaining<=0){battle.status='lost';warScoreAdjust1300(game,battle.enemyCountry,-4);if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);else returnEnemyBattleSurvivorsToStanding1300(game,battle);}
  else if(battle.status==='active'&&battle.playerMorale<=0){
   const retreat=nearestPlayerRetreatCity1300(game,battle.cityId);
   if(retreat){battle.status='lost';battle.retreatCityId=retreat;battle.playerMoraleRetreat=true;army.location=retreat;army.morale=25;warScoreAdjust1300(game,battle.enemyCountry,-4);}
   else{battle.playerSurrendered=true;battle.playerSurrenderedUnits=wipeArmyOnSurrender1300(game,battle.armyHomeId);playerRemaining=0;battle.status='lost';warScoreAdjust1300(game,battle.enemyCountry,-6);}
-  if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);
+  if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);else returnEnemyBattleSurvivorsToStanding1300(game,battle);
  }
  return true;
 }
@@ -1592,11 +1668,11 @@ function companyBuildingSupportTotal1300(game){
 }
 function economyCitySnapshot1300(game,c){
  const state=gameProvinceBuildingState(c),e=game.economy,sectors=state.buildings.filter(row=>row.level>0&&row.id!=='walls').map(row=>{const policy=companyPolicy1300(game,c.id,row.id),method=resolvedProductionMethod1300(game,row.id,policy.productionMethod);return {id:row.id,level:row.level,workers:Math.max(0,Number(e.employment?.[c.id]?.[row.id])||0),capacity:Math.max(1,row.maxWorkers*row.level),wage:companyOperatingWage1300(game,c,row),treasury:companyTreasury1300(game,c.id,row.id),employmentTarget:policy.employmentTarget,buildingSupport:policy.buildingSupport,priority:policy.priority,productionMethod:method.id,production:productionDefinition1300(game,row.id,method.id)};}),stats=provinceDynamicStats1300(game,c);
- return {id:c.id,population:effectivePopulation1300(game,c),food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,coastal:isCoastalCity1300(c),labourPool:cityLabourPool1300(c,game),grainBonusPct:Number(PROVINCE_GRAIN_BONUS_1300[c.id])||0,demandGrowthMultiplier:populationDemandGrowth1300(game),expectedWage:expectedMonthlyWage1300(game),techEffects:technologyBonuses1300(game.technology),militaryDemand:militaryMarketDemand1300(game,c.id),sectors};
+ return {id:c.id,population:effectivePopulation1300(game,c),food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,coastal:isCoastalCity1300(c),labourPool:cityLabourPool1300(c,game),grainBonusPct:Number(PROVINCE_GRAIN_BONUS_1300[c.id])||0,demandGrowthMultiplier:populationDemandGrowth1300(game),consumerDemandGrowthMultiplier:consumerDemandGrowth1300(game),expectedWage:expectedMonthlyWage1300(game),techEffects:technologyBonuses1300(game.technology),militaryDemand:militaryMarketDemand1300(game,c.id),sectors};
 }
 function calculateWeeklyBudgetProjection1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),foreignImports=foreignImportContext1300(game);
- const result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...normaliseGameDiplomacy1300(game.diplomacy).tradeStockpile},foreignSupply:foreignImports.pool}),expenses=weeklyStateExpenses1300(game),bonuses=technologyBonuses1300(game.technology),sectorTaxes=roundStat1300(result.weeklyTaxEstimate*(1+bonuses.taxIncomePct/100)),importTariffs=roundStat1300(result.weeklyTariffRevenue*(1+bonuses.tradeIncomePct/100)),income=roundStat1300(sectorTaxes+importTariffs);
+ const result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...normaliseGameDiplomacy1300(game.diplomacy).tradeStockpile},foreignSupply:foreignImports.pool,foreignTradeEfficiency:foreignImports.tradeEfficiency,foreignTransportCostReduction:foreignImports.transportCostReduction}),expenses=weeklyStateExpenses1300(game),bonuses=technologyBonuses1300(game.technology),sectorTaxes=roundStat1300(result.weeklyTaxEstimate*(1+bonuses.taxIncomePct/100)),importTariffs=roundStat1300(result.weeklyTariffRevenue*(1+bonuses.tradeIncomePct/100)),income=roundStat1300(sectorTaxes+importTariffs);
  return {day:Number(game.day)||0,sectorTaxes,importTariffs,income,expenses,balance:roundStat1300(income-expenses.total)};
 }
 function weeklyBudgetProjection1300(game,{refresh=false}={}){
@@ -1618,7 +1694,7 @@ function simulateGameEconomyDay1300(game,{forceMarket=false,collectRevenue=true}
   let remaining=labour;for(const sec of sectors){const hardMax=Math.floor(sec.capacity*sec.treasuryEmploymentCap);if(sec.treasury<0){e.employment[cityId][sec.row.id]=0;continue;}const target=Math.min(sec.desired,remaining,hardMax);remaining-=target;let current=Math.min(hardMax,Math.max(0,Number(e.employment[cityId][sec.row.id])||0)),speed=1+(sec.policy.priority==='employment'?.35:sec.policy.priority==='output'?.15:0),distressExit=sec.treasury<50?.55:sec.treasury<75?.35:0,move=Math.max(5,Math.round(sec.capacity*Math.max(.08*speed,distressExit)));e.employment[cityId][sec.row.id]=Math.round(current+clamp1300(target-current,-move,move));}
  }
  const last=Number(e.lastMarketTickDay),due=forceMarket||!Number.isFinite(last)||(Number(game.day)||0)-last>=7;
- if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),actualTradeTick=collectRevenue&&!forceMarket&&isCampaignMonday1300(game),foreignImports=foreignImportContext1300(game,{replenish:actualTradeTick}),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...d.tradeStockpile},foreignSupply:foreignImports.pool}),techBonuses=technologyBonuses1300(game.technology);if(collectRevenue&&isCampaignMonday1300(game))applyCompanyTreasuryResults1300(game,result.sectorsByCity);e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.weeklyTax=roundStat1300(result.weeklyTaxEstimate*(1+techBonuses.taxIncomePct/100));e.weeklyTariffRevenue=roundStat1300(result.weeklyTariffRevenue*(1+techBonuses.tradeIncomePct/100));if(!forceMarket)e.lastMarketTickDay=Number(game.day)||0;if(collectRevenue&&isCampaignMonday1300(game)){if(actualTradeTick)consumeForeignImports1300(game,foreignImports,result.foreignUsed);for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(result.tradeStockpileRemaining?.[g.id])||0)*100)/100);accrueTradeSurplus1300(game,result.markets);}if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue){e.weekSectorRevenue=Math.round((Number(e.weekSectorRevenue||0)+e.weeklyTax)*100)/100;e.weekTariffRevenue=Math.round((Number(e.weekTariffRevenue||0)+e.weeklyTariffRevenue)*100)/100;e.monthRevenue=Math.round((e.weekSectorRevenue+e.weekTariffRevenue)*100)/100;}}
+ if(due){const cities=(game.ownedCities||[]).map(id=>CITY_1300[id]).filter(Boolean).map(c=>economyCitySnapshot1300(game,c)),d=game.diplomacy=normaliseGameDiplomacy1300(game.diplomacy),actualTradeTick=collectRevenue&&!forceMarket&&isCampaignMonday1300(game),foreignImports=foreignImportContext1300(game,{replenish:actualTradeTick}),result=simulateWeeklyEconomy1300({cities,previousMarkets:e.markets,previousPops:e.pops,taxRate:e.taxRate,taxCollectionFactor:GAME_TAX_COLLECTION_FACTOR,tariffs:e.tariffs,tradeStockpile:{...d.tradeStockpile},foreignSupply:foreignImports.pool,foreignTradeEfficiency:foreignImports.tradeEfficiency,foreignTransportCostReduction:foreignImports.transportCostReduction}),techBonuses=technologyBonuses1300(game.technology);if(collectRevenue&&isCampaignMonday1300(game))applyCompanyTreasuryResults1300(game,result.sectorsByCity);e.markets=result.markets;e.pops=result.pops;e.lastEconomy=result.sectorsByCity;e.weeklyTax=roundStat1300(result.weeklyTaxEstimate*(1+techBonuses.taxIncomePct/100));e.weeklyTariffRevenue=roundStat1300(result.weeklyTariffRevenue*(1+techBonuses.tradeIncomePct/100));if(!forceMarket)e.lastMarketTickDay=Number(game.day)||0;if(collectRevenue&&isCampaignMonday1300(game)){if(actualTradeTick)consumeForeignImports1300(game,foreignImports,result.foreignUsed);for(const g of GOODS_1300)d.tradeStockpile[g.id]=Math.max(0,Math.round((Number(result.tradeStockpileRemaining?.[g.id])||0)*100)/100);accrueTradeSurplus1300(game,result.markets);}if(!forceMarket)applyLiveDynamicStats1300(game,1/WEEKS_PER_MONTH);if(collectRevenue){e.weekSectorRevenue=Math.round((Number(e.weekSectorRevenue||0)+e.weeklyTax)*100)/100;e.weekTariffRevenue=Math.round((Number(e.weekTariffRevenue||0)+e.weeklyTariffRevenue)*100)/100;e.monthRevenue=Math.round((e.weekSectorRevenue+e.weekTariffRevenue)*100)/100;}}
  e.monthExpenses=weeklyStateExpenses1300(game).total;invalidateWeeklyBudgetProjection1300(game);
 }
 function refreshGameDateUI1300(){
@@ -1631,7 +1707,7 @@ function refreshGameClockUI1300(){
 function settleGameWeek1300(game){
  const e=game.economy=normaliseGameEconomy1300(game.economy),expenseBreakdown=weeklyStateExpenses1300(game),revenue=Math.round(e.monthRevenue*100)/100,expenses=expenseBreakdown.total,balance=Math.round((revenue-expenses)*100)/100,d=gameDate1300(game.day);
  e.lastMonthRevenue=revenue;e.lastMonthExpenses=expenses;e.lastMonthBalance=balance;e.lastMonthLabel=`${d.day} ${d.month} ${d.year}`;e.lastWeekSectorRevenue=e.weekSectorRevenue;e.lastWeekTariffRevenue=e.weekTariffRevenue;
- game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyWeeklyStabilityPolicy1300(game);applyWeeklyPopulationChange1300(game);settleWeeklyResearch1300(game);initializeDiplomacyWorld1300(game);const aiWeek=completedCampaignWeeks1300(game),rankingRows=buildCampaignRankings1300(game),rankingPowers=Object.fromEntries(rankingRows.map(r=>[r.country,r.strength||1]));for(const event of weeklyDiplomacy(game,aiWeek,rankingPowers))diplomacyLog1300(game,'World',event);const aiCountries=rankingRows.filter(r=>!r.player).map(r=>({country:r.country,cityCount:r.playableCityCount||r.cityCount,population:r.population,army:r.army,navy:r.navy,foodAvg:r.foodAvg,economyAvg:r.economyAvg,technologyAvg:r.technologyAvg,stabilityAvg:r.stabilityAvg,strength:r.strength,coastal:r.cities.some(c=>!c.supportTerritory&&isCoastalCity1300(c))}));for(const event of runCountryAIWeek1300(game,{week:aiWeek,countries:aiCountries,playerStrength:diplomacyPlayerStrength1300(game)}))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.weekSectorRevenue=0;e.weekTariffRevenue=0;e.monthRevenue=0;e.monthExpenses=weeklyStateExpenses1300(game).total;
+ game.florins=Math.max(0,Math.round((Number(game.florins)+balance)*100)/100);applyWeeklyStabilityPolicy1300(game);applyWeeklyPopulationChange1300(game);settleWeeklyResearch1300(game);initializeDiplomacyWorld1300(game);const aiWeek=completedCampaignWeeks1300(game),rankingRows=buildCampaignRankings1300(game),rankingPowers=Object.fromEntries(rankingRows.map(r=>[r.country,r.strength||1]));for(const event of weeklyDiplomacy(game,aiWeek,rankingPowers))diplomacyLog1300(game,'World',event);const aiCountries=rankingRows.filter(r=>!r.player).map(r=>({country:r.country,cityCount:r.playableCityCount||r.cityCount,population:r.population,army:r.army,navy:r.navy,foodAvg:r.foodAvg,economyAvg:r.economyAvg,technologyAvg:r.technologyAvg,stabilityAvg:r.stabilityAvg,strength:r.strength,coastal:r.cities.some(c=>!c.supportTerritory&&isCoastalCity1300(c))}));for(const event of runCountryAIWeek1300(game,{week:aiWeek,countries:aiCountries,playerStrength:diplomacyPlayerStrength1300(game)}))diplomacyLog1300(game,'World',event);for(const event of manageAIRecruitmentWeek1300(game,aiCountries,aiWeek))diplomacyLog1300(game,'World',event);updateCampaignRankingSnapshot1300(game);e.weekSectorRevenue=0;e.weekTariffRevenue=0;e.monthRevenue=0;e.monthExpenses=weeklyStateExpenses1300(game).total;
 }
 function maybeAutosaveCampaign1300(game){
  if(!game)return false;
@@ -2544,7 +2620,7 @@ function campaignCityOwner1300(game,c){
  return owner==='player'?gameCountryName1300():(typeof owner==='string'&&owner?owner:c.country);
 }
 function campaignCityStats1300(game,c,isPlayer){
- if(!isPlayer){const base={food:Number(c.food)||0,economy:Number(c.economyScore)||0,technology:Number(c.technology)||0,stability:Number(c.stability)||0,population:Number(c.people)||0,army:Number(c.army)||0,navy:Number(c.navy)||0};return applyCountryAIStats1300(game,campaignCityOwner1300(game,c),base);}
+ if(!isPlayer){const base={food:Number(c.food)||0,economy:Number(c.economyScore)||0,technology:Number(c.technology)||0,stability:Number(c.stability)||0,population:Number(c.people)||0,army:Number(c.army)||0,navy:Number(c.navy)||0},country=campaignCityOwner1300(game,c),stats=applyCountryAIStats1300(game,country,base);stats.army=aiArmyCountForCity1300(game,country,c.id);return stats;}
  const state=gameProvinceBuildingState(c),b=state.bonuses,stats=provinceDynamicStats1300(game,c),prof=professionalArmyState1300(game);
  return {
   food:stats.food,economy:stats.economy,technology:stats.technology,stability:stats.stability,
