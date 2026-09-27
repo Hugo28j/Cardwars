@@ -553,7 +553,19 @@ function diplomacyCountryGoodsModel1300(country){
  return {balances,popK,economy:econ,technology:tech};
 }
 function diplomacyCountryStats1300(country){
- const row=profile.activeGame?buildCampaignRankings1300(profile.activeGame).find(r=>r.country===country):countryRankings1300().find(r=>r.country===country);if(row)return row;
+ const game=profile.activeGame;
+ if(game){
+  const playerName=gameCountryName1300(game),playable=CITIES_1300.filter(c=>campaignCityOwner1300(game,c)===country),isPlayer=country===playerName;
+  if(playable.length){
+   let population=0,army=0,navy=0,foodTotal=0,economyTotal=0,technologyTotal=0,stabilityTotal=0;
+   for(const c of playable){const st=campaignCityStats1300(game,c,isPlayer);population+=st.population;army+=st.army;navy+=st.navy;foodTotal+=st.food;economyTotal+=st.economy;technologyTotal+=st.technology;stabilityTotal+=st.stability;}
+   const support=!isPlayer?SUPPORT_TERRITORIES_1300.filter(s=>s.country===country):[];
+   for(const s of support){population+=Number(s.people)||0;army+=Number(s.army)||0;navy+=Number(s.navy)||0;foodTotal+=Number(s.food)||0;economyTotal+=Number(s.economyScore)||0;technologyTotal+=Number(s.technology)||0;stabilityTotal+=Number(s.stability)||0;}
+   const cityCount=playable.length+support.length,count=Math.max(1,cityCount),foodAvg=roundStat1300(foodTotal/count),economyAvg=roundStat1300(economyTotal/count),technologyAvg=roundStat1300(technologyTotal/count),stabilityAvg=roundStat1300(stabilityTotal/count),baseScore=foodAvg*50+economyAvg*50+technologyAvg*50+stabilityAvg*50+Math.round(population/50)+Math.round(army*2)+Math.round(navy*10),cityMultiplier=1+cityCount/50,powerModifier=campaignPowerModifier1300(game,{country,player:isPlayer}),strength=Math.round(Math.round(baseScore*cityMultiplier)*powerModifier);
+   return {country,cityCount,playableCityCount:playable.length,population,army,navy,foodAvg,economyAvg,technologyAvg,stabilityAvg,baseScore,cityMultiplier,powerModifier,strength};
+  }
+ }
+ const row=countryRankings1300().find(r=>r.country===country);if(row)return row;
  const cities=diplomacyCountryCities1300(country),count=Math.max(1,cities.length),sum=k=>cities.reduce((n,c)=>n+(Number(c[k])||0),0);
  return {country,cityCount:cities.length,population:sum('people'),army:sum('army'),navy:sum('navy'),foodAvg:Math.round(sum('food')/count),economyAvg:Math.round(sum('economyScore')/count),technologyAvg:Math.round(sum('technology')/count),stabilityAvg:Math.round(sum('stability')/count),strength:Math.round((sum('army')*2+sum('navy')*10+sum('people')/50+sum('economyScore')*50/count)*1.1)};
 }
@@ -2991,7 +3003,7 @@ function renderGameDiplomacyPanel1300(){
  const panel=$('#game-diplomacy-panel');if(!panel)return;if(!gameDiplomacyCountry||!profile.activeGame){panel.innerHTML='';panel.classList.remove('open');return;}const scroll=panel.querySelector('.dip-scroll')?.scrollTop||0;panel.innerHTML=diplomacyCountryPanelHTML1300(gameDiplomacyCountry);panel.classList.add('open');const next=panel.querySelector('.dip-scroll');if(next)next.scrollTop=scroll;
 }
 function openGameDiplomacyPanel1300(region){
- const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}ensureDiplomacyCountry1300(game,country);gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel(true);renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
+ const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel(true);renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
 }
 
 function gameCountryPanelHTML1300(){

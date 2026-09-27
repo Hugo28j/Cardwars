@@ -54,3 +54,17 @@ test('right-click country panels open without a synchronous full map refresh',()
  assert.match(dipBlock,/renderGameProvincePanel\(true\)/);
  assert.doesNotMatch(dipBlock,/world\.refresh\(\)/);
 });
+
+
+test('right-click diplomacy stats avoid rebuilding the entire campaign ranking',()=>{
+ const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
+ const statsStart=source.indexOf('function diplomacyCountryStats1300');
+ const statsEnd=source.indexOf('function openingVictimCountry1300',statsStart);
+ const statsBlock=source.slice(statsStart,statsEnd);
+ assert.doesNotMatch(statsBlock,/buildCampaignRankings1300\(/);
+ assert.match(statsBlock,/campaignCityStats1300\(game,c,isPlayer\)/);
+ const openStart=source.indexOf('function openGameDiplomacyPanel1300');
+ const openEnd=source.indexOf('function gameCountryPanelHTML1300',openStart);
+ const openBlock=source.slice(openStart,openEnd);
+ assert.doesNotMatch(openBlock,/ensureDiplomacyCountry1300\(/);
+});
