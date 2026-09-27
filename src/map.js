@@ -394,7 +394,7 @@ export class WorldMap{
    cell.classList.toggle('game-visible',!!game&&!isOwned&&isVisible);
    const occupier=game?.occupations?.[id],occupationPattern=occupier?occupationPatternByCountry.get(occupier):null;
    cell.classList.toggle('game-hidden',!!game&&fogDetail&&!isVisible);cell.classList.toggle('game-battle',!!game?.battlesByCity?.[id]);cell.classList.toggle('game-siege',!!game?.siegesByCity?.[id]);cell.classList.toggle('game-occupied',!!occupier);
-   if(occupationPattern){cell.style.fill=`url(#${occupationPattern})`;cell.style.fillOpacity='.92';}else{cell.style.removeProperty('fill');cell.style.removeProperty('fill-opacity');}
+   if(occupationPattern&&(!fogDetail||isVisible)){cell.style.fill=`url(#${occupationPattern})`;cell.style.fillOpacity='.92';}else{cell.style.removeProperty('fill');cell.style.removeProperty('fill-opacity');}
   }
   // Country / polity names follow the territory that realm still owns.
   // When a realm loses a city, its name is re-centered over its remaining city cells.
