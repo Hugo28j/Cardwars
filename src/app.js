@@ -125,7 +125,7 @@ const POP_ARCHETYPES=[
 ];
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const round=(n,p=4)=>{const m=10**p;return Math.round((Number(n)||0)*m)/m;};
-const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=3.6,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
+const WEEKS_PER_MONTH=52/12,FLORINS_PER_MARKET_VALUE=.05,POP_FOOD_DEMAND_PER_1000=4.8,BUILDING_MAINTENANCE_INPUT_SHARE=.35,REALM_PRICE_FOOD_SERVICE_INTEGRATION=.62,REALM_PRICE_OTHER_INTEGRATION=.42;
 
 function blankGood(g,previous){
  const price=Number(previous?.price),start=Number.isFinite(price)&&price>0?price:g.basePrice,stock=Math.max(0,Number(previous?.stock)||0),consumer=Number(previous?.consumerPrice);
@@ -153,7 +153,7 @@ function ambientSupply(city,market){
 function popOrders(city,market,popState){
  const k=Math.max(.1,Number(city.population||0)/1000),demandGrowth=clamp(Number(city.demandGrowthMultiplier)||1,1,3),needK=k*demandGrowth,groups=popState.groups||[],pop=Math.max(1,groups.reduce((n,g)=>n+g.size,0)),avgWealth=groups.reduce((n,g)=>n+g.wealth*g.size,0)/pop,wealthFactor=clamp(.75+(avgWealth-8)*.025,.7,1.45),food=allocateSubstitutes(market,['grain','fish','meat'],needK*POP_FOOD_DEMAND_PER_1000,{grain:2.30,fish:city.coastal?1.20:.60,meat:.90},1.35);
  for(const [id,n] of Object.entries(food))addOrder(market.goods[id],'demand',n*priceDemandMultiplier1300(market,id,1.05,.65,2.6));
- addOrder(market.goods.cloth,'demand',needK*.25*wealthFactor*priceDemandMultiplier1300(market,'cloth',.95,.60,2.7));
+ addOrder(market.goods.cloth,'demand',needK*.30*wealthFactor*priceDemandMultiplier1300(market,'cloth',.95,.60,2.7));
  addOrder(market.goods.wood,'demand',needK*.10*priceDemandMultiplier1300(market,'wood',.65,.70,2.0));
  addOrder(market.goods.salt,'demand',needK*.12*priceDemandMultiplier1300(market,'salt',.65,.70,2.0));
  addOrder(market.goods.ale,'demand',needK*.18*wealthFactor*priceDemandMultiplier1300(market,'ale',1.0,.55,2.8));
@@ -923,7 +923,7 @@ function effectivePopulation1300(game,c){
 }
 function foodAvailabilityFromMarket1300(market,fallback=1){
  const rows=['grain','fish','meat'].map(id=>market?.goods?.[id]).filter(Boolean),need=rows.reduce((n,r)=>n+(Number(r.need)||Number(r.demand)||0),0),fulfilled=rows.reduce((n,r)=>n+(Number(r.fulfilled)||0),0);
- return need>0?clamp1300(fulfilled/need,.15,1.15):clamp1300(Number(fallback)||1,.15,1.15);
+ return need>0?clamp1300(fulfilled/need,.15,1):clamp1300(Number(fallback)||1,.15,1);
 }
 function foodHappinessEffect1300(availability){
  const a=clamp1300(Number(availability)||1,.15,1.15);
@@ -937,7 +937,7 @@ function costOfLivingHappinessEffect1300(costPct){
 }
 function countryFoodAvailability1300(game){
  let need=0,fulfilled=0;for(const id of game?.ownedCities||[]){const market=game.economy?.markets?.[id];for(const gid of ['grain','fish','meat']){const row=market?.goods?.[gid];if(!row)continue;need+=Number(row.need)||Number(row.demand)||0;fulfilled+=Number(row.fulfilled)||0;}}
- return need>0?clamp1300(fulfilled/need,.15,1.15):1;
+ return need>0?clamp1300(fulfilled/need,.15,1):1;
 }
 function rescalePopulationGroups1300(game,cityId,newPopulation){
  const groups=game?.economy?.pops?.[cityId]?.groups;if(!Array.isArray(groups)||!groups.length)return;const current=groups.reduce((n,g)=>n+(Number(g.size)||0),0);if(current<=0)return;
