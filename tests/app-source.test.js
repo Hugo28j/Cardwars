@@ -68,3 +68,21 @@ test('right-click diplomacy stats avoid rebuilding the entire campaign ranking',
  const openBlock=source.slice(openStart,openEnd);
  assert.doesNotMatch(openBlock,/ensureDiplomacyCountry1300\(/);
 });
+
+
+test('right click country panel paints a shell before full diplomacy rendering',()=>{
+ const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
+ const start=source.indexOf('function openGameDiplomacyPanel1300');
+ const end=source.indexOf('function gameCountryPanelHTML1300',start);
+ const block=source.slice(start,end);
+ assert.match(block,/panel\.classList\.add\('open'\)/);
+ assert.match(block,/requestAnimationFrame\(\(\)=>requestAnimationFrame/);
+ assert.match(source,/function diplomacyCountryPanelShellHTML1300/);
+});
+
+test('diplomacy action rendering reuses one diplomat summary and ranking snapshot',()=>{
+ const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
+ assert.match(source,/diplomacyActionCanStart1300\(game,country,id,dip\)/);
+ assert.match(source,/diplomacyActionMeta1300\(game,country,x\.id,dip\)/);
+ assert.match(source,/game\?\.rankingSnapshot\?\.rows/);
+});

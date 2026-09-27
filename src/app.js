@@ -436,7 +436,12 @@ function normaliseGameDiplomacy1300(raw){
 }
 const ASK_FLORINS_FAVOR_COST_1300=5;
 function totalDiplomats1300(game){
- const status=campaignLeaderboardStatus1300(game),ratio=status.scoreRatio;
+ const rows=Array.isArray(game?.rankingSnapshot?.rows)?game.rankingSnapshot.rows:null;
+ let ratio;
+ if(rows?.length){
+  const playerName=gameCountryName1300(game),player=rows.find(r=>r.player||r.country===playerName),leaderStrength=Math.max(1,...rows.map(r=>Number(r.strength)||0));
+  ratio=clamp1300((Number(player?.strength)||0)/leaderStrength,0,1);
+ }else ratio=campaignLeaderboardStatus1300(game).scoreRatio;
  return ratio>=.75?5:ratio>=.50?4:ratio>=.25?3:2;
 }
 function activeDiplomatMissions1300(game){
@@ -453,9 +458,9 @@ function actionRecallsDiplomat1300(game,country,action){
  const ours=relation(game,PLAYER_REALM,country).ours;
  return action==='improve'&&ours.mission==='improve'||action==='curry'&&ours.mission==='curry';
 }
-function diplomacyActionCanStart1300(game,country,action){
+function diplomacyActionCanStart1300(game,country,action,dip=null){
  if(actionRecallsDiplomat1300(game,country,action))return true;
- if(availableDiplomats1300(game)<=0)return false;
+ if((dip?.available??availableDiplomats1300(game))<=0)return false;
  if(action==='money')return relation(game,PLAYER_REALM,country).ours.favors>=ASK_FLORINS_FAVOR_COST_1300;
  return true;
 }
@@ -464,13 +469,13 @@ function requireFreeDiplomat1300(game,country,action){
  if(availableDiplomats1300(game)>0)return true;
  toast(`All ${totalDiplomats1300(game)} diplomats are busy. Recall an Improve Relations or Curry Favors diplomat first.`);return false;
 }
-function diplomacyActionMeta1300(game,country,action){
+function diplomacyActionMeta1300(game,country,action,dip=null){
  const ours=relation(game,PLAYER_REALM,country).ours;
  if(action==='improve')return ours.mission==='improve'?'Recall diplomat':'Uses 1 diplomat';
  if(action==='curry')return ours.mission==='curry'?'Recall diplomat':'Uses 1 diplomat';
  if(action==='money')return `${ASK_FLORINS_FAVOR_COST_1300} favors`;
  if(action==='war'&&availableCasusBelli1300(game,PLAYER_REALM,country).length)return 'Casus belli available';
- return 'Needs free diplomat';
+ return (dip?.available??availableDiplomats1300(game))>0?'Uses 1 diplomat':'Needs free diplomat';
 }
 function diplomacyRelation1300(game,country){return opinion(relation(game,PLAYER_REALM,country).theirs);}
 function setDiplomacyRelation1300(game,country,value){const r=relation(game,PLAYER_REALM,country).theirs,current=opinion(r);r.opinion=clamp1300(r.opinion+value-current,-200,200);game.diplomacy.relations[country]=opinion(r);return opinion(r);}
@@ -536,10 +541,10 @@ function advancedDiplomacyHTML1300(game,country){
   supportIndependence:{id:'supportIndependence',label:labels.supportIndependence,disabled:pair.war}
  });
  const order=['improve','curry','gift','alliance','breakAlliance','trust','rival','insult','guarantee','recognition','supportIndependence','access','offerAccess','trade','money','sellCity','deal','peace','war'];
- const rows=order.filter(id=>defs[id]&&(id!=='peace'||pair.war)).map(id=>({...defs[id],disabled:defs[id].disabled||!diplomacyActionCanStart1300(game,country,id)}));
+ const rows=order.filter(id=>defs[id]&&(id!=='peace'||pair.war)).map(id=>({...defs[id],disabled:defs[id].disabled||!diplomacyActionCanStart1300(game,country,id,dip)}));
  return `<p class="dip-detail-note">Diplomats: <b>${dip.available}/${dip.total} available</b> · Commitments: ${slots}/4${pair.truceUntil>game.day?` · Truce: ${pair.truceUntil-game.day} days`:''}</p>
  <div class="dip-section-title compact"><span>DIPLOMATIC ACTIONS</span></div>
- <ul class="dip-action-list">${rows.map(x=>`<li><button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}><span>${esc(x.label)}</span><small class="${x.id==='money'?'favor':'diplomat'}">${esc(diplomacyActionMeta1300(game,country,x.id))}</small></button></li>`).join('')}</ul>
+ <ul class="dip-action-list">${rows.map(x=>`<li><button data-action="dip-advanced" data-id="${x.id}" ${x.disabled?'disabled':''}><span>${esc(x.label)}</span><small class="${x.id==='money'?'favor':'diplomat'}">${esc(diplomacyActionMeta1300(game,country,x.id,dip))}</small></button></li>`).join('')}</ul>
  <details class="dip-memory"><summary>Their diplomatic memories (${theirs.modifiers.length})</summary>${theirs.modifiers.map(m=>`<p>${esc(m.type)} <b class="${m.value>=0?'positive':'negative'}">${m.value>0?'+':''}${m.value.toFixed(1)}</b></p>`).join('')||'<p>No memories yet.</p>'}</details>`;
 }
 function diplomacyRelationLabel1300(v){return v>=70?'Trusted':v>=35?'Friendly':v>=10?'Cordial':v>-10?'Neutral':v>-35?'Tense':v>-70?'Hostile':'Bitter enemies';}
@@ -3002,8 +3007,16 @@ function diplomacyCountryPanelHTML1300(country){
 function renderGameDiplomacyPanel1300(){
  const panel=$('#game-diplomacy-panel');if(!panel)return;if(!gameDiplomacyCountry||!profile.activeGame){panel.innerHTML='';panel.classList.remove('open');return;}const scroll=panel.querySelector('.dip-scroll')?.scrollTop||0;panel.innerHTML=diplomacyCountryPanelHTML1300(gameDiplomacyCountry);panel.classList.add('open');const next=panel.querySelector('.dip-scroll');if(next)next.scrollTop=scroll;
 }
+function diplomacyCountryPanelShellHTML1300(country){
+ return `<div class="dip-panel-head"><button class="country-panel-close" data-action="game-diplomacy-close">×</button><div class="dip-realm-seal">${icon('crown')}</div><div class="dip-panel-title"><span>${esc(polityType(country).toUpperCase())}</span><h2>${esc(country)}</h2><small>LOADING DIPLOMACY…</small></div></div><div class="dip-scroll"></div>`;
+}
 function openGameDiplomacyPanel1300(region){
- const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel(true);renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
+ const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}
+ gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;
+ renderGameProvincePanel(true);renderGameCountryPanel1300();gameDiplomacyCountry=country;
+ const panel=$('#game-diplomacy-panel');
+ if(panel){panel.innerHTML=diplomacyCountryPanelShellHTML1300(country);panel.classList.add('open');}
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{if(gameDiplomacyCountry===country&&profile.activeGame===game)renderGameDiplomacyPanel1300();}));
 }
 
 function gameCountryPanelHTML1300(){
