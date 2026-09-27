@@ -2130,9 +2130,13 @@ function gameProvincePanelHTML(cityId){
   ${owned?`<div class="create-building-wrap"><button class="create-new-building" data-action="game-building-catalog-open"><span>＋</span><div><strong>CREATE A NEW BUILDING</strong><small>Choose from buildings this province can support</small></div></button></div>`:''}`:''}
  </div>`;
 }
-function renderGameProvincePanel(){
+function clearCampaignArmySelectionVisual1300(){
+ if(world?.state?.game){world.state.game.selectedArmyCity=null;world.state.game.armyMoveMode=false;}
+ world?.svg?.querySelectorAll?.('.army-map-marker.selected-army,.army-map-marker.move-armed').forEach(el=>el.classList.remove('selected-army','move-armed'));
+}
+function renderGameProvincePanel(skipMapRefresh=false){
  const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;if(gameBattlePanelId){renderGameBattlePanel1300();return;}if(gameSiegePanelId){renderGameSiegePanel1300();return;}if(gameArmyPanelKey){renderArmyMapPanel1300();return;}
- if(!gameProvincePanel||!CITY_1300[gameProvincePanel]){panel.innerHTML='';panel.classList.remove('open');shell?.classList.remove('province-panel-open');if(world?.state?.game){world.state.game.selectedArmyCity=null;world.state.game.armyMoveMode=false;world.refresh();}return;}
+ if(!gameProvincePanel||!CITY_1300[gameProvincePanel]){panel.innerHTML='';panel.classList.remove('open');shell?.classList.remove('province-panel-open');if(world?.state?.game){clearCampaignArmySelectionVisual1300();if(!skipMapRefresh)world.refresh();}return;}
  const scroll=panel.querySelector('.province-side-scroll')?.scrollTop||0;panel.innerHTML=gameProvincePanelHTML(gameProvincePanel);panel.classList.add('open');shell?.classList.add('province-panel-open');const next=panel.querySelector('.province-side-scroll');if(next)next.scrollTop=scroll;
 }
 function buyGameProvinceBuilding(cityId,buildingId){
@@ -2987,7 +2991,7 @@ function renderGameDiplomacyPanel1300(){
  const panel=$('#game-diplomacy-panel');if(!panel)return;if(!gameDiplomacyCountry||!profile.activeGame){panel.innerHTML='';panel.classList.remove('open');return;}const scroll=panel.querySelector('.dip-scroll')?.scrollTop||0;panel.innerHTML=diplomacyCountryPanelHTML1300(gameDiplomacyCountry);panel.classList.add('open');const next=panel.querySelector('.dip-scroll');if(next)next.scrollTop=scroll;
 }
 function openGameDiplomacyPanel1300(region){
- const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}ensureDiplomacyCountry1300(game,country);gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel();renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
+ const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}ensureDiplomacyCountry1300(game,country);gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;renderGameProvincePanel(true);renderGameCountryPanel1300();gameDiplomacyCountry=country;renderGameDiplomacyPanel1300();
 }
 
 function gameCountryPanelHTML1300(){
@@ -3001,7 +3005,7 @@ function renderGameCountryPanel1300(){
  const oldScroll=panel.querySelector('.country-panel-scroll')?.scrollTop||0;panel.innerHTML=gameCountryPanelHTML1300();panel.classList.add('open');const sc=panel.querySelector('.country-panel-scroll');if(sc)sc.scrollTop=oldScroll;
 }
 function openGameCountryPanel1300(){
- if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();gameCountryPanel=true;renderGameCountryPanel1300();
+ if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel(true);gameCountryPanel=true;renderGameCountryPanel1300();
 }
 function campaignResourceBarHTML1300(game){
  const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game),rank=campaignLeaderboardStatus1300(game);

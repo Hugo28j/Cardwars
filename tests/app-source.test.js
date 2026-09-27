@@ -42,3 +42,15 @@ test('campaign province clicks do not force a full synchronous map refresh',()=>
  assert.doesNotMatch(block,/mapState\.selected=id;world\.refresh\(\)/);
  assert.match(block,/mapState\.selected=id;renderGameProvincePanel\(\)/);
 });
+
+
+test('right-click country panels open without a synchronous full map refresh',()=>{
+ const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
+ assert.match(source,/function clearCampaignArmySelectionVisual1300/);
+ assert.match(source,/function renderGameProvincePanel\(skipMapRefresh=false\)/);
+ const dipStart=source.indexOf('function openGameDiplomacyPanel1300');
+ const dipEnd=source.indexOf('function gameCountryPanelHTML1300',dipStart);
+ const dipBlock=source.slice(dipStart,dipEnd);
+ assert.match(dipBlock,/renderGameProvincePanel\(true\)/);
+ assert.doesNotMatch(dipBlock,/world\.refresh\(\)/);
+});
