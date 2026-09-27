@@ -566,7 +566,7 @@ function diplomacyCountryStats1300(country){
    for(const c of playable){const st=campaignCityStats1300(game,c,isPlayer);population+=st.population;army+=st.army;navy+=st.navy;foodTotal+=st.food;economyTotal+=st.economy;technologyTotal+=st.technology;stabilityTotal+=st.stability;}
    const support=!isPlayer?SUPPORT_TERRITORIES_1300.filter(s=>s.country===country):[];
    for(const s of support){population+=Number(s.people)||0;army+=Number(s.army)||0;navy+=Number(s.navy)||0;foodTotal+=Number(s.food)||0;economyTotal+=Number(s.economyScore)||0;technologyTotal+=Number(s.technology)||0;stabilityTotal+=Number(s.stability)||0;}
-   const cityCount=playable.length+support.length,count=Math.max(1,cityCount),foodAvg=roundStat1300(foodTotal/count),economyAvg=roundStat1300(economyTotal/count),technologyAvg=roundStat1300(technologyTotal/count),stabilityAvg=roundStat1300(stabilityTotal/count),baseScore=foodAvg*50+economyAvg*50+technologyAvg*50+stabilityAvg*50+Math.round(population/50)+Math.round(army*2)+Math.round(navy*10),cityMultiplier=1+cityCount/50,powerModifier=campaignPowerModifier1300(game,{country,player:isPlayer}),strength=Math.round(Math.round(baseScore*cityMultiplier)*powerModifier);
+   const cityCount=playable.length+support.length,count=Math.max(1,cityCount),foodAvg=roundStat1300(foodTotal/count),economyAvg=roundStat1300(economyTotal/count),technologyAvg=roundStat1300(technologyTotal/count),stabilityAvg=roundStat1300(stabilityTotal/count),baseScore=foodAvg*50+economyAvg*50+technologyAvg*50+stabilityAvg*50+Math.round(population/50)+Math.round(army*2)+Math.round(navy*10),cityMultiplier=1+cityCount/25,powerModifier=campaignPowerModifier1300(game,{country,player:isPlayer}),strength=Math.round(Math.round(baseScore*cityMultiplier)*powerModifier);
    return {country,cityCount,playableCityCount:playable.length,population,army,navy,foodAvg,economyAvg,technologyAvg,stabilityAvg,baseScore,cityMultiplier,powerModifier,strength};
   }
  }
@@ -2238,7 +2238,7 @@ const countryRankings1300=()=>{
   const foodScore=foodAvg*50,economyScore=economyAvg*50,technologyScore=technologyAvg*50,stabilityScore=stabilityAvg*50;
   const populationScore=Math.round(entry.population/50),armyScore=Math.round(entry.army*2),navyScore=Math.round(entry.navy*10);
   const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore;
-  const cityMultiplier=1+cityCount/50,powerModifier=baselinePowerModifier1300(entry.country),rawStrength=Math.round(baseScore*cityMultiplier),strength=Math.round(rawStrength*powerModifier);
+  const cityMultiplier=1+cityCount/25,powerModifier=baselinePowerModifier1300(entry.country),rawStrength=Math.round(baseScore*cityMultiplier),strength=Math.round(rawStrength*powerModifier);
   return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,powerModifier,rawStrength,strength};
  }).sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country)).map((entry,i)=>({...entry,rank:i+1}));
 };
@@ -2532,7 +2532,7 @@ function buildCampaignRankings1300(game){
   const cityCount=entry.cities.length||1,playableCityCount=entry.cities.filter(c=>!c.supportTerritory).length;
   const foodAvg=roundStat1300(entry.foodTotal/cityCount),economyAvg=roundStat1300(entry.economyTotal/cityCount),technologyAvg=roundStat1300(entry.technologyTotal/cityCount),stabilityAvg=roundStat1300(entry.stabilityTotal/cityCount);
   const foodScore=foodAvg*50,economyScore=economyAvg*50,technologyScore=technologyAvg*50,stabilityScore=stabilityAvg*50,populationScore=Math.round(entry.population/50),armyScore=Math.round(entry.army*2),navyScore=Math.round(entry.navy*10);
-  const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore,cityMultiplier=1+cityCount/50,powerModifier=campaignPowerModifier1300(game,entry),rawStrength=Math.round(baseScore*cityMultiplier),strength=Math.round(rawStrength*powerModifier);
+  const baseScore=foodScore+economyScore+technologyScore+stabilityScore+populationScore+armyScore+navyScore,cityMultiplier=1+cityCount/25,powerModifier=campaignPowerModifier1300(game,entry),rawStrength=Math.round(baseScore*cityMultiplier),strength=Math.round(rawStrength*powerModifier);
   return {...entry,cityCount,playableCityCount,foodAvg,economyAvg,technologyAvg,stabilityAvg,foodScore,economyScore,technologyScore,stabilityScore,populationScore,armyScore,navyScore,baseScore,cityMultiplier,powerModifier,rawStrength,strength};
  }).filter(r=>r.playableCityCount>0).sort((a,b)=>b.strength-a.strength||a.country.localeCompare(b.country)).map((r,i)=>({...r,rank:i+1}));
 }
@@ -3075,7 +3075,7 @@ function rankingsPage(){
  const categoryValue=(r,key)=>key==='strength'?strengthNumber(r.strength):['foodAvg','economyAvg','technologyAvg','stabilityAvg'].includes(key)?strengthNumber(r[key])+'/100':strengthNumber(r[key]);
  return `<main class="rankings-page">
   <div class="page-title rankings-title"><div><span class="eyebrow">COUNTRY POWER · c. 1300 CE</span><h1>Rankings<span class="title-dot">.</span></h1><p>Country strength now uses national averages for the four 0–100 stats, total population, army and navy, followed by a bonus for the number of cities.</p></div><div class="ranking-leader"><span>#1 OVERALL</span><strong>${esc(leader?.country||'—')}</strong><small>${leader?strengthNumber(leader.strength):'—'} strength</small></div></div>
-  <div class="ranking-formula">${icon('help')}<div><strong>Country strength formula</strong><p><b>(Average Food × 50 + Average Economy × 50 + Average Technology × 50 + Average Stability × 50 + Total Population ÷ 50 + Total Army × 2 + Total Navy × 10) × city bonus.</b> The city bonus is <b>1 + (cities × 0.02)</b>, so 12 cities = <b>×1.24</b> and 4 cities = <b>×1.08</b>. All displayed scores are rounded to whole numbers.</p></div></div>
+  <div class="ranking-formula">${icon('help')}<div><strong>Country strength formula</strong><p><b>(Average Food × 50 + Average Economy × 50 + Average Technology × 50 + Average Stability × 50 + Total Population ÷ 50 + Total Army × 2 + Total Navy × 10) × city bonus.</b> The city bonus is <b>1 + (cities × 0.04)</b>, so 12 cities = <b>×1.48</b> and 4 cities = <b>×1.16</b>. All displayed scores are rounded to whole numbers.</p></div></div>
   <div class="ranking-overview"><span><strong>${overall.length}</strong><small>COUNTRIES</small></span><span><strong>${CITIES_1300.length}</strong><small>CITIES</small></span><span><strong>${leader?strengthNumber(leader.cityMultiplier*100-100):'0'}%</strong><small>#1 CITY BONUS</small></span></div>
   <div class="ranking-category-tabs" aria-label="Ranking category">
    ${RANKING_CATEGORIES_1300.map(([id,label])=>`<button class="${rankingCategory===id?'active':''}" data-action="ranking-category" data-id="${id}">${label}</button>`).join('')}
