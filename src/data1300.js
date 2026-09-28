@@ -4643,6 +4643,90 @@ export const CITIES_1300=[
        "https://www.visitportugal.com/en/content/faro"
      ]
    ]
+ },
+ {
+   "id": "1300-tarnovo",
+   "name": "Tarnovo",
+   "modern": "Veliko Tarnovo",
+   "country": "Second Bulgarian Empire",
+   "subrealm": "Imperial capital · Tsarevets and Trapezitsa",
+   "lon": 25.6172,
+   "lat": 43.0757,
+   "rarity": 3,
+   "year": 1300,
+   "people": 30000,
+   "populationText": "30.0 K",
+   "populationRange": "20–40 K",
+   "populationConfidence": "low",
+   "sizeText": "2.4 km²",
+   "sizeConfidence": "low",
+   "army": 900,
+   "armyText": "900",
+   "navy": 0,
+   "navyText": "0",
+   "food": 72,
+   "technology": 90,
+   "economyScore": 84,
+   "stability": 54,
+   "startingFlorins": 9.8,
+   "historicalRole": "Capital of the Second Bulgarian Empire and seat of the tsar and patriarch",
+   "economy": "Court demand, crafts, church estates, regional markets and Balkan-route trade",
+   "militaryRole": "Powerful hill-fortress capital with a large royal and urban defensive core",
+   "researchSummary": "Tarnovo was the political, religious, administrative and cultural centre of the Second Bulgarian Empire. Tsarevets held the royal and patriarchal complexes, while the wider fortified city spread across several hills.",
+   "evidenceNote": "No reliable c.1300 census survives. Population, urban footprint and standing army are cautious comparative Cardwars estimates; the strong Technology score reflects the patriarchate, court administration and literary culture.",
+   "sources": [
+     [
+       "Bulgarian Ministry of Tourism — Tsarevets",
+       "https://www.tourism.government.bg/en/tourist-destinations/2804/5519"
+     ],
+     [
+       "Veliko Tarnovo tourism — Tsarevets architectural reserve",
+       "https://velikoturnovo.info/en/places/tsarevets/"
+     ]
+   ]
+ },
+ {
+   "id": "1300-vidin",
+   "name": "Vidin",
+   "modern": "Vidin",
+   "country": "Second Bulgarian Empire",
+   "subrealm": "Autonomous Despotate of Vidin · Danube fortress of Shishman",
+   "historicalCountry": "Despotate of Vidin",
+   "lon": 22.8754,
+   "lat": 43.9962,
+   "rarity": 2,
+   "year": 1300,
+   "people": 12000,
+   "populationText": "12.0 K",
+   "populationRange": "8–16 K",
+   "populationConfidence": "low",
+   "sizeText": "0.9 km²",
+   "sizeConfidence": "low",
+   "army": 350,
+   "armyText": "350",
+   "navy": 0,
+   "navyText": "0",
+   "food": 76,
+   "technology": 68,
+   "economyScore": 74,
+   "stability": 55,
+   "startingFlorins": 3.65,
+   "historicalRole": "Semi-autonomous northwestern Bulgarian capital and strategic Danube port-fortress",
+   "economy": "Danube trade, port services, agriculture, crafts and princely administration",
+   "militaryRole": "Major river frontier fortress with a strong permanent princely garrison",
+   "researchSummary": "Around 1300 Vidin was the centre of the lands ruled by Despot Shishman. The city combined political autonomy, Danube commerce and the heavily fortified Baba Vida complex.",
+   "evidenceNote": "Vidin is grouped under the Second Bulgarian Empire for Cardwars country formation. Historically, Shishman ruled the region with extensive autonomy and shifting Serbian and Bulgarian relationships. Population and military values are low-confidence gameplay estimates.",
+   "gameplayNote": "Gameplay grouping: Vidin is shown with Bulgaria so the Second Bulgarian Empire can be formed from two provinces; historically it was a semi-autonomous despotate around 1300.",
+   "sources": [
+     [
+       "Municipality of Vidin — history of medieval Bdin",
+       "https://old.vidin.bg/pages/Istoriq-na-Vidin-140"
+     ],
+     [
+       "Bulgarian Ministry of Tourism — Baba Vida Fortress",
+       "https://www.tourism.government.bg/en/tourist-destinations/2118/2119"
+     ]
+   ]
  }
 ];
 
