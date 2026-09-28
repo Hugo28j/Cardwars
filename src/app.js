@@ -1,10 +1,10 @@
 import {PLAYER_REALM, DIP_ACTIONS, diplomacyState, relation, opinion, attitude, acceptance, performAction, weeklyDiplomacy, relationSlots, availableCasusBelli1300} from './diplomacy1300.js?v=20260926-country-ai-v23';
-import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260928-bulgaria-v7';
+import {CITIES_1300,CITY_1300,SUPPORT_TERRITORIES_1300,RARITIES_1300,RARITY_COLORS_1300,RESEARCH_1300_NOTE} from './data1300.js?v=20260928-anatolia-v8';
 import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=20260921-player-realm-v7';
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-treasury-grain-market-v9';
 import {icon} from './icons.js?v=20260926-hud-notifications-v3';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20260928-bulgaria-v23';
+import {WorldMap} from './map.js?v=20260928-anatolia-v24';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260926-military-unlocks-v3';
 import {MILITARY_UNITS_1300,MILITARY_UNIT_1300,PROFESSIONAL_MILITARY_UNITS_1300,normaliseMilitaryState1300,unitCount1300,professionalCount1300,levyCount1300,pendingProfessional1300,addTrainingOrder1300,addLevyOrder1300,cancelOrder1300,disbandUnits1300,applyUnitLosses1300,completeTrainingForDay1300} from './military1300.js?v=20260926-v2';
 import {freshCountryAI1300,normaliseCountryAI1300,applyCountryAIStats1300,runCountryAIWeek1300} from './ai1300.js?v=20260926-country-ai-v1';
