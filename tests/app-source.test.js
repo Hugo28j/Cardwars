@@ -33,6 +33,12 @@ test('fog of war uses friendly cities occupations alliances and player armies as
 });
 
 
+test('single-player ownership does not treat two missing multiplayer ids as a match',()=>{
+ const mapSource=readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
+ assert.match(mapSource,/isLocalMultiplayerOwner=!!game\?\.localPlayerId&&savedOwner===game\.localPlayerId/);
+ assert.doesNotMatch(mapSource,/isOwned=ownedCities\.has\(id\)\|\|savedOwner===game\?\.localPlayerId/);
+});
+
 test('campaign province clicks do not force a full synchronous map refresh',()=>{
  const source=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
  const start=source.indexOf("world=new WorldMap($('#game-map-host')");

@@ -390,7 +390,7 @@ export class WorldMap{
   const occupationPatternByCountry=new Map(),patternHost=this.svg.querySelector('#occupation-patterns'),occupiers=[...new Set(Object.values(game?.occupations||{}).filter(Boolean))];
   if(patternHost){patternHost.innerHTML=occupiers.map((country,i)=>{const id='occupation-stripes-'+i,realm=CITY_REALM_ALIASES.get(country)||country,color=game?.playerColors?.[country]||(country===game?.playerCountry?(game?.playerColor||'#c6534d'):colorForRealm(realm));occupationPatternByCountry.set(country,id);return `<pattern id="${id}" patternUnits="userSpaceOnUse" width="9" height="9" patternTransform="rotate(45)"><rect width="9" height="9" fill="transparent"/><path d="M0 -2V11" stroke="${color}" stroke-width="3.2" stroke-opacity=".88"/></pattern>`;}).join('');}
   for(const cell of this.svg.querySelectorAll('.city-territory-cell')){
-   const id=cell.dataset.city,savedOwner=game?.cityOwners?.[id],humanColor=savedOwner?game?.playerColors?.[savedOwner]:null,isOwned=ownedCities.has(id)||savedOwner===game?.localPlayerId,isHumanOwned=!!humanColor,isVisible=visibleCities.has(id);
+   const id=cell.dataset.city,savedOwner=game?.cityOwners?.[id],humanColor=savedOwner?game?.playerColors?.[savedOwner]:null,isLocalMultiplayerOwner=!!game?.localPlayerId&&savedOwner===game.localPlayerId,isOwned=ownedCities.has(id)||isLocalMultiplayerOwner,isHumanOwned=!!humanColor,isVisible=visibleCities.has(id);
    cell.classList.toggle('game-owned',!!game&&isOwned);cell.classList.toggle('game-player-owned',!!game&&isHumanOwned);
    cell.classList.toggle('game-visible',!!game&&!isOwned&&isVisible);
    const occupier=game?.occupations?.[id],occupationPattern=occupier?occupationPatternByCountry.get(occupier):null;
