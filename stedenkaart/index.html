@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#092f36">
+<meta name="description" content="Cardwars-kaart met kustlijnen, 323 steden en tekenfunctie.">
+<title>Cardwars · Stedenkaart</title><link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body><main class="map-shell">
+<header><div><p>Cardwars · 1300</p><h1>Stedenkaart</h1></div><strong><span id="city-count">323</span> steden</strong></header>
+<section class="map-stage" aria-label="Interactieve kaart met Cardwars-steden">
+<svg id="map" viewBox="45 0 840 590" role="img" aria-label="Kaart met kustlijnen en steden"><defs>
+<filter id="land-shadow"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#00191d" flood-opacity=".34"/></filter>
+<filter id="point-glow"><feDropShadow dx="0" dy="0" stdDeviation="1.4" flood-color="#ffcf70" flood-opacity=".85"/></filter>
+<pattern id="sea-grid" width="32" height="32" patternUnits="userSpaceOnUse" patternTransform="rotate(24)"><path d="M0 0V32" stroke="#76a7aa" stroke-width=".55" opacity=".16"/></pattern>
+</defs><rect class="sea" x="-1000" y="-1000" width="3000" height="3000"/><rect class="grid" x="-1000" y="-1000" width="3000" height="3000"/>
+<g><path id="land" class="land"/><g id="cities"></g><g id="labels"></g></g></svg>
+<canvas id="draw-layer" aria-label="Tekenlaag"></canvas>
+<nav class="tools" aria-label="Tekenbediening">
+<button class="mode active" data-mode="pan" title="Kaart bewegen">✋ <span>Kaart</span></button>
+<button class="mode" data-mode="draw" title="Lijn tekenen">✎ <span>Teken</span></button>
+<button class="mode" data-mode="erase" title="Lijn wissen">⌫ <span>Wis</span></button>
+<label title="Lijnkleur"><input id="draw-color" type="color" value="#ef6548"><span>Kleur</span></label>
+<button id="clear-drawing" title="Alle lijnen wissen">× <span>Alles</span></button>
+</nav>
+<nav class="zoom"><button id="zoom-in">+</button><button id="zoom-out">−</button><button id="reset">⌂</button></nav>
+<button id="label-mode" class="labels-button">Namen: slim</button>
+<aside id="city-card" hidden><button id="close-card">×</button><small>Stad</small><h2 id="city-name"></h2><span id="city-country"></span></aside>
+<p class="hint">Kies Teken om lijnen te maken · Wis verwijdert een volledige lijn</p>
+</section></main><script src="map-data.js?v=2"></script><script src="app.js?v=2"></script></body></html>
