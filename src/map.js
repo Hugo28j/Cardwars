@@ -185,6 +185,7 @@ const cityBorderColor=realm=>'#7a8781';
 const cityBorderOpacity=realm=>'.30';
 const cache={};
 let physicalLandCache;
+let drawnBordersCache;
 export class WorldMap{
  constructor(host,state,onSelect,onRegion,onArmySelect=null,onArmyMove=null){
   this.host=host;this.state=state;this.onSelect=onSelect;this.onRegion=onRegion;this.onArmySelect=onArmySelect;this.onArmyMove=onArmyMove;this.armyPointer=null;this.mode='historical';this.view={x:100,y:220,w:750,h:600};this.pointers=new Map();this.destroyed=false;this.drawn=false;this.coastMarkerCache=new Map();this.physicalLandPolys=[];this.deferredRefreshTimer=null;this.interactionRefreshDelay=90;this.movementAnimationFrame=0;
@@ -207,18 +208,19 @@ export class WorldMap{
  }
  async load(fit){
   const mode=this.mode;
-  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-aquileia-venice-coast-fix-v1':'assets/atlas.json?v=20260920-merge-frankfurt-into-mainz-v1').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});physicalLandCache??=fetch('assets/map-land.json?v=20260920-aquileia-venice-coast-fix-v1').then(r=>r.ok?r.json():{d:''}).catch(()=>({d:''}));const [atlas,physicalLand]=await Promise.all([cache[mode],physicalLandCache]);this.physicalLandPolys=svgSubpaths(physicalLand.d).map(svgSubpathPoints).filter(p=>p.length>=3);this.coastMarkerCache.clear();this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+  try{cache[mode]??=fetch(mode==='modern'?'assets/modern-atlas.json?v=20260920-aquileia-venice-coast-fix-v1':'assets/atlas.json?v=20260929-hugo-drawn-map-v1').then(r=>{if(!r.ok)throw new Error('Missing atlas');return r.json();});physicalLandCache??=fetch('assets/map-land.json?v=20260920-aquileia-venice-coast-fix-v1').then(r=>r.ok?r.json():{d:''}).catch(()=>({d:''}));drawnBordersCache??=fetch('assets/map-user-borders.json?v=20260929-hugo-drawn-map-v1').then(r=>r.ok?r.json():{d:'',nonPlayableD:''}).catch(()=>({d:'',nonPlayableD:''}));const [atlas,physicalLand,drawnBorders]=await Promise.all([cache[mode],physicalLandCache,mode==='historical'?drawnBordersCache:Promise.resolve({d:'',nonPlayableD:''})]);this.physicalLandPolys=svgSubpaths(physicalLand.d).map(svgSubpathPoints).filter(p=>p.length>=3);this.coastMarkerCache.clear();this.realmInfo=new Map(atlas.map(f=>[realmOf(f),f]));if(this.destroyed||this.mode!==mode)return;
+   const drawnAtlas=mode==='historical'&&atlas.some(f=>f.cityId);
    const atlasRealms=new Set(atlas.filter(f=>!f.outline&&!f.underlay).map(realmOf));
    this.cityTerritoryRealms=new Set([...CITY_TERRITORY_REALMS].filter(realm=>atlasRealms.has(realm)));
-   const territoryMarkup=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),outline=f.underlay?'':withoutIslandStroke(f.d),cleaned=!f.underlay&&outline!==f.d,stroke=f.underlay||cleaned?'none':'#28372e',sw=f.underlay||cleaned?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${this.cityTerritoryRealms.has(realm)?'city-region-realm':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleaned)return base;return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
-   const cleanIslandCoast=islandLandOutline(physicalLand.d),cleanIslandBorders=sharedIslandBorders(atlas),realmSeamCovers=sameRealmSeamCovers(atlas,mode);
-   this.svg.querySelector('#land').innerHTML=territoryMarkup+(cleanIslandCoast?`<path d="${cleanIslandCoast}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'')+(cleanIslandBorders?`<path d="${cleanIslandBorders}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'')+realmSeamCovers;
+   const territoryMarkup=atlas.filter(f=>!f.outline).map((f,i,arr)=>{const realm=realmOf(f),mainIndex=arr.findIndex(g=>!g.underlay&&realmOf(g)===realm),fill=(mode==='historical'?colorForRealm(realm):palettes[((f.underlay&&mainIndex>=0)?mainIndex:i)%palettes.length]),outline=f.underlay||drawnAtlas?'':withoutIslandStroke(f.d),cleaned=!f.underlay&&outline!==f.d,stroke=f.underlay||cleaned||drawnAtlas?'none':'#28372e',sw=f.underlay||cleaned||drawnAtlas?'0':'.85',base=`<path class="territory ${f.detail?'detail-polity':''} ${this.cityTerritoryRealms.has(realm)?'city-region-realm':''} ${IBERIA_REALMS.has(realm)?'iberia-realm':''} ${f.underlay?'territory-underlay':''} ${drawnAtlas?'drawn-map-territory':''}" data-realm="${esc(realm)}" data-detail="${f.detail?'1':'0'}" d="${f.d}" fill="${fill}" fill-rule="evenodd" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" vector-effect="non-scaling-stroke"><title>${esc(f.name||'Local communities')}</title></path>`;if(!cleaned)return base;return base+(outline?`<path d="${outline}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'');}).join('');
+   const cleanIslandCoast=drawnAtlas?'':islandLandOutline(physicalLand.d),cleanIslandBorders=drawnAtlas?'':sharedIslandBorders(atlas),realmSeamCovers=drawnAtlas?'':sameRealmSeamCovers(atlas,mode),drawnLinework=drawnAtlas?`${drawnBorders.d?`<path class="drawn-map-border" d="${drawnBorders.d}"/>`:''}${drawnBorders.nonPlayableD?`<path class="drawn-map-border drawn-map-border-support" d="${drawnBorders.nonPlayableD}"/>`:''}${physicalLand.d?`<path class="drawn-map-coast" d="${physicalLand.d}"/>`:''}`:'';
+   this.svg.querySelector('#land').innerHTML=territoryMarkup+drawnLinework+(cleanIslandCoast?`<path d="${cleanIslandCoast}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'')+(cleanIslandBorders?`<path d="${cleanIslandBorders}" fill="none" stroke="#28372e" stroke-width=".85" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`:'')+realmSeamCovers;
    this.buildCityTerritories(atlas);
    const rawLabels=[...historicalLabels.map(([name,x,y,level=1])=>({name,x,y,level,kind:level===1?'major':'polity',realm:HISTORICAL_LABEL_REALMS.get(name)||''})),...atlas.filter(f=>f.label).map(f=>({name:f.label,x:f.lx,y:f.ly,level:f.labelLevel||2,kind:f.outline?'umbrella':'polity',realm:f.outline?'':realmOf(f)}))],seenLabels=new Set(),labels=rawLabels.filter(l=>{const key=(l.realm||'')+'|'+l.name;if(seenLabels.has(key))return false;seenLabels.add(key);return true;});
    this.svg.querySelector('#realm-labels').innerHTML=labels.map(({name,x,y,level,kind,realm})=>{const fallback=pos(x,y),metric=realm?realmLabelMetrics(atlas,realm,fallback):{center:fallback,clearance:0},p=metric.center;return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" dominant-baseline="central" data-level="${level}" data-kind="${kind}" data-realm-label="${esc(realm)}" data-base-x="${p[0]}" data-base-y="${p[1]}" data-safe-radius="${metric.clearance.toFixed(3)}" class="realm-label">${esc(name)}</text>`;}).join('');
    this.realmLabels=[...this.svg.querySelectorAll('.realm-label')].sort((a,b)=>{const au=a.dataset.kind==='umbrella'?1:0,bu=b.dataset.kind==='umbrella'?1:0;return au-bu||+(a.dataset.level)-+(b.dataset.level);});
    this.svg.querySelector('#sea-labels').innerHTML=[['MEDITERRANEAN SEA',14,35],['BLACK SEA',34,43],['ATLANTIC OCEAN',-14,44],['NORTH SEA',3,56]].map(([name,x,y])=>{const p=pos(x,y);return `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" class="sea-label">${name}</text>`;}).join('');
-   this.host.querySelector('#map-attribution').textContent='Approximate 1300 borders · Historical Basemaps · Natural Earth coastline';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
+   this.host.querySelector('#map-attribution').textContent=drawnAtlas?'Hand-drawn borders by Hugo · historical realms c. 1300 · Natural Earth coastline':'Approximate 1300 borders · Historical Basemaps · Natural Earth coastline';this.host.querySelector('.map-loading')?.remove();if(fit&&this.focusRequest)this.focus(this.focusRequest);else if(fit)this.fit();else this.update();
   }catch{delete cache[mode];const el=this.host.querySelector('.map-loading');if(el)el.textContent='Map could not load. Reload to try again.';}
  }
  pick(target,intent='primary',event=null){
@@ -251,6 +253,7 @@ export class WorldMap{
   return best;
  }
  buildCityTerritories(atlas){
+  if(atlas.some(f=>f.cityId)){this.buildDrawnCityTerritories(atlas);return;}
   const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels');
   defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();this.cityUnitAnchors=new Map();this.cityCellGeometry=new Map();this.cityRealmGeometry=new Map();
   for(const realm of this.cityTerritoryRealms||[]){
@@ -327,6 +330,24 @@ export class WorldMap{
     }
    }
   }
+  this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
+ }
+ buildDrawnCityTerritories(atlas){
+  const defs=this.svg.querySelector('defs'),territoryLayer=this.svg.querySelector('#city-territories'),labelLayer=this.svg.querySelector('#city-territory-labels'),features=atlas.filter(f=>f.cityId&&CITY[f.cityId]);
+  defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();this.cityUnitAnchors=new Map();this.cityCellGeometry=new Map();this.cityRealmGeometry=new Map();
+  const byRealm=new Map();
+  for(const feature of features){
+   const c=CITY[feature.cityId],realm=realmOf(feature),point=pos(c.mapLon??c.lon,c.mapLat??c.lat),polys=svgSubpaths(feature.d).map(svgSubpathPoints).filter(p=>p.length>=3),poly=polys.find(p=>pointInPolygon(point,p))||[...polys].sort((a,b)=>polygonArea(b)-polygonArea(a))[0];if(!poly)continue;
+   const metrics=visibleCellMetrics(poly,[poly],point),cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
+   this.cityCenters.set(c.id,point);this.cityAdjacency.set(c.id,new Set(feature.neighbors||[]));this.cityUnitAnchors.set(c.id,{point:metrics.center,clearance:metrics.clearance,cellClip,componentClip:cellClip});this.cityCellGeometry.set(c.id,{poly,componentPoly:poly,realmPolys:polys});
+   if(!byRealm.has(realm))byRealm.set(realm,{realm,polys:[],cities:[],points:[]});const group=byRealm.get(realm);group.polys.push(...polys);group.cities.push(c);group.points.push(point);
+   defs.insertAdjacentHTML('beforeend',`<clipPath class="city-territory-dynamic" id="${cellClip}"><path d="${feature.d}" fill-rule="evenodd"/></clipPath>`);
+   territoryLayer.insertAdjacentHTML('beforeend',`<path class="city-territory-cell drawn-city-territory-cell" data-city="${c.id}" data-realm="${esc(realm)}" d="${feature.d}" fill-rule="evenodd"><title>${esc(displayCityName(c))} · ${esc(displayRealmName(realm))}</title></path>`);
+   const angle=IBERIA_LABEL_ANGLES[c.id]||0,p=metrics.center,box=metrics.box;
+   labelLayer.insertAdjacentHTML('beforeend',`<g clip-path="url(#${cellClip})"><text x="${p[0]}" y="${p[1]}" text-anchor="middle" dominant-baseline="central" transform="rotate(${angle} ${p[0]} ${p[1]})" class="city-area-label" data-city-label="${c.id}" data-cell-w="${box.w}" data-cell-h="${box.h}" data-safe-radius="${metrics.clearance.toFixed(3)}">${esc(displayCityName(c))}</text></g>`);
+  }
+  for(const [realm,g] of byRealm){const pts=g.polys.flat(),xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);if(!pts.length)continue;g.bbox={x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};this.cityRealmGeometry.set(realm,g);}
+  for(const [id,neighbors] of this.cityAdjacency)for(const neighbor of neighbors)if(this.cityAdjacency.has(neighbor))this.cityAdjacency.get(neighbor).add(id);
   this.cityTerritoryLabels=[...labelLayer.querySelectorAll('.city-area-label')];
  }
  coastMarkerForCity(c){

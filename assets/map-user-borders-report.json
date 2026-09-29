@@ -1,0 +1,74 @@
+{
+  "sourceStrokeCount": 409,
+  "sourcePointCount": 21678,
+  "cityCount": 323,
+  "cityFeatureCount": 323,
+  "regionCount": 596,
+  "nonPlayableRealms": [
+    "Cyprus",
+    "Empire of Trebizond",
+    "Georgia",
+    "Grand Duchy of Lithuania",
+    "Grand Duchy of Moscow",
+    "Hafsid Caliphate",
+    "Ilkhanate",
+    "Khanate of the Golden Horde",
+    "Kingdom of Norway",
+    "Kingdom of Scotland",
+    "Kingdom of Sweden",
+    "Mamluke Sultanate",
+    "Morocco",
+    "Novgorod Republic",
+    "Principality of Ryazan",
+    "Teutonic Order"
+  ],
+  "repairedCities": [
+    {
+      "cityId": "1300-lisbon",
+      "distance": 0.0245,
+      "region": 180
+    },
+    {
+      "cityId": "1300-regensburg",
+      "distance": 0.2245,
+      "region": 429
+    },
+    {
+      "cityId": "1300-venice",
+      "distance": 0.5256,
+      "region": 219
+    },
+    {
+      "cityId": "1300-trapani",
+      "distance": 0.0195,
+      "region": 126
+    },
+    {
+      "cityId": "1300-calvi",
+      "distance": 0.0354,
+      "region": 89
+    },
+    {
+      "cityId": "1300-sandomierz",
+      "distance": 0.6171,
+      "region": 517
+    },
+    {
+      "cityId": "1300-gdansk",
+      "distance": 0.0249,
+      "region": 133
+    },
+    {
+      "cityId": "1300-pag",
+      "distance": 0.0328,
+      "region": 109
+    },
+    {
+      "cityId": "1300-vidin",
+      "distance": 0.0448,
+      "region": 547
+    }
+  ],
+  "featureCount": 598,
+  "adjacencyLinks": 785
+}

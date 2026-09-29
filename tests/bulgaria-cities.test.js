@@ -19,13 +19,7 @@ test('Tarnovo and Vidin are playable Bulgarian city cards',()=>{
 
 test('both Bulgarian city coordinates lie inside the Bulgarian atlas realm',()=>{
  const atlas=JSON.parse(fs.readFileSync(new URL('../assets/atlas.json',import.meta.url)));
- const realm=atlas.find(feature=>feature.realm==='Second Bulgarian Empire');
- assert.ok(realm?.d);
- const polygon=(realm.d.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number).reduce((points,n,index,all)=>{
-  if(index%2===0&&index+1<all.length)points.push([n,all[index+1]]);
-  return points;
- },[]);
- const inside=(point)=>{
+ const insidePolygon=(point,polygon)=>{
   let hit=false;
   for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
    const a=polygon[i],b=polygon[j];
@@ -34,7 +28,13 @@ test('both Bulgarian city coordinates lie inside the Bulgarian atlas realm',()=>
   return hit;
  };
  for(const id of ['1300-tarnovo','1300-vidin']){
+  const realm=atlas.find(feature=>feature.realm==='Second Bulgarian Empire'&&feature.cityId===id);
+  assert.ok(realm?.d);
+  const polygons=(realm.d.match(/M[^M]+?Z/g)||[]).map(segment=>(segment.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number).reduce((points,n,index,all)=>{
+   if(index%2===0&&index+1<all.length)points.push([n,all[index+1]]);
+   return points;
+  },[]));
   const city=CITY_1300[id],point=[((city.mapLon??city.lon)+22)*12,(72-(city.mapLat??city.lat))*15];
-  assert.equal(inside(point),true,id);
+  assert.equal(polygons.some(polygon=>insidePolygon(point,polygon)),true,id);
  }
 });

@@ -17,6 +17,19 @@ def parse(d):
 
 atlas=json.loads((ROOT/'assets/atlas.json').read_text())
 land=parse(json.loads((ROOT/'assets/map-land.json').read_text())['d'])
+if any(f.get('cityId') for f in atlas):
+    states=[f for f in atlas if not f.get('outline') and not f.get('underlay')]
+    geoms=[parse(f['d']) for f in states]
+    city_states=[f for f in states if f.get('cityId')]
+    underlay=next((parse(f['d']) for f in atlas if f.get('underlay')),GeometryCollection())
+    assert all(g.is_valid for g in geoms), 'A drawn province has invalid geometry'
+    assert coverage_is_valid(geoms), 'Drawn provinces overlap or have mismatched edges'
+    assert len(city_states)==323
+    assert len({f['cityId'] for f in city_states})==len(city_states)
+    assert unary_union(geoms).difference(land.buffer(.003)).area<1.0, 'A drawn province extends materially into the sea'
+    assert land.symmetric_difference(underlay).area<.01, 'The recovery underlay no longer matches the coastline'
+    print(f'PASS: {len(states)} hand-drawn regions; {len(city_states)} unique city provinces; valid shared edges.')
+    raise SystemExit(0)
 states=[f for f in atlas if not f.get('outline')]
 geoms=[parse(f['d']) for f in states]
 assert all(g.is_valid for g in geoms)

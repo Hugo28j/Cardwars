@@ -1,0 +1,24 @@
+#world-map .territory.drawn-map-territory {
+  stroke: none;
+  stroke-width: 0;
+}
+
+#world-map .drawn-map-border,
+#world-map .drawn-map-coast {
+  fill: none;
+  stroke: #28372e;
+  stroke-width: .78;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+#world-map .drawn-map-border-support {
+  stroke-width: .68;
+  stroke-opacity: .92;
+}
+
+#world-map .drawn-map-coast {
+  stroke-width: .9;
+}
