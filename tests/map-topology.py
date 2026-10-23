@@ -27,6 +27,7 @@ if any(f.get('cityId') for f in atlas):
     assert len(city_states)==323
     assert len({f['cityId'] for f in city_states})==len(city_states)
     assert unary_union(geoms).difference(land.buffer(.003)).area<1.0, 'A drawn province extends materially into the sea'
+    assert land.difference(unary_union(geoms).buffer(.003)).area<1e-7, 'Rebuilt drawn land still has gaps'
     assert land.symmetric_difference(underlay).area<.01, 'The recovery underlay no longer matches the coastline'
     print(f'PASS: {len(states)} hand-drawn regions; {len(city_states)} unique city provinces; valid shared edges.')
     raise SystemExit(0)

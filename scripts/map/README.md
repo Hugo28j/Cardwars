@@ -58,6 +58,16 @@ independent overlapping paths.
 `assets/map-land.json`: land coverage, overlaps, matching shared edges,
 duplicate realms and the screenshot's central-European gap locations.
 
+## Hand-drawn atlas coverage rebuild
+
+After importing or editing the later city-level hand-drawn atlas, run
+`python scripts/rebuild-drawn-map.py` with Shapely 2.1+. It keeps every
+existing city polygon, assigns uncovered land to the nearest polygon edge,
+and writes `assets/map-shared-borders.json` from the resulting shared edges.
+The game renders that generated linework instead of the original freehand
+stroke layer, so political and city borders meet exactly and cannot continue
+across the sea.
+
 ## Gameplay grouping and border cleanup
 
 `scripts/map/gameplay.py` applies the requested playable-state changes after

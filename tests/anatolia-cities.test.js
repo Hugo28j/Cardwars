@@ -40,7 +40,6 @@ test('all new province points lie inside their atlas realms',()=>{
  const polygons=d=>d.split(/(?=M)/).map(part=>(part.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number).reduce((out,n,i,a)=>{if(i%2===0)out.push([n,a[i+1]]);return out;},[])).filter(p=>p.length>2);
  const inside=(point,polygon)=>{let hit=false;for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){const a=polygon[i],b=polygon[j];if(((a[1]>point[1])!==(b[1]>point[1]))&&(point[0]<(b[0]-a[0])*(point[1]-a[1])/(b[1]-a[1]||1e-9)+a[0]))hit=!hit;}return hit;};
  for(const [country,ids] of Object.entries(expected)){
-  const realm=atlas.find(feature=>feature.realm===country);assert.ok(realm?.d,country);
-  for(const id of ids){const city=CITY_1300[id],point=[((city.mapLon??city.lon)+22)*12,(72-(city.mapLat??city.lat))*15];assert.equal(polygons(realm.d).some(p=>inside(point,p)),true,id);}
+  for(const id of ids){const city=CITY_1300[id],province=atlas.find(feature=>feature.cityId===id);assert.equal(province?.realm,country,id);const point=[((city.mapLon??city.lon)+22)*12,(72-(city.mapLat??city.lat))*15];assert.equal(polygons(province.d).some(p=>inside(point,p)),true,id);}
  }
 });

@@ -4,9 +4,15 @@
 
 #world-map .territory.drawn-map-territory:not(.territory-underlay) {
   stroke: var(--territory-fill);
-  stroke-width: 2.4;
+  stroke-width: .36;
   stroke-opacity: 1;
   paint-order: stroke fill;
+}
+
+#world-map .drawn-map-land-base {
+  fill: #4b554f;
+  stroke: none;
+  pointer-events: none;
 }
 
 #world-map .territory.drawn-map-territory:hover,
@@ -33,20 +39,14 @@
 #world-map .drawn-map-coast {
   fill: none;
   stroke: #050706;
-  stroke-width: 1.25;
+  stroke-width: .85;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 
-#world-map .drawn-map-border-support {
-  stroke: #101412;
-  stroke-width: .95;
-  stroke-opacity: 1;
-}
-
 #world-map .drawn-map-coast {
   stroke: #0a0d0c;
-  stroke-width: 1;
+  stroke-width: .72;
 }
