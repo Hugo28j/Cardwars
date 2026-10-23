@@ -3,11 +3,26 @@
   stroke-width: 0;
 }
 
+/* Exact city/province polygons from the hand-drawn atlas. Hidden at overview,
+   then progressively revealed by updateBorderZoomStyle while zooming in. */
+#world-map .drawn-city-border {
+  fill: none;
+  stroke: var(--city-border-zoom-color, #7b857f);
+  stroke-width: var(--city-border-zoom-width, .62);
+  stroke-opacity: var(--city-border-zoom-opacity, 0);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+/* Political boundaries always sit above city lines, so a city outline can
+   never wash out or cover the border between two countries. */
 #world-map .drawn-map-border,
 #world-map .drawn-map-coast {
   fill: none;
-  stroke: #28372e;
-  stroke-width: .78;
+  stroke: #050706;
+  stroke-width: 2.25;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -15,10 +30,12 @@
 }
 
 #world-map .drawn-map-border-support {
-  stroke-width: .68;
-  stroke-opacity: .92;
+  stroke: #101412;
+  stroke-width: 1.55;
+  stroke-opacity: .96;
 }
 
 #world-map .drawn-map-coast {
-  stroke-width: .9;
+  stroke: #0a0d0c;
+  stroke-width: 1.35;
 }

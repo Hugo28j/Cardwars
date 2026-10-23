@@ -48,3 +48,21 @@ test('old atlas and engine are retained as recovery copies',()=>{
  assert.ok(fs.statSync(new URL('../assets/map-backups/atlas-before-hugo-drawing-20260929.json',import.meta.url)).size>100000);
  assert.ok(fs.statSync(new URL('../assets/map-backups/map-engine-before-hugo-drawing-20260929.js',import.meta.url)).size>10000);
 });
+
+
+test('map renders exact province outlines below a separate political-border layer',()=>{
+ const source=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
+ const css=fs.readFileSync(new URL('../drawn-map.css',import.meta.url),'utf8');
+ assert.match(source,/<g id="city-territories"><\/g><g id="country-borders"><\/g>/);
+ assert.match(source,/class="drawn-city-border" d="\$\{feature\.d\}"/);
+ assert.match(source,/querySelector\('#country-borders'\)\.innerHTML=countryLinework/);
+ assert.match(css,/\.drawn-city-border[\s\S]*--city-border-zoom-opacity/);
+ assert.match(css,/\.drawn-map-border,[\s\S]*stroke: #050706;[\s\S]*stroke-width: 2\.25/);
+});
+
+test('province borders disappear at overview and become clearer while zooming',()=>{
+ const source=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
+ assert.match(source,/reveal=Math\.max\(0,Math\.min\(1,\(\.34-unit\)\/\.26\)\)/);
+ assert.match(source,/--city-border-zoom-opacity',\(reveal\*\.68\)/);
+ assert.match(source,/Math\.max\(12,Math\.min/);
+});
