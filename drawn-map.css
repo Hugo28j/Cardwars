@@ -1,6 +1,17 @@
 #world-map .territory.drawn-map-territory {
-  stroke: none;
-  stroke-width: 0;
+  filter: none;
+}
+
+#world-map .territory.drawn-map-territory:not(.territory-underlay) {
+  stroke: var(--territory-fill);
+  stroke-width: 2.4;
+  stroke-opacity: 1;
+  paint-order: stroke fill;
+}
+
+#world-map .territory.drawn-map-territory:hover,
+#world-map .territory.drawn-map-territory.realm-hover {
+  filter: none;
 }
 
 /* Exact city/province polygons from the hand-drawn atlas. Hidden at overview,
@@ -8,7 +19,7 @@
 #world-map .drawn-city-border {
   fill: none;
   stroke: var(--city-border-zoom-color, #7b857f);
-  stroke-width: var(--city-border-zoom-width, .62);
+  stroke-width: var(--city-border-zoom-width, .45);
   stroke-opacity: var(--city-border-zoom-opacity, 0);
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -22,7 +33,7 @@
 #world-map .drawn-map-coast {
   fill: none;
   stroke: #050706;
-  stroke-width: 2.25;
+  stroke-width: 1.25;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -31,11 +42,11 @@
 
 #world-map .drawn-map-border-support {
   stroke: #101412;
-  stroke-width: 1.55;
-  stroke-opacity: .96;
+  stroke-width: .95;
+  stroke-opacity: 1;
 }
 
 #world-map .drawn-map-coast {
   stroke: #0a0d0c;
-  stroke-width: 1.35;
+  stroke-width: 1;
 }

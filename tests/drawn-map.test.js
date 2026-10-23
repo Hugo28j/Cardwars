@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {CITIES_1300} from '../src/data1300.js';
+import {classifyDrawnBorders} from '../src/map.js';
 
 const atlas=JSON.parse(fs.readFileSync(new URL('../assets/atlas.json',import.meta.url)));
 const borders=JSON.parse(fs.readFileSync(new URL('../assets/map-user-borders.json',import.meta.url)));
@@ -54,15 +55,26 @@ test('map renders exact province outlines below a separate political-border laye
  const source=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
  const css=fs.readFileSync(new URL('../drawn-map.css',import.meta.url),'utf8');
  assert.match(source,/<g id="city-territories"><\/g><g id="country-borders"><\/g>/);
- assert.match(source,/class="drawn-city-border" d="\$\{feature\.d\}"/);
+ assert.match(source,/classifyDrawnBorders\(atlas\.filter/);
+ assert.doesNotMatch(source,/class="drawn-city-border" d="\$\{feature\.d\}"/);
  assert.match(source,/querySelector\('#country-borders'\)\.innerHTML=countryLinework/);
+ assert.match(source,/style="--territory-fill:\$\{fill\}"/);
  assert.match(css,/\.drawn-city-border[\s\S]*--city-border-zoom-opacity/);
- assert.match(css,/\.drawn-map-border,[\s\S]*stroke: #050706;[\s\S]*stroke-width: 2\.25/);
+ assert.match(css,/\.drawn-map-border,[\s\S]*stroke: #050706;[\s\S]*stroke-width: 1\.25/);
+ assert.match(css,/\.drawn-map-territory\.realm-hover[\s\S]*filter: none/);
 });
 
 test('province borders disappear at overview and become clearer while zooming',()=>{
  const source=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
  assert.match(source,/reveal=Math\.max\(0,Math\.min\(1,\(\.34-unit\)\/\.26\)\)/);
- assert.match(source,/--city-border-zoom-opacity',\(reveal\*\.68\)/);
+ assert.match(source,/--city-border-zoom-opacity',\(reveal\*\.48\)/);
  assert.match(source,/Math\.max\(12,Math\.min/);
+});
+
+test('lighter city linework contains only real shared borders inside one realm',()=>{
+ const linework=classifyDrawnBorders(atlas.filter(feature=>!feature.outline&&!feature.underlay),borders.d);
+ assert.ok(linework.cityD.length>10000);
+ assert.ok(linework.cityD.split('M').length>1000);
+ assert.ok(linework.countryD.length>10000);
+ assert.ok(linework.countryD.split('M').length>500);
 });
