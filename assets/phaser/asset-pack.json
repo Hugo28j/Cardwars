@@ -1,0 +1,16 @@
+{
+  "map": {
+    "files": [
+      {
+        "type": "image",
+        "key": "realm-banner",
+        "url": "assets/phaser/realm-banner.svg"
+      }
+    ]
+  },
+  "meta": {
+    "app": "Phaser Editor 2D - Asset Pack Editor",
+    "contentType": "phasereditor2d.pack.core.AssetContentType",
+    "version": 2
+  }
+}

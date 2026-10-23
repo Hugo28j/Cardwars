@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "objects": [
+    {
+      "id": "selected-realm-banner",
+      "city": "selected",
+      "texture": "realm-banner",
+      "width": 28,
+      "height": 38,
+      "offsetX": 16,
+      "offsetY": -24,
+      "motion": "banner"
+    }
+  ]
+}

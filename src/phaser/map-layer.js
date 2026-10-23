@@ -1,0 +1,87 @@
+// Shared by the campaign, atlas and map editor. Phaser assets use document-root URLs.
+const ROOT = new URL('../../', import.meta.url);
+let runtimePromise;
+function loadRuntime() {
+  if (globalThis.Phaser) return Promise.resolve(globalThis.Phaser);
+  return runtimePromise ||= new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = new URL('vendor/phaser/phaser-3.90.0.min.js', ROOT).href;
+    script.onload = () => resolve(globalThis.Phaser);
+    script.onerror = () => { script.remove(); runtimePromise = null; reject(new Error('Phaser runtime unavailable')); };
+    document.head.append(script);
+  });
+}
+// Match SVG's default xMidYMid meet, including letterboxing.
+export function mapToScreen(x, y, view, width, height) {
+  const scale = Math.min(width / view.w, height / view.h);
+  return { x: (width - view.w * scale) / 2 + (x - view.x) * scale,
+    y: (height - view.h * scale) / 2 + (y - view.y) * scale };
+}
+export class PhaserMapLayer {
+  constructor(map) {
+    this.map = map;
+    this.destroyed = false;
+    this.items = [];
+    this.ready = this.start().catch(error => {
+      console.warn('Cardwars 2D layer:', error);
+      this.destroy(); // SVG map remains fully usable if optional visuals fail.
+    });
+  }
+  async start() {
+    const [Phaser, response] = await Promise.all([loadRuntime(), fetch(new URL('assets/phaser/map-objects.json', ROOT))]);
+    if (!response.ok) throw new Error('Map object manifest unavailable');
+    const manifest = await response.json();
+    if (this.destroyed) return;
+    const owner = this;
+    this.host = document.createElement('div');
+    this.host.className = 'phaser-map-layer';
+    this.host.setAttribute('aria-hidden', 'true');
+    Object.assign(this.host.style, {position:'absolute', inset:'0', pointerEvents:'none', overflow:'hidden'});
+    this.map.svg.after(this.host);
+    const width = Math.max(1, this.map.host.clientWidth), height = Math.max(1, this.map.host.clientHeight);
+    class MapObjects extends Phaser.Scene {
+      preload() {
+        this.load.setBaseURL(ROOT.href);
+        this.load.pack('cardwars-map', 'assets/phaser/asset-pack.json');
+      }
+      create() {
+        for (const spec of manifest.objects || []) {
+          if (!this.textures.exists(spec.texture)) continue;
+          const sprite = this.add.sprite(0, 0, spec.texture, spec.frame).setOrigin(.5, 1).setVisible(false);
+          sprite.setDisplaySize(spec.width || 32, spec.height || 48);
+          if (spec.animation && this.anims.exists(spec.animation)) sprite.play(spec.animation);
+          if (spec.motion === 'banner' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            this.tweens.add({targets:sprite, angle:{from:-3,to:3}, duration:950, yoyo:true, repeat:-1, ease:'Sine.easeInOut'});
+          }
+          owner.items.push({sprite, spec});
+        }
+        owner.scene = this;
+        owner.host.dataset.ready = 'true';
+      }
+      update() { owner.sync(); }
+    }
+    this.game = new Phaser.Game({type:Phaser.CANVAS, parent:this.host, width, height,
+      transparent:true, banner:false, audio:{noAudio:true}, input:{mouse:false,touch:false,keyboard:false},
+      fps:{target:30}, scene:MapObjects});
+  }
+  sync() {
+    if (this.destroyed || !this.game) return;
+    const map = this.map, width = Math.max(1,map.host.clientWidth), height = Math.max(1,map.host.clientHeight);
+    if (this.game.scale.width !== width || this.game.scale.height !== height) this.game.scale.resize(width,height);
+    for (const {sprite,spec} of this.items) {
+      const id = spec.city === 'selected' ? map.state.selected : spec.city;
+      const point = map.cityCenters?.get(id);
+      const allowed = !map.state.game?.fogOfWar || map.phaserVisibleCities?.has(id);
+      if (!point || !allowed) { sprite.setVisible(false); continue; }
+      const q = mapToScreen(point[0],point[1],map.view,width,height);
+      sprite.setPosition(q.x+(spec.offsetX||0),q.y+(spec.offsetY||0));
+      sprite.setVisible(q.x>=-50 && q.y>=-50 && q.x<=width+50 && q.y<=height+50);
+    }
+  }
+  destroy() {
+    this.destroyed = true;
+    this.game?.destroy(true);
+    this.host?.remove();
+    this.items = [];
+  }
+}
