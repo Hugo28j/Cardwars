@@ -325,9 +325,18 @@ function rapidUnopposedAdvance(){
   if(!ownerAtWar(owner))continue;
   let ownerCap=0;
   for(const group of connected(owner)){
-   const frontline=frontFor(group,owner).filter(i=>grid[i].troops>=7).sort((a,b)=>grid[b].troops-grid[a].troops);
+   const allFront=frontFor(group,owner).filter(i=>grid[i].troops>=5).sort((a,b)=>grid[b].troops-grid[a].troops);
    const commands=orders.filter(o=>o.type==='arrow'&&o.owner===owner&&group.cells.includes(o.from));
-   const invasion=!commands.length?priorityIncursion(owner,group):null;
+   // Automatic advance: ONE column from each ~6x5 front sector. This
+   // spreads captured land along the line, instead of one far-off spike.
+   const sectorStarts=new Map();
+   if(!commands.length){
+    for(const i of allFront){
+     const [x,y]=loc(i),key=Math.floor(x/6)+':'+Math.floor(y/5);
+     if(!sectorStarts.has(key))sectorStarts.set(key,i);
+    }
+   }
+   const frontline=commands.length?allFront:[...sectorStarts.values()].sort((a,b)=>a-b);
    for(const start of frontline){
     if(ownerCap>=110)break;
     let current=start,direction=null;
@@ -335,12 +344,12 @@ function rapidUnopposedAdvance(){
       const [sx,sy]=loc(start),[ax,ay]=loc(a.to),[bx,by]=loc(b.to);
       return Math.hypot(ax-sx,ay-sy)-Math.hypot(bx-sx,by-sy);
     })[0];
-    const targetCastle=!targetOrder&&!invasion?castles.filter(c=>atWar(owner,c.owner)).sort((a,b)=>{
+    const targetCastle=!targetOrder?castles.filter(c=>atWar(owner,c.owner)).sort((a,b)=>{
       const [sx,sy]=loc(start),[ax,ay]=loc(a.center),[bx,by]=loc(b.center);
       return Math.hypot(ax-sx,ay-sy)-Math.hypot(bx-sx,by-sy);
     })[0]:null;
-    const objective=targetOrder?loc(targetOrder.to):invasion?invasion.coordinate:targetCastle?loc(targetCastle.center):loc(start);
-    for(let hop=0;hop<(targetOrder?4:3)&&ownerCap<110;hop++){
+    const objective=targetOrder?loc(targetOrder.to):targetCastle?loc(targetCastle.center):loc(start);
+    for(let hop=0;hop<(targetOrder?4:1)&&ownerCap<110;hop++){
       if(grid[current].troops<5)break;
       const [cx,cy]=loc(current);
       const enemies=adjacent(current).filter(n=>{
@@ -634,7 +643,7 @@ function fightDay(){
    const at=grid[target];if(!orders.some(o=>o.owner===g.owner&&o.type==='arrow')){
     const [fx,fy]=loc(i),[tx,ty]=loc(target);
     const priority=battlePriorities[g.owner];
-    if(priority){const [px,py]=priority.coordinate;const improvement=(Math.abs(fx-px)+Math.abs(fy-py))-(Math.abs(tx-px)+Math.abs(ty-py));score*=clamp(1+improvement*.45,.65,1.8);if(at.original===g.owner)score*=1.3;}
+    if(priority){const [px,py]=priority.coordinate;const improvement=(Math.abs(fx-px)+Math.abs(fy-py))-(Math.abs(tx-px)+Math.abs(ty-py));score*=clamp(1+improvement*.14,.88,1.15);if(at.original===g.owner)score*=1.12;}
     const nearest=priority?null:castles.filter(c=>c.owner!==g.owner&&atWar(g.owner,c.owner)).sort((a,b)=>{const [ax,ay]=loc(a.center),[bx,by]=loc(b.center);return Math.hypot(ax-fx,ay-fy)-Math.hypot(bx-fx,by-fy)})[0];
     if(nearest){const [cx,cy]=loc(nearest.center);score*=clamp(1+((Math.abs(fx-cx)+Math.abs(fy-cy))-(Math.abs(tx-cx)+Math.abs(ty-cy)))*.2,.75,1.3);}
    }
