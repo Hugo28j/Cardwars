@@ -316,8 +316,32 @@ function castleBreakout(castle,attacker){
  event('Uitval bij '+cities[Math.floor(castle.id/4)][castle.id%4]+': het garnizoen breekt een stuk van de omsingeling open.');
  return true;
 }
+function tightenCastleEncirclement(castle){
+ const ring=castleRing(castle),count=new Map();
+ for(const i of ring){const owner=grid[i].owner;if(owner!==castle.owner&&atWar(owner,castle.owner))count.set(owner,(count.get(owner)||0)+1);}
+ const [pair]=[...count].sort((a,b)=>b[1]-a[1]);
+ if(!pair||pair[1]<5)return 0;
+ const attacker=pair[0];
+ let advances=0;
+ for(const target of ring){
+  if(advances>=2)break;
+  if(grid[target].owner===attacker||grid[target].fort>0||grid[target].troops>4)continue;
+  const neighbor=adjacent(target).filter(i=>grid[i].owner===attacker&&grid[i].troops>=8)
+   .sort((a,b)=>grid[b].troops-grid[a].troops)[0];
+  if(neighbor===undefined)continue;
+  const source=grid[neighbor],defender=grid[target];
+  if(source.troops<defender.troops*2+6)continue;
+  const retreat=adjacent(target).find(i=>grid[i].owner===defender.owner&&i!==castle.center);
+  if(retreat!==undefined)grid[retreat].troops+=Math.floor(defender.troops*.60);
+  defender.owner=attacker;defender.troops=0;
+  moveTroops(neighbor,target,Math.min(Math.max(6,Math.ceil(source.troops*.35)),source.troops));
+  advances++;
+ }
+ return advances;
+}
 function processCastlesDay(){
  for(const castle of castles){
+  tightenCastleEncirclement(castle);
   const ring=siegeEncirclement(castle);
   const city=cities[Math.floor(castle.id/4)][castle.id%4];
   const fullRing=ring.total===8&&ring.occupied===8&&ring.attackers>=5;
