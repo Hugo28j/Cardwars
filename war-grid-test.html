@@ -652,18 +652,23 @@ function paintFrontBorders(){
 }
 
 function regroupStragglers(){
- // Never march tiny 1-9 man units by themselves. Find the nearest friendly
- // detachment and join it, one neighboring step per game day.
- const pieces=grid.map((t,i)=>t.troops>0&&t.troops<MIN_DETACHMENT?i:-1).filter(i=>i>=0);
- for(const from of pieces){
-  const t=grid[from];if(t.troops<=0||t.troops>=MIN_DETACHMENT)continue;
-  const friends=adjacent(from).filter(i=>grid[i].owner===t.owner&&grid[i].castleId<0);
-  if(!friends.length)continue;
-  friends.sort((a,b)=>grid[b].troops-grid[a].troops);
-  const receiver=friends[0];
-  moveTroops(from,receiver,t.troops);
+ // Soldiers below ten are stragglers, not individual armies. They NEVER
+ // attack or initiate a march. Each day they step toward the nearest full
+ // friendly detachment, using connected friendly tiles only.
+ for(let owner=0;owner<3;owner++)for(const group of connected(owner)){
+  const regular=group.cells.filter(i=>grid[i].troops>=MIN_DETACHMENT);
+  const seeds=regular.length?regular:[group.cells.slice().sort((a,b)=>grid[b].troops-grid[a].troops)[0]];
+  if(seeds[0]===undefined)continue;
+  const field=distanceField(group.cells,seeds);
+  for(const from of field.q){
+   const soldiers=grid[from].troops;
+   if(soldiers<=0||soldiers>=MIN_DETACHMENT||field.dist[from]<=0)continue;
+   const target=field.parent[from];
+   if(target>=0&&grid[target].owner===owner)moveTroops(from,target,soldiers);
+  }
  }
 }
+
 function fightDay(){
  day++;expireTemporaryOrders();regroupStragglers();redistribute();reinforceOrders();computeFrontResistance();
  const battlePriorities=[0,1,2].map(owner=>orders.some(o=>o.owner===owner&&o.type==='arrow')?null:priorityIncursion(owner));
