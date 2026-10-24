@@ -319,7 +319,7 @@ function stabilizeBorder(){
     else bordering.set(other,(bordering.get(other)||0)+1);
    }
   }
-  if(touchesEdge||fortified||!bordering.size||component.length>20||enemyTroops>2)continue;
+  if(touchesEdge||fortified||!bordering.size||component.length>20||enemyTroops>0)continue;
   const colors=[...bordering.entries()].sort((a,b)=>b[1]-a[1]);
   const takeover=colors[0][0];
   // No instant takeover where two rival powers divide the ring.
@@ -341,7 +341,7 @@ function stabilizeBorder(){
  const unique=new Map(changes);
  for(const [i,owner] of unique){
   // Never generate troops when smoothing terrain.
-  if(grid[i].castleId<0&&grid[i].troops<=2){grid[i].troops=0;grid[i].owner=owner;}
+  if(grid[i].castleId<0&&grid[i].troops===0)grid[i].owner=owner;
  }
  return unique.size;
 }
@@ -603,52 +603,35 @@ function paintPeaceArmyIcon(city,owner,count){
  ctx.restore();
 }
 function formationMarkers(){
- // No shared army pool/bubble: the three city armies remain geographically
- // distinct. The connected-territory system affects COMMANDS, not coordinates.
- const markers=[];warReserveBalls=[];
+ // Group NEARBY, not necessarily same tile, into readable troop concentrations.
+ // This only changes the visual representation, never the physical soldiers.
+ const clusters=new Map();warReserveBalls=[];
  for(let owner=0;owner<4;owner++){
   if(!ownerAtWar(owner))continue;
-  // Soldiers still stationed around each city are represented by that
-  // city's soldier icon and its REAL local count.
-  const stagingByCity=new Map();
-  for(const castle of castles){
-   if(castle.original!==owner)continue;
-   const [cx,cy]=loc(castle.center);
-   let total=0;
-   for(let dy=-5;dy<=5;dy++)for(let dx=-5;dx<=5;dx++){
-    if(dx*dx+dy*dy>30)continue;
-    const x=cx+dx,y=cy+dy;
-    if(x<0||x>=W||y<0||y>=H)continue;
-    const i=ix(x,y),tile=grid[i];
-    if(tile.owner===owner&&tile.city===castle.id)total+=tile.troops;
-   }
-   stagingByCity.set(castle.id,total);
-  }
   for(let i=0;i<grid.length;i++){
-   const tile=grid[i];
-   if(tile.owner!==owner||tile.troops<=0)continue;
-   const [gx,gy]=loc(i);
-   const sourceCastle=castles[tile.city];
+   const tile=grid[i];if(tile.owner!==owner||tile.troops<=0)continue;
+   const [gx,gy]=loc(i),sourceCastle=castles[tile.city];
    if(sourceCastle&&sourceCastle.original===owner){
     const [cx,cy]=loc(sourceCastle.center),dx=gx-cx,dy=gy-cy;
-    if(dx*dx+dy*dy<=30)continue; // Counted in its city icon.
+    if(dx*dx+dy*dy<=30)continue; // Displayed by that city's soldier icon.
    }
-   const troopCount=Math.floor(tile.troops);
-   const number=troopCount>=950?Math.min(5,Math.ceil(troopCount/450)):troopCount>=360?2:1;
-   let left=troopCount;
-   for(let k=0;k<number;k++){
-    const count=Math.ceil(left/(number-k));left-=count;
-    const seed=troopHash(i,k),angle=(seed%3600)/3600*Math.PI*2+k*2.39996;
-    const radius=number===1?2:Math.min(6.9,2.7+number*.7);
-    const offset=radius*(.55+((seed>>>12)%100)/220);
-    const bx=(gx+.5)*S,by=(gy+.5)*S;
-    let x=clamp(bx+Math.cos(angle)*offset,2,canvas.width-2);
-    let y=clamp(by+Math.sin(angle)*offset,2,canvas.height-2);
-    const projection=ix(clamp(Math.floor(x/S),0,W-1),clamp(Math.floor(y/S),0,H-1));
-    if(grid[projection].owner!==owner){x=bx+Math.cos(angle)*1.3;y=by+Math.sin(angle)*1.3;}
-    markers.push({x,y,count,owner,source:i});
-   }
+   // Local visual groups are 3x3 terrain cells; different owners never mix.
+   const key=owner+':'+Math.floor(gx/3)+':'+Math.floor(gy/3);
+   let cluster=clusters.get(key);
+   if(!cluster){cluster={owner,count:0,wx:0,wy:0,source:i,maxIndividual:0};clusters.set(key,cluster);}
+   cluster.count+=tile.troops;
+   cluster.wx+=(gx+.5)*S*tile.troops;cluster.wy+=(gy+.5)*S*tile.troops;
+   if(tile.troops>cluster.maxIndividual){cluster.maxIndividual=tile.troops;cluster.source=i;}
   }
+ }
+ const markers=[];
+ for(const cluster of clusters.values()){
+  const count=cluster.count,seed=troopHash(cluster.source,0);
+  const angle=(seed%3600)/3600*Math.PI*2;
+  const offset=1.1+((seed>>>12)%17)/13;
+  const px=clamp(cluster.wx/count+Math.cos(angle)*offset,2,canvas.width-2);
+  const py=clamp(cluster.wy/count+Math.sin(angle)*offset,2,canvas.height-2);
+  markers.push({x:px,y:py,count,owner:cluster.owner,source:cluster.source});
  }
  return markers;
 }
