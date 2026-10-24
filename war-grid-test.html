@@ -390,53 +390,67 @@ function rapidUnopposedAdvance(){
  }
  return claimed;
 }
+function allied(a,b){return (a===0&&b===2)||(a===2&&b===0)}
 function stabilizeBorder(){
- // Small, entirely surrounded leftovers follow the enclosing colour.
- // A few trapped soldiers surrender; a serious formation, castle, or fort
- // still has to be fought / besieged. Snapshot avoids runaway capture.
- const old=grid.map(g=>g.owner),visited=new Uint8Array(grid.length),changes=new Map();
- for(let seed=0;seed<grid.length;seed++){
-  if(visited[seed])continue;
-  const owner=old[seed],queue=[seed],component=[],border=new Map();
-  let touchesEdge=false,soldiers=0,protectedPosition=false;
-  visited[seed]=1;
-  for(let q=0;q<queue.length;q++){
-   const i=queue[q],[x,y]=loc(i),tile=grid[i];
-   component.push(i);soldiers+=tile.troops;
-   if(tile.castleId>=0||tile.fort>0)protectedPosition=true;
-   if(x===0||x===W-1||y===0||y===H-1)touchesEdge=true;
-   for(const n of adjacent(i)){
-    if(old[n]===owner){if(!visited[n]){visited[n]=1;queue.push(n)}}
-    else border.set(old[n],(border.get(old[n])||0)+1);
+ // No-army enclaves are absorbed immediately, even if they consist of more
+ // than 48 cells. This is evaluated over connected components, not random
+ // recolouring of individual cells. Forts and unsurrendered castles survive.
+ let totalChanged=0;
+ for(let sweep=0;sweep<2;sweep++){
+  const old=grid.map(g=>g.owner),visited=new Uint8Array(grid.length);
+  const changes=new Map();
+  for(let seed=0;seed<grid.length;seed++){
+   if(visited[seed])continue;
+   const owner=old[seed],queue=[seed],part=[],border=new Map();
+   let touchesOuterEdge=false,soldiers=0,fortified=false;
+   visited[seed]=1;
+   for(let q=0;q<queue.length;q++){
+    const i=queue[q],[x,y]=loc(i),tile=grid[i];
+    part.push(i);soldiers+=tile.troops;
+    if(tile.castleId>=0||tile.fort>0)fortified=true;
+    if(x===0||y===0||x===W-1||y===H-1)touchesOuterEdge=true;
+    for(const n of adjacent(i)){
+     if(old[n]===owner){if(!visited[n]){visited[n]=1;queue.push(n)}}
+     else border.set(old[n],(border.get(old[n])||0)+1);
+    }
    }
+   if(touchesOuterEdge||fortified||!border.size)continue;
+   const empty=soldiers===0;
+   // Very small surrounded detachments can surrender; stronger
+   // encircled armies remain until a genuine battle resolves them.
+   if(!empty&&(part.length>24||soldiers>Math.max(3,Math.ceil(part.length*.35))))continue;
+   const borders=[...border].sort((a,b)=>b[1]-a[1]);
+   const winner=borders[0][0];
+   if(!atWar(owner,winner))continue;
+   // A combined Blue + Gold ring can defeat a Red pocket. It cannot cause
+   // allied territory to be transferred between Blue and Gold.
+   if(borders.some(([color])=>color!==winner&&!allied(color,winner)))continue;
+   if(part.some(i=>castleProtectedRing(i,winner)))continue;
+   for(const i of part)changes.set(i,winner);
   }
-  if(touchesEdge||protectedPosition||component.length>48||!border.size)continue;
-  if(soldiers>Math.max(5,Math.ceil(component.length*.40)))continue;
-  // Do not capture a mixed ring. All surrounding border cells must have
-  // the SAME hostile owner, and the two countries must actually be at war.
-  if(border.size!==1)continue;
-  const nextOwner=border.keys().next().value;
-  if(!atWar(owner,nextOwner))continue;
-  if(component.some(i=>castleProtectedRing(i,nextOwner)))continue;
-  for(const i of component)changes.set(i,nextOwner);
+  // Close harmless dents and single-tile holes which are surrounded
+  // on 3 of their 4 orthogonal sides. Never violate castle defenses.
+  for(let i=0;i<grid.length;i++){
+   const tile=grid[i];
+   if(tile.castleId>=0||tile.fort>0||tile.troops>0)continue;
+   const [x,y]=loc(i);if(x===0||y===0||x===W-1||y===H-1)continue;
+   const counts=new Map();
+   for(const n of adjacent(i))counts.set(old[n],(counts.get(old[n])||0)+1);
+   const option=[...counts].find(([color,around])=>
+    color!==tile.owner&&around>=3&&atWar(tile.owner,color)&&!castleProtectedRing(i,color));
+   if(option)changes.set(i,option[0]);
+  }
+  let changed=0;
+  for(const [i,winner] of changes){
+   const tile=grid[i];
+   if(tile.owner===winner||tile.castleId>=0||tile.fort>0||castleProtectedRing(i,winner))continue;
+   // Surrounded small detachments surrender and are subtracted, not cloned.
+   tile.troops=0;tile.owner=winner;changed++;
+  }
+  totalChanged+=changed;
+  if(!changed)break;
  }
- // Smooth isolated one-square / two-square chips along the front too,
- // including one or two stragglers, but never across protected castle rings.
- for(let i=0;i<grid.length;i++){
-  const tile=grid[i];if(tile.castleId>=0||tile.fort>0||tile.troops>2)continue;
-  const [x,y]=loc(i);if(x===0||y===0||x===W-1||y===H-1)continue;
-  const neighbors=adjacent(i),tallies=new Map();
-  for(const n of neighbors)tallies.set(old[n],(tallies.get(old[n])||0)+1);
-  const option=[...tallies].find(([o,count])=>count>=3&&o!==tile.owner&&atWar(o,tile.owner)&&!castleProtectedRing(i,o));
-  if(option)changes.set(i,option[0]);
- }
- let switched=0;
- for(const [i,nextOwner] of changes){
-  if(grid[i].castleId>=0||castleProtectedRing(i,nextOwner)||grid[i].fort>0||grid[i].troops>2)continue;
-  // At most two stranded soldiers are captured, never moved or generated.
-  grid[i].troops=0;grid[i].owner=nextOwner;switched++;
- }
- return switched;
+ return totalChanged;
 }
 
 function castleRing(castle){
