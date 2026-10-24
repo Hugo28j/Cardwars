@@ -183,6 +183,62 @@ function paintMarchTrails(){
   ctx.fillStyle='#b6f8b4';ctx.fill();
  }
 }
+function rapidUnopposedAdvance(){
+ // Light scouting / uncontested marching is faster than a pitched battle.
+ // A column may occupy up to four ADJACENT empty sectors in one game day.
+ // A real garrison, fortification, or neutral border stops the column.
+ let captured=0;
+ for(let owner=0;owner<4;owner++){
+  if(!ownerAtWar(owner))continue;
+  const startingGroups=connected(owner);
+  let ownerCap=0;
+  for(const group of startingGroups){
+   const frontline=frontFor(group,owner)
+    .filter(i=>grid[i].troops>=22)
+    .sort((a,b)=>grid[b].troops-grid[a].troops);
+   const offensiveOrders=orders.filter(o=>o.type==='arrow'&&o.owner===owner&&group.cells.includes(o.from));
+   for(const start of frontline){
+    if(ownerCap>=165)break;
+    let current=start,previousDir=null;
+    const nearbyOrder=offensiveOrders.length?offensiveOrders.slice().sort((a,b)=>{
+     const [sx,sy]=loc(start),[ax,ay]=loc(a.to),[bx,by]=loc(b.to);
+     return Math.hypot(ax-sx,ay-sy)-Math.hypot(bx-sx,by-sy);
+    })[0]:null;
+    const [ox,oy]=nearbyOrder?loc(nearbyOrder.to):[0,0];
+    for(let hop=0;hop<4&&ownerCap<165;hop++){
+     if(grid[current].troops<11)break;
+     const [cx,cy]=loc(current);
+     const candidates=adjacent(current).filter(n=>atWar(owner,grid[n].owner)&&grid[n].troops<=2&&grid[n].fort===0);
+     if(!candidates.length)break;
+     candidates.sort((a,b)=>{
+      const metric=n=>{
+       const [x,y]=loc(n),dx=x-cx,dy=y-cy;
+       let directional=0;
+       if(nearbyOrder){const vx=ox-cx,vy=oy-cy;directional=(dx*vx+dy*vy)/Math.max(1,Math.hypot(vx,vy));}
+       if(previousDir)directional+=1.3*(dx*previousDir[0]+dy*previousDir[1]);
+       return directional-grid[n].troops*.05;
+      };
+      return metric(b)-metric(a);
+     });
+     const dest=candidates[0],prevOwner=grid[dest].owner;
+     // No defenders present: control advances immediately to the next sector.
+     const remaining=grid[dest].troops;
+     grid[dest].owner=owner;grid[dest].troops=0;
+     const remainingSource=grid[current].troops;
+     moveTroops(current,dest,Math.max(4,Math.floor(remainingSource*.83)));
+     if(remaining>0){
+      // Tiny scouting detachments yield and withdraw rather than vanish.
+      const fallback=adjacent(dest).find(n=>grid[n].owner===prevOwner);
+      if(fallback!==undefined)grid[fallback].troops+=remaining;
+     }
+     const [nx,ny]=loc(dest);previousDir=[nx-cx,ny-cy];
+     current=dest;captured++;ownerCap++;
+    }
+   }
+  }
+ }
+ return captured;
+}
 function fightDay(){
  day++;redistribute();reinforceOrders();
  const attackers=[];
@@ -218,8 +274,9 @@ function fightDay(){
    captures++;
   }
  }
+ captures+=rapidUnopposedAdvance();
  if(day%7===0){for(const t of grid)if(t.owner===t.original&&Math.random()<.10)t.troops+=2;event('Nieuwe voorraden en rekruten aan het front aangekomen.')}
- if(captures&&day%3===0)event(captures+' roosters veroverd; het front verschuift.');
+ if(captures&&day%3===0)event(captures+' roosters ingenomen, inclusief sneller doortrekken waar geen verdedigers staan.');
  render();
 }
 
