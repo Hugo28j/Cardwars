@@ -8,8 +8,8 @@
       },
       {
         "type": "image",
-        "key": "city-house",
-        "url": "assets/phaser/city-house.svg"
+        "key": "city-castle",
+        "url": "assets/phaser/city-castle.svg"
       }
     ]
   },

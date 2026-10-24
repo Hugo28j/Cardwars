@@ -12,12 +12,12 @@ const polygons=d=>(String(d).match(/M[^M]+?Z/g)||[]).map(segment=>{
  return points;
 }).filter(poly=>poly.length>=3);
 
-test('every city house receives a point inside its clickable province',()=>{
+test('every city castle receives a point inside its clickable province',()=>{
  for(const city of CITIES_1300){
   const feature=byCity.get(city.id);assert.ok(feature,city.id);
   const areas=polygons(feature.d),raw=[((city.mapLon??city.lon)+22)*12,(72-(city.mapLat??city.lat))*15];
   const placed=cityPointInProvince(raw,areas);
-  assert.ok(areas.some(poly=>pointInPolygon(placed,poly)),`${city.id} house is outside its province`);
+  assert.ok(areas.some(poly=>pointInPolygon(placed,poly)),`${city.id} castle is outside its province`);
  }
 });
 

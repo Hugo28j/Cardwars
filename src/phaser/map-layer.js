@@ -1,7 +1,7 @@
 // Shared by the campaign, atlas and map editor. Phaser assets use document-root URLs.
 import {CITIES_1300} from '../data1300.js?v=20260928-anatolia-v8';
 const ROOT = new URL('../../', import.meta.url);
-const ASSET_VERSION = '20261024-city-houses-v1';
+const ASSET_VERSION = '20261024-city-castles-v1';
 let runtimePromise;
 export function expandMapObjectSpecs(objects=[]) {
   return objects.flatMap(spec => spec.repeat === 'cities'
@@ -23,6 +23,17 @@ export function mapToScreen(x, y, view, width, height) {
   const scale = Math.min(width / view.w, height / view.h);
   return { x: (width - view.w * scale) / 2 + (x - view.x) * scale,
     y: (height - view.h * scale) / 2 + (y - view.y) * scale };
+}
+export function cityCastleVisual(viewWidth, selected=false) {
+  const zoom = Math.max(0, Math.min(1, (500 - Number(viewWidth || 0)) / 380));
+  if (zoom <= 0) return {visible:false, width:0, height:0, alpha:0};
+  const eased = zoom * zoom * (3 - 2 * zoom), boost = selected ? 1.12 : 1;
+  return {
+    visible:true,
+    width:(4 + 24 * eased) * boost,
+    height:(5 + 27 * eased) * boost,
+    alpha:Math.min(1, .18 + zoom * 1.35)
+  };
 }
 export class PhaserMapLayer {
   constructor(map) {
@@ -83,14 +94,15 @@ export class PhaserMapLayer {
       if (!point || !allowed) { sprite.setVisible(false); continue; }
       const q = mapToScreen(point[0],point[1],map.view,width,height);
       sprite.setPosition(q.x+(spec.offsetX||0),q.y+(spec.offsetY||0));
-      if (spec.role === 'city-house') {
-        const detail = Math.max(.62, Math.min(1.08, 360 / Math.max(1,map.view.w)));
-        const selected = map.state.selected === id;
-        sprite.setDisplaySize((spec.width || 18) * detail * (selected ? 1.16 : 1), (spec.height || 22) * detail * (selected ? 1.16 : 1));
-        sprite.setAlpha(selected ? 1 : .92);
+      let decorationVisible = true;
+      if (spec.role === 'city-castle') {
+        const selected = map.state.selected === id, visual = cityCastleVisual(map.view.w, selected);
+        decorationVisible = visual.visible;
+        sprite.setDisplaySize(visual.width, visual.height);
+        sprite.setAlpha(visual.alpha);
         sprite.setDepth(selected ? 8 : (spec.depth || 0));
       }
-      sprite.setVisible(q.x>=-50 && q.y>=-50 && q.x<=width+50 && q.y<=height+50);
+      sprite.setVisible(decorationVisible&&q.x>=-50&&q.y>=-50&&q.x<=width+50&&q.y<=height+50);
     }
   }
   destroy() {

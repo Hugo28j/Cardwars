@@ -14,6 +14,8 @@ Edit `assets/phaser/map-objects.json`. Each object has a unique `id`, a `city` (
 
 City anchors prefer the real longitude/latitude. If a coordinate falls outside its clickable province after a border edit, the map moves only the visual anchor to the nearest safe point inside that province. The province geometry and real source coordinates remain unchanged.
 
+Playable cities use the `city-castle` decoration. Castles are hidden at the full overview, appear as tiny silhouettes after zooming in and grow progressively as the view gets closer. This keeps dense city regions readable while preserving the real city anchor.
+
 The starter object places a gently animated realm banner at the selected province. This establishes a working visual path, not a replacement for every military model. For future soldiers, ships and buildings, add assets and pack entries, then placements or explicit game-state bindings in `src/phaser/map-layer.js`. Never expose enemy positions through fog. Pure decorations must not intercept pointer events.
 
 Phaser Editor's generated `.scene` code is not automatically imported by this adapter. For complex Editor scenes/prefabs, explicitly import their generated JavaScript and bind the objects to campaign state. A full tilemap is also a separate renderer change; the historical SVG boundaries remain authoritative.
