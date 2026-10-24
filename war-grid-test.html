@@ -413,10 +413,13 @@ function fightDay(){
   const attack=src.troops*attackBonus(src.owner,a.from,a.to);
   const block=(dst.troops+8)*defense(a.to)*defenseBonus(dst.owner,a.to);
   const ratio=attack/Math.max(1,block);
-  const lossA=Math.min(src.troops,Math.max(1,Math.round(dst.troops*.006/Math.max(.38,ratio))));
-  const lossB=Math.min(dst.troops,Math.max(1,Math.round(src.troops*.0065*Math.min(2.2,ratio))));
+  // Losses scale with headcount: a one-man skirmish is usually harmless.
+  // Keeping a forced minimum loss of one PER TILE destroyed small armies.
+  const lossA=Math.min(src.troops,Math.floor(dst.troops*.007/Math.max(.38,ratio)+(Math.random()<.10?1:0)));
+  const lossB=Math.min(dst.troops,Math.floor(src.troops*.0075*Math.min(2.2,ratio)+(Math.random()<.10?1:0)));
+  
   src.troops-=lossA;dst.troops-=lossB;
-  if(ratio>1.16&&src.troops>dst.troops*1.12+5){
+  if(ratio>1.10&&src.troops>dst.troops*1.08+3){
    const displaced=dst.troops,oldOwner=dst.owner;
    const retreat=adjacent(a.to).find(n=>grid[n].owner===oldOwner);
    if(retreat!==undefined)grid[retreat].troops+=Math.floor(displaced*.7);
@@ -427,7 +430,7 @@ function fightDay(){
  }
  captures+=rapidUnopposedAdvance();
  processCastlesDay();
- if(day%7===0)event('Kastelen sturen alleen kleine versterkingen wanneer ze veilig en niet belegerd zijn.');
+ if(day%14===0)event('Kastelen blijven kleine lokale versterkingen leveren zolang er geen belegering is.');
  if(captures&&day%3===0)event(captures+' roosters ingenomen, inclusief sneller doortrekken waar geen verdedigers staan.');
  render();
 }
