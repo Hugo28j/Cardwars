@@ -133,36 +133,61 @@ function transport(field,passes=1,share=.65,limit=Infinity,reserve=1,protectedTi
 function frontFor(group,owner){
  return group.cells.filter(i=>adjacent(i).some(n=>atWar(owner,grid[n].owner)));
 }
-function redistribute(passes=4){
- // Armies are commanded together inside a connected country, but never
- // pooled in one location. Each city supplies its OWN stretch of the front.
+function priorityIncursion(owner,group=null){
+ // Deeper hostile protrusions into original territory take precedence.
+ let best=null;
+ const keep=castles.filter(c=>c.original===owner).map(c=>loc(c.center));
+ const frontier=group?frontFor(group,owner):null;
+ const frontXs=frontier?.map(n=>loc(n))||[];
+ for(let i=0;i<grid.length;i++){
+  const tile=grid[i];
+  if(tile.original!==owner||tile.owner===owner||!atWar(owner,tile.owner))continue;
+  const [x,y]=loc(i),west=owner*CITYW,east=(owner+1)*CITYW-1;
+  const depth=Math.min(x-west+1,east-x);
+  let support=0;for(const n of adjacent(i))if(grid[n].owner===tile.owner&&grid[n].original===owner)support++;
+  const nearby=keep.length?Math.min(...keep.map(([cx,cy])=>Math.abs(x-cx)+Math.abs(y-cy))):80;
+  const frontDist=frontXs.length?Math.min(...frontXs.map(([fx,fy])=>Math.abs(x-fx)+Math.abs(y-fy))):0;
+  const score=depth*6+support*2+Math.min(12,tile.troops*.25)+18/(1+nearby)-frontDist*.15;
+  if(!best||score>best.score)best={index:i,score,depth,coordinate:[x,y]};
+ }
+ return best;
+}
+function redistribute(passes=6){
+ // All mobile troops march by neighboring cells; stationed castle troops
+ // have a separate garrison pool and do not join the marching algorithm.
  for(let owner=0;owner<4;owner++)for(const group of connected(owner)){
-  const frontier=frontFor(group,owner);
-  if(!frontier.length)continue;
+  const frontline=frontFor(group,owner);if(!frontline.length)continue;
   const protectedTiles=reinforcementProtectedCells(owner);
-  const groupTiles=new Set(group.cells);
+  const groupSet=new Set(group.cells);
+  const active=orders.filter(o=>o.owner===owner&&groupSet.has(o.from));
   const rally=new Set();
-  const armyCities=castles.filter(c=>c.original===owner&&groupTiles.has(c.center));
-  // Each city's front sector is picked according to its own position.
-  for(const castle of armyCities){
-   const [cx,cy]=loc(castle.center);
-   const near=frontier.slice().sort((a,b)=>{
-    const [ax,ay]=loc(a),[bx,by]=loc(b);
-    return (Math.abs(ax-cx)+Math.abs(ay-cy))-(Math.abs(bx-cx)+Math.abs(by-cy));
-   });
-   // Several adjoining rally positions per city, avoiding an all-army blob.
-   for(let k=0;k<Math.min(4,near.length);k++)rally.add(near[k]);
+  if(active.length){
+   for(const order of active)for(const i of chooseSeeds(order,group.cells))rally.add(i);
+  }else{
+   const intrusion=priorityIncursion(owner,group);
+   if(intrusion){
+    const [tx,ty]=intrusion.coordinate;
+    const sorted=frontline.slice().sort((a,b)=>{
+     const [ax,ay]=loc(a),[bx,by]=loc(b);
+     return Math.abs(ax-tx)+Math.abs(ay-ty)-Math.abs(bx-tx)-Math.abs(by-ty);
+    });
+    for(let k=0;k<Math.min(10,sorted.length);k++)rally.add(sorted[k]);
+   }else{
+    for(const castle of castles.filter(c=>c.owner===owner&&groupSet.has(c.center))){
+     const [cx,cy]=loc(castle.center);
+     const sorted=frontline.slice().sort((a,b)=>{
+      const [ax,ay]=loc(a),[bx,by]=loc(b);
+      return Math.abs(ax-cx)+Math.abs(ay-cy)-Math.abs(bx-cx)-Math.abs(by-cy);
+     });
+     for(let k=0;k<Math.min(4,sorted.length);k++)rally.add(sorted[k]);
+    }
+   }
   }
-  if(!rally.size){
-   const ordered=frontier.slice().sort((a,b)=>a-b);
-   const count=Math.min(6,ordered.length);
-   for(let i=0;i<count;i++)rally.add(ordered[Math.floor((i+.5)*ordered.length/count)]);
-  }
-  const field=distanceField(group.cells,[...rally]);
-  // Soldiers actually march through adjacent friendly tiles on game ticks.
-  transport(field,passes,.68,Infinity,1,protectedTiles);
+  if(!rally.size)for(let k=0;k<Math.min(6,frontline.length);k++)rally.add(frontline[Math.floor((k+.5)*frontline.length/Math.min(6,frontline.length))]);
+  transport(distanceField(group.cells,[...rally]),passes,.86,Infinity,0,protectedTiles);
  }
 }
+
 function ordersFor(owner,origin){
  return orders.filter(o=>o.owner===owner&&(o.scope!=='city'||grid[origin].city===o.city));
 }
