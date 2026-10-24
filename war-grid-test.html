@@ -153,39 +153,36 @@ function priorityIncursion(owner,group=null){
  }
  return best;
 }
-function redistribute(passes=6){
- // All mobile troops march by neighboring cells; stationed castle troops
- // have a separate garrison pool and do not join the marching algorithm.
+function evenlySpacedFront(frontline){
+ // One representative per ~6x5 cell sector: no more collapsing all armies
+ // onto a single penetration while the rest of the line is unguarded.
+ const areas=new Map();
+ for(const i of frontline){
+  const [x,y]=loc(i),bx=Math.floor(x/6),by=Math.floor(y/5),key=bx+':'+by;
+  const score=Math.abs(x-(bx*6+2.5))+Math.abs(y-(by*5+2));
+  if(!areas.has(key)||score<areas.get(key).score)areas.set(key,{index:i,score});
+ }
+ return [...areas.values()].map(v=>v.index);
+}
+function redistribute(passes=5){
+ // Give all connected cities shared command, not a single army location.
+ // Without explicit orders, build a wide and steady front line.
  for(let owner=0;owner<4;owner++)for(const group of connected(owner)){
   const frontline=frontFor(group,owner);if(!frontline.length)continue;
   const protectedTiles=reinforcementProtectedCells(owner);
-  const groupSet=new Set(group.cells);
-  const active=orders.filter(o=>o.owner===owner&&groupSet.has(o.from));
-  const rally=new Set();
+  const connectedCells=new Set(group.cells);
+  const active=orders.filter(o=>o.owner===owner&&connectedCells.has(o.from));
+  let rally=[];
   if(active.length){
-   for(const order of active)for(const i of chooseSeeds(order,group.cells))rally.add(i);
+   const destinations=new Set();
+   for(const order of active)for(const i of chooseSeeds(order,group.cells))destinations.add(i);
+   rally=[...destinations];
   }else{
-   const intrusion=priorityIncursion(owner,group);
-   if(intrusion){
-    const [tx,ty]=intrusion.coordinate;
-    const sorted=frontline.slice().sort((a,b)=>{
-     const [ax,ay]=loc(a),[bx,by]=loc(b);
-     return Math.abs(ax-tx)+Math.abs(ay-ty)-Math.abs(bx-tx)-Math.abs(by-ty);
-    });
-    for(let k=0;k<Math.min(10,sorted.length);k++)rally.add(sorted[k]);
-   }else{
-    for(const castle of castles.filter(c=>c.owner===owner&&groupSet.has(c.center))){
-     const [cx,cy]=loc(castle.center);
-     const sorted=frontline.slice().sort((a,b)=>{
-      const [ax,ay]=loc(a),[bx,by]=loc(b);
-      return Math.abs(ax-cx)+Math.abs(ay-cy)-Math.abs(bx-cx)-Math.abs(by-cy);
-     });
-     for(let k=0;k<Math.min(4,sorted.length);k++)rally.add(sorted[k]);
-    }
-   }
+   rally=evenlySpacedFront(frontline);
   }
-  if(!rally.size)for(let k=0;k<Math.min(6,frontline.length);k++)rally.add(frontline[Math.floor((k+.5)*frontline.length/Math.min(6,frontline.length))]);
-  transport(distanceField(group.cells,[...rally]),passes,.86,Infinity,0,protectedTiles);
+  if(!rally.length)continue;
+  // Each marching pass crosses only a neighboring friendly tile.
+  transport(distanceField(group.cells,rally),passes,.66,Infinity,0,protectedTiles);
  }
 }
 
@@ -376,52 +373,54 @@ function rapidUnopposedAdvance(){
  return claimed;
 }
 function stabilizeBorder(){
- // Capture ONLY abandoned, small completely surrounded pockets. Large
- // cut-off armies, strong forts and castles survive as real encirclements.
- // Work on a snapshot so ownership cannot cascade through a pocket.
- const old=grid.map(g=>g.owner),visited=new Uint8Array(grid.length),changes=[];
+ // Small, entirely surrounded leftovers follow the enclosing colour.
+ // A few trapped soldiers surrender; a serious formation, castle, or fort
+ // still has to be fought / besieged. Snapshot avoids runaway capture.
+ const old=grid.map(g=>g.owner),visited=new Uint8Array(grid.length),changes=new Map();
  for(let seed=0;seed<grid.length;seed++){
   if(visited[seed])continue;
-  const owner=old[seed],queue=[seed],component=[];let touchesEdge=false;
-  const bordering=new Map();
-  visited[seed]=1;let enemyTroops=0,fortified=false;
-  for(let j=0;j<queue.length;j++){
-   const i=queue[j],[x,y]=loc(i),tile=grid[i];
-   component.push(i);enemyTroops+=tile.troops;
-   if(tile.castleId>=0||tile.fort>0)fortified=true;
+  const owner=old[seed],queue=[seed],component=[],border=new Map();
+  let touchesEdge=false,soldiers=0,protectedPosition=false;
+  visited[seed]=1;
+  for(let q=0;q<queue.length;q++){
+   const i=queue[q],[x,y]=loc(i),tile=grid[i];
+   component.push(i);soldiers+=tile.troops;
+   if(tile.castleId>=0||tile.fort>0)protectedPosition=true;
    if(x===0||x===W-1||y===0||y===H-1)touchesEdge=true;
    for(const n of adjacent(i)){
-    const other=old[n];
-    if(other===owner){if(!visited[n]){visited[n]=1;queue.push(n);}}
-    else bordering.set(other,(bordering.get(other)||0)+1);
+    if(old[n]===owner){if(!visited[n]){visited[n]=1;queue.push(n)}}
+    else border.set(old[n],(border.get(old[n])||0)+1);
    }
   }
-  if(touchesEdge||fortified||!bordering.size||component.length>20||enemyTroops>0)continue;
-  const colors=[...bordering.entries()].sort((a,b)=>b[1]-a[1]);
-  const takeover=colors[0][0];
-  // No instant takeover where two rival powers divide the ring.
-  if(colors.length!==1||!atWar(owner,takeover))continue;
-  for(const i of component)changes.push([i,takeover]);
+  if(touchesEdge||protectedPosition||component.length>48||!border.size)continue;
+  if(soldiers>Math.max(5,Math.ceil(component.length*.40)))continue;
+  // Do not capture a mixed ring. All surrounding border cells must have
+  // the SAME hostile owner, and the two countries must actually be at war.
+  if(border.size!==1)continue;
+  const nextOwner=border.keys().next().value;
+  if(!atWar(owner,nextOwner))continue;
+  if(component.some(i=>castleProtectedRing(i,nextOwner)))continue;
+  for(const i of component)changes.set(i,nextOwner);
  }
- // Also remove tiny zero-troop single-square notches when three of four
- // surrounding tiles already belong to the same enemy, except castle rings.
+ // Smooth isolated one-square / two-square chips along the front too,
+ // including one or two stragglers, but never across protected castle rings.
  for(let i=0;i<grid.length;i++){
-  const tile=grid[i];if(tile.castleId>=0||tile.fort>0||tile.troops>0)continue;
+  const tile=grid[i];if(tile.castleId>=0||tile.fort>0||tile.troops>2)continue;
   const [x,y]=loc(i);if(x===0||y===0||x===W-1||y===H-1)continue;
-  if(castles.some(c=>{const [cx,cy]=loc(c.center);return Math.max(Math.abs(x-cx),Math.abs(y-cy))<=2;}))continue;
-  const adj=adjacent(i);if(adj.length!==4)continue;
-  const counts=new Map();
-  for(const n of adj)counts.set(old[n],(counts.get(old[n])||0)+1);
-  const match=[...counts.entries()].find(([color,num])=>color!==tile.owner&&num>=3&&atWar(tile.owner,color));
-  if(match)changes.push([i,match[0]]);
+  const neighbors=adjacent(i),tallies=new Map();
+  for(const n of neighbors)tallies.set(old[n],(tallies.get(old[n])||0)+1);
+  const option=[...tallies].find(([o,count])=>count>=3&&o!==tile.owner&&atWar(o,tile.owner)&&!castleProtectedRing(i,o));
+  if(option)changes.set(i,option[0]);
  }
- const unique=new Map(changes);
- for(const [i,owner] of unique){
-  // Never generate troops when smoothing terrain.
-  if(grid[i].castleId<0&&grid[i].troops===0)grid[i].owner=owner;
+ let switched=0;
+ for(const [i,nextOwner] of changes){
+  if(grid[i].castleId>=0||castleProtectedRing(i,nextOwner)||grid[i].fort>0||grid[i].troops>2)continue;
+  // At most two stranded soldiers are captured, never moved or generated.
+  grid[i].troops=0;grid[i].owner=nextOwner;switched++;
  }
- return unique.size;
+ return switched;
 }
+
 function castleRing(castle){
  const [x,y]=loc(castle.center),result=[];
  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
