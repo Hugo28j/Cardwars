@@ -56,13 +56,13 @@ function transport(field,passes=1,share=.65,limit=Infinity,reserve=1,protectedTi
 function frontFor(group,owner){
  return group.cells.filter(i=>adjacent(i).some(n=>atWar(owner,grid[n].owner)));
 }
-function redistribute(passes=8){
+function redistribute(passes=2){
  for(let owner=0;owner<4;owner++)for(const group of connected(owner)){
   const protectedTiles=reinforcementProtectedCells(owner);
   const frontier=frontFor(group,owner);
   if(!frontier.length)continue;
   const field=distanceField(group.cells,frontier);
-  transport(field,passes,.92,Infinity,0,protectedTiles);
+  transport(field,passes,.42,Infinity,1,protectedTiles);
  }
 }
 function ordersFor(owner,origin){
@@ -74,8 +74,8 @@ function arrowAffinity(order,from,to){
  const along=((nx-sx)*vx+(ny-sy)*vy)/(len*len);
  const lateral=Math.abs((nx-sx)*vy-(ny-sy)*vx)/len;
  const delta=(nx-fx)*vx+(ny-fy)*vy;
- if(delta<=0||along<-.12||along>1.25||lateral>6)return 0;
- return (1-lateral/6)*(.45+.55*clamp(along,0,1));
+ if(delta<=0||along<-.12||along>1.25||lateral>11)return 0;
+ return (1-lateral/11)*(.50+.5*clamp(along,0,1));
 }
 function attackBonus(owner,from,to){
  let bonus=1;
@@ -99,7 +99,7 @@ function chooseSeeds(o,allowed){
  if(o.type==='arrow'){
   // Assault sector: living front tiles nearest the arrowhead.
   const near=(front.length?front:pool).slice().sort((a,b)=>metric(a)-metric(b));
-  return near.slice(0,Math.min(8,near.length));
+  return near.slice(0,Math.min(16,near.length));
  }
  const inside=pool.filter(i=>metric(i)<=o.radius);
  const defenders=inside.filter(i=>adjacent(i).some(n=>atWar(owner,grid[n].owner)));
@@ -114,13 +114,22 @@ function chooseSeeds(o,allowed){
 function reinforcementProtectedCells(owner){
  const result=new Set();
  for(const o of orders){
-  if(o.owner!==owner||o.type!=='circle')continue;
+  if(o.owner!==owner)continue;
   const region=connected(owner).find(g=>g.cells.includes(o.from));
   if(!region)continue;
   const allowed=region.cells.filter(i=>o.scope!=='city'||grid[i].city===o.city);
   for(const target of chooseSeeds(o,allowed))result.add(target);
  }
  return result;
+}
+function reinforcementGoal(order,group,allowed){
+ if(order.type==='circle')return (order.baseline||0)+order.amount;
+ const matching=orders.filter(o=>o.type==='arrow'&&o.owner===order.owner&&
+   o.scope===order.scope&&(o.scope!=='city'||o.city===order.city)&&group.cells.includes(o.from));
+ const weights=matching.reduce((sum,o)=>sum+o.amount,0)||1;
+ const pool=allowed.reduce((sum,i)=>sum+grid[i].troops,0);
+ // Arrow weights allocate 78% of available troops to offensive directions.
+ return Math.max(1,Math.round(pool*.78*(order.amount/weights)));
 }
 function reinforceOrders(){
  marchTrails=[];
@@ -132,36 +141,33 @@ function reinforceOrders(){
   const seeds=chooseSeeds(order,allowed);
   if(!seeds.length){order.status='Geen bereikbaar doel';order.lastMoved=0;continue;}
   const atTarget=seeds.reduce((n,i)=>n+grid[i].troops,0);
-  const target=(order.baseline||0)+order.amount;
-  order.arrived=Math.max(0,atTarget-(order.baseline||0));
-  const remaining=Math.max(0,target-atTarget);
-  if(!remaining){order.status='Versterkt';order.lastMoved=0;continue;}
+  const goal=reinforcementGoal(order,group,allowed);
+  order.currentGoal=goal;
+  order.arrived=order.type==='circle'?Math.max(0,atTarget-(order.baseline||0)):atTarget;
+  const missing=Math.max(0,goal-atTarget);
+  if(!missing){order.status='Op positie';order.lastMoved=0;continue;}
   const field=distanceField(allowed,seeds);
-  // Max two neighboring cells travelled per day. Marches are observable
-  // across several days instead of materializing at the destination.
-  const MARCH_STEPS_PER_DAY=2;
-  let remainingBudget=Math.min(remaining,Math.max(80,Math.ceil(order.amount*.40)));
-  let totalSteps=0;
-  for(let pass=0;pass<MARCH_STEPS_PER_DAY&&remainingBudget>0;pass++){
-   // q is sorted closest-to-destination first; troops cannot be moved
-   // multiple cells inside one pass.
+  const passes=2; // A marching column can travel only two adjacent cells per day.
+  let budget=Math.min(missing,Math.max(120,Math.ceil(goal*.24)));
+  let marched=0;
+  for(let pass=0;pass<passes&&budget>0;pass++){
    for(const from of field.q){
-    if(field.dist[from]<=0||remainingBudget<=0)continue;
+    if(field.dist[from]<=0||budget<=0)continue;
     const to=field.parent[from];
     if(to<0||grid[from].owner!==order.owner||grid[to].owner!==order.owner)continue;
-    const reservable=Math.max(0,grid[from].troops-(order.scope==='city'?0:1));
-    if(reservable<=0)continue;
-    const moved=moveTroops(from,to,Math.min(Math.ceil(reservable*.52),remainingBudget));
+    const ready=Math.max(0,grid[from].troops-(order.scope==='city'?0:1));
+    if(!ready)continue;
+    const moved=moveTroops(from,to,Math.min(Math.ceil(ready*.70),budget));
     if(!moved)continue;
-    remainingBudget-=moved;
-    totalSteps+=moved;
+    marched+=moved;budget-=moved;
     if(marchTrails.length<240&&moved>=2)marchTrails.push({from,to,count:moved,owner:order.owner,orderId:order.id});
    }
   }
-  order.arrived=Math.max(0,seeds.reduce((n,i)=>n+grid[i].troops,0)-(order.baseline||0));
-  order.lastMoved=totalSteps;
-  order.moved=(order.moved||0)+totalSteps;
-  order.status=totalSteps>0?'Onderweg': 'Wacht op beschikbare soldaten';
+  const arrived=seeds.reduce((n,i)=>n+grid[i].troops,0);
+  order.arrived=order.type==='circle'?Math.max(0,arrived-(order.baseline||0)):arrived;
+  order.lastMoved=marched;
+  order.moved=(order.moved||0)+marched;
+  order.status=marched>0?'Marcheert richting doel':'Wacht op beschikbare soldaten';
  }
 }
 function paintMarchTrails(){
@@ -301,10 +307,10 @@ function eraseAt(index){
 }
 function drawOrder(from,to){const origin=grid[from],destination=grid[to],amount=clamp(Math.max(20,Math.floor(Number($('amount').value)||1000)),20,20000);if(tool==='erase'){eraseAt(to);return}if(tool==='fort'){if(origin.owner!==0){event('Je kunt alleen je eigen gebied verstevigen.');return}origin.fort=Math.min(5,origin.fort+1);event('Rooster verstevigd.');return}if(tool==='inspect'){const [x,y]=loc(to);$('cell').textContent='Rooster '+x+','+y+' · '+cities[Math.floor(destination.city/4)][destination.city%4]+' · '+names[destination.owner]+' · '+fmt(destination.troops)+' soldaten · verdediging '+defense(to).toFixed(2)+'×';return}if(origin.owner!==0||!orderScope(from)){event('Begin je bevel in een eigen, geselecteerd legergebied.');return}if(tool==='arrow'&&destination.owner!==0&&!atWar(0,destination.owner)){event('Verklaar eerst oorlog aan deze vijand.');return}
 const order={id:nextOrderId++,type:tool,from,to,owner:0,scope,city:selected,amount,stance:$('stance').value,radius:clamp(Math.hypot(...loc(from).map((v,i)=>v-loc(to)[i])),2,24)};const group=connected(0).find(g=>g.cells.includes(from));const allowed=(group?.cells||[]).filter(i=>scope!=='city'||grid[i].city===selected);order.baseline=chooseSeeds(order,allowed).reduce((sum,i)=>sum+grid[i].troops,0);orders.push(order);event((tool==='circle'?'Versterkcirkel':'Aanvalspijl')+' geplaatst voor '+(scope==='city'?'stadsgarnizoen '+cities[Math.floor(selected/4)][selected%4]:'gezamenlijk landleger'))}
-function orderProgress(o){const group=connected(o.owner).find(g=>g.cells.includes(o.from));if(!group)return 'gebied niet bereikbaar';const area=group.cells.filter(i=>o.scope!=='city'||grid[i].city===o.city);const tiles=chooseSeeds(o,area);const atTarget=tiles.reduce((n,i)=>n+grid[i].troops,0);return 'Bij doel: '+fmt(atTarget)+' / '+fmt((o.baseline||0)+o.amount)+' · '+(o.status||'In afwachting')+(o.lastMoved?' · '+fmt(o.lastMoved)+' soldaat-roosterstappen vandaag':'')}
+function orderProgress(o){const group=connected(o.owner).find(g=>g.cells.includes(o.from));if(!group)return 'gebied niet bereikbaar';const area=group.cells.filter(i=>o.scope!=='city'||grid[i].city===o.city);const tiles=chooseSeeds(o,area);const atTarget=tiles.reduce((n,i)=>n+grid[i].troops,0);return 'Bij doel: '+fmt(atTarget)+' / '+fmt(o.currentGoal??((o.baseline||0)+o.amount))+' · '+(o.status||'In afwachting')+(o.lastMoved?' · '+fmt(o.lastMoved)+' soldaat-roosterstappen vandaag':'')}
 function render(){paint();$('day').textContent=day;$('wars').textContent=wars.size;$('total').textContent=fmt(grid.reduce((s,t)=>s+(t.owner===0?t.troops:0),0));$('countries').innerHTML=names.map((n,i)=>'<div class="country"><span><b style="color:'+colors[i]+'">●</b> '+n+'<br><small>'+fmt(grid.reduce((s,t)=>s+(t.owner===i?t.troops:0),0))+' soldaten</small></span>'+(i===0?'<small>Jij</small>':wars.has('0-'+i)?'<small>⚔ Oorlog</small>':'<button data-war="'+i+'">Oorlog</button>')+'</div>').join('');$('city').innerHTML=Array.from({length:12},(_,i)=>'<option value="'+i+'" '+(i===selected?'selected':'')+'>'+cities[Math.floor(i/4)][i%4]+'</option>').join('');$('order-list').innerHTML='<b>Actieve bevelen ('+orders.length+')</b>'+orders.map(o=>'<div class="country"><span>'+ (o.type==='arrow'?'➜ Aanval':'◯ Versterking')+' #'+o.id+' · '+fmt(o.amount)+' extra soldaten'+(o.scope==='city'?' · '+cities[Math.floor(o.city/4)][o.city%4]:' · land')+'<br><small>'+orderProgress(o)+'</small></span><button data-delete-order="'+o.id+'" aria-label="Verwijder bevel '+o.id+'">✕ Wis</button></div>').join('');const components=connected(0),cityTroops=grid.reduce((s,t)=>s+(t.city===selected&&t.owner===0?t.troops:0),0);$('command').textContent=scope==='country'?'Landelijk opperbevel · '+components.length+' afzonderlijke verbonden legergroep(en).':'Garnizoen '+cities[Math.floor(selected/4)][selected%4]+' · '+fmt(cityTroops)+' soldaten';$('groups').innerHTML=components.map((g,i)=>'<div class="country">Legergroep '+(i+1)+'<strong>'+fmt(g.soldiers)+'</strong></div>').join('');$('log').innerHTML=events.map(v=>'<div>'+v+'</div>').join('')}
 canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drag={from:mouseIndex(e),to:mouseIndex(e)};paint()});canvas.addEventListener('pointermove',e=>{if(!drag)return;drag.to=mouseIndex(e);paint()});canvas.addEventListener('pointerup',e=>{if(!drag)return;drag.to=mouseIndex(e);drawOrder(drag.from,drag.to);drag=null;render()});canvas.addEventListener('pointercancel',()=>{drag=null;paint()});
-document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.tool)));$('order-list').addEventListener('click',e=>{const b=e.target.closest('[data-delete-order]');if(!b)return;const before=orders.length;orders=orders.filter(o=>o.id!==Number(b.dataset.deleteOrder));if(orders.length!==before)event('Bevel '+b.dataset.deleteOrder+' verwijderd.');render()});$('countries').addEventListener('click',e=>{const b=e.target.closest('[data-war]');if(!b)return;const n=Number(b.dataset.war);wars.add('0-'+n);event('Oorlog verklaard aan '+names[n]+'! Legers verzamelen aan de volledige grens.');redistribute(48);render()});$('scope').onchange=e=>{scope=e.target.value;render()};$('city').onchange=e=>{selected=Number(e.target.value);render()};$('next').onclick=fightDay;$('week').onclick=()=>{for(let k=0;k<7;k++)fightDay()};$('play').onclick=()=>{if(running){clearInterval(running);running=null;$('play').textContent='▶ Automatisch'}else{running=setInterval(fightDay,450);$('play').textContent='⏸ Pauze'}};$('reset').onclick=reset;$('clear-orders').onclick=()=>{orders=[];event('Alle aanvalspijlen en versterkcirkels verwijderd.');render()};$('recruit').onclick=()=>{const allowed=scopeTiles(),local=allowed.filter(i=>grid[i].original===0);if(!local.length)return;const [cx,cy]=centroid(selected);local.sort((a,b)=>Math.hypot(loc(a)[0]-cx,loc(a)[1]-cy)-Math.hypot(loc(b)[0]-cx,loc(b)[1]-cy));for(let i=0;i<500;i++)grid[local[i%Math.min(100,local.length)]].troops++;event('500 rekruten toegewezen aan '+(scope==='city'?'het stadsgarnizoen':'het landleger'));render()};
+document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.tool)));$('order-list').addEventListener('click',e=>{const b=e.target.closest('[data-delete-order]');if(!b)return;const before=orders.length;orders=orders.filter(o=>o.id!==Number(b.dataset.deleteOrder));if(orders.length!==before)event('Bevel '+b.dataset.deleteOrder+' verwijderd.');render()});$('countries').addEventListener('click',e=>{const b=e.target.closest('[data-war]');if(!b)return;const n=Number(b.dataset.war);wars.add('0-'+n);event('Oorlog verklaard aan '+names[n]+'! De grote legerreserve marcheert de komende dagen naar het front.');render()});$('scope').onchange=e=>{scope=e.target.value;render()};$('city').onchange=e=>{selected=Number(e.target.value);render()};$('next').onclick=fightDay;$('week').onclick=()=>{for(let k=0;k<7;k++)fightDay()};$('play').onclick=()=>{if(running){clearInterval(running);running=null;$('play').textContent='▶ Automatisch'}else{running=setInterval(fightDay,450);$('play').textContent='⏸ Pauze'}};$('reset').onclick=reset;$('clear-orders').onclick=()=>{orders=[];event('Alle aanvalspijlen en versterkcirkels verwijderd.');render()};$('recruit').onclick=()=>{const allowed=scopeTiles(),local=allowed.filter(i=>grid[i].original===0);if(!local.length)return;const [cx,cy]=centroid(selected);local.sort((a,b)=>Math.hypot(loc(a)[0]-cx,loc(a)[1]-cy)-Math.hypot(loc(b)[0]-cx,loc(b)[1]-cy));for(let i=0;i<500;i++)grid[local[i%Math.min(100,local.length)]].troops++;event('500 rekruten toegewezen aan '+(scope==='city'?'het stadsgarnizoen':'het landleger'));render()};
 reset();
 })();
 </script></body></html>
