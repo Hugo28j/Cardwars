@@ -97,7 +97,9 @@ function reset(){
    positions.push(ix(x,y));
   }
   // Small starting city armies; each country owns exactly three cities.
-  for(let i=0;i<soldiers;i++)grid[positions[(i*17+Math.floor(i/positions.length))%positions.length]].troops++;
+  // A city fields eight proper formations of 20-40 men, not 70 isolated scouts.
+  const localGroups=positions.filter((_,k)=>k%11===0).slice(0,8);
+  for(let i=0;i<soldiers;i++)grid[localGroups[i%localGroups.length]].troops++;
  }
  event('Drie kleine legers starten bij hun kastelen. Goud is jouw bondgenoot. Kasteelrekrutering gebeurt elke vijf dagen zolang er geen beleg is.');
  $('castle-men').value=String(castles[selected].garrison);
@@ -117,6 +119,7 @@ function distanceField(allowed,seeds){
  for(let h=0;h<q.length;h++){const i=q[h];for(const n of adjacent(i))if(mask[n]&&dist[n]===-1){dist[n]=dist[i]+1;parent[n]=i;q.push(n)}}
  return {dist,parent,q};
 }
+const MIN_DETACHMENT=10;
 function transport(field,passes=1,share=.65,limit=Infinity,reserve=1,protectedTiles=null){
  let moved=0;
  for(let pass=0;pass<passes&&moved<limit;pass++){
@@ -124,8 +127,10 @@ function transport(field,passes=1,share=.65,limit=Infinity,reserve=1,protectedTi
    if(field.dist[i]===0||protectedTiles?.has(i))continue;
    const dest=field.parent[i];if(dest<0)continue;
    const available=Math.max(0,grid[i].troops-reserve);
-   const amount=Math.min(Math.ceil(available*share),limit-moved);
-   if(amount>0){moveTroops(i,dest,amount);moved+=amount}
+   if(available<MIN_DETACHMENT)continue;
+   let amount=Math.min(Math.ceil(available*share),limit-moved);
+   if(available-amount<MIN_DETACHMENT)amount=Math.min(available,limit-moved);
+   if(amount>=MIN_DETACHMENT){moveTroops(i,dest,amount);moved+=amount}
   }
  }
  return moved;
@@ -276,8 +281,11 @@ function reinforceOrders(){
     const to=field.parent[from];
     if(to<0||grid[from].owner!==order.owner||grid[to].owner!==order.owner)continue;
     const ready=Math.max(0,grid[from].troops-(order.scope==='city'?0:1));
-    if(!ready)continue;
-    const moved=moveTroops(from,to,Math.min(Math.ceil(ready*.70),budget));
+    if(ready<MIN_DETACHMENT||budget<MIN_DETACHMENT)continue;
+    let send=Math.min(Math.ceil(ready*.70),budget);
+    if(ready-send<MIN_DETACHMENT)send=Math.min(ready,budget);
+    if(send<MIN_DETACHMENT)continue;
+    const moved=moveTroops(from,to,send);
     if(!moved)continue;
     marched+=moved;budget-=moved;
     if(marchTrails.length<240&&moved>=2)marchTrails.push({from,to,count:moved,owner:order.owner,orderId:order.id});
@@ -324,7 +332,7 @@ function rapidUnopposedAdvance(){
   if(!ownerAtWar(owner))continue;
   let ownerCap=0;
   for(const group of connected(owner)){
-   const allFront=frontFor(group,owner).filter(i=>grid[i].troops>=5).sort((a,b)=>grid[b].troops-grid[a].troops);
+   const allFront=frontFor(group,owner).filter(i=>grid[i].troops>=MIN_DETACHMENT).sort((a,b)=>grid[b].troops-grid[a].troops);
    const commands=orders.filter(o=>o.type==='arrow'&&o.owner===owner&&group.cells.includes(o.from));
    // Automatic advance: ONE column from each ~6x5 front sector. This
    // spreads captured land along the line, instead of one far-off spike.
@@ -349,7 +357,7 @@ function rapidUnopposedAdvance(){
     })[0]:null;
     const objective=targetOrder?loc(targetOrder.to):targetCastle?loc(targetCastle.center):loc(start);
     for(let hop=0;hop<(targetOrder?4:1)&&ownerCap<110;hop++){
-      if(grid[current].troops<5)break;
+      if(grid[current].troops<MIN_DETACHMENT)break;
       const [cx,cy]=loc(current);
       const enemies=adjacent(current).filter(n=>{
         const tile=grid[n];return tile.castleId<0&&tile.fort===0&&tile.troops<=2&&
@@ -371,7 +379,9 @@ function rapidUnopposedAdvance(){
         const fallback=adjacent(dest).find(n=>grid[n].owner===oldOwner);
         if(fallback!==undefined)grid[fallback].troops+=oldTroops;
       }
-      const send=Math.max(1,Math.floor(grid[current].troops*.65));
+      const available=grid[current].troops;
+      const want=Math.ceil(available*.65);
+      const send=available-want<MIN_DETACHMENT?available:Math.max(MIN_DETACHMENT,want);
       moveTroops(current,dest,send);
       const [nx,ny]=loc(dest);direction=[nx-cx,ny-cy];current=dest;ownerCap++;claimed++;
     }
@@ -627,12 +637,25 @@ function paintFrontBorders(){
  ctx.stroke();
 }
 
+function regroupStragglers(){
+ // Never march tiny 1-9 man units by themselves. Find the nearest friendly
+ // detachment and join it, one neighboring step per game day.
+ const pieces=grid.map((t,i)=>t.troops>0&&t.troops<MIN_DETACHMENT?i:-1).filter(i=>i>=0);
+ for(const from of pieces){
+  const t=grid[from];if(t.troops<=0||t.troops>=MIN_DETACHMENT)continue;
+  const friends=adjacent(from).filter(i=>grid[i].owner===t.owner&&grid[i].castleId<0);
+  if(!friends.length)continue;
+  friends.sort((a,b)=>grid[b].troops-grid[a].troops);
+  const receiver=friends[0];
+  moveTroops(from,receiver,t.troops);
+ }
+}
 function fightDay(){
- day++;expireTemporaryOrders();redistribute();reinforceOrders();computeFrontResistance();
+ day++;expireTemporaryOrders();regroupStragglers();redistribute();reinforceOrders();computeFrontResistance();
  const battlePriorities=[0,1,2].map(owner=>orders.some(o=>o.owner===owner&&o.type==='arrow')?null:priorityIncursion(owner));
  const attackers=[];
  for(let i=0;i<grid.length;i++){
-  const g=grid[i];if(g.troops<5)continue;
+  const g=grid[i];if(g.troops<MIN_DETACHMENT)continue;
   const enemies=adjacent(i).filter(n=>grid[n].castleId<0&&atWar(g.owner,grid[n].owner));
   if(!enemies.length)continue;
   let best=null;
@@ -654,7 +677,7 @@ function fightDay(){
  let captures=0;
  for(const a of attackers){
   const src=grid[a.from],dst=grid[a.to];
-  if(src.owner!==a.owner||!atWar(src.owner,dst.owner)||src.troops<5)continue;
+  if(src.owner!==a.owner||!atWar(src.owner,dst.owner)||src.troops<MIN_DETACHMENT)continue;
   const attack=src.troops*attackBonus(src.owner,a.from,a.to);
   const shield=castleProtectedRing(a.to,src.owner);
   if(shield){damageCastleDefenders(shield,a.from);continue;}
@@ -671,13 +694,16 @@ function fightDay(){
    const retreat=adjacent(a.to).find(n=>grid[n].owner===oldOwner);
    if(retreat!==undefined)grid[retreat].troops+=Math.floor(displaced*.7);
    dst.owner=src.owner;dst.troops=0;
-   moveTroops(a.from,a.to,Math.max(1,Math.ceil(src.troops*.38)));
+   const send=Math.ceil(src.troops*.52);
+   const detached=src.troops-send<MIN_DETACHMENT?src.troops:Math.max(MIN_DETACHMENT,send);
+   moveTroops(a.from,a.to,detached);
    captures++;
   }
  }
  captures+=rapidUnopposedAdvance();
  captures+=stabilizeBorder();
  processCastlesDay();
+ regroupStragglers();
  if(day%14===0)event('Kastelen blijven kleine lokale versterkingen leveren zolang er geen belegering is.');
  if(captures&&day%3===0)event(captures+' roosters ingenomen, inclusief sneller doortrekken waar geen verdedigers staan.');
  render();
@@ -773,7 +799,7 @@ function drawFormations(){
   ctx.beginPath();ctx.arc(f.x,f.y,size,0,Math.PI*2);
   ctx.fillStyle=f.owner===0?'#143b68':'#322a24';ctx.fill();
   ctx.lineWidth=count<200?.55:1.1;ctx.strokeStyle=f.owner===0?'#addcff':colors[f.owner];ctx.stroke();
-  if(count>20){
+  if(count>=10){
    const tile=grid[f.source],order=orders.find(o=>o.owner===f.owner&&o.type==='arrow'&&(o.scope!=='city'||o.city===tile.city));
    let theta=0;if(order){const [sx,sy]=loc(order.from),[tx,ty]=loc(order.to);theta=Math.atan2(ty-sy,tx-sx);}
    ctx.save();ctx.translate(f.x,f.y-size-5);ctx.rotate(clamp(theta,-.65,.65));
