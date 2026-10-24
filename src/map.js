@@ -1,4 +1,4 @@
-import {PhaserMapLayer} from './phaser/map-layer.js?v=20261023-v1';
+import {PhaserMapLayer} from './phaser/map-layer.js?v=20261024-city-houses-v1';
 import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260928-anatolia-v8';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -70,10 +70,29 @@ const polygonPath=poly=>poly.length?'M'+poly.map(p=>p[0].toFixed(3)+','+p[1].toF
 const polygonBox=poly=>{const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};};
 const polygonArea=poly=>Math.abs(poly.reduce((a,p,i)=>{const q=poly[(i+1)%poly.length];return a+p[0]*q[1]-q[0]*p[1];},0)/2);
 const polygonCentroid=poly=>{let a=0,cx=0,cy=0;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],k=p[0]*q[1]-q[0]*p[1];a+=k;cx+=(p[0]+q[0])*k;cy+=(p[1]+q[1])*k;}if(Math.abs(a)<1e-8){const n=poly.length||1;return [poly.reduce((v,p)=>v+p[0],0)/n,poly.reduce((v,p)=>v+p[1],0)/n];}return [cx/(3*a),cy/(3*a)];};
-const pointInPolygon=(p,poly)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j],cross=((a[1]>p[1])!==(b[1]>p[1]))&&(p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1]||1e-9)+a[0]);if(cross)inside=!inside;}return inside;};
+export const pointInPolygon=(p,poly)=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j],cross=((a[1]>p[1])!==(b[1]>p[1]))&&(p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1]||1e-9)+a[0]);if(cross)inside=!inside;}return inside;};
 const pointSegmentDistance=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy;if(l2<1e-12)return Math.hypot(p[0]-a[0],p[1]-a[1]);const t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/l2)),x=a[0]+t*dx,y=a[1]+t*dy;return Math.hypot(p[0]-x,p[1]-y);};
 const polygonEdgeDistance=(p,poly)=>{let d=Infinity;for(let i=0;i<poly.length;i++)d=Math.min(d,pointSegmentDistance(p,poly[i],poly[(i+1)%poly.length]));return d;};
 const nearestPointOnSegment=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy;if(l2<1e-12)return {point:[...a],distance:Math.hypot(p[0]-a[0],p[1]-a[1]),a,b};const t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/l2)),q=[a[0]+t*dx,a[1]+t*dy];return {point:q,distance:Math.hypot(p[0]-q[0],p[1]-q[1]),a,b};};
+export const cityPointInProvince=(point,polys)=>{
+ const usable=(polys||[]).filter(poly=>poly.length>=3);
+ if(!usable.length)return [...point];
+ if(usable.some(poly=>pointInPolygon(point,poly)))return [...point];
+ let nearest=null,targetPoly=null;
+ for(const poly of usable)for(let i=0;i<poly.length;i++){
+  const hit=nearestPointOnSegment(point,poly[i],poly[(i+1)%poly.length]);
+  if(!nearest||hit.distance<nearest.distance){nearest=hit;targetPoly=poly;}
+ }
+ if(!nearest||!targetPoly)return [...point];
+ const interior=safeLabelMetrics(targetPoly,[targetPoly],polygonCentroid(targetPoly)).center;
+ // The nearest boundary point itself can fail strict point-in-polygon tests.
+ // Move only as far inward as required, preserving the real city position.
+ for(const ratio of [.015,.03,.06,.12,.25,.5,1]){
+  const candidate=[nearest.point[0]+(interior[0]-nearest.point[0])*ratio,nearest.point[1]+(interior[1]-nearest.point[1])*ratio];
+  if(pointInPolygon(candidate,targetPoly))return candidate;
+ }
+ return [...interior];
+};
 const nearestCoastEdge=(p,polys)=>{let best=null;for(const poly of polys||[])for(let i=0;i<poly.length;i++){const hit=nearestPointOnSegment(p,poly[i],poly[(i+1)%poly.length]);if(!best||hit.distance<best.distance)best=hit;}return best;};
 const compactMilitaryNumber=n=>Math.max(0,Math.round(Number(n)||0)).toLocaleString('en-GB');
 const normalizeArmyRelation=r=>r===true?'player':r===false||!r?'neutral':String(r);
@@ -262,7 +281,7 @@ export class WorldMap{
   for(const realm of this.cityTerritoryRealms||[]){
    const features=atlas.filter(f=>!f.outline&&!f.underlay&&realmOf(f)===realm);if(!features.length)continue;
    const realmD=features.map(f=>f.d).join(''),realmPolys=svgSubpaths(realmD).map(svgSubpathPoints).filter(p=>p.length>=3);if(!realmPolys.length)continue;
-   const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>cityTerritoryPoint(realm,c));if(!cities.length)continue;
+   const cities=CITIES.filter(c=>cityRealm(c)===realm),points=cities.map(c=>cityPointInProvince(cityTerritoryPoint(realm,c),realmPolys));if(!cities.length)continue;
    cities.forEach((c,i)=>{this.cityCenters.set(c.id,points[i]);if(!this.cityAdjacency.has(c.id))this.cityAdjacency.set(c.id,new Set());});
    const geometryPts=realmPolys.flat(),geometryXs=geometryPts.map(p=>p[0]),geometryYs=geometryPts.map(p=>p[1]);
    this.cityRealmGeometry.set(realm,{realm,polys:realmPolys,cities,points,bbox:{x:Math.min(...geometryXs),y:Math.min(...geometryYs),w:Math.max(...geometryXs)-Math.min(...geometryXs),h:Math.max(...geometryYs)-Math.min(...geometryYs)}});
@@ -340,7 +359,7 @@ export class WorldMap{
   defs.querySelectorAll('.city-territory-dynamic,.iberia-dynamic').forEach(n=>n.remove());territoryLayer.innerHTML='';labelLayer.innerHTML='';this.cityTerritoryLabels=[];this.cityAdjacency=new Map();this.cityCenters=new Map();this.cityUnitAnchors=new Map();this.cityCellGeometry=new Map();this.cityRealmGeometry=new Map();
   const byRealm=new Map();
   for(const feature of features){
-   const c=CITY[feature.cityId],realm=realmOf(feature),point=pos(c.mapLon??c.lon,c.mapLat??c.lat),polys=svgSubpaths(feature.d).map(svgSubpathPoints).filter(p=>p.length>=3),poly=polys.find(p=>pointInPolygon(point,p))||[...polys].sort((a,b)=>polygonArea(b)-polygonArea(a))[0];if(!poly)continue;
+   const c=CITY[feature.cityId],realm=realmOf(feature),rawPoint=pos(c.mapLon??c.lon,c.mapLat??c.lat),polys=svgSubpaths(feature.d).map(svgSubpathPoints).filter(p=>p.length>=3),point=cityPointInProvince(rawPoint,polys),poly=polys.find(p=>pointInPolygon(point,p))||[...polys].sort((a,b)=>polygonArea(b)-polygonArea(a))[0];if(!poly)continue;
    const metrics=visibleCellMetrics(poly,[poly],point),cellClip='city-cell-'+c.id.replace(/[^a-z0-9-]/gi,'-');
    this.cityCenters.set(c.id,point);this.cityAdjacency.set(c.id,new Set(feature.neighbors||[]));this.cityUnitAnchors.set(c.id,{point:metrics.center,clearance:metrics.clearance,cellClip,componentClip:cellClip});this.cityCellGeometry.set(c.id,{poly,componentPoly:poly,realmPolys:polys});
    if(!byRealm.has(realm))byRealm.set(realm,{realm,polys:[],cities:[],points:[]});const group=byRealm.get(realm);group.polys.push(...polys);group.cities.push(c);group.points.push(point);
@@ -481,7 +500,7 @@ export class WorldMap{
   }
   this.svg.querySelectorAll('.sea-label').forEach(t=>{t.style.fontSize=(unit*12)+'px';t.style.letterSpacing=(unit*2)+'px';t.style.display=unit<.15?'none':'';});
   this.svg.querySelector('#cities').innerHTML=CITIES.map(c=>{
-   const p=pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=this.cityTerritoryRealms?.has(cityRealm(c));
+   const p=this.cityCenters?.get(c.id)||pos(c.mapLon??c.lon,c.mapLat??c.lat),q=screen(...p),selected=s.selected===c.id,territoryCity=this.cityTerritoryRealms?.has(cityRealm(c));
    if(q.x<-20||q.y<-20||q.x>width+20||q.y>height+20)return '';
    if(fogDetail&&!visibleCities.has(c.id))return '';
    const size=selected||unit<.3?4:2;

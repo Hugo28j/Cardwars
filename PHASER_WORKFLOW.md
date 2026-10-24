@@ -10,7 +10,9 @@ Start an HTTP server with `npm start`. Visit `/phaser-preview.html` to inspect t
 
 ## Add map objects
 
-Edit `assets/phaser/map-objects.json`. Each object has a unique `id`, a `city` (city ID or `selected`), a `texture` matching an asset-pack key, optional `frame`, `width`/`height` in screen pixels and `offsetX`/`offsetY`. `motion: "banner"` adds the built-in gentle sway. `animation` plays a named Phaser animation loaded by an `animation` entry in the pack. Anchor points come from the existing province centers. Missing cities or textures are skipped. Objects in unseen campaign provinces are hidden.
+Edit `assets/phaser/map-objects.json`. Each object has a unique `id`, a `city` (city ID or `selected`), a `texture` matching an asset-pack key, optional `frame`, `width`/`height` in screen pixels and `offsetX`/`offsetY`. Use `repeat: "cities"` instead of `city` to place the object once for every playable city. `motion: "banner"` adds the built-in gentle sway. `animation` plays a named Phaser animation loaded by an `animation` entry in the pack. Anchor points come from the existing province centers. Missing cities or textures are skipped. Objects in unseen campaign provinces are hidden.
+
+City anchors prefer the real longitude/latitude. If a coordinate falls outside its clickable province after a border edit, the map moves only the visual anchor to the nearest safe point inside that province. The province geometry and real source coordinates remain unchanged.
 
 The starter object places a gently animated realm banner at the selected province. This establishes a working visual path, not a replacement for every military model. For future soldiers, ships and buildings, add assets and pack entries, then placements or explicit game-state bindings in `src/phaser/map-layer.js`. Never expose enemy positions through fog. Pure decorations must not intercept pointer events.
 

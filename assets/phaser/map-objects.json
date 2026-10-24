@@ -2,6 +2,24 @@
   "version": 1,
   "objects": [
     {
+      "id": "city-capital-house",
+      "repeat": "cities",
+      "texture": "city-house",
+      "role": "city-house",
+      "width": 18,
+      "height": 22,
+      "depth": 3
+    },
+    {
+      "id": "preview-city-house",
+      "city": "preview",
+      "texture": "city-house",
+      "role": "city-house",
+      "width": 18,
+      "height": 22,
+      "depth": 3
+    },
+    {
       "id": "selected-realm-banner",
       "city": "selected",
       "texture": "realm-banner",
@@ -9,6 +27,7 @@
       "height": 38,
       "offsetX": 16,
       "offsetY": -24,
+      "depth": 10,
       "motion": "banner"
     }
   ]

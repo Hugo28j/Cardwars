@@ -5,6 +5,11 @@
         "type": "image",
         "key": "realm-banner",
         "url": "assets/phaser/realm-banner.svg"
+      },
+      {
+        "type": "image",
+        "key": "city-house",
+        "url": "assets/phaser/city-house.svg"
       }
     ]
   },
