@@ -68,12 +68,6 @@ The game renders that generated linework instead of the original freehand
 stroke layer, so political and city borders meet exactly and cannot continue
 across the sea.
 
-The rebuild also applies `assets/map-current-region-overrides.json`. Belgium
-and Luxembourg use their current country outlines, Mons follows current
-Hainaut, Belgian Luxembourg is joined to the present-day country Luxembourg,
-and Avignon retains the smaller user-marked polygon. These visible polygons
-are also the pointer hit areas used by the game.
-
 ## Gameplay grouping and border cleanup
 
 `scripts/map/gameplay.py` applies the requested playable-state changes after

@@ -23,25 +23,12 @@ if any(f.get('cityId') for f in atlas):
     city_states=[f for f in states if f.get('cityId')]
     underlay=next((parse(f['d']) for f in atlas if f.get('underlay')),GeometryCollection())
     assert all(g.is_valid for g in geoms), 'A drawn province has invalid geometry'
-    coverage=unary_union(geoms)
-    assert sum(g.area for g in geoms)-coverage.area<.0001, 'Drawn provinces materially overlap'
+    assert coverage_is_valid(geoms), 'Drawn provinces overlap or have mismatched edges'
     assert len(city_states)==323
     assert len({f['cityId'] for f in city_states})==len(city_states)
-    assert coverage.difference(land.buffer(.003)).area<1.0, 'A drawn province extends materially into the sea'
-    assert land.difference(coverage.buffer(.003)).area<1e-7, 'Rebuilt drawn land still has gaps'
+    assert unary_union(geoms).difference(land.buffer(.003)).area<1.0, 'A drawn province extends materially into the sea'
+    assert land.difference(unary_union(geoms).buffer(.003)).area<1e-7, 'Rebuilt drawn land still has gaps'
     assert land.symmetric_difference(underlay).area<.01, 'The recovery underlay no longer matches the coastline'
-    modern=json.loads((ROOT/'assets/modern-atlas.json').read_text())
-    modern_by_name={f['name']:parse(f['d']) for f in modern if f.get('name') in {'Belgium','Luxembourg'}}
-    by_city={f['cityId']:parse(f['d']) for f in city_states}
-    belgian_ids={'1300-bruges','1300-ypres','1300-ghent','1300-antwerp','1300-brussels','1300-leuven','1300-mons','1300-luxembourg'}
-    current_zone=modern_by_name['Belgium'].union(modern_by_name['Luxembourg']).intersection(land)
-    assert unary_union([by_city[city_id] for city_id in belgian_ids]).symmetric_difference(current_zone).area<.02, 'Belgian cities do not follow the current Belgium/Luxembourg outline'
-    overrides=json.loads((ROOT/'assets/map-current-region-overrides.json').read_text())
-    expected_mons=parse(overrides['belgianHainautD']).intersection(modern_by_name['Belgium'])
-    expected_luxembourg=parse(overrides['belgianLuxembourgD']).intersection(modern_by_name['Belgium']).union(modern_by_name['Luxembourg'])
-    assert by_city['1300-mons'].symmetric_difference(expected_mons).area<.02, 'Mons no longer follows current Hainaut'
-    assert by_city['1300-luxembourg'].symmetric_difference(expected_luxembourg).area<.02, 'Luxembourg no longer combines Belgian Luxembourg and the current country'
-    assert by_city['1300-avignon'].area<45, 'Avignon reclaimed the oversized surrounding gap'
     print(f'PASS: {len(states)} hand-drawn regions; {len(city_states)} unique city provinces; valid shared edges.')
     raise SystemExit(0)
 states=[f for f in atlas if not f.get('outline')]
