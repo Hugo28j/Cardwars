@@ -305,7 +305,7 @@ function stabilizeBorder(){
  const old=grid.map(g=>g.owner),visited=new Uint8Array(grid.length),changes=[];
  for(let seed=0;seed<grid.length;seed++){
   if(visited[seed])continue;
-  const owner=old[seed],queue=[seed],component=[],touchesEdge=false;
+  const owner=old[seed],queue=[seed],component=[];let touchesEdge=false;
   const bordering=new Map();
   visited[seed]=1;let enemyTroops=0,fortified=false;
   for(let j=0;j<queue.length;j++){
