@@ -2,21 +2,21 @@
   "version": 1,
   "objects": [
     {
-      "id": "city-capital-house",
+      "id": "city-capital-castle",
       "repeat": "cities",
-      "texture": "city-house",
-      "role": "city-house",
-      "width": 18,
-      "height": 22,
+      "texture": "city-castle",
+      "role": "city-castle",
+      "width": 28,
+      "height": 32,
       "depth": 3
     },
     {
-      "id": "preview-city-house",
+      "id": "preview-city-castle",
       "city": "preview",
-      "texture": "city-house",
-      "role": "city-house",
-      "width": 18,
-      "height": 22,
+      "texture": "city-castle",
+      "role": "city-castle",
+      "width": 28,
+      "height": 32,
       "depth": 3
     },
     {
