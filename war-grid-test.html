@@ -5,7 +5,7 @@
 <div class="stats"><div class="stat">Dag<strong id="day">1</strong></div><div class="stat">Jouw soldaten<strong id="total">0</strong></div><div class="stat">Oorlogen<strong id="wars">0</strong></div></div>
 <div class="flex" style="margin-bottom:10px"><button id="next">+1 dag</button><button id="week">+7 dagen</button><button id="play">▶ Automatisch</button><button id="reset">↺ Reset</button></div>
 <div class="mapbox"><canvas id="field" width="1200" height="360" aria-label="Oorlogskaart met verspreide legertroepen en tekenbare aanvalsorders"></canvas><div id="map-error" role="alert" hidden style="position:absolute;inset:auto 12px 12px 12px;background:#432e27;color:#fff0df;padding:10px;border:1px solid #df977a;border-radius:7px;font-size:13px"></div></div>
-<p class="legend">🔵 Speler · 🔴 Rood · 🟡 Goud · 🟢 Groen · <b>♟</b> stadsleger (ook in oorlog) · <b>●</b> marcherende troepen · <b>250</b> = 250 soldaten · <b>1.2k</b> = 1.200 soldaten · 🏰 kasteel · gekleurde ring = belegering · omrande cirkel = versterking · pijl = aanval</p><div class="help">Lichtblauw-groene pijltjes tonen <b>waar soldaten de vorige dag naartoe gestapt zijn</b> (geen toekomstige route). Gele pijlen zijn jouw aanvalsbevelen. Teken rechtstreeks op de kaart: <b>cirkel</b> om soldaten er stap voor stap naartoe te laten marcheren of <b>pijl</b> om het front in een richting te laten oprukken. Op gsm kun je met je vinger tekenen. Kleuren veranderen rooster per rooster.</div></section><section class="panel"><h2>Gebeurtenissen</h2><div id="log" class="log"></div></section></main>
+<p class="legend">🔵 Speler · 🔴 Rood · 🟡 Goud · 🟢 Groen · <b>♟</b> stadsleger (ook in oorlog) · <b>●</b> marcherende troepen · <b>250</b> = 250 soldaten · <b>1.2k</b> = 1.200 soldaten · 🏰 kasteel · gekleurde ring = belegering · omrande cirkel = versterking · pijl = aanval</p><div class="help">Lichtblauw-groene pijltjes tonen <b>waar soldaten de vorige dag naartoe gestapt zijn</b> (geen toekomstige route). Gele pijlen zijn jouw aanvalsbevelen. Pijlen, cirkels en tijdelijke versterkingen vervallen na tien speldagen. Teken rechtstreeks op de kaart: <b>cirkel</b> om soldaten er stap voor stap naartoe te laten marcheren of <b>pijl</b> om het front in een richting te laten oprukken. Op gsm kun je met je vinger tekenen. Kleuren veranderen rooster per rooster.</div></section><section class="panel"><h2>Gebeurtenissen</h2><div id="log" class="log"></div></section></main>
 <aside><section class="panel"><h2>Oorlog verklaren</h2><div id="countries"></div></section>
 <section class="panel"><h2>Bevelen</h2><label>Niveau van bevelvoering</label><select id="scope"><option value="country">Gezamenlijk landleger</option><option value="city">Apart stadsgarnizoen</option></select><label>Geselecteerde stad</label><select id="city"></select><div id="command" class="small" style="margin:9px 0"></div><label>Tekenmodus</label><div class="actions"><button data-tool="arrow" class="active">➜ Aanvalspijl</button><button data-tool="circle">◯ Versterkcirkel</button><button data-tool="fort">🛡 Verstevig</button><button data-tool="inspect">⌖ Inspecteer</button><button data-tool="erase">⌫ Gum / wissen</button></div><div id="mode" class="help">Tekenmodus: aanvalspijl. Sleep van start naar doel.</div><label>Aanvalsgewicht (pijl) / extra soldaten (cirkel)</label><input id="amount" type="number" min="20" max="20000" step="100" value="1000"><label>Tactiek</label><select id="stance"><option value="push">Geleidelijk oprukken</option><option value="force">Doorbraak forceren</option><option value="hold">Standhouden</option></select><div class="flex" style="margin-top:10px"><button id="clear-orders">Wis alle bevelen</button><button id="recruit">+100 via kasteel (test)</button></div><div id="order-list" class="small" style="margin-top:12px"></div><div class="small" id="message" style="margin-top:10px">Bevelen op landniveau gelden voor alle verbonden legers. Stadbevelen gebruiken uitsluitend de soldaten van de geselecteerde stad. Na het tekenen marcheren versterkingen pas bij het vooruitzetten van de tijd: maximaal twee aangrenzende roosters per speldag. De cirkel geeft pas extra verdediging wanneer troepen arriveren.</div></section>
 <section class="panel"><h2>Legers en troepenverdeling</h2><div id="groups" class="small"></div><h2 style="margin-top:14px">Kastelen & belegeringen</h2><div id="sieges" class="small"></div><h2 style="margin-top:14px">Rooster</h2><div id="cell" class="small">Gebruik Inspecteer om de sterkte van een rooster te bekijken.</div></section></aside></div>
@@ -20,7 +20,7 @@ window.addEventListener('error',function(error){
 'use strict';
 const W=160,H=48,S=7.5,CITYW=40,CITYH=16,canvas=document.getElementById('field'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id),colors=['#608db8','#bb716b','#c1a15e','#7ca88e'],names=['Azuren Koninkrijk','Rode Hertogdom','Gouden Liga','Groene Mark'],cities=[['Westhaven','Rooddam','Goudwijk','Groenmeer'],['Blauwburg','Oostwacht','Zuidpoort','Woudstad'],['Koningsveld','Burchtveld','Bergstad','Grensfort']];
 const ix=(x,y)=>y*W+x,loc=i=>[i%W,Math.floor(i/W)],clamp=(x,a,b)=>Math.min(b,Math.max(a,x)),cityId=(x,y)=>Math.floor(y/CITYH)*4+Math.floor(x/CITYW),fmt=n=>Math.round(n).toLocaleString('nl-BE');
-let grid=[],garrisons=[],castles=[],wars=new Set(),orders=[],day=1,tool='arrow',drag=null,selected=0,scope='country',running=null,events=[],hiddenGrid=false,nextOrderId=1,marchTrails=[],mobilizedCells=new Set(),warFirstSeenDay=new Map();
+let grid=[],garrisons=[],castles=[],wars=new Set(),orders=[],day=1,tool='arrow',drag=null,selected=0,scope='country',running=null,events=[],hiddenGrid=true,nextOrderId=1,marchTrails=[],mobilizedCells=new Set(),warFirstSeenDay=new Map();
 const adjacent=i=>{const [x,y]=loc(i);return[x>0?i-1:-1,x<W-1?i+1:-1,y>0?i-W:-1,y<H-1?i+W:-1].filter(v=>v>=0)};
 const atWar=(a,b)=>a!==b&&wars.has(Math.min(a,b)+'-'+Math.max(a,b));
 function event(s){events.unshift('Dag '+day+': '+s);events=events.slice(0,70)}
@@ -31,7 +31,7 @@ function reset(){
  events=[];selected=0;scope='country';$('scope').value='country';grid=[];garrisons=[];castles=[];
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
   const owner=Math.floor(x/CITYW),road=y%16===8||x%40===19;
-  grid.push({owner,original:owner,city:cityId(x,y),troops:0,fort:0,importance:road?2:1,terrain:(x*17+y*13)%37<5?1.2:1,castleId:-1});
+  grid.push({owner,original:owner,city:cityId(x,y),troops:0,fort:0,importance:road?2:1,terrain:(x*17+y*13)%37<5?1.2:1,castleId:-1,fortExpiresAt:null});
  }
  for(let c=0;c<12;c++){
   const owner=c%4,row=Math.floor(c/4),soldiers=180+owner*50+row*45,[cx,cy]=centroid(c);
@@ -428,8 +428,48 @@ function paintCastles(){
   ctx.restore();
  }
 }
+// Temporary orders expire after 10 game-days. Castle fortifications persist.
+function expireTemporaryOrders(){
+ const old=orders.length;
+ orders=orders.filter(o=>day<(o.expiresDay??((o.createdDay??day)+10)));
+ for(const tile of grid){
+  if(tile.castleId>=0)continue;
+  if(tile.fortExpiresAt!=null&&day>=tile.fortExpiresAt){tile.fort=0;tile.fortExpiresAt=null;}
+ }
+ if(orders.length!==old)event((old-orders.length)+' bevel(en) automatisch verlopen na tien dagen.');
+}
+// Troops hold the WHOLE connected frontline via local support and distributed
+// army density, without spawning any extra physical soldiers.
+let frontResistance=new Float32Array(W*H);
+function computeFrontResistance(){
+ frontResistance.fill(0);
+ for(let owner=0;owner<4;owner++)for(const group of connected(owner)){
+  const frontline=frontFor(group,owner);if(!frontline.length)continue;
+  const density=group.soldiers/frontline.length;
+  const coverage=group.soldiers<18||density<.2?0:clamp(density*.42,0,9);
+  for(const i of frontline){
+   const [x,y]=loc(i);let nearby=0;
+   for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){
+    const xx=x+dx,yy=y+dy;if(xx<0||xx>=W||yy<0||yy>=H)continue;
+    const n=ix(xx,yy),t=grid[n];if(t.owner!==owner||n===i)continue;
+    nearby+=t.troops/(2+Math.abs(dx)+Math.abs(dy));
+   }
+   frontResistance[i]=coverage+Math.min(12,nearby*.55);
+  }
+ }
+}
+// Paint a continuous active border, not a black outline on every grid cell.
+function paintFrontBorders(){
+ ctx.beginPath();ctx.lineWidth=1.55;ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle='#293d37';
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  const i=ix(x,y),owner=grid[i].owner;
+  if(x<W-1&&grid[i+1].owner!==owner){let px=(x+1)*S,py=y*S;ctx.moveTo(px,py);ctx.lineTo(px,py+S);}
+  if(y<H-1&&grid[i+W].owner!==owner){let px=x*S,py=(y+1)*S;ctx.moveTo(px,py);ctx.lineTo(px+S,py);}
+ }
+ ctx.stroke();
+}
 function fightDay(){
- day++;redistribute();reinforceOrders();
+ day++;expireTemporaryOrders();redistribute();reinforceOrders();computeFrontResistance();
  const attackers=[];
  for(let i=0;i<grid.length;i++){
   const g=grid[i];if(g.troops<5)continue;
@@ -437,7 +477,7 @@ function fightDay(){
   if(!enemies.length)continue;
   let best=null;
   for(const target of enemies){
-   const power=g.troops*attackBonus(g.owner,i,target),block=(grid[target].troops+5)*defense(target)*defenseBonus(grid[target].owner,target);
+   const power=g.troops*attackBonus(g.owner,i,target),block=(grid[target].troops+frontResistance[target]+1)*defense(target)*defenseBonus(grid[target].owner,target);
    let score=power/Math.max(1,block);
    const at=grid[target];if(!orders.some(o=>o.owner===g.owner&&o.type==='arrow')){
     const [fx,fy]=loc(i),[tx,ty]=loc(target);
@@ -454,7 +494,7 @@ function fightDay(){
   const src=grid[a.from],dst=grid[a.to];
   if(src.owner!==a.owner||!atWar(src.owner,dst.owner)||src.troops<5)continue;
   const attack=src.troops*attackBonus(src.owner,a.from,a.to);
-  const block=(dst.troops+8)*defense(a.to)*defenseBonus(dst.owner,a.to);
+  const block=(dst.troops+frontResistance[a.to]+1)*defense(a.to)*defenseBonus(dst.owner,a.to);
   const ratio=attack/Math.max(1,block);
   // Losses scale with headcount: a one-man skirmish is usually harmless.
   // Keeping a forced minimum loss of one PER TILE destroyed small armies.
@@ -472,6 +512,7 @@ function fightDay(){
   }
  }
  captures+=rapidUnopposedAdvance();
+ captures+=stabilizeBorder();
  processCastlesDay();
  if(day%14===0)event('Kastelen blijven kleine lokale versterkingen leveren zolang er geen belegering is.');
  if(captures&&day%3===0)event(captures+' roosters ingenomen, inclusief sneller doortrekken waar geen verdedigers staan.');
@@ -585,11 +626,11 @@ function drawFormations(){
   ctx.beginPath();ctx.arc(f.x,f.y,size,0,Math.PI*2);
   ctx.fillStyle=f.owner===0?'#143b68':'#322a24';ctx.fill();
   ctx.lineWidth=count<200?.55:1.1;ctx.strokeStyle=f.owner===0?'#addcff':colors[f.owner];ctx.stroke();
-  if(count>=200){
+  if(count>20){
    const tile=grid[f.source],order=orders.find(o=>o.owner===f.owner&&o.type==='arrow'&&(o.scope!=='city'||o.city===tile.city));
    let theta=0;if(order){const [sx,sy]=loc(order.from),[tx,ty]=loc(order.to);theta=Math.atan2(ty-sy,tx-sx);}
    ctx.save();ctx.translate(f.x,f.y-size-5);ctx.rotate(clamp(theta,-.65,.65));
-   ctx.font='bold 8px system-ui';ctx.textAlign='center';ctx.lineWidth=2.2;
+   ctx.font=count<100?'bold 9px system-ui':'bold 8px system-ui';ctx.textAlign='center';ctx.lineWidth=2.2;
    ctx.strokeStyle='#17211d';ctx.fillStyle='#fff6df';
    const label=count>=1000?(count/1000).toFixed(1)+'k':String(count);
    ctx.strokeText(label,0,0);ctx.fillText(label,0,0);ctx.restore();
@@ -597,6 +638,7 @@ function drawFormations(){
  }
 }
 function paint(){const width=canvas.width,height=canvas.height;ctx.clearRect(0,0,width,height);for(let i=0;i<grid.length;i++){const [x,y]=loc(i),t=grid[i];ctx.fillStyle=colors[t.owner];ctx.fillRect(x*S,y*S,S+.14,S+.14);if(!hiddenGrid){ctx.strokeStyle='#1c272419';ctx.lineWidth=.3;ctx.strokeRect(x*S,y*S,S,S)}if(t.fort){ctx.fillStyle='#172d64';ctx.fillRect(x*S+2,y*S+2,Math.min(4,t.fort),Math.min(4,t.fort))}}
+paintFrontBorders();
 ctx.strokeStyle='#26352f';ctx.lineWidth=2;for(let x=1;x<4;x++){ctx.beginPath();ctx.moveTo(x*CITYW*S,0);ctx.lineTo(x*CITYW*S,height);ctx.stroke()}for(let y=1;y<3;y++){ctx.beginPath();ctx.moveTo(0,y*CITYH*S);ctx.lineTo(width,y*CITYH*S);ctx.stroke()}
 ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 12px system-ui';for(let c=0;c<12;c++){const [x,y]=centroid(c);ctx.lineWidth=3;ctx.strokeStyle='#1d2521';ctx.fillStyle='#fff4ce';const label=cities[Math.floor(c/4)][c%4];ctx.strokeText(label,x*S,y*S-32);ctx.fillText(label,x*S,y*S-32);ctx.font='bold 12px system-ui'}
 drawFormations();
@@ -625,10 +667,10 @@ function eraseAt(index){
  if(grid[index].fort>0&&grid[index].owner===0){grid[index].fort=0;event('Lokale versterking verwijderd.');return}
  event('Geen bevel gevonden: klik dichter bij de pijl of cirkelrand.');
 }
-function drawOrder(from,to){const origin=grid[from],destination=grid[to],amount=clamp(Math.max(20,Math.floor(Number($('amount').value)||1000)),20,20000);if(tool==='erase'){eraseAt(to);return}if(tool==='fort'){if(origin.owner!==0){event('Je kunt alleen je eigen gebied verstevigen.');return}origin.fort=Math.min(5,origin.fort+1);event('Rooster verstevigd.');return}if(tool==='inspect'){const [x,y]=loc(to),castle=destination.castleId>=0?castles[destination.castleId]:null;$('cell').textContent='Rooster '+x+','+y+' · '+cities[Math.floor(destination.city/4)][destination.city%4]+' · '+names[destination.owner]+' · '+fmt(destination.troops)+' veldsoldaten · verdediging '+defense(to).toFixed(2)+'×'+(castle?' · 🏰 kasteel van '+names[castle.owner]+' · '+fmt(castle.garrison)+' garnizoen · '+(castle.siege?'BELEG '+castle.siege.progress+'% · rekrutering geblokkeerd':'niet belegerd, rekrutering toegestaan'):'');return}if(origin.owner!==0||!orderScope(from)){event('Begin je bevel in een eigen, geselecteerd legergebied.');return}if(tool==='arrow'&&destination.owner!==0&&!atWar(0,destination.owner)){event('Verklaar eerst oorlog aan deze vijand.');return}
-const order={id:nextOrderId++,type:tool,from,to,owner:0,scope,city:selected,amount,stance:$('stance').value,radius:clamp(Math.hypot(...loc(from).map((v,i)=>v-loc(to)[i])),2,24)};const group=connected(0).find(g=>g.cells.includes(from));const allowed=(group?.cells||[]).filter(i=>scope!=='city'||grid[i].city===selected);order.baseline=chooseSeeds(order,allowed).reduce((sum,i)=>sum+grid[i].troops,0);orders.push(order);event((tool==='circle'?'Versterkcirkel':'Aanvalspijl')+' geplaatst voor '+(scope==='city'?'stadsgarnizoen '+cities[Math.floor(selected/4)][selected%4]:'gezamenlijk landleger'))}
+function drawOrder(from,to){const origin=grid[from],destination=grid[to],amount=clamp(Math.max(20,Math.floor(Number($('amount').value)||1000)),20,20000);if(tool==='erase'){eraseAt(to);return}if(tool==='fort'){if(origin.owner!==0){event('Je kunt alleen je eigen gebied verstevigen.');return}origin.fort=Math.min(5,origin.fort+1);origin.fortExpiresAt=day+10;event('Rooster tien dagen verstevigd.');return}if(tool==='inspect'){const [x,y]=loc(to),castle=destination.castleId>=0?castles[destination.castleId]:null;$('cell').textContent='Rooster '+x+','+y+' · '+cities[Math.floor(destination.city/4)][destination.city%4]+' · '+names[destination.owner]+' · '+fmt(destination.troops)+' veldsoldaten · verdediging '+defense(to).toFixed(2)+'×'+(castle?' · 🏰 kasteel van '+names[castle.owner]+' · '+fmt(castle.garrison)+' garnizoen · '+(castle.siege?'BELEG '+castle.siege.progress+'% · rekrutering geblokkeerd':'niet belegerd, rekrutering toegestaan'):'');return}if(origin.owner!==0||!orderScope(from)){event('Begin je bevel in een eigen, geselecteerd legergebied.');return}if(tool==='arrow'&&destination.owner!==0&&!atWar(0,destination.owner)){event('Verklaar eerst oorlog aan deze vijand.');return}
+const order={id:nextOrderId++,createdDay:day,expiresDay:day+10,type:tool,from,to,owner:0,scope,city:selected,amount,stance:$('stance').value,radius:clamp(Math.hypot(...loc(from).map((v,i)=>v-loc(to)[i])),2,24)};const group=connected(0).find(g=>g.cells.includes(from));const allowed=(group?.cells||[]).filter(i=>scope!=='city'||grid[i].city===selected);order.baseline=chooseSeeds(order,allowed).reduce((sum,i)=>sum+grid[i].troops,0);orders.push(order);event((tool==='circle'?'Versterkcirkel':'Aanvalspijl')+' geplaatst voor '+(scope==='city'?'stadsgarnizoen '+cities[Math.floor(selected/4)][selected%4]:'gezamenlijk landleger'))}
 function orderProgress(o){const group=connected(o.owner).find(g=>g.cells.includes(o.from));if(!group)return 'gebied niet bereikbaar';const area=group.cells.filter(i=>o.scope!=='city'||grid[i].city===o.city);const tiles=chooseSeeds(o,area);const atTarget=tiles.reduce((n,i)=>n+grid[i].troops,0);return 'Bij doel: '+fmt(atTarget)+' / '+fmt(o.currentGoal??((o.baseline||0)+o.amount))+' · '+(o.status||'In afwachting')+(o.lastMoved?' · '+fmt(o.lastMoved)+' soldaat-roosterstappen vandaag':'')}
-function render(){paint();$('day').textContent=day;$('wars').textContent=wars.size;$('total').textContent=fmt(grid.reduce((s,t)=>s+(t.owner===0?t.troops:0),0));$('countries').innerHTML=names.map((n,i)=>'<div class="country"><span><b style="color:'+colors[i]+'">●</b> '+n+'<br><small>'+fmt(grid.reduce((s,t)=>s+(t.owner===i?t.troops:0),0))+' soldaten</small></span>'+(i===0?'<small>Jij</small>':wars.has('0-'+i)?'<small>⚔ Oorlog</small>':'<button data-war="'+i+'">Oorlog</button>')+'</div>').join('');$('city').innerHTML=Array.from({length:12},(_,i)=>'<option value="'+i+'" '+(i===selected?'selected':'')+'>'+cities[Math.floor(i/4)][i%4]+'</option>').join('');$('order-list').innerHTML='<b>Actieve bevelen ('+orders.length+')</b>'+orders.map(o=>'<div class="country"><span>'+ (o.type==='arrow'?'➜ Aanval':'◯ Versterking')+' #'+o.id+' · '+(o.type==='arrow'?'gewicht '+fmt(o.amount)+' · 78% landleger over pijlen verdeeld':fmt(o.amount)+' extra soldaten')+(o.scope==='city'?' · '+cities[Math.floor(o.city/4)][o.city%4]:' · land')+'<br><small>'+orderProgress(o)+'</small></span><button data-delete-order="'+o.id+'" aria-label="Verwijder bevel '+o.id+'">✕ Wis</button></div>').join('');const components=connected(0),cityTroops=grid.reduce((s,t)=>s+(t.city===selected&&t.owner===0?t.troops:0),0);$('command').textContent=scope==='country'?'Landelijk opperbevel · '+components.length+' afzonderlijke verbonden legergroep(en).':'Garnizoen '+cities[Math.floor(selected/4)][selected%4]+' · '+fmt(cityTroops)+' soldaten';$('groups').innerHTML=components.map((g,i)=>'<div class="country">Legergroep '+(i+1)+'<strong>'+fmt(g.soldiers)+'</strong></div>').join('');$('sieges').innerHTML=castles.map(c=>{const ring=siegeEncirclement(c),name=cities[Math.floor(c.id/4)][c.id%4],status=c.siege?'<b style="color:#f2ba76">BELEG '+c.siege.progress+'% · voorraden '+c.siege.foodPct+'%</b>':ring.occupied?ring.occupied+'/8 ringroosters bezet':'Veilig · rekruteert';return '<div class="country"><span>🏰 '+name+'<br><small>'+status+'</small></span><small>'+fmt(c.garrison)+' garnizoen</small></div>'}).join('');$('log').innerHTML=events.map(v=>'<div>'+v+'</div>').join('')}
+function render(){paint();$('day').textContent=day;$('wars').textContent=wars.size;$('total').textContent=fmt(grid.reduce((s,t)=>s+(t.owner===0?t.troops:0),0));$('countries').innerHTML=names.map((n,i)=>'<div class="country"><span><b style="color:'+colors[i]+'">●</b> '+n+'<br><small>'+fmt(grid.reduce((s,t)=>s+(t.owner===i?t.troops:0),0))+' soldaten</small></span>'+(i===0?'<small>Jij</small>':wars.has('0-'+i)?'<small>⚔ Oorlog</small>':'<button data-war="'+i+'">Oorlog</button>')+'</div>').join('');$('city').innerHTML=Array.from({length:12},(_,i)=>'<option value="'+i+'" '+(i===selected?'selected':'')+'>'+cities[Math.floor(i/4)][i%4]+'</option>').join('');$('order-list').innerHTML='<b>Actieve bevelen ('+orders.length+')</b>'+orders.map(o=>'<div class="country"><span>'+ (o.type==='arrow'?'➜ Aanval':'◯ Versterking')+' #'+o.id+' · '+(o.type==='arrow'?'gewicht '+fmt(o.amount)+' · 78% landleger over pijlen verdeeld':fmt(o.amount)+' extra soldaten')+(o.scope==='city'?' · '+cities[Math.floor(o.city/4)][o.city%4]:' · land')+'<br><small>'+orderProgress(o)+' · verdwijnt dag '+o.expiresDay+'</small></span><button data-delete-order="'+o.id+'" aria-label="Verwijder bevel '+o.id+'">✕ Wis</button></div>').join('');const components=connected(0),cityTroops=grid.reduce((s,t)=>s+(t.city===selected&&t.owner===0?t.troops:0),0);$('command').textContent=scope==='country'?'Landelijk opperbevel · '+components.length+' afzonderlijke verbonden legergroep(en).':'Garnizoen '+cities[Math.floor(selected/4)][selected%4]+' · '+fmt(cityTroops)+' soldaten';$('groups').innerHTML=components.map((g,i)=>'<div class="country">Legergroep '+(i+1)+'<strong>'+fmt(g.soldiers)+'</strong></div>').join('');$('sieges').innerHTML=castles.map(c=>{const ring=siegeEncirclement(c),name=cities[Math.floor(c.id/4)][c.id%4],status=c.siege?'<b style="color:#f2ba76">BELEG '+c.siege.progress+'% · voorraden '+c.siege.foodPct+'%</b>':ring.occupied?ring.occupied+'/8 ringroosters bezet':'Veilig · rekruteert';return '<div class="country"><span>🏰 '+name+'<br><small>'+status+'</small></span><small>'+fmt(c.garrison)+' garnizoen</small></div>'}).join('');$('log').innerHTML=events.map(v=>'<div>'+v+'</div>').join('')}
 canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drag={from:mouseIndex(e),to:mouseIndex(e)};paint()});canvas.addEventListener('pointermove',e=>{if(!drag)return;drag.to=mouseIndex(e);paint()});canvas.addEventListener('pointerup',e=>{if(!drag)return;drag.to=mouseIndex(e);drawOrder(drag.from,drag.to);drag=null;render()});canvas.addEventListener('pointercancel',()=>{drag=null;paint()});
 document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.tool)));$('order-list').addEventListener('click',e=>{const b=e.target.closest('[data-delete-order]');if(!b)return;const before=orders.length;orders=orders.filter(o=>o.id!==Number(b.dataset.deleteOrder));if(orders.length!==before)event('Bevel '+b.dataset.deleteOrder+' verwijderd.');render()});$('countries').addEventListener('click',e=>{const b=e.target.closest('[data-war]');if(!b)return;const n=Number(b.dataset.war);wars.add('0-'+n);if(!warFirstSeenDay.has(0))warFirstSeenDay.set(0,day);if(!warFirstSeenDay.has(n))warFirstSeenDay.set(n,day);event('Oorlog verklaard aan '+names[n]+'! Alle stadslegers blijven op hun eigen locaties en marcheren van daaruit naar hun frontsector.');render()});$('scope').onchange=e=>{scope=e.target.value;render()};$('city').onchange=e=>{selected=Number(e.target.value);render()};$('next').onclick=fightDay;$('week').onclick=()=>{for(let k=0;k<7;k++)fightDay()};$('play').onclick=()=>{if(running){clearInterval(running);running=null;$('play').textContent='▶ Automatisch'}else{running=setInterval(fightDay,450);$('play').textContent='⏸ Pauze'}};$('reset').onclick=reset;$('clear-orders').onclick=()=>{orders=[];event('Alle aanvalspijlen en versterkcirkels verwijderd.');render()};$('recruit').onclick=()=>{const c=castles[selected];if(!c||c.owner!==0){event('Je moet eerst het kasteel van deze stad controleren om daar soldaten op te leiden.');render();return;}if(c.siege){event('Tijdens een belegering kan '+cities[Math.floor(c.id/4)][c.id%4]+' geen nieuwe troepen opleiden.');render();return;}grid[c.center].troops+=100;event('100 nieuwe soldaten gerekruteerd bij kasteel '+cities[Math.floor(c.id/4)][c.id%4]+'. Ze marcheren vervolgens naar het front.');render()};
 reset();
