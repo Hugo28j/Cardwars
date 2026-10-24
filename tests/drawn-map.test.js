@@ -22,6 +22,16 @@ test('Hugo drawn map has exactly one province for every city card',()=>{
  }
 });
 
+test('every city marker remains inside its visible clickable province',()=>{
+ const polygons=d=>d.split(/(?=M)/).map(part=>(part.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number).reduce((out,n,i,a)=>{if(i%2===0)out.push([n,a[i+1]]);return out;},[])).filter(p=>p.length>2);
+ const inside=(point,polygon)=>{let hit=false;for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){const a=polygon[i],b=polygon[j];if(((a[1]>point[1])!==(b[1]>point[1]))&&(point[0]<(b[0]-a[0])*(point[1]-a[1])/(b[1]-a[1]||1e-9)+a[0]))hit=!hit;}return hit;};
+ const byId=new Map(cityFeatures.map(feature=>[feature.cityId,feature]));
+ for(const city of CITIES_1300){
+  const feature=byId.get(city.id),point=[((city.mapLon??city.lon)+22)*12,(72-(city.mapLat??city.lat))*15];
+  assert.equal(polygons(feature.d).some(polygon=>inside(point,polygon)),true,city.id);
+ }
+});
+
 test('drawn province adjacency is valid and symmetric',()=>{
  const byId=new Map(cityFeatures.map(feature=>[feature.cityId,feature]));
  let links=0;
@@ -80,4 +90,15 @@ test('lighter city linework contains only real shared borders inside one realm',
  assert.ok(sharedBorders.cityD.split('M').length>200);
  assert.ok(sharedBorders.countryD.length>30000);
  assert.ok(sharedBorders.countryD.split('M').length>300);
+});
+
+test('current-region overrides preserve exact visible and clickable polygons',()=>{
+ const overrides=JSON.parse(fs.readFileSync(new URL('../assets/map-current-region-overrides.json',import.meta.url)));
+ assert.match(overrides.source,/Current Belgian province boundaries/);
+ assert.match(overrides.belgianHainautD,/^M/);
+ assert.match(overrides.belgianLuxembourgD,/^M/);
+ assert.match(overrides.avignonD,/^M/);
+ const source=fs.readFileSync(new URL('../scripts/rebuild-drawn-map.py',import.meta.url),'utf8');
+ assert.match(source,/apply_current_belgium_layout/);
+ assert.match(source,/LOCKED_GAP_CITY_IDS/);
 });
