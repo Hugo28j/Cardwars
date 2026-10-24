@@ -1,6 +1,13 @@
 // Shared by the campaign, atlas and map editor. Phaser assets use document-root URLs.
+import {CITIES_1300} from '../data1300.js?v=20260928-anatolia-v8';
 const ROOT = new URL('../../', import.meta.url);
+const ASSET_VERSION = '20261024-city-houses-v1';
 let runtimePromise;
+export function expandMapObjectSpecs(objects=[]) {
+  return objects.flatMap(spec => spec.repeat === 'cities'
+    ? CITIES_1300.map(city => ({...spec, id:`${spec.id}-${city.id}`, city:city.id, repeat:undefined}))
+    : [spec]);
+}
 function loadRuntime() {
   if (globalThis.Phaser) return Promise.resolve(globalThis.Phaser);
   return runtimePromise ||= new Promise((resolve, reject) => {
@@ -28,7 +35,7 @@ export class PhaserMapLayer {
     });
   }
   async start() {
-    const [Phaser, response] = await Promise.all([loadRuntime(), fetch(new URL('assets/phaser/map-objects.json', ROOT))]);
+    const [Phaser, response] = await Promise.all([loadRuntime(), fetch(new URL(`assets/phaser/map-objects.json?v=${ASSET_VERSION}`, ROOT))]);
     if (!response.ok) throw new Error('Map object manifest unavailable');
     const manifest = await response.json();
     if (this.destroyed) return;
@@ -42,13 +49,14 @@ export class PhaserMapLayer {
     class MapObjects extends Phaser.Scene {
       preload() {
         this.load.setBaseURL(ROOT.href);
-        this.load.pack('cardwars-map', 'assets/phaser/asset-pack.json');
+        this.load.pack('cardwars-map', `assets/phaser/asset-pack.json?v=${ASSET_VERSION}`);
       }
       create() {
-        for (const spec of manifest.objects || []) {
+        for (const spec of expandMapObjectSpecs(manifest.objects)) {
           if (!this.textures.exists(spec.texture)) continue;
           const sprite = this.add.sprite(0, 0, spec.texture, spec.frame).setOrigin(.5, 1).setVisible(false);
           sprite.setDisplaySize(spec.width || 32, spec.height || 48);
+          sprite.setDepth(spec.depth || 0);
           if (spec.animation && this.anims.exists(spec.animation)) sprite.play(spec.animation);
           if (spec.motion === 'banner' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
             this.tweens.add({targets:sprite, angle:{from:-3,to:3}, duration:950, yoyo:true, repeat:-1, ease:'Sine.easeInOut'});
@@ -75,6 +83,13 @@ export class PhaserMapLayer {
       if (!point || !allowed) { sprite.setVisible(false); continue; }
       const q = mapToScreen(point[0],point[1],map.view,width,height);
       sprite.setPosition(q.x+(spec.offsetX||0),q.y+(spec.offsetY||0));
+      if (spec.role === 'city-house') {
+        const detail = Math.max(.62, Math.min(1.08, 360 / Math.max(1,map.view.w)));
+        const selected = map.state.selected === id;
+        sprite.setDisplaySize((spec.width || 18) * detail * (selected ? 1.16 : 1), (spec.height || 22) * detail * (selected ? 1.16 : 1));
+        sprite.setAlpha(selected ? 1 : .92);
+        sprite.setDepth(selected ? 8 : (spec.depth || 0));
+      }
       sprite.setVisible(q.x>=-50 && q.y>=-50 && q.x<=width+50 && q.y<=height+50);
     }
   }
