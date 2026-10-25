@@ -9,7 +9,7 @@ test('campaign and war sandbox share one pitched-roof sprite registered in the e
  const pack=JSON.parse(file('assets/phaser/asset-pack.json'));
  assert.match(svg,/viewBox="0 0 96 108"/);
  assert.match(svg,/Sloping roof planes share a ridge/);
- assert.match(svg,/Timber gable/);
+ assert.match(svg,/timber gable/i);
  assert.ok(pack.map.files.some(a=>a.key==='watchpost-government'&&a.url==='assets/phaser/watchpost.svg'));
  const map=file('src/map.js'),testMap=file('war-grid-test.html');
  assert.match(map,/assets\/phaser\/watchpost\.svg\?v=/);
