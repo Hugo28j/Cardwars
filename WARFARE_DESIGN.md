@@ -44,3 +44,13 @@
 3. Add peace terms: Recognise Independence, Return Rebel Provinces, White Peace, War Reparations and Cede Province.
 4. Let AI parent countries evaluate and declare War Against Rebellion.
 5. Add army splitting and merging while preserving one active commander per army.
+
+## Main campaign tactical front (25 October 2026)
+
+The single-player campaign now advances a persistent terrain front on the real province map. The military ledger remains authoritative for every existing unit type, recruitment, upkeep and casualties. Front formations are positions and allocations of those soldiers, not additional armies. Castle reserves are configurable before mobilisation; watchpost garrisons defend at their placed map position. Mobile groups move one connected terrain edge per game day and cannot cross neutral countries. Attack and defence orders use the existing ten-day order lifetime; without orders, groups reinforce invaded home territory and advance along hostile borders.
+
+Terrain control does not grant ownership of a castle. Encirclement supplies the established weekly siege resolver, including fortifications, food depletion, unrest and occupation/war score. Besiegers hold their position and recruitment pauses while a siege is active. Relief or peace lifts unsupported sieges. Unit HP, attack, range, tactics, commander bonuses and supply feed front combat. Front state persists inside `game.military.front`; old saves initialise it automatically. Existing marches and battles finish through their original resolvers before those troops join the front.
+
+The tactical renderer uses existing province geometry, zoom and fog visibility. Capture effects are bounded, skip hidden/newly revealed provinces and respect reduced motion. Click or drag a player formation to command its source army. The independent test pages and multiplayer server retain their existing simulations.
+
+Validation: `tests/campaign-front1300.test.js` exercises unit conservation, casualty accounting, castle reserves, daily movement, neutral borders, save/reload, peace cleanup and siege relief/holding; `tests/campaign-front-map.test.js` builds the front on the complete historical map.
