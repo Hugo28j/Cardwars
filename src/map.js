@@ -533,8 +533,13 @@ export class WorldMap{
    watchpostLayer.innerHTML=(game?.watchposts||[]).filter(p=>ownedCities.has(p.cityId)&&(!fogDetail||visibleCities.has(p.cityId))).map(p=>{
     const city=CITY[p.cityId];if(!city)return '';
     const center=this.cityCenters?.get(p.cityId)||pos(city.lon,city.lat);
-    const x=center[0]+(Math.max(0,Math.min(6,Number(p.x)||3))-3)*2.5;
-    const y=center[1]+(Math.max(0,Math.min(4,Number(p.y)||2))-2)*2.5;
+    const placement=[center[0]+(Math.max(0,Math.min(6,Number(p.x)||3))-3)*2.5,center[1]+(Math.max(0,Math.min(4,Number(p.y)||2))-2)*2.5];
+    const geometry=this.cityCellGeometry?.get(p.cityId)?.poly;
+    if(geometry?.length>=3&&!pointInPolygon(placement,geometry)){
+     const safe=this.cityUnitAnchors?.get(p.cityId)?.point||center;
+     for(let t=.92;t>=0;t-=.08){const candidate=[safe[0]+(placement[0]-safe[0])*t,safe[1]+(placement[1]-safe[1])*t];if(pointInPolygon(candidate,geometry)){placement[0]=candidate[0];placement[1]=candidate[1];break;}}
+    }
+    const x=placement[0],y=placement[1];
     const complete=(Number(game?.day)||0)>=(Number(p.readyDay)||Infinity);
     const stone=(Number(p.level)||1)>1;
     const front=stone?'#c9c7b9':'#d3ad77',side=stone?'#8b9189':'#99734f',roof=complete?'#765038':'#b89a50';
