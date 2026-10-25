@@ -219,6 +219,16 @@ function attackBonus(owner,from,to){
   bonus+=arrowAffinity(o,from,to)*clamp(o.amount/1100,.2,1.8)*(o.stance==='force'?1.7:o.stance==='hold'?.25:1.15);
  return Math.min(4.5,bonus);
 }
+function postGarrisonResistance(owner,index){
+ const [x,y]=loc(index);let resistance=0;
+ for(const p of posts){
+  if(p.disabled||p.owner!==owner||p.readyDay>day||p.men<1||grid[p.tile]?.owner!==owner)continue;
+  const [px,py]=loc(p.tile),radius=p.level===1?5:p.level===2?8:11,d=Math.hypot(x-px,y-py);
+  if(d>radius)continue;
+  resistance+=Math.min(35,p.men*.11)*(1-d/(radius+1));
+ }
+ return Math.min(45,resistance);
+}
 function postDefenseSupport(owner,index){
  // Local defenders are protected only by completed, staffed, friendly posts.
  const [x,y]=loc(index);let bonus=0;
@@ -383,7 +393,7 @@ function rapidUnopposedAdvance(){
       const [cx,cy]=loc(current);
       const enemies=adjacent(current).filter(n=>{
         const tile=grid[n];return tile.castleId<0&&tile.fort===0&&tile.troops<=2&&
-          atWar(owner,tile.owner)&&emptyFrontDefense(n,tile.owner)<=4&&frontResistance[n]<3&&!castleProtectedRing(n,owner);
+          atWar(owner,tile.owner)&&emptyFrontDefense(n,tile.owner)<=4&&frontResistance[n]<3&&postDefenseSupport(tile.owner,n)<.05&&!castleProtectedRing(n,owner);
       });
       if(!enemies.length)break;
       enemies.sort((a,b)=>{
@@ -429,7 +439,7 @@ function stabilizeBorder(){
    for(let q=0;q<queue.length;q++){
     const i=queue[q],[x,y]=loc(i),tile=grid[i];
     part.push(i);soldiers+=tile.troops;
-    if(tile.castleId>=0||tile.fort>0)fortified=true;
+    if(tile.castleId>=0||tile.fort>0||postDefenseSupport(owner,i)>.05)fortified=true;
     if(x===0||y===0||x===W-1||y===H-1)touchesOuterEdge=true;
     for(const n of adjacent(i)){
      if(old[n]===owner){if(!visited[n]){visited[n]=1;queue.push(n)}}
@@ -454,7 +464,7 @@ function stabilizeBorder(){
   // on 3 of their 4 orthogonal sides. Never violate castle defenses.
   for(let i=0;i<grid.length;i++){
    const tile=grid[i];
-   if(tile.castleId>=0||tile.fort>0||tile.troops>0)continue;
+   if(tile.castleId>=0||tile.fort>0||tile.troops>0||postDefenseSupport(tile.owner,i)>.05)continue;
    const [x,y]=loc(i);if(x===0||y===0||x===W-1||y===H-1)continue;
    const counts=new Map();
    for(const n of adjacent(i))counts.set(old[n],(counts.get(old[n])||0)+1);
@@ -701,7 +711,7 @@ function fightDay(){
   if(!enemies.length)continue;
   let best=null;
   for(const target of enemies){
-   const power=g.troops*attackBonus(g.owner,i,target),block=(grid[target].troops+frontResistance[target]+1)*defense(target)*defenseBonus(grid[target].owner,target);
+   const power=g.troops*attackBonus(g.owner,i,target),block=(grid[target].troops+frontResistance[target]+1+postGarrisonResistance(grid[target].owner,target))*defense(target)*defenseBonus(grid[target].owner,target);
    let score=power/Math.max(1,block);
    const at=grid[target];if(!orders.some(o=>o.owner===g.owner&&o.type==='arrow')){
     const [fx,fy]=loc(i),[tx,ty]=loc(target);
@@ -722,7 +732,7 @@ function fightDay(){
   const attack=src.troops*attackBonus(src.owner,a.from,a.to);
   const shield=castleProtectedRing(a.to,src.owner);
   if(shield){damageCastleDefenders(shield,a.from);continue;}
-  const block=(dst.troops+frontResistance[a.to]+1)*defense(a.to)*defenseBonus(dst.owner,a.to);
+  const block=(dst.troops+frontResistance[a.to]+1+postGarrisonResistance(dst.owner,a.to))*defense(a.to)*defenseBonus(dst.owner,a.to);
   const ratio=attack/Math.max(1,block);
   // Losses scale with headcount: a one-man skirmish is usually harmless.
   // Keeping a forced minimum loss of one PER TILE destroyed small armies.
