@@ -4,7 +4,7 @@ import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=2026092
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-treasury-grain-market-v9';
 import {icon} from './icons.js?v=20260926-hud-notifications-v3';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20261025-pitched-watchposts-v1';
+import {WorldMap} from './map.js?v=20261025-fog-capture-v1';
 import {watchpostCapacity1300,watchpostTravelDays1300,incomingWatchpostSoldiers1300,watchpostSupplyBill1300} from './watchposts1300.js?v=20261025-v1';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260926-military-unlocks-v3';
 import {MILITARY_UNITS_1300,MILITARY_UNIT_1300,PROFESSIONAL_MILITARY_UNITS_1300,normaliseMilitaryState1300,unitCount1300,professionalCount1300,levyCount1300,pendingProfessional1300,addTrainingOrder1300,addLevyOrder1300,cancelOrder1300,disbandUnits1300,applyUnitLosses1300,completeTrainingForDay1300} from './military1300.js?v=20260926-v2';
@@ -1422,13 +1422,28 @@ function wipeArmyOnSurrender1300(game,homeId){
 function wipeEnemyOnSurrender1300(battle){const removed=battleUnitTotal1300(battle?.enemyUnits);if(battle?.enemyUnits)for(const id of Object.keys(battle.enemyUnits))battle.enemyUnits[id]=0;return removed;}
 function battleDiceRoll1300(){return 1+Math.floor(Math.random()*10);}
 function battleDiceDamageMultiplier1300(roll){return 1+clamp1300(Number(roll)||1,1,10)*.018;}
+function watchpostRegionDefensePct1300(game,cityId){
+ // A fortified government outpost protects its province and immediate neighbour
+ // while staffed. Defence is capped, and the garrison is never duplicated.
+ if(!game?.ownedCities?.includes(cityId))return 0;
+ const neighbours=new Set(world?.neighboursOf?.(cityId)||[]);
+ let total=0;
+ for(const post of game.watchposts||[]){
+  if(!game.ownedCities.includes(post.cityId)||Number(post.readyDay)>Number(game.day)||Number(post.men)<=0)continue;
+  const local=post.cityId===cityId;if(!local&&!neighbours.has(post.cityId))continue;
+  const men=Math.max(0,Number(post.men)||0),level=Math.max(1,Math.min(3,Number(post.level)||1));
+  const contribution=Math.min(18,3*level+Math.sqrt(men)*.55);
+  total+=local?contribution:contribution*.35;
+ }
+ return Math.min(25,Math.round(total*10)/10);
+}
 function resolveBattleDay1300(game,battle){
  if(!battle||battle.status!=='active'||battle.lastResolvedDay>=game.day)return false;
  const army=militaryCityArmy1300(game,battle.armyHomeId);if(!army){battle.status='lost';battle.lastResolvedDay=game.day;if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);return true;}
  const beforePlayer=militaryArmyTotal1300(game,battle.armyHomeId),beforeEnemy=battleUnitTotal1300(battle.enemyUnits);
  if(beforePlayer<=0){battle.status='lost';battle.lastResolvedDay=game.day;warScoreAdjust1300(game,battle.enemyCountry,-4);if(battle.enemyAttacker)restoreEnemyAttackerAfterVictory1300(game,battle);else returnEnemyBattleSurvivorsToStanding1300(game,battle);return true;}
  if(beforeEnemy<=0){battle.status='won';battle.lastResolvedDay=game.day;warScoreAdjust1300(game,battle.enemyCountry,4);afterPlayerBattleVictory1300(game,battle);return true;}
- const phase=game.day-battle.startedDay<2?'ranged':'melee',supply=militarySupplyStatus1300(game,battle.armyHomeId),commander=commanderForArmy1300(game,battle.armyHomeId)?.bonuses||{},defenderBonus=Number(battle.defenderBonusPct)||BATTLE_DEFENDER_BONUS_PCT_1300,playerCommander=battle.enemyAttacker?{...commander,defensePct:(Number(commander.defensePct)||0)+defenderBonus}:commander,enemyCommander=battle.enemyAttacker?{}:{defensePct:defenderBonus},p=tacticCombat1300(army.units,battle.playerTactic,phase,playerCommander,supply.combat,battle.playerMorale),e=tacticCombat1300(battle.enemyUnits,battle.enemyTactic,phase,enemyCommander,.94,battle.enemyMorale);
+ const phase=game.day-battle.startedDay<2?'ranged':'melee',supply=militarySupplyStatus1300(game,battle.armyHomeId),commander=commanderForArmy1300(game,battle.armyHomeId)?.bonuses||{},defenderBonus=Number(battle.defenderBonusPct)||BATTLE_DEFENDER_BONUS_PCT_1300,playerCommander=battle.enemyAttacker?{...commander,defensePct:(Number(commander.defensePct)||0)+defenderBonus+watchpostRegionDefensePct1300(game,battle.cityId)}:commander,enemyCommander=battle.enemyAttacker?{}:{defensePct:defenderBonus},p=tacticCombat1300(army.units,battle.playerTactic,phase,playerCommander,supply.combat,battle.playerMorale),e=tacticCombat1300(battle.enemyUnits,battle.enemyTactic,phase,enemyCommander,.94,battle.enemyMorale);
  const playerDice=battleDiceRoll1300(),enemyDice=battleDiceRoll1300(),playerDamage=battleDiceDamageMultiplier1300(playerDice),enemyDamage=battleDiceDamageMultiplier1300(enemyDice);
  const pLoss=Math.max(0,Math.min(p.total,Math.round(e.attack*enemyDamage/Math.max(35,p.avgHp*18*p.defense)))),eLoss=Math.max(0,Math.min(e.total,Math.round(p.attack*playerDamage/Math.max(35,e.avgHp*18*e.defense)))),actualP=applyArmyCasualties1300(game,battle.armyHomeId,pLoss),actualE=removeEnemyCasualties1300(battle.enemyUnits,eLoss);battle.playerCasualties+=actualP;battle.enemyCasualties+=actualE;
  const moraleBonus=Number(commander.moralePct)||0;battle.playerMorale=clamp1300(battle.playerMorale-(.7+actualP/Math.max(1,p.total)*115+supply.moralePenalty)*(1-moraleBonus/100),0,100);battle.enemyMorale=clamp1300(battle.enemyMorale-(.8+actualE/Math.max(1,e.total)*115),0,100);battle.lastResolvedDay=game.day;
