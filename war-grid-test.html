@@ -233,7 +233,7 @@ function postDefenseSupport(owner,index){
  // Local defenders are protected only by completed, staffed, friendly posts.
  const [x,y]=loc(index);let bonus=0;
  for(const p of posts){
-  if(p.owner!==owner||p.readyDay>day||p.men<1||grid[p.tile]?.owner!==owner)continue;
+  if(p.disabled||p.owner!==owner||p.readyDay>day||p.men<1||grid[p.tile]?.owner!==owner)continue;
   const [px,py]=loc(p.tile),radius=p.level===1?5:p.level===2?8:11,d=Math.hypot(x-px,y-py);
   if(d>radius)continue;
   bonus+=Math.min(.85,.22+Math.sqrt(p.men)*.035)*(1-d/(radius+1));
