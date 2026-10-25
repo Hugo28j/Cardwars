@@ -1,4 +1,4 @@
-import {buildCampaignFrontTopology1300} from './campaign-front1300.js?v=20261025-v1';
+import {buildCampaignFrontTopology1300,alignCampaignFront1300} from './campaign-front1300.js?v=20261025-fine-grid-v2';
 import {PhaserMapLayer} from './phaser/map-layer.js?v=20261025-watchpost-roof-v1';
 import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260928-anatolia-v8';
 import {icon} from './icons.js';
@@ -394,6 +394,7 @@ export class WorldMap{
   const terrain=this.svg.querySelector('#tactical-front-territory'),formations=this.svg.querySelector('#tactical-front-formations');
   if(!terrain||!formations)return;const front=game?.tacticalFront,topology=front&&this.campaignFrontTopology1300();
   if(!front||!topology||!show){terrain.replaceChildren();formations.replaceChildren();return;}
+  alignCampaignFront1300(front,topology);
   const color=country=>country===game.playerCountry?(game.playerColor||'#608db8'):(game.alliances||[]).includes(country)?'#c1a15e':colorForRealm(CITY_REALM_ALIASES.get(country)||country),visible=n=>visibleCities.has(n.city)&&n.x>=this.view.x-topology.step&&n.x<=this.view.x+this.view.w+topology.step&&n.y>=this.view.y-topology.step&&n.y<=this.view.y+this.view.h+topology.step;
   const paths=new Map(),changed=new Set(front.changes||[]),fresh=[];
   for(const [id,country] of Object.entries(front.control||{})){const n=topology.byId.get(id);if(!n||!visible(n)||n.castle)continue;const key=n.city+'|'+country;if(!paths.has(key))paths.set(key,{city:n.city,country,d:''});const z=topology.step/2;paths.get(key).d+='M'+(n.x-z)+','+(n.y-z)+'h'+topology.step+'v'+topology.step+'h-'+topology.step+'Z';if(changed.has(id)&&this.frontRevision!==front.revision&&this.frontVisiblePrevious?.has(n.city))fresh.push(n);}

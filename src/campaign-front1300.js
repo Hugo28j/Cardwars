@@ -1,6 +1,8 @@
 // Persistent tactical positions; soldier totals remain in the campaign military ledger.
 // Geometry is rebuilt from the real map and is never stored in a save.
-export const FRONT_STEP_1300=2;
+// Eight times less area per tile; keep the previous map-distance budget per day.
+export const FRONT_STEP_1300=2/Math.sqrt(8);
+export const FRONT_DAILY_DISTANCE_1300=2;
 const count=u=>Object.values(u||{}).reduce((s,n)=>s+Math.max(0,Number(n)||0),0);
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const inside=(p,poly)=>{let yes=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])yes=!yes;}return yes;};
@@ -30,6 +32,17 @@ export function ensureCampaignFront1300(military){
  const f=military.front&&military.front.version===1?military.front:{version:1,control:{},formations:[],lastDay:-1};
  f.control=f.control&&typeof f.control==='object'?f.control:{};f.formations=Array.isArray(f.formations)?f.formations:[];military.front=f;return f;
 }
+// Old saves used a 2-unit grid. Remap positions and occupied terrain before rendering/ticking.
+export function alignCampaignFront1300(front,topology){
+ const oldStep=Number(front.step)||2;if(Math.abs(oldStep-topology.step)<1e-9){front.step=topology.step;return front;}
+ const oldControl=front.control||{},control={};
+ if(Object.keys(oldControl).length)for(const n of topology.nodes){if(n.castle)continue;const id=Math.floor(n.x/oldStep)+','+Math.floor(n.y/oldStep);if(oldControl[id])control[n.id]=oldControl[id];}
+ const remap=id=>{if(!id||id.startsWith('castle:'))return topology.byId.has(id)?id:null;const [x,y]=id.split(',').map(Number);if(!Number.isFinite(x)||!Number.isFinite(y))return null;const px=(x+.5)*oldStep,py=(y+.5)*oldStep,gx=Math.floor(px/topology.step),gy=Math.floor(py/topology.step);let best=null;
+  for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const n=topology.byId.get((gx+dx)+','+(gy+dy));if(n&&(!best||Math.hypot(n.x-px,n.y-py)<Math.hypot(best.x-px,best.y-py)))best=n;}return best?.id||null;
+ };
+ for(const f of front.formations||[]){f.node=remap(f.node);f.previous=remap(f.previous);}
+ front.control=control;front.step=topology.step;front.changes=[];front.revision=(front.revision||0)+1;return front;
+}
 function allocate(units,n){const result={},total=count(units);let left=Math.min(n,total);const entries=Object.entries(units);for(let i=0;i<entries.length;i++){const [id,have]=entries[i],take=i===entries.length-1?Math.min(have,left):Math.min(have,left,Math.floor(n*have/Math.max(1,total)));result[id]=take;left-=take;}for(const [id,have] of entries){const take=Math.min(left,have-(result[id]||0));result[id]=(result[id]||0)+take;left-=take;}return result;}
 export function frontArmyDeployed1300(military,key){return (military.front?.formations||[]).some(f=>f.source===key&&count(f.units)>0);}
 export function frontSiegeSupport1300(front,topology,city,country){
@@ -38,7 +51,7 @@ export function frontSiegeSupport1300(front,topology,city,country){
  return front.formations.filter(f=>f.country===country&&count(f.units)>0&&ring.some(n=>distance(n,topology.byId.get(f.node)||c)<=topology.step*2.1));
 }
 export function tickCampaignFront1300(military,topology,ctx){
- const state=ensureCampaignFront1300(military);if(state.lastDay===ctx.day)return false;state.lastDay=ctx.day;
+ const state=alignCampaignFront1300(ensureCampaignFront1300(military),topology);if(state.lastDay===ctx.day)return false;state.lastDay=ctx.day;
  const {byId,nodes,castles}=topology,owner=n=>state.control[n.id]||ctx.owner(n.city),active=n=>ctx.active(ctx.owner(n.city));
  for(const [id,country] of Object.entries(state.control)){const n=byId.get(id);if(!n||country===ctx.owner(n.city)||!ctx.atWar(country,ctx.owner(n.city)))delete state.control[id];}
  const sources=new Map(ctx.sources.map(s=>[s.key,s]));
@@ -52,7 +65,7 @@ export function tickCampaignFront1300(military,topology,ctx){
   if(!groups.length&&wanted>0){const size=Math.max(1,Math.min(8,Math.floor(wanted/20)||1));for(let i=0;i<size;i++){const f={id:source.key+':'+i,source:source.key,country:source.country,node:source.node||center.id,units:{}};state.formations.push(f);groups.push(f);}}
   const pool=allocate(source.units,wanted);
   let guard=state.formations.find(f=>f.source===source.key&&f.guard);
-  if(!source.fixed&&reserve>0){if(!guard){guard={id:source.key+':guard',source:source.key,country:source.country,node:center.id,units:{},guard:true};state.formations.push(guard);}guard.units=Object.fromEntries(Object.entries(source.units).map(([id,n])=>[id,n-(pool[id]||0)]));}
+  if(!source.fixed&&reserve>0){if(!guard){guard={id:source.key+':guard',source:source.key,country:source.country,node:center.id,units:{},guard:true};state.formations.push(guard);}guard.node=center.id;guard.units=Object.fromEntries(Object.entries(source.units).map(([id,n])=>[id,n-(pool[id]||0)]));}
   else if(guard)guard.units={};
   for(const [unit,amount] of Object.entries(pool)){
    const old=groups.reduce((s,f)=>s+(f.units[unit]||0),0);let left=amount;
@@ -63,18 +76,19 @@ export function tickCampaignFront1300(military,topology,ctx){
  state.formations=state.formations.filter(f=>count(f.units)>0);
  const occupied=new Map();for(const f of state.formations){if(!occupied.has(f.node))occupied.set(f.node,[]);occupied.get(f.node).push(f);}
  // Simultaneous damage uses the existing unit HP, attack, range, tactics, supply and commanders.
- const losses=new Map();for(const f of state.formations){const source=sources.get(f.source),n=byId.get(f.node);if(!source)continue;const combat=ctx.combat(source,f.units),range=Math.min(3,Math.max(1,combat.range||1));const nearby=[n],seen=new Set([n.id]);for(let k=0;k<range;k++){for(const a of [...nearby])for(const id of a.links)if(!seen.has(id)){seen.add(id);nearby.push(byId.get(id));}}
+ const losses=new Map();for(const f of state.formations){const source=sources.get(f.source),n=byId.get(f.node);if(!source)continue;const combat=ctx.combat(source,f.units),range=Math.ceil(Math.min(3,Math.max(1,combat.range||1))*FRONT_DAILY_DISTANCE_1300/topology.step);const nearby=[n],seen=new Set([n.id]);for(let k=0;k<range;k++){for(const a of [...nearby])for(const id of a.links)if(!seen.has(id)){seen.add(id);nearby.push(byId.get(id));}}
   const targets=nearby.flatMap(a=>occupied.get(a.id)||[]).filter(t=>ctx.atWar(f.country,t.country));if(!targets.length)continue;
   const target=targets.sort((a,b)=>distance(n,byId.get(a.node))-distance(n,byId.get(b.node)))[0],def=ctx.combat(sources.get(target.source),target.units),bonus=ctx.defense?.(target,byId.get(target.node))||0;
   const damage=Math.max(1,Math.round(combat.attack/Math.max(35,def.avgHp*18*def.defense*(1+bonus/100))));losses.set(target,(losses.get(target)||0)+damage);
  }
  for(const [f,amount] of losses){const dead=allocate(f.units,Math.min(count(f.units),amount));for(const [unit,n] of Object.entries(dead))if(n){f.units[unit]-=n;ctx.casualty(sources.get(f.source),unit,n);}}
  state.formations=state.formations.filter(f=>count(f.units)>0);
- // One graph edge per day; a formation can never cross neutral territory or teleport.
+ // Multiple connected small steps retain the previous map-distance budget per day.
  const fields=new Map(),pathField=(country,seeds)=>{const cacheKey=country+'|'+seeds.join(';');if(fields.has(cacheKey))return fields.get(cacheKey);const dist=new Map(),q=[];for(const id of seeds)if(byId.has(id)){dist.set(id,0);q.push(byId.get(id));}for(let h=0;h<q.length;h++)for(const id of q[h].links){if(dist.has(id))continue;const n=byId.get(id),o=owner(n);if(o!==country&&!ctx.allied(country,o)&&!ctx.atWar(country,o))continue;dist.set(id,dist.get(q[h].id)+1);q.push(n);}fields.set(cacheKey,dist);return dist;};
  const fronts=new Map();for(const n of nodes){if(!active(n))continue;const o=owner(n);if(n.links.some(id=>ctx.atWar(o,owner(byId.get(id))))){if(!fronts.has(o))fronts.set(o,[]);fronts.get(o).push(n.id);}}
  const siegeHolds=new Map();for(const [city,castle] of castles){for(const country of new Set(ctx.sources.map(s=>s.country))){if(!ctx.atWar(country,owner(castle)))continue;const supporters=frontSiegeSupport1300(state,topology,city,country);for(const f of supporters)if(!f.guard)siegeHolds.set(f.id,city);}}
- const changes=[];for(const f of state.formations){const s=sources.get(f.source),n=byId.get(f.node);if(!s||s.fixed||f.guard)continue;
+ const ratio=FRONT_DAILY_DISTANCE_1300/topology.step,steps=Math.max(1,Math.floor(ctx.day*ratio)-Math.floor((ctx.day-1)*ratio));
+ const changes=[];for(let substep=0;substep<steps;substep++)for(const f of state.formations){const s=sources.get(f.source),n=byId.get(f.node);if(!s||s.fixed||f.guard)continue;
   const order=ctx.orders.find(o=>o.armyKey===s.key),target=order&&castles.get(order.target);if(siegeHolds.has(f.id)&&(!order||order.target===siegeHolds.get(f.id)))continue;let seeds;
   if(target)seeds=order.type==='defend'?[target.id,...target.links]:target.links;
   else {const invaded=(fronts.get(f.country)||[]).filter(id=>ctx.owner(byId.get(id).city)===f.country&&owner(byId.get(id))===f.country&&byId.get(id).links.some(k=>ctx.owner(byId.get(k).city)===f.country&&ctx.atWar(f.country,owner(byId.get(k)))));seeds=invaded.length?invaded:(fronts.get(f.country)||[]);}
@@ -83,7 +97,7 @@ export function tickCampaignFront1300(military,topology,ctx){
   else options=options.filter(a=>(field.get(a.id)??Infinity)<(here??Infinity));
   options.sort((a,b)=>{const rank=a=>(field.get(a.id)??1e6)+(state.formations.filter(t=>t.node===a.id&&t.country===f.country).length*2);return rank(a)-rank(b);});
   const next=options[0];if(!next)continue;
-  const previous=n.id;f.node=next.id;f.previous=previous;f.movedDay=ctx.day;
+  const previous=n.id;f.node=next.id;if(f.movedDay!==ctx.day)f.previous=previous;f.movedDay=ctx.day;
   if(ctx.atWar(f.country,owner(next))){state.control[next.id]=f.country;changes.push(next.id);}
  }
  // Merge isolated remnants into friendly formations at the same tile, retaining every type.

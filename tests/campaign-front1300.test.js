@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildCampaignFrontTopology1300,tickCampaignFront1300,frontSiegeSupport1300} from '../src/campaign-front1300.js';
+import {buildCampaignFrontTopology1300,tickCampaignFront1300,frontSiegeSupport1300,alignCampaignFront1300,FRONT_STEP_1300} from '../src/campaign-front1300.js';
 const sum=u=>Object.values(u).reduce((a,b)=>a+b,0);
 function fixture(){
  const provinces=['a','b','c'].map((id,i)=>({id,poly:[[i*8,0],[i*8+8,0],[i*8+8,8],[i*8,8]],center:[i*8+3,3],neighbors:i===0?['b']:i===1?['a','c']:['b']}));
- const topology=buildCampaignFrontTopology1300(provinces),military={},sources=[{key:'army',country:'A',city:'a',units:{swords:80,bows:40},garrison:30},{key:'enemy',country:'B',city:'b',units:{swords:50},garrison:10}];
+ const topology=buildCampaignFrontTopology1300(provinces,2),military={},sources=[{key:'army',country:'A',city:'a',units:{swords:80,bows:40},garrison:30},{key:'enemy',country:'B',city:'b',units:{swords:50},garrison:10}];
  const ctx={day:1,sources,orders:[],active:c=>c!=='C',owner:id=>id.toUpperCase(),atWar:(a,b)=>a!==b&&a!=='C'&&b!=='C',allied:(a,b)=>a===b,combat:()=>({attack:100,avgHp:10,defense:1,range:1}),casualty:(s,u,n)=>s.units[u]-=n};
  return {topology,military,ctx};
 }
@@ -39,4 +39,14 @@ test('front combat applies simultaneous casualties to the original typed ledgers
  military.front={version:1,lastDay:0,control:{},formations:ctx.sources.map((s,i)=>({id:s.key+':0',source:s.key,country:s.country,node,units:{...s.units}}))};
  const totals=ctx.sources.map(s=>sum(s.units));tickCampaignFront1300(military,topology,ctx);
  ctx.sources.forEach((s,i)=>{assert.ok(sum(s.units)<totals[i]);for(const [id,n] of Object.entries(s.units))assert.equal(military.front.formations.filter(f=>f.source===s.key).reduce((v,f)=>v+(f.units[id]||0),0),n);});
+});
+
+test('fine tiles have eight times less area and old saves retain troops and terrain',()=>{
+ assert.ok(Math.abs(FRONT_STEP_1300**2-4/8)<1e-9);
+ const {topology,military,ctx}=fixture();tickCampaignFront1300(military,topology,ctx);
+ const old=topology.byCity.get('b').find(n=>!n.castle);military.front.control[old.id]='A';
+ const provinces=['a','b','c'].map((id,i)=>({id,poly:[[i*8,0],[i*8+8,0],[i*8+8,8],[i*8,8]],center:[i*8+3,3],neighbors:i===0?['b']:i===1?['a','c']:['b']})),fine=buildCampaignFrontTopology1300(provinces);
+ const total=military.front.formations.reduce((n,f)=>n+sum(f.units),0);alignCampaignFront1300(military.front,fine);
+ assert.equal(total,military.front.formations.reduce((n,f)=>n+sum(f.units),0));assert.ok(military.front.formations.every(f=>fine.byId.has(f.node)));assert.ok(Object.keys(military.front.control).length>1);
+ const snapshot=JSON.stringify(military.front);alignCampaignFront1300(military.front,fine);assert.equal(JSON.stringify(military.front),snapshot);
 });
