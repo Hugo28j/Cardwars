@@ -41,6 +41,16 @@ test('government watchpost has a real local military radius and spends soldiers'
  post.disabled=true;
  assert.equal(ctx.apply.postDefenseSupport(0,ix(21,12)),0);
 });
+test('conquest animation never forces a full battlefield redraw per frame',()=>{
+ assert.match(war,/id="capture-overlay"/);
+ assert.match(war,/captureCtx\.clearRect/);
+ assert.match(war,/lastCaptureFrame=now;paintCaptureWave\(now\)/);
+ const start=war.indexOf('function animateCapturedTerritory(before){');
+ const end=war.indexOf('function paint(){',start);
+ assert.ok(start>=0&&end>start);
+ assert.doesNotMatch(war.slice(start,end),/\bpaint\(\)/);
+});
+
 test('territory animations have hard visual caps and respect fog and reduced motion',()=>{
  assert.match(war,/const maxTiles=500/);
  assert.match(war,/reducedWarMotion/);
