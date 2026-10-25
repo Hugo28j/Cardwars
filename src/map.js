@@ -398,13 +398,21 @@ export class WorldMap{
   this.svg.style.setProperty('--city-border-zoom-width',(.26+reveal*.25).toFixed(3));
  }
  updateMovingArmyAnimation(){
-  const game=this.state?.game,moves=game?.movements;if(this.destroyed||!Array.isArray(moves)||!moves.length)return false;
+  const game=this.state?.game,moves=game?.movements;if(this.destroyed||(!moves?.length&&!game?.watchpostTransfers?.length))return false;
   const dayDuration=Math.max(250,Number(game.dayDurationMs)||2000),dayNow=Number(game.day)||0,lastTick=Number(game.lastTickAt)||Date.now(),dayFraction=Math.max(0,Math.min(.999,(Date.now()-lastTick)/dayDuration));
-  const movingEls=[...(this.svg?.querySelectorAll('.moving-army-marker[data-move-id]')||[])];if(!movingEls.length)return false;
+  const movingEls=[...(this.svg?.querySelectorAll('.moving-army-marker[data-move-id]')||[])],postEls=[...(this.svg?.querySelectorAll('.watchpost-transfer-marker[data-post-transfer-id]')||[])];if(!movingEls.length&&!postEls.length)return false;
   for(const el of movingEls){
    const move=moves.find(x=>String(x.id)===el.dataset.moveId);if(!move)continue;const from=this.cityCenters?.get(move.from)||this.cityUnitAnchors?.get(move.from)?.point,to=this.cityCenters?.get(move.to)||this.cityUnitAnchors?.get(move.to)?.point;if(!from||!to)continue;
    const start=Number.isFinite(Number(move.visualStartDay))?Number(move.visualStartDay):(Number(move.startDay)||dayNow),finish=Number(move.finishDay)||start+1,span=Math.max(.001,finish-start),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-start)/span)),x=from[0]+(to[0]-from[0])*progress,y=from[1]+(to[1]-from[1])*progress;
    el.setAttribute('transform',`translate(${x} ${y})`);
+  }
+  for(const el of postEls){
+   const transfer=game.watchpostTransfers.find(t=>String(t.id)===el.dataset.postTransferId);
+   if(!transfer)continue;
+   const fromX=Number(el.dataset.fromX),fromY=Number(el.dataset.fromY),toX=Number(el.dataset.toX),toY=Number(el.dataset.toY);
+   if(![fromX,fromY,toX,toY].every(Number.isFinite))continue;
+   const start=Number(transfer.startDay)||0,finish=Math.max(start+1,Number(transfer.arrivalDay)||start+1),progress=Math.max(0,Math.min(1,(dayNow+dayFraction-start)/(finish-start)));
+   el.setAttribute('transform',`translate(${fromX+(toX-fromX)*progress} ${fromY+(toY-fromY)*progress})`);
   }
   return true;
  }
@@ -524,13 +532,15 @@ export class WorldMap{
     }
     movementLayer.innerHTML=routePieces.join('');this.ensureMovementAnimationLoop();
    }
-   if(!game?.movements?.length)this.stopMovementAnimationLoop();
+   if(!game?.movements?.length&&!game?.watchpostTransfers?.length)this.stopMovementAnimationLoop();
   }
   // Pseudo-3D government watchposts drawn on the real campaign map.
   // Placement is stored per province, separate from normal town buildings.
   const watchpostLayer=this.svg.querySelector('#watchpost-markers');
   if(watchpostLayer){
-   watchpostLayer.innerHTML=(game?.watchposts||[]).filter(p=>ownedCities.has(p.cityId)&&(!fogDetail||visibleCities.has(p.cityId))).map(p=>{
+   const postVisualPositions=new Map();
+   const postZoom=Math.max(0,Math.min(1,(500-(Number(this.view?.w)||0))/380));
+   watchpostLayer.innerHTML=(postZoom>0&&showCityAreas?(game?.watchposts||[]):[]).filter(p=>ownedCities.has(p.cityId)&&(!fogDetail||visibleCities.has(p.cityId))).map(p=>{
     const city=CITY[p.cityId];if(!city)return '';
     const center=this.cityCenters?.get(p.cityId)||pos(city.lon,city.lat);
     const placement=[center[0]+(Math.max(0,Math.min(6,Number.isFinite(Number(p.x))?Number(p.x):3))-3)*2.5,center[1]+(Math.max(0,Math.min(4,Number.isFinite(Number(p.y))?Number(p.y):2))-2)*2.5];
@@ -539,13 +549,22 @@ export class WorldMap{
      const safe=this.cityUnitAnchors?.get(p.cityId)?.point||center;
      for(let t=.92;t>=0;t-=.08){const candidate=[safe[0]+(placement[0]-safe[0])*t,safe[1]+(placement[1]-safe[1])*t];if(pointInPolygon(candidate,geometry)){placement[0]=candidate[0];placement[1]=candidate[1];break;}}
     }
-    const x=placement[0],y=placement[1];
+    const x=placement[0],y=placement[1];postVisualPositions.set(String(p.id),[x,y]);
     const complete=(Number(game?.day)||0)>=(Number(p.readyDay)||Infinity);
     const stone=(Number(p.level)||1)>1;
     const front=stone?'#c9c7b9':'#d3ad77',side=stone?'#8b9189':'#99734f',roof=complete?'#765038':'#b89a50';
     const text=complete?String(Math.floor(Number(p.men)||0))+' · L'+p.level:Math.max(0,Number(p.readyDay)-Number(game?.day||0))+'d';
-    return '<g class="campaign-watchpost" transform="translate('+x.toFixed(2)+' '+y.toFixed(2)+') scale(.70)" opacity=".98"><title>Wachtpost '+p.id+' – '+(complete?'niveau '+p.level+', '+p.men+' garnizoen':'in aanbouw, '+text)+'</title><ellipse cx="0" cy="14" rx="16" ry="5" fill="#23372d" opacity=".7"/><path d="M-12 0L0 6V18L-12 11Z" fill="'+side+'" stroke="#2b302c"/><path d="M0 6L12 0V11L0 18Z" fill="'+front+'" stroke="#28332d"/><path d="M-15 -5L0 -20L15 -5L0 6Z" fill="'+roof+'" stroke="#2b302c" stroke-width="1.3"/><rect x="-7" y="5" width="4" height="6" fill="#354138"/><rect x="6" y="4" width="3" height="6" fill="#354138"/><text x="0" y="29" text-anchor="middle" font-size="10" font-weight="800" fill="#fff0bb" stroke="#192d27" stroke-width="2.8" paint-order="stroke">'+text+'</text></g>';
+    return '<g class="campaign-watchpost" data-watchpost-id="'+p.id+'" transform="translate('+x.toFixed(2)+' '+y.toFixed(2)+') scale('+(0.42+postZoom*.42).toFixed(2)+')" opacity="'+(.25+postZoom*.75).toFixed(2)+'"><title>Wachtpost '+p.id+' – '+(complete?'niveau '+p.level+', '+p.men+' garnizoen':'in aanbouw, '+text)+'</title><ellipse cx="0" cy="14" rx="16" ry="5" fill="#23372d" opacity=".7"/><path d="M-12 0L0 6V18L-12 11Z" fill="'+side+'" stroke="#2b302c"/><path d="M0 6L12 0V11L0 18Z" fill="'+front+'" stroke="#28332d"/><path d="M-15 -5L0 -20L15 -5L0 6Z" fill="'+roof+'" stroke="#2b302c" stroke-width="1.3"/><rect x="-7" y="5" width="4" height="6" fill="#354138"/><rect x="6" y="4" width="3" height="6" fill="#354138"/><text x="0" y="29" text-anchor="middle" font-size="10" font-weight="800" fill="#fff0bb" stroke="#192d27" stroke-width="2.8" paint-order="stroke">'+text+'</text></g>';
    }).join('');
+   const transports=(game?.watchpostTransfers||[]).filter(t=>ownedCities.has(t.cityId)&&(!fogDetail||visibleCities.has(t.cityId)));
+   watchpostLayer.insertAdjacentHTML('beforeend',transports.map(t=>{
+    const post=postVisualPositions.get(String(t.postId)),castle=this.cityCenters?.get(t.cityId);
+    if(!post||!castle)return '';
+    const outward=t.direction==='to-post',from=outward?castle:post,to=outward?post:castle;
+    const count=Object.values(t.units||{}).reduce((n,x)=>n+Math.max(0,Number(x)||0),0);
+    return '<g class="watchpost-transfer-marker" data-post-transfer-id="'+String(t.id).replace(/[^\w-]/g,'')+'" data-from-x="'+from[0]+'" data-from-y="'+from[1]+'" data-to-x="'+to[0]+'" data-to-y="'+to[1]+'" pointer-events="none"><title>'+count+' soldiers travelling '+(outward?'to watchpost':'to castle')+'</title><circle r="3.5" cy="-3" fill="#ecd6a2" stroke="#31544e" stroke-width="1.5"/><circle r="2.5" cx="5" cy="0" fill="#ecd6a2" stroke="#31544e" stroke-width="1"/></g>';
+   }).join(''));
+   if(transports.length)this.ensureMovementAnimationLoop();
   }
   const militaryLayer=this.svg.querySelector('#military-markers');
   if(militaryLayer){
