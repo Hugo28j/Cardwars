@@ -533,7 +533,7 @@ export class WorldMap{
    watchpostLayer.innerHTML=(game?.watchposts||[]).filter(p=>ownedCities.has(p.cityId)&&(!fogDetail||visibleCities.has(p.cityId))).map(p=>{
     const city=CITY[p.cityId];if(!city)return '';
     const center=this.cityCenters?.get(p.cityId)||pos(city.lon,city.lat);
-    const placement=[center[0]+(Math.max(0,Math.min(6,Number(p.x)||3))-3)*2.5,center[1]+(Math.max(0,Math.min(4,Number(p.y)||2))-2)*2.5];
+    const placement=[center[0]+(Math.max(0,Math.min(6,Number.isFinite(Number(p.x))?Number(p.x):3))-3)*2.5,center[1]+(Math.max(0,Math.min(4,Number.isFinite(Number(p.y))?Number(p.y):2))-2)*2.5];
     const geometry=this.cityCellGeometry?.get(p.cityId)?.poly;
     if(geometry?.length>=3&&!pointInPolygon(placement,geometry)){
      const safe=this.cityUnitAnchors?.get(p.cityId)?.point||center;
