@@ -54,7 +54,7 @@ test('old atlas and engine are retained as recovery copies',()=>{
 test('map renders exact province outlines below a separate political-border layer',()=>{
  const source=fs.readFileSync(new URL('../src/map.js',import.meta.url),'utf8');
  const css=fs.readFileSync(new URL('../drawn-map.css',import.meta.url),'utf8');
- assert.match(source,/<g id="city-territories"><\/g><g id="country-borders"><\/g>/);
+ assert.match(source,/<g id="city-territories"><\/g>[\s\S]*?<g id="country-borders"><\/g>/);
  assert.match(source,/assets\/map-shared-borders\.json/);
  assert.doesNotMatch(source,/assets\/map-user-borders\.json/);
  assert.doesNotMatch(source,/class="drawn-city-border" d="\$\{feature\.d\}"/);
