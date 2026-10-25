@@ -1490,7 +1490,7 @@ function processArmyMovements1300(game){
 function processMilitaryAttrition1300(game){
  if((Number(game.day)||0)%7!==0)return false;let changed=false;for(const homeId of armyKeys1300(game)){if(activeBattleForArmy1300(game,homeId))continue;const supply=militarySupplyStatus1300(game,homeId),total=militaryArmyTotal1300(game,homeId);if(total>=100&&supply.food<.45){const loss=Math.max(1,Math.floor(total*(.45-supply.food)*.01));if(applyArmyCasualties1300(game,homeId,loss)>0)changed=true;}}return changed;
 }
-function processAdvancedMilitaryDay1300(game){const military=ensureAdvancedMilitary1300(game);const beforeOrders=Array.isArray(game.frontOrders)?game.frontOrders.length:0;campaignFrontOrders1300(game);let changed=beforeOrders!==game.frontOrders.length;changed=processArmyMovements1300(game)||changed;if(processAIMilitaryDay1300(game))changed=true;if(military.movements.length||military.enemyMovements.length)changed=true;for(const b of [...military.battles])if(resolveBattleDay1300(game,b))changed=true;if(processSiegesDay1300(game))changed=true;if(processEnemySiegesDay1300(game))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(gameArmyPanelKey)renderArmyMapPanel1300();if(gameBattlePanelId)renderGameBattlePanel1300();if(gameSiegePanelId)renderGameSiegePanel1300();if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
+function processAdvancedMilitaryDay1300(game){const military=ensureAdvancedMilitary1300(game);const beforeOrders=Array.isArray(game.frontOrders)?game.frontOrders.length:0;campaignFrontOrders1300(game);game.frontOrders=game.frontOrders.filter(o=>military.armiesByCity[o.armyKey]&&militaryArmyTotal1300(game,o.armyKey)>0);let changed=beforeOrders!==game.frontOrders.length;changed=processArmyMovements1300(game)||changed;if(processAIMilitaryDay1300(game))changed=true;if(military.movements.length||military.enemyMovements.length)changed=true;for(const b of [...military.battles])if(resolveBattleDay1300(game,b))changed=true;if(processSiegesDay1300(game))changed=true;if(processEnemySiegesDay1300(game))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(gameArmyPanelKey)renderArmyMapPanel1300();if(gameBattlePanelId)renderGameBattlePanel1300();if(gameSiegePanelId)renderGameSiegePanel1300();if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
 
 
 function professionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryProfessionalCountCity1300(game,id);army+=byCity[id];}for(const p of game?.watchposts||[])if(ids.includes(p.cityId)){
@@ -2135,7 +2135,7 @@ function renderGameBattlePanel1300(){
 }
 function openGameBattlePanel1300(battleId){
  const game=profile.activeGame,b=ensureAdvancedMilitary1300(game)?.battles.find(x=>x.id===battleId);if(!game||!b)return;
- gameBattlePanelId=battleId;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameBattlePanel1300();
+ gameBattlePanelId=battleId;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameBattlePanel1300();
 }
 
 
@@ -2162,7 +2162,7 @@ function renderGameSiegePanel1300(){
  const html=gameSiegePanelHTML1300(gameSiegePanelId);if(!html){gameSiegePanelId=null;renderGameProvincePanel();return;}const scroll=panel.querySelector('.siege-side-scroll')?.scrollTop||0;panel.innerHTML=html;panel.classList.add('open');shell?.classList.add('province-panel-open');const next=panel.querySelector('.siege-side-scroll');if(next)next.scrollTop=scroll;
 }
 function openGameSiegePanel1300(siegeId){
- const game=profile.activeGame,s=ensureAdvancedMilitary1300(game)?.sieges.find(x=>x.id===siegeId);if(!game||!s)return;gameSiegePanelId=siegeId;gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameSiegePanel1300();
+ const game=profile.activeGame,s=ensureAdvancedMilitary1300(game)?.sieges.find(x=>x.id===siegeId);if(!game||!s)return;gameSiegePanelId=siegeId;gameBattlePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;renderGameCountryPanel1300();renderGameDiplomacyPanel1300();renderGameSiegePanel1300();
 }
 
 function provinceMilitaryHTML1300(game,c){
@@ -2246,7 +2246,7 @@ function gameArmyPanelHTML1300(armyKey){
 }
 function renderArmyMapPanel1300(){
  const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;if(!gameArmyPanelKey){if(!gameProvincePanel){panel.innerHTML='';panel.classList.remove('open');shell?.classList.remove('province-panel-open');}return;}
- const html=gameArmyPanelHTML1300(gameArmyPanelKey);if(!html){gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;renderGameProvincePanel();return;}panel.innerHTML=html;panel.classList.add('open');shell?.classList.add('province-panel-open');
+ const html=gameArmyPanelHTML1300(gameArmyPanelKey);if(!html){gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;renderGameProvincePanel();return;}panel.innerHTML=html;panel.classList.add('open');shell?.classList.add('province-panel-open');
  if(world?.state?.game){const a=ensureAdvancedMilitary1300(profile.activeGame)?.armiesByCity?.[gameArmyPanelKey];world.state.game.selectedArmyCity=a?.location||null;world.state.game.armyMoveMode=gameArmyMoveMode;world.refresh();}
 }
 function openMapArmyPanel1300(locationId,intent='click'){
@@ -3344,7 +3344,7 @@ function diplomacyCountryPanelShellHTML1300(country){
 }
 function openGameDiplomacyPanel1300(region){
  const game=profile.activeGame,country=String(region?.name||region?.realm||'').trim();if(!game||!country)return;if(country===gameCountryName1300(game)){openGameCountryPanel1300();return;}
- gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;
+ gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;
  renderGameProvincePanel(true);renderGameCountryPanel1300();gameDiplomacyCountry=country;
  const panel=$('#game-diplomacy-panel');
  if(panel){panel.innerHTML=diplomacyCountryPanelShellHTML1300(country);panel.classList.add('open');}
@@ -3362,7 +3362,7 @@ function renderGameCountryPanel1300(){
  const oldScroll=panel.querySelector('.country-panel-scroll')?.scrollTop||0;panel.innerHTML=gameCountryPanelHTML1300();panel.classList.add('open');const sc=panel.querySelector('.country-panel-scroll');if(sc)sc.scrollTop=oldScroll;
 }
 function openGameCountryPanel1300(){
- if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel(true);gameCountryPanel=true;renderGameCountryPanel1300();
+ if(!profile.activeGame)return;gameDiplomacyCountry=null;renderGameDiplomacyPanel1300();gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel(true);gameCountryPanel=true;renderGameCountryPanel1300();
 }
 function campaignResourceBarHTML1300(game){
  const budget=weeklyBudgetProjection1300(game),totals=countryTotals1300(game),prof=professionalArmyState1300(game),unprof=unprofessionalArmyState1300(game),mil=militaryTotals1300(game),balance=Number(budget.balance)||0,dip=diplomatSummary1300(game),rank=campaignLeaderboardStatus1300(game);
@@ -3584,10 +3584,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='multiplayer-command-build'){const wrap=b.closest('[data-mp-city-controls]'),cityId=b.dataset.city,buildingId=wrap?.querySelector('[data-mp-building-id]')?.value;if(buildingId)multiplayerLobby1300.command('build',{cityId,buildingId});return;}
  if(a==='multiplayer-start'){multiplayerLobby1300.start();return;}
  if(a==='multiplayer-leave'){multiplayerLobby1300.leave();multiplayerLobbyScreen=false;clearMultiplayerInvite1300();render();return;}
- if(a==='start-game'){gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;startGame1300();return;}
+ if(a==='start-game'){gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;startGame1300();return;}
  if(a==='game-map'){gameScreen='map';render();return;}
  if(a==='game-province-tab'){if(GAME_PROVINCE_TABS_1300.some(([tabId])=>tabId===id)){gameProvinceTab=id;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;const provinceScroll=$('#game-province-panel .province-side-scroll');if(provinceScroll)provinceScroll.scrollTop=0;renderGameProvincePanel();}return;}
- if(a==='close-game-province'){gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();return;}
+ if(a==='close-game-province'){gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;renderGameProvincePanel();return;}
  if(a==='game-building-detail'){if(BUILDING_1300[id]&&CITY_1300[b.dataset.city]){gameProvincePanel=b.dataset.city;gameProvinceTab='economy';gameProvinceBuildingDetail=id;renderGameProvincePanel();}return;}
  if(a==='game-building-detail-back'){gameProvinceBuildingDetail=null;renderGameProvincePanel();return;}
  if(a==='game-building-catalog-open'){if(gameProvincePanel&&profile.activeGame?.ownedCities?.includes(gameProvincePanel)){gameProvinceTab='economy';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=true;renderGameProvincePanel();}return;}
@@ -3628,8 +3628,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='battle-open'){openGameBattlePanel1300(b.dataset.battle);return;}
  if(a==='battle-tactic'){const result=setBattleTactic1300(profile.activeGame,b.dataset.battle,b.dataset.tactic);if(result.ok){save();if(gameBattlePanelId)renderGameBattlePanel1300();renderBattleDialog1300(b.dataset.battle);}toast(result.message);return;}
  if(a==='battle-retreat'){const result=retreatBattle1300(profile.activeGame,b.dataset.battle);if(result.ok){save();syncCampaignMilitaryOverlay1300(profile.activeGame);refreshCampaignResourceBar1300(profile.activeGame);if(gameBattlePanelId)renderGameBattlePanel1300();if(gameArmyPanelKey)renderArmyMapPanel1300();}toast(result.message);return;}
- if(a==='army-panel-close'){gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;renderGameProvincePanel();return;}
- if(a==='army-select-group'){const key=b.dataset.armyKey;if(ensureAdvancedMilitary1300(profile.activeGame)?.armiesByCity?.[key]){gameArmyPanelKey=key;gameArmyMoveMode=false;gameArmySplitMode=false;renderArmyMapPanel1300();}return;}
+ if(a==='army-panel-close'){gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;renderGameProvincePanel();return;}
+ if(a==='army-select-group'){const key=b.dataset.armyKey;if(ensureAdvancedMilitary1300(profile.activeGame)?.armiesByCity?.[key]){gameArmyPanelKey=key;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;renderArmyMapPanel1300();}return;}
  if(a==='army-send-castle'){const to=b.closest('.army-march-control')?.querySelector('[data-army-march-target]')?.value;if(to)orderSelectedArmyMovement1300(to);return;}
   if(a==='army-front-attack'||a==='army-front-defend'){
   if(gameArmyPanelKey&&!movementForArmy1300(profile.activeGame,gameArmyPanelKey)&&!activeBattleForArmy1300(profile.activeGame,gameArmyPanelKey)){
@@ -3639,7 +3639,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
   }return;
  }
  if(a==='army-front-cancel'){
-  const game=profile.activeGame;if(game&&gameArmyPanelKey){game.frontOrders=campaignFrontOrders1300(game).filter(o=>o.armyKey!==gameArmyPanelKey);save();syncCampaignMilitaryOverlay1300(game);renderArmyMapPanel1300();toast('Front order removed.');}return;
+  const game=profile.activeGame;if(game&&gameArmyPanelKey){game.frontOrders=campaignFrontOrders1300(game).filter(o=>o.armyKey!==gameArmyPanelKey);gameArmyMoveMode=false;gameArmyTacticalMode=null;save();syncCampaignMilitaryOverlay1300(game);renderArmyMapPanel1300();toast('Front order removed.');}return;
  }
  if(a==='army-arm-move'){if(gameArmyPanelKey&&!movementForArmy1300(profile.activeGame,gameArmyPanelKey)&&!activeBattleForArmy1300(profile.activeGame,gameArmyPanelKey)){gameArmyMoveMode=!gameArmyMoveMode;gameArmyTacticalMode=null;gameArmySplitMode=false;renderArmyMapPanel1300();toast(gameArmyMoveMode?'Choose a destination province on the map.':'Movement selection cancelled.');}return;}
  if(a==='army-unify'){if(gameArmyPanelKey){const result=unifyArmiesAtLocation1300(profile.activeGame,gameArmyPanelKey);if(result.ok){gameArmySplitMode=false;save();syncCampaignMilitaryOverlay1300(profile.activeGame);refreshCampaignResourceBar1300(profile.activeGame);}renderArmyMapPanel1300();toast(result.message);}return;}
@@ -3664,7 +3664,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  if(a==='game-building-wage-reset'){resetBuildingWage1300(b.dataset.city,id);return;}
  if(a==='game-production-methods'){openProductionMethods1300(b.dataset.city,id);return;}
  if(a==='game-select-production-method'){setCompanyPolicy1300(b.dataset.city,id,{productionMethod:b.dataset.method});modal.close();return;}
- if(a==='quit-game'){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;profile.activeGame=null;for(const key of ['previousGame','previousGames','pastGame','pastGames','gameHistory','campaignHistory','savedGame','savedGames','lastGame'])delete profile[key];mapState.game=null;gameScreen='map';gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;save();render();toast('Campaign deleted from this device. Your deck and collection were kept.');return;}
+ if(a==='quit-game'){if(gameClockTimer){clearInterval(gameClockTimer);gameClockTimer=null;}world?.destroy();world=null;profile.activeGame=null;for(const key of ['previousGame','previousGames','pastGame','pastGames','gameHistory','campaignHistory','savedGame','savedGames','lastGame'])delete profile[key];mapState.game=null;gameScreen='map';gameBattlePanelId=null;gameSiegePanelId=null;gameArmyPanelKey=null;gameArmyMoveMode=false;gameArmyTacticalMode=null;gameArmySplitMode=false;gameProvincePanel=null;gameProvinceTab='general';gameProvinceBuildingDetail=null;gameProvinceBuildingCatalog=false;gameCountryPanel=false;gameDiplomacyCountry=null;save();render();toast('Campaign deleted from this device. Your deck and collection were kept.');return;}
  if(a==='build-building'){buildBuilding1300(b.dataset.city,id);return;}
  if(a==='close')modal.close();
  if(a==='country1300'){country1300=id;render();}
