@@ -1,7 +1,7 @@
 // Shared by the campaign, atlas and map editor. Phaser assets use document-root URLs.
 import {CITIES_1300} from '../data1300.js?v=20260928-anatolia-v8';
 const ROOT = new URL('../../', import.meta.url);
-const ASSET_VERSION = '20261024-city-castles-v1';
+const ASSET_VERSION = '20261025-watchpost-roof-v1';
 let runtimePromise;
 export function expandMapObjectSpecs(objects=[]) {
   return objects.flatMap(spec => spec.repeat === 'cities'
