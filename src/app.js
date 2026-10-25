@@ -1950,6 +1950,7 @@ function gameProvinceBuildingState(c){
   for(const [key,value] of Object.entries(levelEffects))bonuses[key]=(bonuses[key]||0)+value;
   const rawCost=level<maxLevel?buildingCost1300(b,level):null,inflation=annualInflationFactor1300(profile.activeGame),discount=technologyBonuses1300(profile.activeGame?.technology).constructionCostPct,cost=rawCost===null?null:Math.max(1,Math.round(rawCost*inflation*(1+discount/100)));return {...b,maxLevel,historical,purchased,level,levelEffects,construction,available:availability.ok,availabilityReason:availability.reason,cost,inflation,constructionDays:cost!==null?buildingConstructionDays1300({...b,level,cost}):null};
  });
+ for(const post of profile.activeGame?.watchposts||[])if(post.cityId===c.id&&Number(profile.activeGame?.day)>=Number(post.readyDay)&&Number(post.men)>0){bonuses.siegeDifficultyPct+=Math.min(18,Number(post.level)*3+Number(post.men)/120);}
  return {bonuses,buildings,totalLevels:buildings.reduce((sum,b)=>sum+b.level,0)};
 }
 function buildingPicture1300(id){
