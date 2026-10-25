@@ -1476,8 +1476,12 @@ function processMilitaryAttrition1300(game){
 function processAdvancedMilitaryDay1300(game){const military=ensureAdvancedMilitary1300(game);let changed=processArmyMovements1300(game);if(processAIMilitaryDay1300(game))changed=true;if(military.movements.length||military.enemyMovements.length)changed=true;for(const b of [...military.battles])if(resolveBattleDay1300(game,b))changed=true;if(processSiegesDay1300(game))changed=true;if(processEnemySiegesDay1300(game))changed=true;if(processMilitaryAttrition1300(game))changed=true;if(changed){syncCampaignMilitaryOverlay1300(game);if(gameArmyPanelKey)renderArmyMapPanel1300();if(gameBattlePanelId)renderGameBattlePanel1300();if(gameSiegePanelId)renderGameSiegePanel1300();if(activeBattleDialogId)renderBattleDialog1300(activeBattleDialogId);}return changed;}
 
 
-function professionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryProfessionalCountCity1300(game,id);army+=byCity[id];}const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryProfessionalLimit1300(game);return {population,basePercent:5,bonusPercent:0,percent:5,limit,rawTotal:army,army,byCity};}
-function unprofessionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryLevyCountCity1300(game,id);army+=byCity[id];}const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryUnprofessionalLimit1300(game);return {population,percent:25,limit,army,byCity};}
+function professionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryProfessionalCountCity1300(game,id);army+=byCity[id];}for(const p of game?.watchposts||[])if(ids.includes(p.cityId)){
+ const count=PROFESSIONAL_MILITARY_UNITS_1300.reduce((n,id)=>n+Math.max(0,Number(p.units?.[id])||0),0);byCity[p.cityId]+=count;army+=count;
+ }const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryProfessionalLimit1300(game);return {population,basePercent:5,bonusPercent:0,percent:5,limit,rawTotal:army,army,byCity};}
+function unprofessionalArmyState1300(game){const ids=(game?.ownedCities||[]).filter(id=>CITY_1300[id]);ensureGameMilitary1300(game);const byCity={};let army=0;for(const id of ids){byCity[id]=militaryLevyCountCity1300(game,id);army+=byCity[id];}for(const p of game?.watchposts||[])if(ids.includes(p.cityId)){
+ const count=Math.max(0,Number(p.units?.['levy-swordsmen'])||0);byCity[p.cityId]+=count;army+=count;
+ }const population=ids.reduce((n,id)=>n+effectivePopulation1300(game,CITY_1300[id]),0),limit=militaryUnprofessionalLimit1300(game);return {population,percent:25,limit,army,byCity};}
 function campaignMilitaryByCity1300(game){
  const out={};if(!game)return out;const m=ensureAdvancedMilitary1300(game),moving=new Set((m.movements||[]).map(x=>x.armyHomeId));
  for(const [key,army] of Object.entries(m.armiesByCity||{})){if(moving.has(key))continue;const total=militaryArmyTotal1300(game,key);if(total<=0)continue;const loc=army.location||armyOriginCityId1300(game,key);if(!CITY_1300[loc])continue;out[loc]??={army:0,navy:0,armyKeys:[]};out[loc].army+=total;out[loc].armyKeys.push(key);}
@@ -2302,7 +2306,7 @@ function governmentWatchpostWeeklyCost1300(game){
 }
 function watchpostGarrisonAvailable1300(game,cityId){
  const military=ensureAdvancedMilitary1300(game);
- return armyKeysAtLocation1300(game,cityId).reduce((sum,key)=>sum+Math.max(0,Number(military.armiesByCity[key]?.units?.['levy-swordsmen'])||0),0);
+ return armyKeysAtLocation1300(game,cityId).reduce((sum,key)=>sum+MILITARY_UNITS_1300.reduce((n,u)=>n+Math.max(0,Number(military.armiesByCity[key]?.units?.[u.id])||0),0),0);
 }
 function watchpostReadNumber1300(p){
  return Math.max(0,Math.floor(Number(document.getElementById('watchpost-men-'+p.id)?.value)||0));
@@ -2342,9 +2346,16 @@ function changeGovernmentWatchpost1300(id,action){
   let remaining=watchpostReadNumber1300(p);
   if(!remaining||remaining>watchpostGarrisonAvailable1300(game,p.cityId)){toast('Te weinig beschikbare lichtingen in de stad.');return;}
   const m=ensureAdvancedMilitary1300(game);
+  p.units??={};
   for(const key of armyKeysAtLocation1300(game,p.cityId)){
-   const units=m.armiesByCity[key].units,take=Math.min(remaining,Number(units['levy-swordsmen'])||0);
-   units['levy-swordsmen']-=take;p.men+=take;remaining-=take;if(!remaining)break;
+   const units=m.armiesByCity[key].units;
+   for(const u of MILITARY_UNITS_1300){
+    const take=Math.min(remaining,Math.max(0,Number(units[u.id])||0));
+    if(!take)continue;
+    units[u.id]-=take;p.units[u.id]=(Number(p.units[u.id])||0)+take;p.men+=take;remaining-=take;
+    if(!remaining)break;
+   }
+   if(!remaining)break;
   }
  }else if(action==='withdraw'){
   const take=watchpostReadNumber1300(p);
@@ -2352,7 +2363,15 @@ function changeGovernmentWatchpost1300(id,action){
   const m=ensureAdvancedMilitary1300(game),key=armyKeysAtLocation1300(game,p.cityId)[0]||p.cityId;
   const army=m.armiesByCity[key]||m.armiesByCity[p.cityId];
   if(!army){toast('Geen bevriend stadsleger gevonden.');return;}
-  army.units['levy-swordsmen']=(Number(army.units['levy-swordsmen'])||0)+take;p.men-=take;
+  p.units??={'levy-swordsmen':p.men};
+  let remaining=take;
+  for(const [unitId,count] of Object.entries(p.units)){
+   if(!MILITARY_UNIT_1300[unitId]||remaining<=0)continue;
+   const returned=Math.min(remaining,Math.max(0,Number(count)||0));
+   p.units[unitId]-=returned;
+   army.units[unitId]=(Number(army.units[unitId])||0)+returned;
+   p.men-=returned;remaining-=returned;
+  }
  }
  watchpostAfterEdit1300(game);
 }
