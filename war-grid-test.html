@@ -834,7 +834,7 @@ function sendPeaceTransfer(fromId,toId,amount,now=performance.now()){
   const moved=Math.min(remaining,grid[i].troops);
   grid[i].troops-=moved;remaining-=moved;
  }
- const travelDays=Math.max(1,Math.ceil((path.length-1)/6));
+ const travelDays=Math.max(2,Math.ceil((path.length-1)/5));
  const convoy={id:nextConvoyId++,owner:0,from:fromId,to:toId,amount,path,startedAt:now,tickAt:now,startDay:day,arrivalDay:day+travelDays,travelDays,paintTimestamp:now};
  convoys.push(convoy);
  event('Konvooi met '+fmt(amount)+' soldaten vertrekt van '+castleName(fromId)+' naar '+castleName(toId)+'. '+travelDays+' dagen reistijd, '+(path.length-1)+' roosters.');
@@ -887,7 +887,7 @@ function postSend(fromId,n){
  if(!path)return 'Geen route door bevriend terrein.';
  if(fromTiles.reduce((a,i)=>a+grid[i].troops,0)<n)return 'Onvoldoende mobiele soldaten.';
  let left=n;for(const i of fromTiles){const take=Math.min(left,grid[i].troops);grid[i].troops-=take;left-=take;if(!left)break;}
- const now=performance.now(),travelDays=Math.max(1,Math.ceil((path.length-1)/6));
+ const now=performance.now(),travelDays=Math.max(2,Math.ceil((path.length-1)/5));
  convoys.push({id:nextConvoyId++,owner:0,from:fromId,postId:p.id,amount:n,path,startDay:day,arrivalDay:day+travelDays,travelDays,tickAt:now,paintTimestamp:now});
  if(convoyAnimation===null)convoyAnimation=requestAnimationFrame(updateConvoyFrames);
  event(fmt(n)+' soldaten marcheren '+travelDays+' dagen naar wachtpost '+p.id+'.');return null;}
