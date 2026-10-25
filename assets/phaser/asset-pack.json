@@ -10,6 +10,11 @@
         "type": "image",
         "key": "city-castle",
         "url": "assets/phaser/city-castle.svg"
+      },
+      {
+        "type": "image",
+        "key": "watchpost-government",
+        "url": "assets/phaser/watchpost.svg"
       }
     ]
   },

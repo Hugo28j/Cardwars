@@ -1,4 +1,4 @@
-import {PhaserMapLayer} from './phaser/map-layer.js?v=20261024-city-castles-v1';
+import {PhaserMapLayer} from './phaser/map-layer.js?v=20261025-watchpost-roof-v1';
 import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260928-anatolia-v8';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -551,10 +551,11 @@ export class WorldMap{
     }
     const x=placement[0],y=placement[1];postVisualPositions.set(String(p.id),[x,y]);
     const complete=(Number(game?.day)||0)>=(Number(p.readyDay)||Infinity);
-    const stone=(Number(p.level)||1)>1;
-    const front=stone?'#c9c7b9':'#d3ad77',side=stone?'#8b9189':'#99734f',roof=complete?'#765038':'#b89a50';
-    const text=complete?String(Math.floor(Number(p.men)||0))+' · L'+p.level:Math.max(0,Number(p.readyDay)-Number(game?.day||0))+'d';
-    return '<g class="campaign-watchpost" data-watchpost-id="'+p.id+'" transform="translate('+x.toFixed(2)+' '+y.toFixed(2)+') scale('+(0.42+postZoom*.42).toFixed(2)+')" opacity="'+(.25+postZoom*.75).toFixed(2)+'"><title>Wachtpost '+p.id+' – '+(complete?'niveau '+p.level+', '+p.men+' garnizoen':'in aanbouw, '+text)+'</title><ellipse cx="0" cy="14" rx="16" ry="5" fill="#23372d" opacity=".7"/><path d="M-12 0L0 6V18L-12 11Z" fill="'+side+'" stroke="#2b302c"/><path d="M0 6L12 0V11L0 18Z" fill="'+front+'" stroke="#28332d"/><path d="M-15 -5L0 -20L15 -5L0 6Z" fill="'+roof+'" stroke="#2b302c" stroke-width="1.3"/><rect x="-7" y="5" width="4" height="6" fill="#354138"/><rect x="6" y="4" width="3" height="6" fill="#354138"/><text x="0" y="29" text-anchor="middle" font-size="10" font-weight="800" fill="#fff0bb" stroke="#192d27" stroke-width="2.8" paint-order="stroke">'+text+'</text></g>';
+    const text=complete?String(Math.floor(Number(p.men)||0)):Math.max(0,Number(p.readyDay)-Number(game?.day||0))+'d';
+    return '<g class="campaign-watchpost" data-watchpost-id="'+p.id+'" transform="translate('+x.toFixed(2)+' '+y.toFixed(2)+') scale('+(0.42+postZoom*.42).toFixed(2)+')" opacity="'+(.25+postZoom*.75).toFixed(2)+'" pointer-events="none">'
+     +'<title>Wachtpost '+p.id+' – '+(complete?p.men+' garnizoen':'in aanbouw, '+text)+'</title>'
+     +'<image href="assets/phaser/watchpost.svg?v=20261025-pitched-gable-v1" x="-22" y="-25" width="44" height="51" preserveAspectRatio="xMidYMid meet"/>'
+     +'<text x="0" y="30" text-anchor="middle" font-size="10" font-weight="800" fill="#fff0bb" stroke="#192d27" stroke-width="2.8" paint-order="stroke">'+text+'</text></g>';
    }).join('');
    const transports=(game?.watchpostTransfers||[]).filter(t=>ownedCities.has(t.cityId)&&(!fogDetail||visibleCities.has(t.cityId)));
    watchpostLayer.insertAdjacentHTML('beforeend',transports.map(t=>{
