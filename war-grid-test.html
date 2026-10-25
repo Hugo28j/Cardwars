@@ -8,7 +8,7 @@
 <p class="legend">🔵 Speler · 🔴 Rode vijand · 🟡 Gouden bondgenoot · <b>🏰</b> soldatenaantal onder elk kasteel · <b>●</b> marcherende troepen en konvooien · <b>10+</b> soldaten = aantal zichtbaar · <b>250</b> = 250 soldaten · <b>1.2k</b> = 1.200 soldaten · 🏰 kasteel · gekleurde ring = belegering · omrande cirkel = versterking · pijl = aanval</p><div class="help">Lichtblauw-groene pijltjes tonen <b>waar soldaten de vorige dag naartoe gestapt zijn</b> (geen toekomstige route). Gele pijlen zijn jouw aanvalsbevelen. Pijlen, cirkels en tijdelijke versterkingen vervallen na tien speldagen. Teken rechtstreeks op de kaart: <b>cirkel</b> om soldaten er stap voor stap naartoe te laten marcheren of <b>pijl</b> om het front in een richting te laten oprukken. Op gsm kun je met je vinger tekenen. Zonder eigen bevelen schuift het leger geleidelijk op langs meerdere frontsectoren. Lege volledig omsingelde gebieden veranderen meteen van kleur, ook bij een gezamenlijke blauw-gouden omsingeling. Kleine achtergebleven groepen trekken naar grotere eigen formaties; aanvallen en marsen vertrekken met minstens tien soldaten. Kastelen en versterkte posities blijven verdedigd.</div></section><section class="panel"><h2>Gebeurtenissen</h2><div id="log" class="log"></div></section></main>
 <aside><section class="panel"><h2>Alliantie & oorlog</h2><div id="countries"></div></section>
 <section class="panel"><h2>Bevelen</h2><label>Niveau van bevelvoering</label><select id="scope"><option value="country">Gezamenlijk landleger</option><option value="city">Mobiele troepen van één stad</option></select><label>Geselecteerde stad</label><select id="city"></select><div id="command" class="small" style="margin:9px 0"></div><label>🏰 Soldaten die in het geselecteerde kasteel blijven</label><input id="castle-men" type="number" min="0" max="2000" step="1" value="40"><div class="flex" style="align-items:center;margin-top:7px"><button id="set-castle-men">Zet kasteelgarnizoen</button><span id="castle-men-info" class="small"></span></div><p class="small">Soldaten in het kasteel beschermen de acht aangrenzende roosters. De rest blijft beschikbaar voor het front. Geen soldaten worden aangemaakt bij het aanpassen.</p><label>Tekenmodus</label><div class="actions"><button data-tool="arrow" class="active">➜ Aanvalspijl</button><button data-tool="circle">◯ Versterkcirkel</button><button data-tool="fort">🛡 Verstevig</button><button data-tool="inspect">⌖ Inspecteer</button><button data-tool="erase">⌫ Gum / wissen</button></div><div id="mode" class="help">Tekenmodus: aanvalspijl. Sleep van start naar doel.</div><label>Aanvalsgewicht (pijl) / extra soldaten (cirkel)</label><input id="amount" type="number" min="20" max="20000" step="100" value="1000"><label>Tactiek</label><select id="stance"><option value="push">Geleidelijk oprukken</option><option value="force">Doorbraak forceren</option><option value="hold">Standhouden</option></select><div class="flex" style="margin-top:10px"><button id="clear-orders">Wis alle bevelen</button><button id="recruit">+100 via kasteel (test)</button></div><div id="order-list" class="small" style="margin-top:12px"></div><div class="small" id="message" style="margin-top:10px">Het kasteelgarnizoen houdt vijanden buiten de acht omliggende roosters totdat het door aanvallen is verslagen. Bevelen op landniveau gelden voor alle verbonden legers. Stadbevelen sturen de mobiele soldaten van de geselecteerde stad aan; het ingestelde kasteelgarnizoen blijft binnen. Na het tekenen marcheren versterkingen pas bij het vooruitzetten van de tijd: maximaal twee aangrenzende roosters per speldag. De cirkel geeft pas extra verdediging wanneer troepen arriveren.</div></section>
-<section class="panel"><h2>Leger verplaatsen in vredestijd</h2><label>Vertrek uit kasteel</label><select id="transfer-from"></select><label>Bestemming: kasteel</label><select id="transfer-to"></select><label>Aantal mobiele soldaten</label><input id="transfer-amount" type="number" min="1" step="1" value="50"><button id="send-transfer" style="margin-top:10px;width:100%">● Stuur leger naar kasteel</button><p class="small">Soldaten vertrekken uit de gekozen stad en reizen langs bevriend terrein. Onderweg zijn ze niet beschikbaar voor gevechten of andere bevelen. Bij aankomst worden ze precies aan het doelkasteel toegevoegd.</p><div id="transfer-status" class="small"></div></section><section class="panel"><h2>Legers en troepenverdeling</h2><div id="groups" class="small"></div><h2 style="margin-top:14px">Kastelen & belegeringen</h2><div id="sieges" class="small"></div><h2 style="margin-top:14px">Rooster</h2><div id="cell" class="small">Gebruik Inspecteer om de sterkte van een rooster te bekijken.</div></section></aside></div>
+<section class="panel"><h2>Leger verplaatsen in vredestijd</h2><label>Vertrek uit kasteel</label><select id="transfer-from"></select><label>Bestemming: kasteel</label><select id="transfer-to"></select><label>Aantal mobiele soldaten</label><input id="transfer-amount" type="number" min="1" step="1" value="50"><button id="send-transfer" style="margin-top:10px;width:100%">● Stuur leger naar kasteel</button><p class="small">Soldaten vertrekken uit de gekozen stad en reizen langs bevriend terrein. De reistijd volgt de afstand: één dag per zes roosters. Onderweg zijn ze niet beschikbaar voor gevechten of andere bevelen. Bij aankomst worden ze precies aan het doelkasteel toegevoegd.</p><div id="transfer-status" class="small"></div></section><section class="panel"><h2>Legers en troepenverdeling</h2><div id="groups" class="small"></div><h2 style="margin-top:14px">Kastelen & belegeringen</h2><div id="sieges" class="small"></div><h2 style="margin-top:14px">Rooster</h2><div id="cell" class="small">Gebruik Inspecteer om de sterkte van een rooster te bekijken.</div></section></aside></div>
 <script>
 window.addEventListener('error',function(error){
  const message=document.getElementById('map-error');
@@ -676,7 +676,7 @@ function regroupStragglers(){
 }
 
 function fightDay(){
- day++;expireTemporaryOrders();regroupStragglers();redistribute();reinforceOrders();computeFrontResistance();
+ day++;advancePeaceConvoys();expireTemporaryOrders();regroupStragglers();redistribute();reinforceOrders();computeFrontResistance();
  const battlePriorities=[0,1,2].map(owner=>orders.some(o=>o.owner===owner&&o.type==='arrow')?null:priorityIncursion(owner));
  const attackers=[];
  for(let i=0;i<grid.length;i++){
@@ -767,7 +767,7 @@ function peaceCastleRoute(from,to){
  route.push(start);return route.reverse();
 }
 function transferProgress(convoy,timestamp){
- return clamp((timestamp-convoy.startedAt)/convoy.duration,0,1);
+ return clamp((day-convoy.startDay+clamp((timestamp-convoy.tickAt)/550,0,1))/convoy.travelDays,0,1);
 }
 function convoyPosition(convoy,progress){
  const positions=convoy.path,count=positions.length;
@@ -795,37 +795,27 @@ function paintConvoys(){
 }
 function updateConvoyFrames(now){
  convoyAnimation=null;
- const anyArrived=convoys.some(c=>transferProgress(c,now)>=1);
- // Limit full tactical-map redraws to about 30 frames/s on slower phones.
- if(!anyArrived&&now-lastConvoyPaintAt<33){
-  convoyAnimation=requestAnimationFrame(updateConvoyFrames);
-  return;
- }
+ if(now-lastConvoyPaintAt<33){if(convoys.length)convoyAnimation=requestAnimationFrame(updateConvoyFrames);return;}
  lastConvoyPaintAt=now;
- let arrived=false;
- for(const convoy of convoys){
-  convoy.paintTimestamp=now;
-  if(transferProgress(convoy,now)<1)continue;
-  // A transfer always ends exactly on its castle tile, not a random city cell.
-  const destination=castles[convoy.to];
-  if(destination&&destination.owner===convoy.owner){
-   grid[destination.center].troops+=convoy.amount;
-   event(fmt(convoy.amount)+' soldaten aangekomen bij kasteel '+castleName(convoy.to)+'.');
-  }else{
-   const home=castles[convoy.from];
-   if(home&&home.owner===convoy.owner){grid[home.center].troops+=convoy.amount;event('Bestemming verloren: het konvooi is teruggekeerd naar '+castleName(convoy.from)+'.');}
-   else event('Konvooi verloren doordat beide kastelen zijn gevallen.');
-  }
-  convoy.completed=true;arrived=true;
- }
- if(arrived){convoys=convoys.filter(c=>!c.completed);render();}
- else {
-  const lines=convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+castleName(c.to)+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,now)*100)+'% onderweg</small></span></div>').join('');
-  $('transfer-status').innerHTML='<small>Konvooien zijn onderweg. Soldaten zijn pas bij aankomst beschikbaar.</small>'+lines;
-  paint();
- }
+ for(const convoy of convoys)convoy.paintTimestamp=now;
+ $('transfer-status').innerHTML='<small>Soldaten arriveren pas na voldoende speldagen. +1 dag om te marcheren.</small>'+
+ convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+castleName(c.to)+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,now)*100)+'% · aankomst dag '+c.arrivalDay+'</small></span></div>').join('');
+ paint();
  if(convoys.length)convoyAnimation=requestAnimationFrame(updateConvoyFrames);
 }
+function advancePeaceConvoys(){
+ for(const convoy of convoys){
+  convoy.tickAt=performance.now();
+  if(day<convoy.arrivalDay)continue;
+  const destination=castles[convoy.to];
+  if(destination&&destination.owner===convoy.owner){grid[destination.center].troops+=convoy.amount;event(fmt(convoy.amount)+' soldaten aangekomen bij kasteel '+castleName(convoy.to)+'.');}
+  else{const home=castles[convoy.from];if(home&&home.owner===convoy.owner)grid[home.center].troops+=convoy.amount;event('Konvooi teruggekeerd: bestemming verloren.');}
+  convoy.completed=true;
+ }
+ convoys=convoys.filter(c=>!c.completed);
+ if(!convoys.length&&convoyAnimation!==null){cancelAnimationFrame(convoyAnimation);convoyAnimation=null;}
+}
+
 function sendPeaceTransfer(fromId,toId,amount,now=performance.now()){
  if(wars.size)return 'Tijdens oorlog zijn kasteeltransfers niet beschikbaar.';
  const from=castles[fromId],to=castles[toId];
@@ -843,9 +833,10 @@ function sendPeaceTransfer(fromId,toId,amount,now=performance.now()){
   const moved=Math.min(remaining,grid[i].troops);
   grid[i].troops-=moved;remaining-=moved;
  }
- const convoy={id:nextConvoyId++,owner:0,from:fromId,to:toId,amount,path,startedAt:now,paintTimestamp:now,duration:clamp(path.length*210,2500,8500)};
+ const travelDays=Math.max(1,Math.ceil((path.length-1)/6));
+ const convoy={id:nextConvoyId++,owner:0,from:fromId,to:toId,amount,path,startedAt:now,tickAt:now,startDay:day,arrivalDay:day+travelDays,travelDays,paintTimestamp:now};
  convoys.push(convoy);
- event('Konvooi met '+fmt(amount)+' soldaten vertrekt van '+castleName(fromId)+' naar '+castleName(toId)+'.');
+ event('Konvooi met '+fmt(amount)+' soldaten vertrekt van '+castleName(fromId)+' naar '+castleName(toId)+'. '+travelDays+' dagen reistijd, '+(path.length-1)+' roosters.');
  if(convoyAnimation===null)convoyAnimation=requestAnimationFrame(updateConvoyFrames);
  render();
  return null;
@@ -949,7 +940,7 @@ function orderProgress(o){const group=connected(o.owner).find(g=>g.cells.include
 function render(){
  $('send-transfer').disabled=!!wars.size||!castles.some(c=>c.owner===0);
  $('transfer-status').innerHTML=(wars.size?'<small>Transfers zijn uitgeschakeld tijdens oorlog.</small>':'<small>Kies vertrek, bestemming en aantal. De bollen reizen naar het doelkasteel.</small>')+
- convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+castleName(c.to)+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,c.paintTimestamp)*100)+'% onderweg</small></span></div>').join('');
+ convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+castleName(c.to)+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,c.paintTimestamp)*100)+'% · aankomst dag '+c.arrivalDay+'</small></span></div>').join('');
  paint();$('day').textContent=day;$('wars').textContent=wars.size;$('total').textContent=fmt(armyManpower(0));$('countries').innerHTML=names.map((n,i)=>'<div class="country"><span><b style="color:'+colors[i]+'">●</b> '+n+'<br><small>'+fmt(armyManpower(i))+' soldaten</small></span>'+(i===0?'<small>Jij</small>':i===2?'<small>🤝 Bondgenoot'+(wars.has('1-2')?' · ⚔ tegen rood':'')+'</small>':wars.has('0-1')?'<small>⚔ Oorlog</small>':'<button data-war="1">Oorlog</button>')+'</div>').join('');$('city').innerHTML=Array.from({length:9},(_,i)=>'<option value="'+i+'" '+(i===selected?'selected':'')+'>'+cities[Math.floor(i/3)][i%3]+'</option>').join('');$('order-list').innerHTML='<b>Actieve bevelen ('+orders.length+')</b>'+orders.map(o=>'<div class="country"><span>'+ (o.type==='arrow'?'➜ Aanval':'◯ Versterking')+' #'+o.id+' · '+(o.type==='arrow'?'gewicht '+fmt(o.amount)+' · 78% landleger over pijlen verdeeld':fmt(o.amount)+' extra soldaten')+(o.scope==='city'?' · '+cities[Math.floor(o.city/3)][o.city%3]:' · land')+'<br><small>'+orderProgress(o)+' · verdwijnt dag '+o.expiresDay+'</small></span><button data-delete-order="'+o.id+'" aria-label="Verwijder bevel '+o.id+'">✕ Wis</button></div>').join('');$('castle-men-info').textContent=castles[selected].owner===0?fmt(castles[selected].garrison)+' in het kasteel': 'Niet jouw kasteel';$('set-castle-men').disabled=castles[selected].owner!==0||!!castles[selected].siege;const components=connected(0),cityTroops=grid.reduce((s,t)=>s+(t.city===selected&&t.owner===0?t.troops:0),0);const autoFocus=!orders.some(o=>o.owner===0)&&(wars.size>0)?priorityIncursion(0):null;$('command').textContent=(scope==='country'?'Landelijk opperbevel · '+components.length+' verbonden legergroep(en)':'Stadsleger '+cities[Math.floor(selected/3)][selected%3]+' · '+fmt(cityTroops)+' mobiele soldaten')+(autoFocus?' · Automatische tegenaanval: '+cities[Math.floor(cityId(...autoFocus.coordinate)/3)][cityId(...autoFocus.coordinate)%3]+' (diepte '+autoFocus.depth+')':wars.size&&!orders.length?' · Automatische verdediging langs de grens':'');$('groups').innerHTML=components.map((g,i)=>'<div class="country">Legergroep '+(i+1)+'<strong>'+fmt(g.soldiers)+'</strong></div>').join('');$('sieges').innerHTML=castles.map(c=>{const ring=siegeEncirclement(c),name=cities[Math.floor(c.id/3)][c.id%3],status=c.siege?'<b style="color:#f2ba76">BELEG '+c.siege.progress+'% · voorraden '+c.siege.foodPct+'%</b>':ring.occupied?ring.occupied+'/8 ringroosters bezet':'Veilig · rekruteert';return '<div class="country"><span>🏰 '+name+'<br><small>'+status+'</small></span><small>'+fmt(c.garrison)+' garnizoen / doel '+fmt(c.desiredGarrison)+'</small></div>'}).join('');$('log').innerHTML=events.map(v=>'<div>'+v+'</div>').join('')}
 canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drag={from:mouseIndex(e),to:mouseIndex(e)};paint()});canvas.addEventListener('pointermove',e=>{if(!drag)return;drag.to=mouseIndex(e);paint()});canvas.addEventListener('pointerup',e=>{if(!drag)return;drag.to=mouseIndex(e);drawOrder(drag.from,drag.to);drag=null;render()});canvas.addEventListener('pointercancel',()=>{drag=null;paint()});
 document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.tool)));$('order-list').addEventListener('click',e=>{const b=e.target.closest('[data-delete-order]');if(!b)return;const before=orders.length;orders=orders.filter(o=>o.id!==Number(b.dataset.deleteOrder));if(orders.length!==before)event('Bevel '+b.dataset.deleteOrder+' verwijderd.');render()});$('countries').addEventListener('click',e=>{const b=e.target.closest('[data-war]');if(!b)return;const n=Number(b.dataset.war);if(n!==1)return;if(convoys.length){event('Wacht tot de konvooien bij hun doelkasteel zijn voordat je oorlog start.');render();return;}wars.add('0-1');wars.add('1-2');for(const id of [0,1,2])if(!warFirstSeenDay.has(id))warFirstSeenDay.set(id,day);event('Oorlog tegen rood! De Gouden Liga treedt automatisch toe als jouw bondgenoot en valt rood vanuit het oosten aan.');render()});$('scope').onchange=e=>{scope=e.target.value;render()};$('city').onchange=e=>{selected=Number(e.target.value);$('castle-men').value=String(castles[selected].garrison);render()};$('next').onclick=fightDay;$('week').onclick=()=>{for(let k=0;k<7;k++)fightDay()};$('play').onclick=()=>{if(running){clearInterval(running);running=null;$('play').textContent='▶ Automatisch'}else{running=setInterval(fightDay,450);$('play').textContent='⏸ Pauze'}};$('reset').onclick=reset;$('clear-orders').onclick=()=>{orders=[];event('Alle aanvalspijlen en versterkcirkels verwijderd.');render()};$('set-castle-men').onclick=()=>{const c=castles[selected],n=Number($('castle-men').value);if(!Number.isFinite(n)||!Number.isInteger(n)||!setCastleGarrison(c,n)){event('Kan kasteelgarnizoen niet instellen: onvoldoende lokale soldaten, geen eigen kasteel of kasteel belegerd.');render();return;}event('Kasteel '+cities[Math.floor(c.id/3)][c.id%3]+' houdt '+fmt(c.garrison)+' soldaten binnen; de rest blijft mobiel.');render()};
