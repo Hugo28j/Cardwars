@@ -1,4 +1,4 @@
-import {PhaserMapLayer} from './phaser/map-layer.js?v=20261024-city-castles-v1';
+import {PhaserMapLayer} from './phaser/map-layer.js?v=20261025-watchpost-roof-v1';
 import {CITIES_1300 as CITIES,CITY_1300 as CITY} from './data1300.js?v=20260928-anatolia-v8';
 import {icon} from './icons.js';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
