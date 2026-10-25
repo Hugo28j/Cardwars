@@ -2400,7 +2400,7 @@ function processWatchpostsDay1300(game){
   const deliver=transport.direction==='to-post'&&p&&owned&&Number(p.readyDay)<=Number(game.day);
   const count=Object.values(transport.units||{}).reduce((sum,n)=>sum+Math.max(0,Math.floor(Number(n)||0)),0);
   if(deliver){
-   p.units??={};
+   p.units??={'levy-swordsmen':Math.max(0,Math.floor(Number(p.men)||0))};
    for(const [unitId,n] of Object.entries(transport.units||{})){
     if(!MILITARY_UNIT_1300[unitId])continue;
     p.units[unitId]=(Number(p.units[unitId])||0)+Math.max(0,Math.floor(Number(n)||0));
