@@ -2,13 +2,13 @@
 *{box-sizing:border-box}body{margin:0;background:#111b1b;color:#eee8d8;font:14px system-ui}header{padding:13px 18px;border-bottom:1px solid #495b51;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1,h2{font-family:Georgia;color:#e2c584;margin:4px 0 10px}h1{font-size:24px}h2{font-size:19px}a{color:#e2c584}.layout{display:grid;grid-template-columns:minmax(300px,1fr) 320px;gap:14px;max-width:1460px;padding:14px;margin:auto}.panel{background:#1c2a28;border:1px solid #43534c;border-radius:10px;padding:14px;margin-bottom:12px}.small{font-size:12px;color:#b8c5bc;line-height:1.55}button,select,input{font:inherit;background:#30433d;color:#efe8d9;border:1px solid #748578;border-radius:7px;padding:8px}button{cursor:pointer}button.active{background:#ad965e;color:#151d19;border-color:#e4c980}button:disabled{opacity:.4}select,input[type=number]{width:100%}label{display:block;margin:8px 0 4px;font-size:12px;color:#d0d7c9}.flex{display:flex;gap:7px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stat{background:#2b3e37;border-radius:8px;padding:9px}.stat strong{display:block;font-size:17px}.mapbox{position:relative;background:#c9c4a9;border-radius:9px;overflow:hidden;touch-action:none}.mapbox canvas{width:100%;height:auto;aspect-ratio:5/2;display:block;touch-action:none;cursor:crosshair}.log{height:130px;overflow-y:auto;line-height:1.6;font-size:12px;color:#c7d1c7}.country{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #3b4f45;gap:8px}.legend{font-size:12px;color:#b8c5bc;margin:9px 0}.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.help{background:#283b34;border-left:3px solid #c7a666;padding:8px;margin-top:8px;font-size:12px}.mode{color:#f1cd84;font-weight:600} @media(max-width:890px){.layout{grid-template-columns:1fr}}@media(max-width:540px){h1{font-size:20px}.layout{padding:7px}.panel{padding:10px}.actions{grid-template-columns:repeat(2,1fr)}}
 </style></head><body><header><div><small style="letter-spacing:2px;color:#bdab78">CARDWARS · TEST</small><h1>Front Command · strategische oorlogstest</h1></div><a href="./index.html">← Cardwars</a></header>
 <div class="layout"><main><section class="panel"><p class="small">Drie landen, elk drie steden. <b>5.760 kleine roosters</b> (640 per stad). Er is één gezamenlijk opperbevel per aangesloten landgebied, terwijl iedere stad haar eigen garnizoen houdt. Elke stad behoudt haar eigen soldaten, ook nadat je oorlog verklaart. Onder elk kasteel staat het actuele aantal soldaten van die stad. In vredestijd kun je mobiele soldaten tussen je kastelen verplaatsen en volgen als reizende bolletjes. Bij aankomst gaan ze naar het doelkasteel, nooit naar een willekeurige plek in de stad. Je geeft gezamenlijke bevelen over verbonden terrein zonder soldaten te teleporteren of samen te voegen. De kaartroosters blijven alleen voor terreincontrole en gevechten. Blauw en goud zijn bondgenoten. Verklaar oorlog aan rood om de gezamenlijke oorlog te starten.</p>
-<div class="stats"><div class="stat">Dag<strong id="day">1</strong></div><div class="stat">Jouw soldaten<strong id="total">0</strong></div><div class="stat">Oorlogen<strong id="wars">0</strong></div></div>
+<div class="stats"><div class="stat">Dag<strong id="day">1</strong></div><div class="stat">Overheidskas<strong id="post-money">ƒ0</strong></div><div class="stat">Jouw soldaten<strong id="total">0</strong></div><div class="stat">Oorlogen<strong id="wars">0</strong></div></div>
 <div class="flex" style="margin-bottom:10px"><button id="next">+1 dag</button><button id="week">+7 dagen</button><button id="play">▶ Automatisch</button><button id="reset">↺ Reset</button></div>
 <div class="mapbox"><canvas id="field" width="900" height="360" aria-label="Oorlogskaart met verspreide legertroepen en tekenbare aanvalsorders"></canvas><div id="map-error" role="alert" hidden style="position:absolute;inset:auto 12px 12px 12px;background:#432e27;color:#fff0df;padding:10px;border:1px solid #df977a;border-radius:7px;font-size:13px"></div></div>
 <p class="legend">🔵 Speler · 🔴 Rode vijand · 🟡 Gouden bondgenoot · <b>🏰</b> soldatenaantal onder elk kasteel · <b>●</b> marcherende troepen en konvooien · <b>10+</b> soldaten = aantal zichtbaar · <b>250</b> = 250 soldaten · <b>1.2k</b> = 1.200 soldaten · 🏰 kasteel · gekleurde ring = belegering · omrande cirkel = versterking · pijl = aanval</p><div class="help">Lichtblauw-groene pijltjes tonen <b>waar soldaten de vorige dag naartoe gestapt zijn</b> (geen toekomstige route). Gele pijlen zijn jouw aanvalsbevelen. Pijlen, cirkels en tijdelijke versterkingen vervallen na tien speldagen. Teken rechtstreeks op de kaart: <b>cirkel</b> om soldaten er stap voor stap naartoe te laten marcheren of <b>pijl</b> om het front in een richting te laten oprukken. Op gsm kun je met je vinger tekenen. Zonder eigen bevelen schuift het leger geleidelijk op langs meerdere frontsectoren. Lege volledig omsingelde gebieden veranderen meteen van kleur, ook bij een gezamenlijke blauw-gouden omsingeling. Kleine achtergebleven groepen trekken naar grotere eigen formaties; aanvallen en marsen vertrekken met minstens tien soldaten. Kastelen en versterkte posities blijven verdedigd.</div></section><section class="panel"><h2>Gebeurtenissen</h2><div id="log" class="log"></div></section></main>
 <aside><section class="panel"><h2>Alliantie & oorlog</h2><div id="countries"></div></section>
 <section class="panel"><h2>Bevelen</h2><label>Niveau van bevelvoering</label><select id="scope"><option value="country">Gezamenlijk landleger</option><option value="city">Mobiele troepen van één stad</option></select><label>Geselecteerde stad</label><select id="city"></select><div id="command" class="small" style="margin:9px 0"></div><label>🏰 Soldaten die in het geselecteerde kasteel blijven</label><input id="castle-men" type="number" min="0" max="2000" step="1" value="40"><div class="flex" style="align-items:center;margin-top:7px"><button id="set-castle-men">Zet kasteelgarnizoen</button><span id="castle-men-info" class="small"></span></div><p class="small">Soldaten in het kasteel beschermen de acht aangrenzende roosters. De rest blijft beschikbaar voor het front. Geen soldaten worden aangemaakt bij het aanpassen.</p><label>Tekenmodus</label><div class="actions"><button data-tool="arrow" class="active">➜ Aanvalspijl</button><button data-tool="circle">◯ Versterkcirkel</button><button data-tool="fort">🛡 Verstevig</button><button data-tool="inspect">⌖ Inspecteer</button><button data-tool="erase">⌫ Gum / wissen</button></div><div id="mode" class="help">Tekenmodus: aanvalspijl. Sleep van start naar doel.</div><label>Aanvalsgewicht (pijl) / extra soldaten (cirkel)</label><input id="amount" type="number" min="20" max="20000" step="100" value="1000"><label>Tactiek</label><select id="stance"><option value="push">Geleidelijk oprukken</option><option value="force">Doorbraak forceren</option><option value="hold">Standhouden</option></select><div class="flex" style="margin-top:10px"><button id="clear-orders">Wis alle bevelen</button><button id="recruit">+100 via kasteel (test)</button></div><div id="order-list" class="small" style="margin-top:12px"></div><div class="small" id="message" style="margin-top:10px">Het kasteelgarnizoen houdt vijanden buiten de acht omliggende roosters totdat het door aanvallen is verslagen. Bevelen op landniveau gelden voor alle verbonden legers. Stadbevelen sturen de mobiele soldaten van de geselecteerde stad aan; het ingestelde kasteelgarnizoen blijft binnen. Na het tekenen marcheren versterkingen pas bij het vooruitzetten van de tijd: maximaal twee aangrenzende roosters per speldag. De cirkel geeft pas extra verdediging wanneer troepen arriveren.</div></section>
-<section class="panel"><h2>Leger verplaatsen in vredestijd</h2><label>Vertrek uit kasteel</label><select id="transfer-from"></select><label>Bestemming: kasteel</label><select id="transfer-to"></select><label>Aantal mobiele soldaten</label><input id="transfer-amount" type="number" min="1" step="1" value="50"><button id="send-transfer" style="margin-top:10px;width:100%">● Stuur leger naar kasteel</button><p class="small">Soldaten vertrekken uit de gekozen stad en reizen langs bevriend terrein. De reistijd volgt de afstand: één dag per zes roosters. Onderweg zijn ze niet beschikbaar voor gevechten of andere bevelen. Bij aankomst worden ze precies aan het doelkasteel toegevoegd.</p><div id="transfer-status" class="small"></div></section><section class="panel"><h2>Legers en troepenverdeling</h2><div id="groups" class="small"></div><h2 style="margin-top:14px">Kastelen & belegeringen</h2><div id="sieges" class="small"></div><h2 style="margin-top:14px">Rooster</h2><div id="cell" class="small">Gebruik Inspecteer om de sterkte van een rooster te bekijken.</div></section></aside></div>
+<section class="panel"><h2>Leger verplaatsen in vredestijd</h2><label>Vertrek uit kasteel</label><select id="transfer-from"></select><label>Bestemming: kasteel</label><select id="transfer-to"></select><label>Aantal mobiele soldaten</label><input id="transfer-amount" type="number" min="1" step="1" value="50"><button id="send-transfer" style="margin-top:10px;width:100%">● Stuur leger naar kasteel</button><p class="small">Soldaten vertrekken uit de gekozen stad en reizen langs bevriend terrein. De reistijd volgt de afstand: één dag per zes roosters. Onderweg zijn ze niet beschikbaar voor gevechten of andere bevelen. Bij aankomst worden ze precies aan het doelkasteel toegevoegd.</p><div id="transfer-status" class="small"></div></section><section class="panel"><h2>🏕 Wachtpost / kazerne</h2><p class="small">Klik 'Plaats' en kies zelf een plek op de kaart. Bouwtijd 30 dagen. Dagelijks staatskosten voor goedkoopste eten en klein beetje hout of steen.</p><button id="post-place">Plaats op kaart</button><button id="post-cancel">Annuleer</button><label>Wachtpost</label><select id="post-select"></select><label>Soldaten uit geselecteerde stad</label><input id="post-men" type="number" min="1" value="30"><button id="post-send">Stuur leger</button><button id="post-upgrade">Upgrade +30 dagen</button><div id="post-info" class="small"></div></section><section class="panel"><h2>Legers en troepenverdeling</h2><div id="groups" class="small"></div><h2 style="margin-top:14px">Kastelen & belegeringen</h2><div id="sieges" class="small"></div><h2 style="margin-top:14px">Rooster</h2><div id="cell" class="small">Gebruik Inspecteer om de sterkte van een rooster te bekijken.</div></section></aside></div>
 <script>
 window.addEventListener('error',function(error){
  const message=document.getElementById('map-error');
@@ -20,13 +20,13 @@ window.addEventListener('error',function(error){
 'use strict';
 const W=120,H=48,S=7.5,CITYW=40,CITYH=16,canvas=document.getElementById('field'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id),colors=['#608db8','#bb716b','#c1a15e'],names=['Azuren Koninkrijk','Rode Hertogdom','Gouden Liga'],cities=[['Westhaven','Rooddam','Goudwijk'],['Blauwburg','Oostwacht','Zuidpoort'],['Koningsveld','Burchtveld','Bergstad']];
 const ix=(x,y)=>y*W+x,loc=i=>[i%W,Math.floor(i/W)],clamp=(x,a,b)=>Math.min(b,Math.max(a,x)),cityId=(x,y)=>Math.floor(y/CITYH)*3+Math.floor(x/CITYW),fmt=n=>Math.round(n).toLocaleString('nl-BE');
-let grid=[],garrisons=[],castles=[],convoys=[],convoyAnimation=null,lastConvoyPaintAt=-Infinity,nextConvoyId=1,wars=new Set(),orders=[],day=1,tool='arrow',drag=null,selected=0,scope='country',running=null,events=[],hiddenGrid=true,nextOrderId=1,marchTrails=[],mobilizedCells=new Set(),warFirstSeenDay=new Map();
+let grid=[],garrisons=[],castles=[],convoys=[],convoyAnimation=null,lastConvoyPaintAt=-Infinity,nextConvoyId=1,posts=[],nextPostId=1,placingPost=false,selectedPost=null,treasury=1600,postDailyExpense=0,wars=new Set(),orders=[],day=1,tool='arrow',drag=null,selected=0,scope='country',running=null,events=[],hiddenGrid=true,nextOrderId=1,marchTrails=[],mobilizedCells=new Set(),warFirstSeenDay=new Map();
 const adjacent=i=>{const [x,y]=loc(i);return[x>0?i-1:-1,x<W-1?i+1:-1,y>0?i-W:-1,y<H-1?i+W:-1].filter(v=>v>=0)};
 const atWar=(a,b)=>a!==b&&wars.has(Math.min(a,b)+'-'+Math.max(a,b));
 function event(s){events.unshift('Dag '+day+': '+s);events=events.slice(0,70)}
 function centroid(c){return [((c%3)*CITYW+20),Math.floor(c/3)*CITYH+8]}
 function armyManpower(owner){
- return grid.reduce((n,t)=>n+(t.owner===owner?t.troops:0),0)+castles.reduce((n,c)=>n+(c.owner===owner?c.garrison:0),0)+convoys.reduce((n,c)=>n+(c.owner===owner?c.amount:0),0);
+ return grid.reduce((n,t)=>n+(t.owner===owner?t.troops:0),0)+castles.reduce((n,c)=>n+(c.owner===owner?c.garrison:0),0)+convoys.reduce((n,c)=>n+(c.owner===owner?c.amount:0),0)+posts.reduce((n,p)=>n+(p.owner===owner?p.men:0),0);
 }
 function castleFieldCandidates(castle){
  const [cx,cy]=loc(castle.center),result=[];
@@ -77,7 +77,7 @@ function damageCastleDefenders(castle,armyFrom){
 }
 function reset(){
  if(convoyAnimation!==null){cancelAnimationFrame(convoyAnimation);convoyAnimation=null;}
- convoys=[];nextConvoyId=1;lastConvoyPaintAt=-Infinity;
+ convoys=[];nextConvoyId=1;lastConvoyPaintAt=-Infinity;posts=[];nextPostId=1;placingPost=false;selectedPost=null;treasury=1600;postDailyExpense=0;
  if(running){clearInterval(running);running=null;$('play').textContent='▶ Automatisch'}
  day=1;wars=new Set();orders=[];nextOrderId=1;marchTrails=[];mobilizedCells=new Set();warFirstSeenDay=new Map();
  events=[];selected=0;scope='country';$('scope').value='country';grid=[];garrisons=[];castles=[];
@@ -676,7 +676,7 @@ function regroupStragglers(){
 }
 
 function fightDay(){
- day++;advancePeaceConvoys();expireTemporaryOrders();regroupStragglers();redistribute();reinforceOrders();computeFrontResistance();
+ day++;advancePeaceConvoys();postDailyTick();expireTemporaryOrders();regroupStragglers();redistribute();reinforceOrders();computeFrontResistance();
  const battlePriorities=[0,1,2].map(owner=>orders.some(o=>o.owner===owner&&o.type==='arrow')?null:priorityIncursion(owner));
  const attackers=[];
  for(let i=0;i<grid.length;i++){
@@ -799,7 +799,7 @@ function updateConvoyFrames(now){
  lastConvoyPaintAt=now;
  for(const convoy of convoys)convoy.paintTimestamp=now;
  $('transfer-status').innerHTML='<small>Soldaten arriveren pas na voldoende speldagen. +1 dag om te marcheren.</small>'+
- convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+castleName(c.to)+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,now)*100)+'% · aankomst dag '+c.arrivalDay+'</small></span></div>').join('');
+ convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+(c.postId?'Wachtpost '+c.postId:castleName(c.to))+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,now)*100)+'% · aankomst dag '+c.arrivalDay+'</small></span></div>').join('');
  paint();
  if(convoys.length)convoyAnimation=requestAnimationFrame(updateConvoyFrames);
 }
@@ -807,8 +807,9 @@ function advancePeaceConvoys(){
  for(const convoy of convoys){
   convoy.tickAt=performance.now();
   if(day<convoy.arrivalDay)continue;
-  const destination=castles[convoy.to];
-  if(destination&&destination.owner===convoy.owner){grid[destination.center].troops+=convoy.amount;event(fmt(convoy.amount)+' soldaten aangekomen bij kasteel '+castleName(convoy.to)+'.');}
+  const post=posts.find(p=>p.id===convoy.postId),destination=castles[convoy.to];
+  if(post&&post.owner===convoy.owner&&post.readyDay<=day){post.men+=convoy.amount;event(fmt(convoy.amount)+' soldaten aangekomen in wachtpost '+post.id+'.');}
+  else if(destination&&destination.owner===convoy.owner){grid[destination.center].troops+=convoy.amount;event(fmt(convoy.amount)+' soldaten aangekomen bij kasteel '+castleName(convoy.to)+'.');}
   else{const home=castles[convoy.from];if(home&&home.owner===convoy.owner)grid[home.center].troops+=convoy.amount;event('Konvooi teruggekeerd: bestemming verloren.');}
   convoy.completed=true;
  }
@@ -850,6 +851,58 @@ function paintCityArmyNumber(castle){
  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 12px system-ui';
  ctx.lineWidth=3.3;ctx.strokeStyle='#17211d';ctx.fillStyle='#fff4cd';
  ctx.strokeText(fmt(total),x,y);ctx.fillText(fmt(total),x,y);
+}
+
+const POST_COST=[0,95,145,205],POST_WOOD=[0,10,7,3],POST_STONE=[0,3,13,25];
+function marketTestPrice(g){const b={grain:1.5,fish:1.6,meat:2.5,wood:1.8,stone:2.2}[g];return b*(1+.1*Math.sin(day*.21+g.length));}
+function postCost(lvl){return POST_COST[lvl]+POST_WOOD[lvl]*marketTestPrice('wood')+POST_STONE[lvl]*marketTestPrice('stone');}
+function postBill(p){
+ const food=['grain','fish','meat'].sort((a,b)=>marketTestPrice(a)-marketTestPrice(b))[0],material=p.level===1?'wood':'stone';
+ return {food,material,total:(p.men*.015+p.level*.12)*marketTestPrice(food)+p.level*.04*marketTestPrice(material)};
+}
+function postDailyTick(){
+ postDailyExpense=0;
+ for(const p of posts){if(day===p.readyDay)event('Wachtpost '+p.id+' is klaar.');if(day>=p.readyDay)postDailyExpense+=postBill(p).total;}
+ treasury=Math.round((treasury-postDailyExpense)*100)/100;
+}
+function postRoute(a,b){if(grid[a].owner!==0||grid[b].owner!==0)return null;const prev=new Int32Array(grid.length).fill(-1),queue=[a];prev[a]=a;
+ for(let i=0;i<queue.length&&prev[b]<0;i++)for(const n of adjacent(queue[i]))if(prev[n]===-1&&grid[n].owner===0){prev[n]=queue[i];queue.push(n)}
+ if(prev[b]<0)return null;const path=[];let cur=b;while(cur!==a){path.push(cur);cur=prev[cur]}path.push(a);return path.reverse();}
+function createPost(i){
+ if(wars.size)return 'Bouwen kan alleen in vredestijd.';
+ if(grid[i].owner!==0||grid[i].castleId>=0)return 'Kies een vrij blauw rooster.';
+ const [x,y]=loc(i);
+ if(posts.some(p=>{const [px,py]=loc(p.tile);return Math.hypot(px-x,py-y)<7})||castles.some(c=>{const [cx,cy]=loc(c.center);return Math.hypot(cx-x,cy-y)<5}))return 'Kies een plek verder weg van kastelen en andere wachtposten.';
+ if(treasury<postCost(1))return 'Onvoldoende overheidsgeld voor bouwmaterialen.';
+ treasury-=postCost(1);const post={id:nextPostId++,tile:i,owner:0,men:0,level:1,readyDay:day+30};posts.push(post);selectedPost=post.id;
+ event('Wachtpost '+post.id+' geplaatst; bouw duurt 30 dagen, klaar op dag '+post.readyDay+'.');return null;}
+function upgradePost(){
+ const p=posts.find(p=>p.id===selectedPost);if(!p||day<p.readyDay||p.level>=3)return 'Selecteer een voltooide wachtpost onder niveau 3.';
+ if(treasury<postCost(p.level+1))return 'Onvoldoende Florijnen.';
+ treasury-=postCost(p.level+1);p.level++;p.readyDay=day+30;event('Upgrade wachtpost '+p.id+' klaar op dag '+p.readyDay+'.');return null;}
+function postSend(fromId,n){
+ const p=posts.find(p=>p.id===selectedPost),from=castles[fromId];if(!p||day<p.readyDay||wars.size||!from||from.owner!==0)return 'Selecteer een voltooide wachtpost en een eigen vertrekstad tijdens vrede.';
+ if(!Number.isSafeInteger(n)||n<1)return 'Vul een positief soldatenaantal in.';
+ const path=postRoute(from.center,p.tile),fromTiles=castleFieldCandidates(from);
+ if(!path)return 'Geen route door bevriend terrein.';
+ if(fromTiles.reduce((a,i)=>a+grid[i].troops,0)<n)return 'Onvoldoende mobiele soldaten.';
+ let left=n;for(const i of fromTiles){const take=Math.min(left,grid[i].troops);grid[i].troops-=take;left-=take;if(!left)break;}
+ const now=performance.now(),travelDays=Math.max(1,Math.ceil((path.length-1)/6));
+ convoys.push({id:nextConvoyId++,owner:0,from:fromId,postId:p.id,amount:n,path,startDay:day,arrivalDay:day+travelDays,travelDays,tickAt:now,paintTimestamp:now});
+ if(convoyAnimation===null)convoyAnimation=requestAnimationFrame(updateConvoyFrames);
+ event(fmt(n)+' soldaten marcheren '+travelDays+' dagen naar wachtpost '+p.id+'.');return null;}
+function paintPosts(){
+ for(const p of posts){const [gx,gy]=loc(p.tile),x=(gx+.5)*S,y=(gy+.5)*S,done=day>=p.readyDay;
+ ctx.save();ctx.translate(x,y);
+ ctx.fillStyle='#20322c';ctx.beginPath();ctx.ellipse(0,14,16,5,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=p.level===1?'#9b815e':'#8f9387';ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(0,6);ctx.lineTo(0,18);ctx.lineTo(-12,11);ctx.closePath();ctx.fill();
+ ctx.fillStyle=p.level===1?'#e4c99e':'#d1d1c5';ctx.beginPath();ctx.moveTo(0,6);ctx.lineTo(12,0);ctx.lineTo(12,11);ctx.lineTo(0,18);ctx.closePath();ctx.fill();
+ ctx.fillStyle=done?'#6c4430':'#b59a54';ctx.beginPath();ctx.moveTo(-14,-5);ctx.lineTo(0,-19-p.level);ctx.lineTo(14,-5);ctx.lineTo(0,6);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#27342f';ctx.lineWidth=1.3;ctx.stroke();ctx.fillStyle='#26382e';ctx.fillRect(-7,5,3,5);ctx.fillRect(5,5,3,5);
+ ctx.textAlign='center';ctx.font='bold 9px system-ui';ctx.strokeStyle='#17221b';ctx.fillStyle='#ffe9ab';ctx.lineWidth=2.5;
+ const label=done?fmt(p.men)+' L'+p.level:'⏳'+(p.readyDay-day)+'d';ctx.strokeText(label,0,28);ctx.fillText(label,0,28);
+ if(p.id===selectedPost){ctx.strokeStyle='#ffe0a0';ctx.strokeRect(-16,-25,32,55)}
+ ctx.restore();}
 }
 function formationMarkers(){
  // Group NEARBY, not necessarily same tile, into readable troop concentrations.
@@ -909,6 +962,7 @@ ctx.strokeStyle='#26352f';ctx.lineWidth=2;for(let x=1;x<3;x++){ctx.beginPath();c
 ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 12px system-ui';for(let c=0;c<9;c++){const [x,y]=centroid(c);ctx.lineWidth=3;ctx.strokeStyle='#1d2521';ctx.fillStyle='#fff4ce';const label=cities[Math.floor(c/3)][c%3];ctx.strokeText(label,x*S,y*S-32);ctx.fillText(label,x*S,y*S-32);ctx.font='bold 12px system-ui'}
 drawFormations();
 paintCastles();
+paintPosts();
 paintConvoys();
 paintMarchTrails();
 for(const order of orders){const [x,y]=loc(order.to),cx=(x+.5)*S,cy=(y+.5)*S;ctx.lineWidth=2.5;ctx.strokeStyle='#ffe77c';if(order.type==='circle'){ctx.beginPath();ctx.arc(cx,cy,order.radius*S,0,Math.PI*2);ctx.stroke()}else{const [sx,sy]=loc(order.from);const ax=(sx+.5)*S,ay=(sy+.5)*S,a=Math.atan2(cy-ay,cx-ax);ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(cx,cy);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx-12*Math.cos(a-.48),cy-12*Math.sin(a-.48));ctx.moveTo(cx,cy);ctx.lineTo(cx-12*Math.cos(a+.48),cy-12*Math.sin(a+.48));ctx.stroke()}}
@@ -938,12 +992,23 @@ function drawOrder(from,to){const origin=grid[from],destination=grid[to],amount=
 const order={id:nextOrderId++,createdDay:day,expiresDay:day+10,type:tool,from,to,owner:0,scope,city:selected,amount,stance:$('stance').value,radius:clamp(Math.hypot(...loc(from).map((v,i)=>v-loc(to)[i])),2,24)};const group=connected(0).find(g=>g.cells.includes(from));const allowed=(group?.cells||[]).filter(i=>scope!=='city'||grid[i].city===selected);order.baseline=chooseSeeds(order,allowed).reduce((sum,i)=>sum+grid[i].troops,0);orders.push(order);event((tool==='circle'?'Versterkcirkel':'Aanvalspijl')+' geplaatst voor '+(scope==='city'?'stadsgarnizoen '+cities[Math.floor(selected/3)][selected%3]:'gezamenlijk landleger'))}
 function orderProgress(o){const group=connected(o.owner).find(g=>g.cells.includes(o.from));if(!group)return 'gebied niet bereikbaar';const area=group.cells.filter(i=>o.scope!=='city'||grid[i].city===o.city);const tiles=chooseSeeds(o,area);const atTarget=tiles.reduce((n,i)=>n+grid[i].troops,0);return 'Bij doel: '+fmt(atTarget)+' / '+fmt(o.currentGoal??((o.baseline||0)+o.amount))+' · '+(o.status||'In afwachting')+(o.lastMoved?' · '+fmt(o.lastMoved)+' soldaat-roosterstappen vandaag':'')}
 function render(){
+ $('post-money').textContent='ƒ'+treasury.toFixed(2)+' (onderhoud ƒ'+postDailyExpense.toFixed(2)+'/dag)';
+ $('post-select').innerHTML=posts.map(p=>'<option value="'+p.id+'" '+(p.id===selectedPost?'selected':'')+'>Wachtpost '+p.id+' · L'+p.level+'</option>').join('');
+ const p=posts.find(p=>p.id===selectedPost);
+ $('post-info').textContent=p?'Wachtpost '+p.id+' · '+(p.readyDay>day?'bouw: '+(p.readyDay-day)+' dagen':'klaar')+' · '+fmt(p.men)+' soldaten · goedkoopste voedsel: '+postBill(p).food+' · ƒ'+postBill(p).total.toFixed(2)+'/dag':'Niveau 1 bouwkosten ca. ƒ'+postCost(1).toFixed(2)+' (inclusief hout/steen), 30 dagen. Klik op een locatie.';
+ $('post-send').disabled=!p||p.readyDay>day||!!wars.size;
+ $('post-upgrade').disabled=!p||p.readyDay>day||p.level>=3;
  $('send-transfer').disabled=!!wars.size||!castles.some(c=>c.owner===0);
  $('transfer-status').innerHTML=(wars.size?'<small>Transfers zijn uitgeschakeld tijdens oorlog.</small>':'<small>Kies vertrek, bestemming en aantal. De bollen reizen naar het doelkasteel.</small>')+
- convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+castleName(c.to)+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,c.paintTimestamp)*100)+'% · aankomst dag '+c.arrivalDay+'</small></span></div>').join('');
+ convoys.map(c=>'<div class="country"><span>● '+castleName(c.from)+' → '+(c.postId?'Wachtpost '+c.postId:castleName(c.to))+'<br><small>'+fmt(c.amount)+' soldaten · '+Math.round(transferProgress(c,c.paintTimestamp)*100)+'% · aankomst dag '+c.arrivalDay+'</small></span></div>').join('');
  paint();$('day').textContent=day;$('wars').textContent=wars.size;$('total').textContent=fmt(armyManpower(0));$('countries').innerHTML=names.map((n,i)=>'<div class="country"><span><b style="color:'+colors[i]+'">●</b> '+n+'<br><small>'+fmt(armyManpower(i))+' soldaten</small></span>'+(i===0?'<small>Jij</small>':i===2?'<small>🤝 Bondgenoot'+(wars.has('1-2')?' · ⚔ tegen rood':'')+'</small>':wars.has('0-1')?'<small>⚔ Oorlog</small>':'<button data-war="1">Oorlog</button>')+'</div>').join('');$('city').innerHTML=Array.from({length:9},(_,i)=>'<option value="'+i+'" '+(i===selected?'selected':'')+'>'+cities[Math.floor(i/3)][i%3]+'</option>').join('');$('order-list').innerHTML='<b>Actieve bevelen ('+orders.length+')</b>'+orders.map(o=>'<div class="country"><span>'+ (o.type==='arrow'?'➜ Aanval':'◯ Versterking')+' #'+o.id+' · '+(o.type==='arrow'?'gewicht '+fmt(o.amount)+' · 78% landleger over pijlen verdeeld':fmt(o.amount)+' extra soldaten')+(o.scope==='city'?' · '+cities[Math.floor(o.city/3)][o.city%3]:' · land')+'<br><small>'+orderProgress(o)+' · verdwijnt dag '+o.expiresDay+'</small></span><button data-delete-order="'+o.id+'" aria-label="Verwijder bevel '+o.id+'">✕ Wis</button></div>').join('');$('castle-men-info').textContent=castles[selected].owner===0?fmt(castles[selected].garrison)+' in het kasteel': 'Niet jouw kasteel';$('set-castle-men').disabled=castles[selected].owner!==0||!!castles[selected].siege;const components=connected(0),cityTroops=grid.reduce((s,t)=>s+(t.city===selected&&t.owner===0?t.troops:0),0);const autoFocus=!orders.some(o=>o.owner===0)&&(wars.size>0)?priorityIncursion(0):null;$('command').textContent=(scope==='country'?'Landelijk opperbevel · '+components.length+' verbonden legergroep(en)':'Stadsleger '+cities[Math.floor(selected/3)][selected%3]+' · '+fmt(cityTroops)+' mobiele soldaten')+(autoFocus?' · Automatische tegenaanval: '+cities[Math.floor(cityId(...autoFocus.coordinate)/3)][cityId(...autoFocus.coordinate)%3]+' (diepte '+autoFocus.depth+')':wars.size&&!orders.length?' · Automatische verdediging langs de grens':'');$('groups').innerHTML=components.map((g,i)=>'<div class="country">Legergroep '+(i+1)+'<strong>'+fmt(g.soldiers)+'</strong></div>').join('');$('sieges').innerHTML=castles.map(c=>{const ring=siegeEncirclement(c),name=cities[Math.floor(c.id/3)][c.id%3],status=c.siege?'<b style="color:#f2ba76">BELEG '+c.siege.progress+'% · voorraden '+c.siege.foodPct+'%</b>':ring.occupied?ring.occupied+'/8 ringroosters bezet':'Veilig · rekruteert';return '<div class="country"><span>🏰 '+name+'<br><small>'+status+'</small></span><small>'+fmt(c.garrison)+' garnizoen / doel '+fmt(c.desiredGarrison)+'</small></div>'}).join('');$('log').innerHTML=events.map(v=>'<div>'+v+'</div>').join('')}
-canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drag={from:mouseIndex(e),to:mouseIndex(e)};paint()});canvas.addEventListener('pointermove',e=>{if(!drag)return;drag.to=mouseIndex(e);paint()});canvas.addEventListener('pointerup',e=>{if(!drag)return;drag.to=mouseIndex(e);drawOrder(drag.from,drag.to);drag=null;render()});canvas.addEventListener('pointercancel',()=>{drag=null;paint()});
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drag={from:mouseIndex(e),to:mouseIndex(e)};paint()});canvas.addEventListener('pointermove',e=>{if(!drag)return;drag.to=mouseIndex(e);paint()});canvas.addEventListener('pointerup',e=>{if(!drag)return;drag.to=mouseIndex(e);if(placingPost){const msg=createPost(drag.to);if(msg)event(msg);else placingPost=false;}else{const p=posts.find(p=>p.tile===drag.to);if(p)selectedPost=p.id;else drawOrder(drag.from,drag.to);}drag=null;render()});canvas.addEventListener('pointercancel',()=>{drag=null;paint()});
 document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.tool)));$('order-list').addEventListener('click',e=>{const b=e.target.closest('[data-delete-order]');if(!b)return;const before=orders.length;orders=orders.filter(o=>o.id!==Number(b.dataset.deleteOrder));if(orders.length!==before)event('Bevel '+b.dataset.deleteOrder+' verwijderd.');render()});$('countries').addEventListener('click',e=>{const b=e.target.closest('[data-war]');if(!b)return;const n=Number(b.dataset.war);if(n!==1)return;if(convoys.length){event('Wacht tot de konvooien bij hun doelkasteel zijn voordat je oorlog start.');render();return;}wars.add('0-1');wars.add('1-2');for(const id of [0,1,2])if(!warFirstSeenDay.has(id))warFirstSeenDay.set(id,day);event('Oorlog tegen rood! De Gouden Liga treedt automatisch toe als jouw bondgenoot en valt rood vanuit het oosten aan.');render()});$('scope').onchange=e=>{scope=e.target.value;render()};$('city').onchange=e=>{selected=Number(e.target.value);$('castle-men').value=String(castles[selected].garrison);render()};$('next').onclick=fightDay;$('week').onclick=()=>{for(let k=0;k<7;k++)fightDay()};$('play').onclick=()=>{if(running){clearInterval(running);running=null;$('play').textContent='▶ Automatisch'}else{running=setInterval(fightDay,450);$('play').textContent='⏸ Pauze'}};$('reset').onclick=reset;$('clear-orders').onclick=()=>{orders=[];event('Alle aanvalspijlen en versterkcirkels verwijderd.');render()};$('set-castle-men').onclick=()=>{const c=castles[selected],n=Number($('castle-men').value);if(!Number.isFinite(n)||!Number.isInteger(n)||!setCastleGarrison(c,n)){event('Kan kasteelgarnizoen niet instellen: onvoldoende lokale soldaten, geen eigen kasteel of kasteel belegerd.');render();return;}event('Kasteel '+cities[Math.floor(c.id/3)][c.id%3]+' houdt '+fmt(c.garrison)+' soldaten binnen; de rest blijft mobiel.');render()};
+$('post-place').onclick=()=>{placingPost=true;event('Klik op eigen grondgebied om de wachtpost te plaatsen.');render()};
+$('post-cancel').onclick=()=>{placingPost=false;render()};
+$('post-upgrade').onclick=()=>{const msg=upgradePost();if(msg)event(msg);render()};
+$('post-send').onclick=()=>{const msg=postSend(selected,Number($('post-men').value));if(msg)event(msg);render()};
+$('post-select').onchange=e=>{selectedPost=Number(e.target.value);render()};
 $('send-transfer').onclick=()=>{
  const from=Number($('transfer-from').value),to=Number($('transfer-to').value),amount=Number($('transfer-amount').value);
  const warning=sendPeaceTransfer(from,to,amount);
