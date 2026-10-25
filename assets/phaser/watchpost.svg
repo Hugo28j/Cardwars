@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 108" width="96" height="108" role="img" aria-label="Medieval timber watchpost with gabled tile roof">
+  <defs>
+    <linearGradient id="front" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6cc9c"/><stop offset="1" stop-color="#ba956a"/>
+    </linearGradient>
+    <linearGradient id="side" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a98761"/><stop offset="1" stop-color="#795a3e"/>
+    </linearGradient>
+    <linearGradient id="rightRoof" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a66c49"/><stop offset="1" stop-color="#603c2c"/>
+    </linearGradient>
+    <linearGradient id="leftRoof" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bb8051"/><stop offset="1" stop-color="#815039"/>
+    </linearGradient>
+  </defs>
+  <!-- Shared 2.5D watchpost sprite for the campaign and war sandbox. -->
+  <ellipse cx="49" cy="93" rx="33" ry="7" fill="#1b3028" opacity=".30"/>
+  <path d="M19 80 62 82 80 72 80 80 63 92 18 90Z" fill="#70695a" stroke="#3a3b34" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M62 44 78 35 78 81 62 90Z" fill="url(#side)" stroke="#5d4531" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M19 44 62 44 62 90 19 87Z" fill="url(#front)" stroke="#654e35" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M22 49V85M59 49V88M21 65 59 66M21 83 59 86" fill="none" stroke="#7a5636" stroke-width="3.5" stroke-linecap="square"/>
+  <path d="M24 50 37 64M57 50 44 65" fill="none" stroke="#947249" stroke-width="2" opacity=".85"/>
+  <path d="M65 47 75 41M65 65 75 59M65 84 75 75" fill="none" stroke="#b08b60" stroke-width="1.7" opacity=".65"/>
+  <path d="M32 86V73Q32 66 40 66Q48 66 48 73V88Z" fill="#493b2d" stroke="#725335" stroke-width="2.5"/>
+  <path d="M39 67V87M43 67V87" fill="none" stroke="#8a6546" stroke-width="1"/>
+  <circle cx="44.5" cy="78" r="1.2" fill="#e5bf74"/>
+  <path d="M68 57 73 54 73 64 68 67Z" fill="#27352f" stroke="#503c2a" stroke-width="1.8"/>
+  <!-- Sloping roof planes share a ridge and overhang the front timber gable. -->
+  <path d="M11 45 42 12 59 3 28 36Z" fill="url(#leftRoof)" stroke="#433328" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M42 12 67 45 84 36 59 3Z" fill="url(#rightRoof)" stroke="#433328" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M49 18 70 43M54 11 79 36M43 27 65 45" fill="none" stroke="#d09a6e" stroke-width="1.5" opacity=".7"/>
+  <path d="M34 22 18 39M44 13 27 35" fill="none" stroke="#e3a16d" stroke-width="1.3" opacity=".5"/>
+  <path d="M53 18 59 16M60 28 66 26M68 37 73 35" stroke="#51362b" stroke-width="1.4" opacity=".6"/>
+  <path d="M16 45 42 16 64 45Z" fill="#c6a075" stroke="#5d4230" stroke-width="1.7" stroke-linejoin="round"/>
+  <path d="M16 45 42 16 64 45" fill="none" stroke="#49352a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 46H64" stroke="#5d4230" stroke-width="4" stroke-linecap="square"/>
+  <path d="M42 20V45M30 34 42 44 54 34" fill="none" stroke="#8b6342" stroke-width="2.1"/>
+  <path d="M37 38H47" stroke="#e5c397" stroke-width="1.6"/>
+  <path d="M42 12 59 3" stroke="#513528" stroke-width="3" stroke-linecap="round"/>
+  <path d="M25 51H57" stroke="#f1d8a9" stroke-width="1" opacity=".65"/>
+</svg>
