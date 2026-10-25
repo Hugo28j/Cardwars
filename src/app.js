@@ -4,7 +4,8 @@ import {freshProfile,migrateProfile,validateProfile} from './engine.js?v=2026092
 import {ECONOMY_1300,BUILDINGS_1300,BUILDING_1300,isCoastalCity1300,startingBuildingLevel1300,buildingCost1300} from './buildings1300.js?v=20260925-treasury-grain-market-v9';
 import {icon} from './icons.js?v=20260926-hud-notifications-v3';
 import {GOOGLE_CLIENT_ID} from './auth-config.js?v=20260921-auth-v1';
-import {WorldMap} from './map.js?v=20261025-state-watchposts-v1';
+import {WorldMap} from './map.js?v=20261025-state-watchposts-v2';
+import {watchpostCapacity1300,watchpostTravelDays1300,incomingWatchpostSoldiers1300,watchpostSupplyBill1300} from './watchposts1300.js?v=20261025-v1';
 import {TECH_BRANCHES_1300,TECHNOLOGIES_1300,TECHNOLOGY_1300,freshTechnologyState1300,normaliseTechnologyState1300,technologyAvailable1300,technologyResearchCost1300,technologyBonuses1300,branchUnlockedCount1300,applyWeeklyResearch1300} from './technology1300.js?v=20260926-military-unlocks-v3';
 import {MILITARY_UNITS_1300,MILITARY_UNIT_1300,PROFESSIONAL_MILITARY_UNITS_1300,normaliseMilitaryState1300,unitCount1300,professionalCount1300,levyCount1300,pendingProfessional1300,addTrainingOrder1300,addLevyOrder1300,cancelOrder1300,disbandUnits1300,applyUnitLosses1300,completeTrainingForDay1300} from './military1300.js?v=20260926-v2';
 import {freshCountryAI1300,normaliseCountryAI1300,applyCountryAIStats1300,runCountryAIWeek1300} from './ai1300.js?v=20260926-country-ai-v1';
@@ -1788,7 +1789,7 @@ function ensureGameProfile(p){
    const savedOwned=Array.isArray(g.ownedCities)?[...new Set(g.ownedCities)].filter(id=>Object.hasOwn(CITY_1300,id)):[],ownedCities=savedOwned.length?savedOwned:[...validHand],oldOwners=g.cityOwners&&typeof g.cityOwners==='object'&&!Array.isArray(g.cityOwners)?g.cityOwners:{},cityOwners={...oldOwners};for(const id of ownedCities)cityOwners[id]='player';
    const gameBuildings=g.buildings&&typeof g.buildings==='object'&&!Array.isArray(g.buildings)?g.buildings:{},construction=g.construction&&typeof g.construction==='object'&&!Array.isArray(g.construction)?g.construction:{};
    const day=Math.max(0,Math.floor(Number(g.day)||0)),clockStartedAt=Number.isFinite(Number(g.clockStartedAt))?Number(g.clockStartedAt):Date.now(),clockStartsAt=Number.isFinite(Number(g.clockStartsAt))?Number(g.clockStartsAt):null,lastTickAt=Number.isFinite(Number(g.lastTickAt))?Number(g.lastTickAt):null,lastAutosaveDay=Number.isFinite(Number(g.lastAutosaveDay))?Math.max(0,Math.floor(Number(g.lastAutosaveDay))):0,economy=normaliseGameEconomy1300(g.economy);
-   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,construction,day,clockStartedAt,clockStartsAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),ai:normaliseCountryAI1300(g.ai),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot,hudNotificationDismissed:g.hudNotificationDismissed&&typeof g.hudNotificationDismissed==='object'&&!Array.isArray(g.hudNotificationDismissed)?g.hudNotificationDismissed:{},military:g.military&&typeof g.military==='object'&&!Array.isArray(g.military)?g.military:null,watchposts:Array.isArray(g.watchposts)?g.watchposts:[]};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);ensureGameMilitary1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id],p.activeGame));refreshCampaignStage1300(p.activeGame);
+   p.activeGame={date:'1300-01-01',deck:validDeck,hand:validHand,ownedCities,cityOwners,playerColor,flag:normaliseFlag1300(g.flag||p.playerFlag),startingFlorins:startTreasury,florins:currentTreasury,buildings:gameBuildings,construction,day,clockStartedAt,clockStartsAt,lastTickAt,lastAutosaveDay,economy,technology:normaliseTechnologyState1300(g.technology),diplomacy:normaliseGameDiplomacy1300(g.diplomacy),ai:normaliseCountryAI1300(g.ai),campaignStage:g.campaignStage,originCountryByCity:g.originCountryByCity,independenceByCity:g.independenceByCity,formedNation:g.formedNation,won:g.won,victoryRank:g.victoryRank,victoryDate:g.victoryDate,rankingSnapshot:g.rankingSnapshot,hudNotificationDismissed:g.hudNotificationDismissed&&typeof g.hudNotificationDismissed==='object'&&!Array.isArray(g.hudNotificationDismissed)?g.hudNotificationDismissed:{},military:g.military&&typeof g.military==='object'&&!Array.isArray(g.military)?g.military:null,watchposts:Array.isArray(g.watchposts)?g.watchposts:[],watchpostTransfers:Array.isArray(g.watchpostTransfers)?g.watchpostTransfers:[]};initialiseCampaignIdentity1300(p.activeGame);ensureGameDynamicStats1300(p.activeGame);ensureGameMilitary1300(p.activeGame);p.activeGame.economy.stabilityBudget=Math.min(p.activeGame.economy.stabilityBudget,stabilityBudgetMax1300(p.activeGame));for(const id of p.activeGame.ownedCities)p.activeGame.economy.technologyBudgets[id]=Math.min(Number(p.activeGame.economy.technologyBudgets[id])||0,provinceTechnologyBudgetMax1300(CITY_1300[id],p.activeGame));refreshCampaignStage1300(p.activeGame);
   }
  }
 }
@@ -2297,17 +2298,14 @@ function governmentWatchpostBuildCost1300(game,cityId,level){
  const c=WATCHPOST_BUILD_1300[level];return c?roundStat1300(c.florins+c.wood*watchpostMarketPrice1300(game,cityId,'wood')+c.stone*watchpostMarketPrice1300(game,cityId,'stone')):Infinity;
 }
 function watchpostWeeklyBill1300(game,p){
- const food=['grain','fish','meat'].sort((a,b)=>watchpostMarketPrice1300(game,p.cityId,a)-watchpostMarketPrice1300(game,p.cityId,b))[0];
- const material=p.level===1?'wood':'stone',guard=Math.max(0,Math.floor(Number(p.men)||0));
- const foodQty=guard*.006+p.level*.12,materialQty=.025*p.level;
- return {food,foodQty,material,materialQty,total:roundStat1300(7*(foodQty*watchpostMarketPrice1300(game,p.cityId,food)+materialQty*watchpostMarketPrice1300(game,p.cityId,material)))};
+ return watchpostSupplyBill1300(p,good=>watchpostMarketPrice1300(game,p.cityId,good));
 }
 function governmentWatchpostWeeklyCost1300(game){
  return roundStat1300((game?.watchposts||[]).filter(p=>Number(p.readyDay)<=Number(game.day)&&game.ownedCities?.includes(p.cityId)).reduce((sum,p)=>sum+watchpostWeeklyBill1300(game,p).total,0));
 }
 function watchpostGarrisonAvailable1300(game,cityId){
  const military=ensureAdvancedMilitary1300(game);
- return armyKeysAtLocation1300(game,cityId).reduce((sum,key)=>sum+MILITARY_UNITS_1300.reduce((n,u)=>n+Math.max(0,Number(military.armiesByCity[key]?.units?.[u.id])||0),0),0);
+ return armyKeysAtLocation1300(game,cityId,{standingOnly:true}).reduce((sum,key)=>sum+MILITARY_UNITS_1300.reduce((n,u)=>n+Math.max(0,Number(military.armiesByCity[key]?.units?.[u.id])||0),0),0);
 }
 function watchpostReadNumber1300(p){
  return Math.max(0,Math.floor(Number(document.getElementById('watchpost-men-'+p.id)?.value)||0));
@@ -2317,9 +2315,9 @@ function governmentWatchpostPanelHTML1300(game,cityId){
  const list=game.watchposts||[],draft=watchpostDraft1300.cityId===cityId?watchpostDraft1300:{x:3,y:2},price=governmentWatchpostBuildCost1300(game,cityId,1);
  const places=Array.from({length:35},(_,i)=>{const x=i%7,y=Math.floor(i/7),selected=x===draft.x&&y===draft.y;
  return '<button type="button" data-action="watchpost-spot" data-city="'+cityId+'" data-x="'+x+'" data-y="'+y+'" title="Plaats op rooster '+(x+1)+','+(y+1)+'" style="width:24px;height:24px;border:1px solid #647568;border-radius:3px;background:'+(selected?'#d9be71':'#354739')+';color:#fff;font-size:12px">'+(selected?'◆':'·')+'</button>';}).join('');
- const rows=list.filter(p=>p.cityId===cityId).map(p=>{const pending=Number(game.day)<p.readyDay,bill=watchpostWeeklyBill1300(game,p),unitStock=watchpostGarrisonAvailable1300(game,cityId);
- return '<article style="border:1px solid #53634e;border-radius:8px;padding:8px;margin:8px 0"><strong>🏕 Wachtpost '+p.id+' · Niveau '+p.level+'</strong><p style="font-size:12px;margin:4px 0">'+(pending?'In aanbouw: '+(p.readyDay-game.day)+' dagen':'Actief · '+p.men+' soldaten')+'</p><small>Staatsonderhoud: ƒ'+money1300(bill.total)+'/week · '+bill.food+' (goedkoopste) + '+bill.material+'</small><p style="font-size:12px">In stad beschikbare lichtingen: '+unitStock+'</p><input id="watchpost-men-'+p.id+'" type="number" min="1" step="1" value="10" style="width:70px" aria-label="Aantal soldaten"/><button type="button" data-action="watchpost-station" data-id="'+p.id+'" '+(pending?'disabled':'')+'>Stationeer</button><button type="button" data-action="watchpost-withdraw" data-id="'+p.id+'" '+(pending?'disabled':'')+'>Terugroepen</button><button type="button" data-action="watchpost-upgrade" data-id="'+p.id+'" '+(pending||p.level>=3?'disabled':'')+'>Upgrade +30d</button></article>';}).join('');
- return '<section class="government-watchposts" style="margin:14px 0;padding:12px;border:1px solid #716b4a;border-radius:10px;background:#222e29;color:#f6edd5"><h3 style="margin:0 0 6px">🏕 Overheidswachtposten</h3><p style="font-size:12px">Kies exact één bouwpositie in deze provincie. Op de wereldkaart verschijnt een 2,5D wachtpost. Bouw duurt 30 speldagen; de overheid betaalt rechtstreeks.</p><div style="display:grid;grid-template-columns:repeat(7,24px);gap:3px;justify-content:start">'+places+'</div><small>Geselecteerde plek: kolom '+(draft.x+1)+', rij '+(draft.y+1)+' · ƒ'+money1300(price)+' incl. hout en steen</small><p><button type="button" data-action="watchpost-build" data-city="'+cityId+'" '+(game.florins<price?'disabled':'')+'>Bouw wachtpost · 30 dagen</button></p>'+rows+'</section>';
+ const rows=list.filter(p=>p.cityId===cityId).map(p=>{const pending=Number(game.day)<p.readyDay,bill=watchpostWeeklyBill1300(game,p),unitStock=watchpostGarrisonAvailable1300(game,cityId),inbound=incomingWatchpostSoldiers1300(game.watchpostTransfers,p.id),capacity=watchpostCapacity1300(p.level);
+ return '<article style="border:1px solid #53634e;border-radius:8px;padding:8px;margin:8px 0"><strong>🏕 Wachtpost '+p.id+' · Niveau '+p.level+'</strong><p style="font-size:12px;margin:4px 0">'+(pending?'In aanbouw: '+(p.readyDay-game.day)+' dagen':'Actief · '+p.men+'/'+capacity+' soldaten · '+inbound+' onderweg')+'</p><small>Staatsonderhoud: ƒ'+money1300(bill.total)+'/week · '+bill.food+' (goedkoopste) + '+bill.material+'</small><p style="font-size:12px">In stad beschikbare lichtingen: '+unitStock+'</p><input id="watchpost-men-'+p.id+'" type="number" min="1" step="1" value="10" style="width:70px" aria-label="Aantal soldaten"/><button type="button" data-action="watchpost-station" data-id="'+p.id+'" '+(pending?'disabled':'')+'>Stationeer</button><button type="button" data-action="watchpost-withdraw" data-id="'+p.id+'" '+(pending?'disabled':'')+'>Terugroepen</button><button type="button" data-action="watchpost-upgrade" data-id="'+p.id+'" '+(pending||p.level>=3?'disabled':'')+'>Upgrade +30d</button></article>';}).join('');
+ return '<section class="government-watchposts" style="margin:14px 0;padding:12px;border:1px solid #716b4a;border-radius:10px;background:#222e29;color:#f6edd5"><h3 style="margin:0 0 6px">🏕 Overheidswachtposten</h3><p style="font-size:12px">Kies een bouwpositie in deze provincie. Op de wereldkaart verschijnt een 2,5D wachtpost. Bouw duurt 30 speldagen; de overheid betaalt rechtstreeks.</p><div style="display:grid;grid-template-columns:repeat(7,24px);gap:3px;justify-content:start">'+places+'</div><small>Geselecteerde plek: kolom '+(draft.x+1)+', rij '+(draft.y+1)+' · ƒ'+money1300(price)+' incl. hout en steen</small><p><button type="button" data-action="watchpost-build" data-city="'+cityId+'" '+(game.florins<price?'disabled':'')+'>Bouw wachtpost · 30 dagen</button></p>'+rows+'</section>';
 }
 function buyGovernmentWatchpost1300(cityId){
  const game=profile.activeGame;
@@ -2334,8 +2332,16 @@ function buyGovernmentWatchpost1300(cityId){
  game.watchposts.push({id,cityId,x,y,level:1,men:0,readyDay:game.day+30});
  watchpostAfterEdit1300(game);toast('Wachtpost geplaatst. Bouw duurt 30 speldagen.');
 }
+function queueWatchpostTransport1300(game,p,direction,units){
+ const amount=Object.values(units).reduce((sum,n)=>sum+Math.max(0,Math.floor(Number(n)||0)),0);
+ if(!amount)return;
+ game.watchpostTransfers??=[];
+ const departure=Math.max(0,Math.floor(Number(game.day)||0)),travelDays=watchpostTravelDays1300(p.x,p.y);
+ game.watchpostTransfers.push({id:'post-transfer-'+departure+'-'+p.id+'-'+game.watchpostTransfers.length,cityId:p.cityId,postId:p.id,direction,units,startDay:departure,arrivalDay:departure+travelDays});
+ toast(amount+' soldaten onderweg ('+travelDays+' speldagen).');
+}
 function changeGovernmentWatchpost1300(id,action){
- const game=profile.activeGame,p=game?.watchposts?.find(p=>String(p.id)===String(id));
+ const game=profile.activeGame,p=game?.watchposts?.find(row=>String(row.id)===String(id));
  if(!p||!game.ownedCities?.includes(p.cityId))return;
  if(game.day<p.readyDay){toast('Wacht eerst tot de bouw voltooid is.');return;}
  if(action==='upgrade'){
@@ -2345,34 +2351,38 @@ function changeGovernmentWatchpost1300(id,action){
   game.florins=roundStat1300(game.florins-cost);p.level++;p.readyDay=game.day+30;
  }else if(action==='station'){
   let remaining=watchpostReadNumber1300(p);
-  if(!remaining||remaining>watchpostGarrisonAvailable1300(game,p.cityId)){toast('Te weinig beschikbare lichtingen in de stad.');return;}
-  const m=ensureAdvancedMilitary1300(game);
-  p.units??={};
-  for(const key of armyKeysAtLocation1300(game,p.cityId)){
-   const units=m.armiesByCity[key].units;
-   for(const u of MILITARY_UNITS_1300){
-    const take=Math.min(remaining,Math.max(0,Number(units[u.id])||0));
+  const availableCapacity=watchpostCapacity1300(p.level)-Math.max(0,Number(p.men)||0)-incomingWatchpostSoldiers1300(game.watchpostTransfers,p.id);
+  if(!remaining||remaining>availableCapacity){toast('De wachtpost heeft onvoldoende vrije garnizoensplaatsen.');return;}
+  if(remaining>watchpostGarrisonAvailable1300(game,p.cityId)){toast('Te weinig beschikbare soldaten in de stad.');return;}
+  const m=ensureAdvancedMilitary1300(game),manifest={};
+  for(const key of armyKeysAtLocation1300(game,p.cityId,{standingOnly:true})){
+   const units=m.armiesByCity[key]?.units;if(!units)continue;
+   for(const unit of MILITARY_UNITS_1300){
+    const take=Math.min(remaining,Math.max(0,Number(units[unit.id])||0));
     if(!take)continue;
-    units[u.id]-=take;p.units[u.id]=(Number(p.units[u.id])||0)+take;p.men+=take;remaining-=take;
+    units[unit.id]-=take;manifest[unit.id]=(manifest[unit.id]||0)+take;remaining-=take;
     if(!remaining)break;
    }
    if(!remaining)break;
   }
+  if(remaining){ // Older/moving-army saves can differ from the apparent city total.
+   const army=m.armiesByCity[p.cityId];if(army)for(const [unitId,n] of Object.entries(manifest))army.units[unitId]=(Number(army.units[unitId])||0)+n;
+   toast('Soldaten zijn niet allemaal beschikbaar.');return;
+  }
+  queueWatchpostTransport1300(game,p,'to-post',manifest);
  }else if(action==='withdraw'){
   const take=watchpostReadNumber1300(p);
-  if(take>p.men||take<=0){toast('Ongeldig aantal voor terugtrekking.');return;}
-  const m=ensureAdvancedMilitary1300(game),key=armyKeysAtLocation1300(game,p.cityId)[0]||p.cityId;
-  const army=m.armiesByCity[key]||m.armiesByCity[p.cityId];
-  if(!army){toast('Geen bevriend stadsleger gevonden.');return;}
+  if(!take||take>Number(p.men||0)){toast('Ongeldig aantal voor terugtrekking.');return;}
   p.units??={'levy-swordsmen':p.men};
-  let remaining=take;
+  let remaining=take;const manifest={};
   for(const [unitId,count] of Object.entries(p.units)){
-   if(!MILITARY_UNIT_1300[unitId]||remaining<=0)continue;
-   const returned=Math.min(remaining,Math.max(0,Number(count)||0));
-   p.units[unitId]-=returned;
-   army.units[unitId]=(Number(army.units[unitId])||0)+returned;
+   if(!MILITARY_UNIT_1300[unitId]||!remaining)continue;
+   const returned=Math.min(remaining,Math.max(0,Math.floor(Number(count)||0)));
+   p.units[unitId]-=returned;manifest[unitId]=(manifest[unitId]||0)+returned;
    p.men-=returned;remaining-=returned;
   }
+  if(remaining){toast('Garnizoensgegevens zijn onvolledig.');return;}
+  queueWatchpostTransport1300(game,p,'from-post',manifest);
  }
  watchpostAfterEdit1300(game);
 }
@@ -2380,10 +2390,37 @@ function watchpostAfterEdit1300(game){
  invalidateWeeklyBudgetProjection1300(game);save();renderGameProvincePanel();refreshGameClockUI1300();syncCampaignMilitaryOverlay1300(game);
 }
 function processWatchpostsDay1300(game){
- if(!(game.watchposts||[]).some(p=>p.readyDay===game.day))return;
+ const due=(game.watchpostTransfers||[]).filter(t=>Number(t.arrivalDay)<=Number(game.day));
+ const ready=(game.watchposts||[]).some(p=>Number(p.readyDay)===Number(game.day));
+ if(!due.length&&!ready)return;
+ const m=ensureAdvancedMilitary1300(game);
+ for(const transport of due){
+  const p=game.watchposts?.find(post=>String(post.id)===String(transport.postId));
+  const owned=game.ownedCities?.includes(transport.cityId);
+  const deliver=transport.direction==='to-post'&&p&&owned&&Number(p.readyDay)<=Number(game.day);
+  const count=Object.values(transport.units||{}).reduce((sum,n)=>sum+Math.max(0,Math.floor(Number(n)||0)),0);
+  if(deliver){
+   p.units??={};
+   for(const [unitId,n] of Object.entries(transport.units||{})){
+    if(!MILITARY_UNIT_1300[unitId])continue;
+    p.units[unitId]=(Number(p.units[unitId])||0)+Math.max(0,Math.floor(Number(n)||0));
+   }
+   p.men=Object.values(p.units).reduce((sum,n)=>sum+Math.max(0,Math.floor(Number(n)||0)),0);
+  }else{
+   // If the destination was lost, return soldiers to a remaining owned castle.
+   const cityId=owned?transport.cityId:game.ownedCities?.[0];
+   if(cityId){
+    const a=m.armiesByCity[cityId]||(m.armiesByCity[cityId]={id:'army-'+cityId,name:'Army of '+displayCityName1300(CITY_1300[cityId]),homeCityId:cityId,location:cityId,units:{}});
+    for(const [unitId,n] of Object.entries(transport.units||{}))if(MILITARY_UNIT_1300[unitId])a.units[unitId]=(Number(a.units[unitId])||0)+Math.max(0,Math.floor(Number(n)||0));
+   }
+  }
+  if(count)toast(count+' soldaten '+(deliver?'aangekomen bij wachtpost.':'aangekomen bij kasteel.'));
+ }
+ game.watchpostTransfers=(game.watchpostTransfers||[]).filter(t=>Number(t.arrivalDay)>Number(game.day));
  invalidateWeeklyBudgetProjection1300(game);
  syncCampaignMilitaryOverlay1300(game);
  if(gameProvincePanel)renderGameProvincePanel();
+ save();
 }
 function renderGameProvincePanel(skipMapRefresh=false){
  const panel=$('#game-province-panel'),shell=$('.game-map-shell');if(!panel)return;if(gameBattlePanelId){renderGameBattlePanel1300();return;}if(gameSiegePanelId){renderGameSiegePanel1300();return;}if(gameArmyPanelKey){renderArmyMapPanel1300();return;}
