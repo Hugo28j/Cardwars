@@ -1,0 +1,51 @@
+[
+  {
+    "id": "1300-paris",
+    "name": "Paris",
+    "realm": "Kingdom of France",
+    "lon": 2.3522,
+    "lat": 48.8566
+  },
+  {
+    "id": "1300-bruges",
+    "name": "Bruges",
+    "realm": "County of Flanders",
+    "lon": 3.2247,
+    "lat": 51.2093
+  },
+  {
+    "id": "1300-prague",
+    "name": "Prague",
+    "realm": "Kingdom of Bohemia",
+    "lon": 14.4378,
+    "lat": 50.0755
+  },
+  {
+    "id": "1300-venice",
+    "name": "Venice",
+    "realm": "Republic of Venice",
+    "lon": 12.3155,
+    "lat": 45.4408
+  },
+  {
+    "id": "1300-rome",
+    "name": "Rome",
+    "realm": "Papal States",
+    "lon": 12.4964,
+    "lat": 41.9028
+  },
+  {
+    "id": "1300-lisbon",
+    "name": "Lisbon",
+    "realm": "Kingdom of Portugal",
+    "lon": -9.1393,
+    "lat": 38.7223
+  },
+  {
+    "id": "1300-constantinople",
+    "name": "Constantinople",
+    "realm": "Byzantine Empire",
+    "lon": 28.9784,
+    "lat": 41.0082
+  }
+]
